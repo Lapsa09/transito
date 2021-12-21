@@ -77,14 +77,7 @@ function AccidentesLugarForm() {
   };
 
   return (
-    <Box
-      component="form"
-      sx={{
-        "& .MuiTextField-root": { m: 1, width: "25ch" },
-      }}
-      noValidate
-      autoComplete="off"
-    >
+    <Box component="form" className="form" noValidate autoComplete="off">
       <TextField
         label="Nombre Responsable de carga"
         value={form.nombreResponsable}

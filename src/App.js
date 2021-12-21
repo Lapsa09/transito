@@ -8,6 +8,7 @@ function App() {
       <nav>
         <NavLink to="/">Home</NavLink>
         <NavLink to="/accidentes">Accidentes</NavLink>
+        <NavLink to="/operativos">Operativos</NavLink>
       </nav>
     </div>
   );

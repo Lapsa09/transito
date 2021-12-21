@@ -1,11 +1,14 @@
 import "./App.css";
-import DateTimePicker from "./components/datetime-picker/DateTimePicker";
+import { NavLink } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      <h1>APP</h1>
-      <DateTimePicker/>
+    <div>
+      <h1>Home</h1>
+      <nav>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/accidentes">Accidentes</NavLink>
+      </nav>
     </div>
   );
 }

@@ -1,13 +1,5 @@
-import axios from "axios";
+import { getter } from "./index";
 
-const getter = async (route) => {
-  const { data } = axios.get(route);
-  return data;
-};
+export const provincias = async () => await getter("/provincias");
 
-// export const provincias = async () => await getter("/provincias");
-
-// export const departamentos = async () => await getter("/deptos");
-
-export const provincias = [];
-export const departamentos = [];
+export const departamentos = async () => await getter("/deptos");

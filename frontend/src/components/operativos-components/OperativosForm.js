@@ -18,14 +18,9 @@ function OperativosForm() {
     motivo: "",
     graduacion_alcoholica: "",
     resolucion: "",
-    fecha_carga: DateTime.now(),
     lpcarga: "",
-    mes: "",
-    semana: "",
     es_del: "",
     resultado: "",
-    cp: "",
-    direccion_full: "",
     latitud: "",
     longitud: "",
     tipo_licencia: "",
@@ -38,8 +33,8 @@ function OperativosForm() {
     setDate(newDate);
     setForm({
       ...form,
-      fechaSiniestro: date.toLocaleString(),
-      horaSiniestro: date.toLocaleString(DateTime.TIME_24_SIMPLE),
+      fecha: date.toLocaleString(),
+      hora: date.toLocaleString(DateTime.TIME_24_SIMPLE),
     });
   };
 
@@ -59,14 +54,10 @@ function OperativosForm() {
         onChange={handleChange("direccion")}
       />
       <TextField
+        select
         label="Zona"
         value={form.zona}
         onChange={handleChange("zona")}
-      />
-      <TextField
-        label="Codigo postal"
-        value={form.cp}
-        onChange={handleChange("cp")}
       />
       <TextField
         label="Legajo a cargo"
@@ -106,7 +97,8 @@ function OperativosForm() {
         onChange={handleChange("tipo_licencia")}
       />
       <TextField
-        label="Ubicacion del infractor"
+        select
+        label="Zona del infractor"
         value={form.zona_infractor}
         onChange={handleChange("zona_infractor")}
       />

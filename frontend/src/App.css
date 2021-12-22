@@ -1,8 +1,16 @@
 .form {
-  width: 60%;
+  max-width: 1120px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.form .MuiTextField-root {
-  margin: 8px;
-  width: 45%;
+.form .MuiFormControl-root .MuiTextField-root {
+  width: 100%;
+}
+
+.form .MuiFormControl-root {
+  margin-bottom: 8px;
+  width: 48%;
 }

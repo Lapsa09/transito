@@ -1,0 +1,8 @@
+.form {
+  width: 60%;
+}
+
+.form .MuiTextField-root {
+  margin: 8px;
+  width: 45%;
+}

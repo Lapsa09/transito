@@ -15,5 +15,6 @@ app.use(
 );
 
 app.use("/", require("./routes/index"));
+app.use("/operativos", require("./routes/operativos"));
 
 app.listen(port);

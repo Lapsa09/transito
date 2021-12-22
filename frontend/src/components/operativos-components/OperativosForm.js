@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, FormControl, MenuItem, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { DateTime } from "luxon";
 import DateTimePicker from "../datetime-picker/DateTimePicker";
 import {
@@ -49,6 +56,7 @@ function OperativosForm() {
   const [resolucion, setResolucion] = useState([]);
   const [es_del, setEs_del] = useState([]);
   const [resultado, setResultado] = useState([]);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   const fillSelects = async () => {
@@ -62,9 +70,43 @@ function OperativosForm() {
     setResultado(await getResultado());
   };
 
+  const validDomain = (dominio) => {
+    const regex =
+      /([A-Z]{3}[0-9]{3})|([A-Z]{2}[0-9]{3}[A-Z]{2})|([0-9]{3}[A-Z]{3})/;
+
+    return dominio != "" && regex.test(dominio);
+  };
+
+  const validField = (content) => {
+    return content != "";
+  };
+
+  const validLegajo = (legajo) => {
+    const regex = /[0-9]+/;
+
+    return legajo != "" && regex.test(legajo);
+  };
+
+  const validated = () => {
+    return (
+      validDomain(form.dominio) &&
+      validField(form.direccion) &&
+      validField(form.zona) &&
+      validLegajo(form.legajo_a_cargo) &&
+      validLegajo(form.legajo_planilla) &&
+      validField(form.turno) &&
+      validField(form.resolucion) &&
+      validLegajo(form.lpcarga)
+    );
+  };
+
   const handleSubmit = async () => {
-    await nuevoOperativo(form);
-    navigate(0);
+    if (validated()) {
+      await nuevoOperativo(form);
+      navigate(0);
+    } else {
+      setError(true);
+    }
   };
 
   const goBack = () => {
@@ -98,14 +140,19 @@ function OperativosForm() {
       </FormControl>
       <FormControl required>
         <TextField
+          error={error && !validField(form.direccion)}
           label="Direccion"
           value={form.direccion}
           onChange={handleChange("direccion")}
         />
+        {error && !validField(form.direccion) && (
+          <FormHelperText>Inserte una direccion valida</FormHelperText>
+        )}
       </FormControl>
       <FormControl required>
         <TextField
           select
+          error={error && !validField(form.zona)}
           label="Zona"
           value={form.zona}
           onChange={handleChange("zona")}
@@ -115,24 +162,36 @@ function OperativosForm() {
             <MenuItem value={id_zona}>{zona}</MenuItem>
           ))}
         </TextField>
+        {error && !validField(form.zona) && (
+          <FormHelperText>Elia una localidad</FormHelperText>
+        )}
       </FormControl>
       <FormControl required>
         <TextField
+          error={error && !validLegajo(form.legajo_a_cargo)}
           label="Legajo a cargo"
           value={form.legajo_a_cargo}
           onChange={handleChange("legajo_a_cargo")}
         />
+        {error && !validLegajo(form.legajo_a_cargo) && (
+          <FormHelperText>Inserte un legajo valido</FormHelperText>
+        )}
       </FormControl>
       <FormControl required>
         <TextField
           label="Legajo planilla"
+          error={error && !validLegajo(form.legajo_planilla)}
           value={form.legajo_planilla}
           onChange={handleChange("legajo_planilla")}
         />
+        {error && !validLegajo(form.legajo_planilla) && (
+          <FormHelperText>Inserte un legajo valido</FormHelperText>
+        )}
       </FormControl>
       <FormControl required>
         <TextField
           select
+          error={error && !validField(form.turno)}
           label="Turno"
           value={form.turno}
           onChange={handleChange("turno")}
@@ -142,8 +201,11 @@ function OperativosForm() {
             <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
           ))}
         </TextField>
+        {error && !validField(form.turno) && (
+          <FormHelperText>Elija una opcion</FormHelperText>
+        )}
       </FormControl>
-      <FormControl required>
+      <FormControl>
         <TextField
           select
           label="Seguridad"
@@ -159,18 +221,22 @@ function OperativosForm() {
       <FormControl required>
         <TextField
           label="Dominio"
+          error={error && !validDomain(form.dominio)}
           value={form.dominio}
           onChange={handleChange("dominio")}
         />
+        {error && !validField(form.dominio) && (
+          <FormHelperText>Inserte una patente valida</FormHelperText>
+        )}
       </FormControl>
-      <FormControl required>
+      <FormControl>
         <TextField
           label="Licencia"
           value={form.licencia}
           onChange={handleChange("licencia")}
         />
       </FormControl>
-      <FormControl required>
+      <FormControl>
         <TextField
           select
           label="Tipo de licencia"
@@ -183,7 +249,7 @@ function OperativosForm() {
           ))}
         </TextField>
       </FormControl>
-      <FormControl required>
+      <FormControl>
         <TextField
           select
           label="Zona del infractor"
@@ -203,12 +269,16 @@ function OperativosForm() {
           onChange={handleChange("acta")}
         />
       </FormControl>
-      <FormControl>
+      <FormControl required>
         <TextField
           label="Motivo"
+          error={error && validField(form.motivo)}
           value={form.motivo}
           onChange={handleChange("motivo")}
         />
+        {error && !validField(form.motivo) && (
+          <FormHelperText>Inserte un motivo valido</FormHelperText>
+        )}
       </FormControl>
       <FormControl>
         <TextField
@@ -221,6 +291,7 @@ function OperativosForm() {
         <TextField
           select
           label="Resolucion"
+          error={error && !validField(form.resolucion)}
           value={form.resolucion}
           onChange={handleChange("resolucion")}
         >
@@ -229,13 +300,20 @@ function OperativosForm() {
             <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
           ))}
         </TextField>
+        {error && !validField(form.resolucion) && (
+          <FormHelperText>Elija una opcion valida</FormHelperText>
+        )}
       </FormControl>
       <FormControl required>
         <TextField
           label="Legajo carga"
+          error={validLegajo(form.lpcarga)}
           value={form.lpcarga}
           onChange={handleChange("lpcarga")}
         />
+        {error && !validLegajo(form.lpcarga) && (
+          <FormHelperText>Inserte un legajo valido</FormHelperText>
+        )}
       </FormControl>
       <FormControl>
         <TextField

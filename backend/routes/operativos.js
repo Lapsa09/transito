@@ -1,4 +1,4 @@
-const router = require("express").Router;
+const router = require("express").Router();
 const pool = require("../pool");
 require("luxon");
 
@@ -7,7 +7,7 @@ router.get("/zonas/vl", async (req, res) => {
     const zonas = await pool.query(
       "select * from operativos.zonas where cp is not null"
     );
-    res.json(zonas);
+    res.json(zonas.rows);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -16,7 +16,7 @@ router.get("/zonas/vl", async (req, res) => {
 router.get("/licencias", async (req, res) => {
   try {
     const licencias = await pool.query("select * from operativos.licencias");
-    res.json(licencias);
+    res.json(licencias.rows);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -25,7 +25,7 @@ router.get("/licencias", async (req, res) => {
 router.get("/zonas/all", async (req, res) => {
   try {
     const zonas = await pool.query("select * from operativos.zonas");
-    res.json(zonas);
+    res.json(zonas.rows);
   } catch (error) {
     res.status(500).json(error);
   }

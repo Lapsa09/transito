@@ -4,6 +4,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AccidentesPage from "./pages/accidentes/Accidentes.page";
 import OperativosPage from "./pages/operativos/Operativos.page";
+import ControlDiarioPage from "./pages/control_diario/ControlDiarioPage";
 
 ReactDOM.render(
   <Router>
@@ -11,6 +12,7 @@ ReactDOM.render(
       <Route path="/" element={<App />} />
       <Route path="/accidentes" element={<AccidentesPage />} />
       <Route path="/operativos" element={<OperativosPage />} />
+      <Route path="/control" element={<ControlDiarioPage />} />
     </Routes>
   </Router>,
   document.getElementById("root")

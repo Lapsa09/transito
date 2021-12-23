@@ -1,27 +1,21 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  FormControl,
-  FormHelperText,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { Box, Button, MenuItem, TextField } from "@mui/material";
 import { DateTime } from "luxon";
 import DateTimePicker from "../datetime-picker/DateTimePicker";
 import {
   getAllZonas,
   getDel,
   getLicencias,
-  getResolucion,
   getResultado,
   getSeguridad,
-  getTurnos,
   getZonasVL,
   nuevoOperativo,
 } from "../../services/operativosService";
+import { getResolucion, getTurnos } from "../../services/index";
 import { useNavigate } from "react-router-dom";
 import "./operativosForm.css";
+import { validDomain, validField, validLegajo } from "../../utils/validations";
+import { dateAndTime } from "../../utils/utils";
 
 function OperativosForm() {
   const [form, setForm] = useState({
@@ -70,23 +64,6 @@ function OperativosForm() {
     setResultado(await getResultado());
   };
 
-  const validDomain = (dominio) => {
-    const regex =
-      /([A-Z]{3}[0-9]{3})|([A-Z]{2}[0-9]{3}[A-Z]{2})|([0-9]{3}[A-Z]{3})/;
-
-    return dominio != "" && regex.test(dominio);
-  };
-
-  const validField = (content) => {
-    return content != "";
-  };
-
-  const validLegajo = (legajo) => {
-    const regex = /[0-9]+/;
-
-    return legajo != "" && regex.test(legajo);
-  };
-
   const validated = () => {
     return (
       validDomain(form.dominio) &&
@@ -118,12 +95,9 @@ function OperativosForm() {
   }, []);
 
   const parseDateTime = (newDate) => {
+    const { fecha, hora } = dateAndTime(newDate);
     setDate(newDate);
-    setForm({
-      ...form,
-      fecha: date.toLocaleString(),
-      hora: date.toLocaleString(DateTime.TIME_24_SIMPLE),
-    });
+    setForm({ ...form, fecha, hora });
   };
 
   const handleChange = (input) => (e) => {
@@ -131,216 +105,189 @@ function OperativosForm() {
   };
   return (
     <Box component="form" className="form" autoComplete="off">
-      <FormControl>
-        <DateTimePicker
-          label="Fecha y hora"
-          value={date}
-          onChange={parseDateTime}
-        />
-      </FormControl>
-      <FormControl required>
-        <TextField
-          error={error && !validField(form.direccion)}
-          label="Direccion"
-          value={form.direccion}
-          onChange={handleChange("direccion")}
-        />
-        {error && !validField(form.direccion) && (
-          <FormHelperText>Inserte una direccion valida</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl required>
-        <TextField
-          select
-          error={error && !validField(form.zona)}
-          label="Zona"
-          value={form.zona}
-          onChange={handleChange("zona")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {zonasVL.map(({ id_zona, zona }) => (
-            <MenuItem value={id_zona}>{zona}</MenuItem>
-          ))}
-        </TextField>
-        {error && !validField(form.zona) && (
-          <FormHelperText>Elia una localidad</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl required>
-        <TextField
-          error={error && !validLegajo(form.legajo_a_cargo)}
-          label="Legajo a cargo"
-          value={form.legajo_a_cargo}
-          onChange={handleChange("legajo_a_cargo")}
-        />
-        {error && !validLegajo(form.legajo_a_cargo) && (
-          <FormHelperText>Inserte un legajo valido</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl required>
-        <TextField
-          label="Legajo planilla"
-          error={error && !validLegajo(form.legajo_planilla)}
-          value={form.legajo_planilla}
-          onChange={handleChange("legajo_planilla")}
-        />
-        {error && !validLegajo(form.legajo_planilla) && (
-          <FormHelperText>Inserte un legajo valido</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl required>
-        <TextField
-          select
-          error={error && !validField(form.turno)}
-          label="Turno"
-          value={form.turno}
-          onChange={handleChange("turno")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {turnos.map((turno) => (
-            <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-        {error && !validField(form.turno) && (
-          <FormHelperText>Elija una opcion</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl>
-        <TextField
-          select
-          label="Seguridad"
-          value={form.seguridad}
-          onChange={handleChange("seguridad")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {seguridad.map((seg) => (
-            <MenuItem value={seg.enumlabel}>{seg.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-      </FormControl>
-      <FormControl required>
-        <TextField
-          label="Dominio"
-          error={error && !validDomain(form.dominio)}
-          value={form.dominio}
-          onChange={handleChange("dominio")}
-        />
-        {error && !validField(form.dominio) && (
-          <FormHelperText>Inserte una patente valida</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl>
-        <TextField
-          label="Licencia"
-          value={form.licencia}
-          onChange={handleChange("licencia")}
-        />
-      </FormControl>
-      <FormControl>
-        <TextField
-          select
-          label="Tipo de licencia"
-          value={form.tipo_licencia}
-          onChange={handleChange("tipo_licencia")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {licencias.map(({ id_lic, licencia }) => (
-            <MenuItem value={id_lic}>{licencia}</MenuItem>
-          ))}
-        </TextField>
-      </FormControl>
-      <FormControl>
-        <TextField
-          select
-          label="Zona del infractor"
-          value={form.zona_infractor}
-          onChange={handleChange("zona_infractor")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {allZonas.map(({ id_zona, zona }) => (
-            <MenuItem value={id_zona}>{zona}</MenuItem>
-          ))}
-        </TextField>
-      </FormControl>
-      <FormControl>
-        <TextField
-          label="Acta"
-          value={form.acta}
-          onChange={handleChange("acta")}
-        />
-      </FormControl>
-      <FormControl required>
-        <TextField
-          label="Motivo"
-          error={error && validField(form.motivo)}
-          value={form.motivo}
-          onChange={handleChange("motivo")}
-        />
-        {error && !validField(form.motivo) && (
-          <FormHelperText>Inserte un motivo valido</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl>
-        <TextField
-          label="Graduacion Alcoholica"
-          value={form.graduacion_alcoholica}
-          onChange={"graduacion_alcoholica"}
-        />
-      </FormControl>
-      <FormControl required>
-        <TextField
-          select
-          label="Resolucion"
-          error={error && !validField(form.resolucion)}
-          value={form.resolucion}
-          onChange={handleChange("resolucion")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {resolucion.map((res) => (
-            <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-        {error && !validField(form.resolucion) && (
-          <FormHelperText>Elija una opcion valida</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl required>
-        <TextField
-          label="Legajo carga"
-          error={validLegajo(form.lpcarga)}
-          value={form.lpcarga}
-          onChange={handleChange("lpcarga")}
-        />
-        {error && !validLegajo(form.lpcarga) && (
-          <FormHelperText>Inserte un legajo valido</FormHelperText>
-        )}
-      </FormControl>
-      <FormControl>
-        <TextField
-          select
-          label="Es Del"
-          value={form.es_del}
-          onChange={handleChange("es_del")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {es_del.map((ed) => (
-            <MenuItem value={ed.enumlabel}>{ed.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-      </FormControl>
-      <FormControl>
-        <TextField
-          select
-          label="Resultado"
-          value={form.resultado}
-          onChange={handleChange("resultado")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {resultado.map((res) => (
-            <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-      </FormControl>
+      <DateTimePicker
+        label="Fecha y hora"
+        value={date}
+        onChange={parseDateTime}
+      />
+      <TextField
+        error={error && !validField(form.direccion)}
+        label="Direccion"
+        value={form.direccion}
+        required
+        onChange={handleChange("direccion")}
+        helperText={
+          error && !validField(form.direccion) && "Inserte una direccion valida"
+        }
+      />
+      <TextField
+        select
+        error={error && !validField(form.zona)}
+        label="Zona"
+        required
+        value={form.zona}
+        onChange={handleChange("zona")}
+        helperText={error && !validField(form.zona) && "Elija una localidad"}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {zonasVL.map(({ id_zona, zona }) => (
+          <MenuItem value={id_zona}>{zona}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        error={error && !validLegajo(form.legajo_a_cargo)}
+        label="Legajo a cargo"
+        required
+        value={form.legajo_a_cargo}
+        onChange={handleChange("legajo_a_cargo")}
+        helperText={
+          error &&
+          !validLegajo(form.legajo_a_cargo) &&
+          "Inserte un legajo valido"
+        }
+      />
+      <TextField
+        label="Legajo planilla"
+        error={error && !validLegajo(form.legajo_planilla)}
+        value={form.legajo_planilla}
+        required
+        helperText={
+          error &&
+          !validLegajo(form.legajo_planilla) &&
+          "Inserte un legajo valido"
+        }
+        onChange={handleChange("legajo_planilla")}
+      />
+      <TextField
+        select
+        error={error && !validField(form.turno)}
+        label="Turno"
+        required
+        value={form.turno}
+        helperText={error && !validField(form.turno) && "Elija una opcion"}
+        onChange={handleChange("turno")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {turnos.map((turno) => (
+          <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        select
+        label="Seguridad"
+        value={form.seguridad}
+        onChange={handleChange("seguridad")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {seguridad.map((seg) => (
+          <MenuItem value={seg.enumlabel}>{seg.enumlabel}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        label="Dominio"
+        error={error && !validDomain(form.dominio)}
+        value={form.dominio}
+        required
+        helperText={
+          error && !validDomain(form.dominio) && "Inserte una patente valida"
+        }
+        onChange={handleChange("dominio")}
+      />
+      <TextField
+        label="Licencia"
+        value={form.licencia}
+        onChange={handleChange("licencia")}
+      />
+      <TextField
+        select
+        label="Tipo de licencia"
+        value={form.tipo_licencia}
+        onChange={handleChange("tipo_licencia")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {licencias.map(({ id_lic, licencia }) => (
+          <MenuItem value={id_lic}>{licencia}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        select
+        label="Zona del infractor"
+        value={form.zona_infractor}
+        onChange={handleChange("zona_infractor")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {allZonas.map(({ id_zona, zona }) => (
+          <MenuItem value={id_zona}>{zona}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        label="Acta"
+        value={form.acta}
+        onChange={handleChange("acta")}
+      />
+      <TextField
+        label="Motivo"
+        error={error && validField(form.motivo)}
+        value={form.motivo}
+        required
+        helperText={
+          error && !validField(form.motivo) && "Inserte un motivo valido"
+        }
+        onChange={handleChange("motivo")}
+      />
+      <TextField
+        label="Graduacion Alcoholica"
+        value={form.graduacion_alcoholica}
+        onChange={"graduacion_alcoholica"}
+      />
+      <TextField
+        select
+        label="Resolucion"
+        error={error && !validField(form.resolucion)}
+        value={form.resolucion}
+        required
+        helperText={
+          error && !validField(form.resolucion) && "Elija una opcion valida"
+        }
+        onChange={handleChange("resolucion")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {resolucion.map((res) => (
+          <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        label="Legajo carga"
+        error={validLegajo(form.lpcarga)}
+        value={form.lpcarga}
+        required
+        helperText={
+          error && !validLegajo(form.lpcarga) && "Inserte un legajo valido"
+        }
+        onChange={handleChange("lpcarga")}
+      />
+      <TextField
+        select
+        label="Es Del"
+        value={form.es_del}
+        onChange={handleChange("es_del")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {es_del.map((ed) => (
+          <MenuItem value={ed.enumlabel}>{ed.enumlabel}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        select
+        label="Resultado"
+        value={form.resultado}
+        onChange={handleChange("resultado")}
+      >
+        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+        {resultado.map((res) => (
+          <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
+        ))}
+      </TextField>
       <div className="buttons">
         <Button onClick={goBack} color="error" variant="contained">
           Cancelar

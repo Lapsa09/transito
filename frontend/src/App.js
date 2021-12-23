@@ -9,6 +9,7 @@ function App() {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/accidentes">Accidentes</NavLink>
         <NavLink to="/operativos">Operativos</NavLink>
+        <NavLink to="/control">Control Diario</NavLink>
       </nav>
     </div>
   );

@@ -6,11 +6,7 @@ export const getZonasVL = async () => await getter("/operativos/zonas/vl");
 
 export const getAllZonas = async () => await getter("/operativos/zonas/all");
 
-export const getTurnos = async () => await getEnums("turno");
-
 export const getSeguridad = async () => await getEnums("seguridad");
-
-export const getResolucion = async () => await getEnums("resolucion");
 
 export const getDel = async () => await getEnums("del");
 

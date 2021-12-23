@@ -16,5 +16,6 @@ app.use(
 
 app.use("/", require("./routes/index"));
 app.use("/operativos", require("./routes/operativos"));
+app.use("/control", require("./routes/controlDiario"));
 
 app.listen(port);

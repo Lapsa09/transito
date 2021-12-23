@@ -1,11 +1,20 @@
-import { Box, Button, MenuItem, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getLocalidades,
   getMotivos,
+  getMotivosPaseo,
   nuevoControl,
+  nuevoControlPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
 import { dateAndTime } from "../../utils/utils";
@@ -19,6 +28,7 @@ function ControlDiarioForm() {
   const [localidades, setLocalidades] = useState([]);
   const [motivos, setMotivos] = useState([]);
   const [error, setError] = useState("");
+  const [alignment, setAlignment] = useState(1);
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fecha: "",
@@ -48,14 +58,20 @@ function ControlDiarioForm() {
     );
   };
 
+  const handleChangeAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validated()) {
       try {
         setError(false);
-        const res = await nuevoControl(form);
-        console.log(res);
+        alignment == 1
+          ? await nuevoControl(form)
+          : await nuevoControlPaseo(form);
         setForm({
+          ...form,
           fecha: "",
           hora: "",
           direccion: "",
@@ -67,7 +83,6 @@ function ControlDiarioForm() {
           motivo: "",
           otroMotivo: "",
           localidadInfractor: "",
-          ...form,
         });
       } catch (error) {
         console.log(error);
@@ -84,7 +99,7 @@ function ControlDiarioForm() {
   const fillSelects = async () => {
     try {
       setLocalidades(await getLocalidades());
-      setMotivos(await getMotivos());
+      setMotivos(alignment == 1 ? await getMotivos() : await getMotivosPaseo());
       setTurnos(await getTurnos());
       setResolucion(await getResolucion());
     } catch (error) {
@@ -94,12 +109,7 @@ function ControlDiarioForm() {
 
   useEffect(() => {
     fillSelects();
-    console.log(
-      DateTime.fromFormat("23/12/2021", "D", {
-        locale: "es-AR",
-      })
-    );
-  }, []);
+  }, [alignment]);
 
   const getMotivo = () => {
     return motivos.find((motivo) => motivo.id == form.motivo)?.motivo || "";
@@ -123,138 +133,157 @@ function ControlDiarioForm() {
   };
 
   return (
-    <Box component="form" className="form">
-      <CustomDateTimePicker
-        label="Fecha y hora"
-        value={date}
-        onChange={parseDateTime}
-      />
-      <TextField
-        error={error && !validField(form.direccion)}
-        label="Direccion"
-        value={form.direccion}
-        required
-        onChange={handleChange("direccion")}
-        helperText={
-          error && !validField(form.direccion) && "Inserte una direccion valida"
-        }
-      />
-      <TextField
-        label="Dominio"
-        error={error && !validDomain(form.dominio)}
-        value={form.dominio}
-        required
-        helperText={
-          error && !validDomain(form.dominio) && "Inserte una patente valida"
-        }
-        onChange={handleChange("dominio")}
-      />
-      <TextField
-        label="Legajo planilla"
-        error={error && !validLegajo(form.lp)}
-        value={form.lp}
-        required
-        helperText={
-          error && !validLegajo(form.lp) && "Inserte un legajo valido"
-        }
-        onChange={handleChange("lp")}
-      />
-      <TextField
-        label="Acta"
-        value={form.acta}
-        onChange={handleChange("acta")}
-      />
-      <TextField
-        select
-        label="Resolucion"
-        error={error && !validField(form.resolucion)}
-        value={form.resolucion}
-        required
-        helperText={
-          error && !validField(form.resolucion) && "Elija una opcion valida"
-        }
-        onChange={handleChange("resolucion")}
+    <div className="form">
+      <ToggleButtonGroup
+        color="primary"
+        value={alignment}
+        exclusive
+        onChange={handleChangeAlignment}
       >
-        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {resolucion.map((res) => (
-          <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        select
-        error={error && !validField(form.turno)}
-        label="Turno"
-        required
-        value={form.turno}
-        helperText={error && !validField(form.turno) && "Elija una opcion"}
-        onChange={handleChange("turno")}
-      >
-        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {turnos.map((turno) => (
-          <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        label="Legajo carga"
-        error={error && !validLegajo(form.lpcarga)}
-        value={form.lpcarga}
-        required
-        helperText={
-          error && !validLegajo(form.lpcarga) && "Inserte un legajo valido"
-        }
-        onChange={handleChange("lpcarga")}
-      />
-      <TextField
-        select
-        error={error && !validField(form.motivo)}
-        label="Motivo"
-        required
-        value={form.motivo}
-        helperText={error && !validField(form.motivo) && "Elija una opcion"}
-        onChange={handleChange("motivo")}
-      >
-        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {motivos.map(({ id, motivo }) => (
-          <MenuItem value={id}>{motivo}</MenuItem>
-        ))}
-      </TextField>
-      {motivos.length > 0 && getMotivo() == "OTRO" && (
+        <ToggleButton value={1}>Normal</ToggleButton>
+        <ToggleButton value={2}>Paseo de la costa</ToggleButton>
+      </ToggleButtonGroup>
+      <Box component="form" className="form">
+        <CustomDateTimePicker
+          label="Fecha y hora"
+          value={date}
+          onChange={parseDateTime}
+        />
         <TextField
-          label="Otro motivo"
-          error={error && validField(form.otroMotivo)}
-          value={form.otroMotivo}
+          error={error && !validField(form.direccion)}
+          label="Direccion"
+          value={form.direccion}
+          required
+          onChange={handleChange("direccion")}
+          helperText={
+            error &&
+            !validField(form.direccion) &&
+            "Inserte una direccion valida"
+          }
+        />
+        <TextField
+          label="Dominio"
+          error={error && !validDomain(form.dominio)}
+          value={form.dominio}
           required
           helperText={
-            error && !validField(form.otroMotivo) && "Inserte un motivo valido"
+            error && !validDomain(form.dominio) && "Inserte una patente valida"
           }
-          onChange={handleChange("otroMotivo")}
+          onChange={handleChange("dominio")}
         />
-      )}
-      <TextField
-        select
-        error={error && !validField(form.localidadInfractor)}
-        label="Localidad del infractor"
-        required
-        value={form.localidadInfractor}
-        helperText={
-          error && !validField(form.localidadInfractor) && "Elija una opcion"
-        }
-        onChange={handleChange("localidadInfractor")}
-      >
-        <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {localidades.map(({ id_localidad, localidad }) => (
-          <MenuItem value={id_localidad}>{localidad}</MenuItem>
-        ))}
-      </TextField>
-      <div className="buttons">
-        <Button onClick={goBack} color="error" variant="contained">
-          Cancelar
-        </Button>
-        <Button onClick={handleSubmit} variant="contained">
-          Guardar
-        </Button>
-      </div>
-    </Box>
+        <TextField
+          label="Legajo planilla"
+          error={error && !validLegajo(form.lp)}
+          value={form.lp}
+          required
+          helperText={
+            error && !validLegajo(form.lp) && "Inserte un legajo valido"
+          }
+          onChange={handleChange("lp")}
+        />
+        <TextField
+          label="Acta"
+          value={form.acta}
+          onChange={handleChange("acta")}
+        />
+        <TextField
+          select
+          label="Resolucion"
+          error={error && !validField(form.resolucion)}
+          value={form.resolucion}
+          required
+          helperText={
+            error && !validField(form.resolucion) && "Elija una opcion valida"
+          }
+          onChange={handleChange("resolucion")}
+        >
+          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+          {resolucion.map((res) => (
+            <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          select
+          error={error && !validField(form.turno)}
+          label="Turno"
+          required
+          value={form.turno}
+          helperText={error && !validField(form.turno) && "Elija una opcion"}
+          onChange={handleChange("turno")}
+        >
+          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+          {turnos.map((turno) => (
+            <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          label="Legajo carga"
+          error={error && !validLegajo(form.lpcarga)}
+          value={form.lpcarga}
+          required
+          helperText={
+            error && !validLegajo(form.lpcarga) && "Inserte un legajo valido"
+          }
+          onChange={handleChange("lpcarga")}
+        />
+        <TextField
+          select
+          error={error && !validField(form.motivo)}
+          label="Motivo"
+          required
+          value={form.motivo}
+          helperText={error && !validField(form.motivo) && "Elija una opcion"}
+          onChange={handleChange("motivo")}
+        >
+          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+          {alignment == 1
+            ? motivos.map(({ id, motivo }) => (
+                <MenuItem value={id}>{motivo}</MenuItem>
+              ))
+            : motivos.map((motivo) => (
+                <MenuItem value={motivo.enumlabel}>{motivo.enumlabel}</MenuItem>
+              ))}
+        </TextField>
+        {motivos.length > 0 && getMotivo() == "OTRO" && (
+          <TextField
+            label="Otro motivo"
+            error={error && validField(form.otroMotivo)}
+            value={form.otroMotivo}
+            required
+            helperText={
+              error &&
+              !validField(form.otroMotivo) &&
+              "Inserte un motivo valido"
+            }
+            onChange={handleChange("otroMotivo")}
+          />
+        )}
+        <TextField
+          select
+          error={error && !validField(form.localidadInfractor)}
+          label="Localidad del infractor"
+          required
+          value={form.localidadInfractor}
+          helperText={
+            error && !validField(form.localidadInfractor) && "Elija una opcion"
+          }
+          onChange={handleChange("localidadInfractor")}
+        >
+          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+          {localidades.map(({ id_localidad, localidad }) => (
+            <MenuItem value={id_localidad}>{localidad}</MenuItem>
+          ))}
+        </TextField>
+        <div className="buttons">
+          <Button onClick={goBack} color="error" variant="contained">
+            Cancelar
+          </Button>
+          <Button onClick={handleSubmit} variant="contained">
+            Guardar
+          </Button>
+        </div>
+      </Box>
+    </div>
   );
 }
 

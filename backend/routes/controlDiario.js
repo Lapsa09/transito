@@ -61,4 +61,44 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/paseo", async (req, res) => {
+  const {
+    fecha,
+    hora,
+    direccion,
+    dominio,
+    lp,
+    acta,
+    resolucion,
+    turno,
+    lpcarga,
+    motivo,
+    otroMotivo,
+    localidadInfractor,
+  } = req.body;
+
+  try {
+    await pool.query(
+      "insert into nuevo_control.registros(fecha, hora, direccion, motivo, dominio, lp, acta, resolucion, turno, fechacarga, lpcarga, mes, id_localidad) values($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10, $11, $12)",
+      [
+        fecha,
+        hora,
+        direccion,
+        motivo,
+        dominio,
+        lp,
+        acta,
+        resolucion,
+        turno,
+        lpcarga,
+        DateTime.fromFormat(fecha, "D", { locale: "es-AR" }).month,
+        localidadInfractor,
+      ]
+    );
+    res.send("Success");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 module.exports = router;

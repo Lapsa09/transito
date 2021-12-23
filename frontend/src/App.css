@@ -2,6 +2,12 @@
   max-width: 1120px;
   width: 100%;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form > .form__box {
+  display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 }

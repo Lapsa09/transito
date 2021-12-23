@@ -20,6 +20,8 @@ import { getResolucion, getTurnos } from "../../services/index";
 import { dateAndTime } from "../../utils/utils";
 import { validDomain, validField, validLegajo } from "../../utils/validations";
 import CustomDateTimePicker from "../datetime-picker/DateTimePicker";
+import CustomSnackbar from "../snackbar/CustomSnackbar";
+import "./controlDiarioForm.css";
 
 function ControlDiarioForm() {
   const [date, setDate] = useState(DateTime.now());
@@ -29,6 +31,8 @@ function ControlDiarioForm() {
   const [motivos, setMotivos] = useState([]);
   const [error, setError] = useState("");
   const [alignment, setAlignment] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [response, setResponse] = useState({ severity: "", message: "" });
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fecha: "",
@@ -76,16 +80,17 @@ function ControlDiarioForm() {
           hora: "",
           direccion: "",
           dominio: "",
+          lp: "",
           acta: "",
           resolucion: "",
           turno: "",
-          lpcarga: "",
           motivo: "",
           otroMotivo: "",
           localidadInfractor: "",
         });
+        showSnackbar("success", "Cargado con exito");
       } catch (error) {
-        console.log(error);
+        showSnackbar("error", error.message);
       }
     } else {
       setError(true);
@@ -103,7 +108,7 @@ function ControlDiarioForm() {
       setTurnos(await getTurnos());
       setResolucion(await getResolucion());
     } catch (error) {
-      console.log(error);
+      showSnackbar("error", error.message);
     }
   };
 
@@ -129,7 +134,19 @@ function ControlDiarioForm() {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
-    console.log(form);
+  };
+
+  const showSnackbar = (severity, message) => {
+    setResponse({ severity, message });
+    setOpen(true);
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
   };
 
   return (
@@ -143,7 +160,7 @@ function ControlDiarioForm() {
         <ToggleButton value={1}>Normal</ToggleButton>
         <ToggleButton value={2}>Paseo de la costa</ToggleButton>
       </ToggleButtonGroup>
-      <Box component="form" className="form">
+      <Box component="form" className="form__box">
         <CustomDateTimePicker
           label="Fecha y hora"
           value={date}
@@ -283,6 +300,7 @@ function ControlDiarioForm() {
           </Button>
         </div>
       </Box>
+      <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </div>
   );
 }

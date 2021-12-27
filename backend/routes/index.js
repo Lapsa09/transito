@@ -10,7 +10,6 @@ router.get("/api/:type", async (req, res) => {
     );
     res.json(enums.rows);
   } catch (error) {
-    console.log(error);
     res.status(400).send("Not found");
   }
 });

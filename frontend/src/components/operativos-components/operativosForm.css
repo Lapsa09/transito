@@ -1,7 +1,0 @@
-.buttons {
-  margin-left: auto;
-}
-
-.buttons > .MuiButton-root ~ .MuiButton-root {
-  margin-left: 20px;
-}

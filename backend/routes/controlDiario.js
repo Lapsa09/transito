@@ -2,6 +2,28 @@ const router = require("express").Router();
 const { DateTime } = require("luxon");
 const pool = require("../pool");
 
+router.get("/", async (req, res) => {
+  try {
+    const controles = await pool.query(
+      "select c.id,c.fecha,c.hora,c.direccion,l.localidad,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.mes,m.motivo,c.otro_motivo from control_diario.control c left join control_diario.localidades l on c.id_localidad=l.id_localidad left join control_diario.motivos m on c.id_motivo=m.id"
+    );
+    res.json(controles.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/paseo", async (req, res) => {
+  try {
+    const controles = await pool.query(
+      "select c.id,c.fecha,c.hora,c.direccion,l.localidad,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo from nuevo_control.registros c left join nuevo_control.localidades l on c.id_localidad=l.id_localidad "
+    );
+    res.json(controles.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 router.get("/zonas", async (req, res) => {
   try {
     const zonas = await pool.query("select * from control_diario.localidades");
@@ -73,7 +95,6 @@ router.post("/paseo", async (req, res) => {
     turno,
     lpcarga,
     motivo,
-    otroMotivo,
     localidadInfractor,
   } = req.body;
 

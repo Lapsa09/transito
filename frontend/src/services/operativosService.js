@@ -13,3 +13,5 @@ export const getDel = async () => await getEnums("del");
 export const getResultado = async () => await getEnums("resultado");
 
 export const nuevoOperativo = async (body) => await setter("/operativos", body);
+
+export const getOperativos = async () => await getter("/operativos");

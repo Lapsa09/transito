@@ -13,11 +13,10 @@ import {
 } from "../../services/operativosService";
 import { getResolucion, getTurnos } from "../../services/index";
 import { useNavigate } from "react-router-dom";
-import "./operativosForm.css";
 import { validDomain, validField, validLegajo } from "../../utils/validations";
 import { dateAndTime } from "../../utils/utils";
 
-function OperativosForm() {
+function OperativosForm({ handleClose, afterCreate }) {
   const [form, setForm] = useState({
     fecha: "",
     hora: "",
@@ -80,14 +79,10 @@ function OperativosForm() {
   const handleSubmit = async () => {
     if (validated()) {
       await nuevoOperativo(form);
-      navigate(0);
+      afterCreate();
     } else {
       setError(true);
     }
-  };
-
-  const goBack = () => {
-    navigate("/");
   };
 
   useEffect(() => {
@@ -103,8 +98,21 @@ function OperativosForm() {
   const handleChange = (input) => (e) => {
     setForm({ ...form, [input]: e.target.value });
   };
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    height: "75%",
+    flexWrap: "wrap",
+  };
   return (
-    <Box component="form" className="form" autoComplete="off">
+    <Box sx={style} component="form" className="form" autoComplete="off">
       <DateTimePicker
         label="Fecha y hora"
         value={date}
@@ -289,7 +297,7 @@ function OperativosForm() {
         ))}
       </TextField>
       <div className="buttons">
-        <Button onClick={goBack} color="error" variant="contained">
+        <Button onClick={handleClose} color="error" variant="contained">
           Cancelar
         </Button>
         <Button onClick={handleSubmit} variant="contained">

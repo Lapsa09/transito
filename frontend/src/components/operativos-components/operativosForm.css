@@ -1,7 +1,23 @@
 .buttons {
   margin-left: auto;
+  margin-top: 20px;
 }
 
 .buttons > .MuiButton-root ~ .MuiButton-root {
   margin-left: 20px;
+}
+
+@media (max-width: 766px) {
+  .form {
+    flex-wrap: nowrap !important;
+    flex-direction: column;
+    overflow-y: overlay;
+    align-items: center;
+  }
+  .form > .MuiTextField-root {
+    width: 80%;
+  }
+  .buttons {
+    margin-left: 0;
+  }
 }

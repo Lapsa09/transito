@@ -1,4 +1,10 @@
 .Operativos {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  height: calc(100vh - 17px);
+}
+
+.Operativos > .buttons {
+  margin: 0 auto;
+  margin-bottom: 10px;
 }

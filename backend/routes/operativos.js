@@ -2,6 +2,17 @@ const router = require("express").Router();
 const pool = require("../pool");
 require("luxon");
 
+router.get("/", async (req, res) => {
+  try {
+    const operativos = await pool.query(
+      "select r.fecha,r.hora,r.direccion,z.zona,z.cp,r.legajo_a_cargo,r.legajo_planilla,r.turno,r.seguridad,r.dominio,r.licencia,l.licencia as tipo_licencia,l.tipo_vehiculo,zi.zona as zona_infractor,r.acta,r.motivo,r.graduacion_alcoholica,r.resolucion,r.fechacarga,r.lpcarga,r.mes,r.semana,r.es_del,r.resultado,r.id from operativos.registros r left join operativos.licencias l on r.id_licencia=l.id_lic left join operativos.zonas z on r.id_zona=z.id_zona left join operativos.zonas zi on r.id_zona_infractor=zi.id_zona"
+    );
+    res.json(operativos.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 router.get("/zonas/vl", async (req, res) => {
   try {
     const zonas = await pool.query(

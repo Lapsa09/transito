@@ -23,7 +23,9 @@ function ControlDiarioPage() {
   }, [alignment]);
 
   const handleFetch = async () => {
-    setControles(alignment === 1 ? await getControles() : getControlesPaseo());
+    setControles(
+      alignment === 1 ? await getControles() : await getControlesPaseo()
+    );
   };
 
   const handleChangeAlignment = (event, newAlignment) => {

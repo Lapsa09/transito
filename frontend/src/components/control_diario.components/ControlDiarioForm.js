@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   getLocalidades,
   getMotivos,
@@ -23,7 +22,7 @@ import CustomDateTimePicker from "../datetime-picker/DateTimePicker";
 import CustomSnackbar from "../snackbar/CustomSnackbar";
 import "./controlDiarioForm.css";
 
-function ControlDiarioForm() {
+function ControlDiarioForm({ handleClose, afterCreate }) {
   const [date, setDate] = useState(DateTime.now());
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
@@ -33,7 +32,6 @@ function ControlDiarioForm() {
   const [alignment, setAlignment] = useState(1);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
-  const navigate = useNavigate();
   const [form, setForm] = useState({
     fecha: "",
     hora: "",
@@ -64,6 +62,20 @@ function ControlDiarioForm() {
 
   const handleChangeAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
+    setForm({
+      fecha: "",
+      hora: "",
+      direccion: "",
+      dominio: "",
+      lp: "",
+      acta: "",
+      resolucion: "",
+      turno: "",
+      lpcarga: "",
+      motivo: "",
+      otroMotivo: "",
+      localidadInfractor: "",
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -80,7 +92,6 @@ function ControlDiarioForm() {
           hora: "",
           direccion: "",
           dominio: "",
-          lp: "",
           acta: "",
           resolucion: "",
           turno: "",
@@ -88,6 +99,7 @@ function ControlDiarioForm() {
           otroMotivo: "",
           localidadInfractor: "",
         });
+        await afterCreate();
         showSnackbar("success", "Cargado con exito");
       } catch (error) {
         showSnackbar("error", error.message);
@@ -95,10 +107,6 @@ function ControlDiarioForm() {
     } else {
       setError(true);
     }
-  };
-
-  const goBack = () => {
-    navigate("/");
   };
 
   const fillSelects = async () => {
@@ -134,6 +142,7 @@ function ControlDiarioForm() {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
+    console.log(form);
   };
 
   const showSnackbar = (severity, message) => {
@@ -149,8 +158,22 @@ function ControlDiarioForm() {
     setOpen(false);
   };
 
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    maxHeight: "75%",
+    flexDirection: "column",
+    alignItems: "center",
+  };
+
   return (
-    <div className="form">
+    <Box sx={style} className="form">
       <ToggleButtonGroup
         color="primary"
         value={alignment}
@@ -292,7 +315,7 @@ function ControlDiarioForm() {
           ))}
         </TextField>
         <div className="buttons">
-          <Button onClick={goBack} color="error" variant="contained">
+          <Button onClick={handleClose} color="error" variant="contained">
             Cancelar
           </Button>
           <Button onClick={handleSubmit} variant="contained">
@@ -301,7 +324,7 @@ function ControlDiarioForm() {
         </div>
       </Box>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </div>
+    </Box>
   );
 }
 

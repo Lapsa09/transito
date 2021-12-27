@@ -1,4 +1,15 @@
 .control_diario {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  height: calc(100vh - 17px);
+}
+
+.control_diario > .buttons {
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+.control_diario > .MuiToggleButtonGroup-root {
+  margin: 20px auto;
 }

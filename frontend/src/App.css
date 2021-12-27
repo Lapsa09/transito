@@ -21,3 +21,47 @@
   margin-bottom: 8px;
   width: 48%;
 }
+
+.buttons {
+  margin-left: auto;
+  margin-top: 20px;
+}
+
+.buttons > .MuiButton-root ~ .MuiButton-root {
+  margin-left: 20px;
+}
+
+@media (max-width: 766px) {
+  .form,
+  .form > .form__box {
+    flex-wrap: nowrap !important;
+    flex-direction: column;
+    overflow-y: overlay;
+    align-items: center;
+    justify-content: flex-start;
+    max-height: 100vh !important;
+  }
+
+  .form > .form__box {
+    width: 100%;
+    padding: 5px;
+  }
+
+  .form > .MuiTextField-root,
+  .form > .form__box > .MuiTextField-root {
+    width: 95%;
+  }
+  .buttons {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 248px) {
+  .buttons > .MuiButton-root ~ .MuiButton-root {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  .buttons > .MuiButton-root {
+    width: 100%;
+  }
+}

@@ -13,7 +13,6 @@ import {
 } from "../../services/operativosService";
 import { getResolucion, getTurnos } from "../../services/index";
 import { useNavigate } from "react-router-dom";
-import "./operativosForm.css";
 import { validDomain, validField, validLegajo } from "../../utils/validations";
 import { dateAndTime } from "../../utils/utils";
 

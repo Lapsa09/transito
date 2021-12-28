@@ -29,6 +29,7 @@
 
 .buttons {
   margin-left: auto;
+  grid-column: 2/3;
   margin-top: 20px;
 }
 
@@ -44,8 +45,11 @@
   .form > .form__box > .MuiFormControl-root:nth-child(1) {
     grid-column: 1;
   }
-  .buttons {
+  .form > .form__box > .buttons {
+    display: flex;
+    justify-content: flex-end;
     width: 100%;
+    grid-column: 1;
     margin: 20px auto;
   }
 }
@@ -62,6 +66,10 @@
 
   .form > .form__box {
     width: 100%;
+  }
+
+  .form > .form__box > .buttons {
+    flex-direction: column;
   }
 
   .form > .MuiTextField-root,

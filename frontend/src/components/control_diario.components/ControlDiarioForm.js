@@ -17,6 +17,7 @@ import {
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
 import {
+  validDate,
   validDomain,
   validField,
   validLegajo,
@@ -139,16 +140,21 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     if (typeof newDate === "object") {
       setDate(newDate);
       setForm({ ...form, fecha: newDate.toLocaleString() });
+    } else {
+      setForm({ ...form, fecha: newDate });
     }
+    console.log(newDate);
   };
 
   const parseTime = (newTime) => {
-    if (typeof newTime === "object") {
+    if (newTime.isInvalid()) {
       setTime(newTime);
       setForm({
         ...form,
         hora: newTime.toLocaleString(DateTime.TIME_24_SIMPLE),
       });
+    } else {
+      setForm({ ...form, hora: newTime });
     }
   };
 
@@ -213,8 +219,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("lpcarga")}
         />
         <CustomDatePicker
-          helperText={"Inserte una fecha"}
-          error={error && !validField(form.fecha)}
+          helperText={"Inserte una fecha valida"}
+          error={error && !validDate(form.fecha)}
           label="Fecha"
           value={date}
           onChange={parseDate}
@@ -234,7 +240,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           ))}
         </TextField>
         <CustomTimePicker
-          helperText={"Inserte una hora"}
+          helperText={"Inserte una hora valida"}
           error={error && !validTime(form.hora)}
           label="Hora"
           value={time}

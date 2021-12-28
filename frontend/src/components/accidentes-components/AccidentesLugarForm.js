@@ -2,7 +2,7 @@ import { TextField, MenuItem, Box } from "@mui/material";
 import { DateTime } from "luxon";
 import React, { useState } from "react";
 import { departamentos, provincias } from "../../services/accidentesService";
-import CustomDateTimePicker from "../datetime-picker/DateTimePicker";
+import CustomDateTimePicker from "../datetime-picker/DatePicker";
 
 function AccidentesLugarForm() {
   const [form, setForm] = useState({

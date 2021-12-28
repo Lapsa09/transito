@@ -16,6 +16,11 @@ export const validLegajo = (legajo) => {
 };
 
 export const validTime = (hora) => {
-  const regex = /\dap/gi;
-  validField(hora) && regex.test(hora);
+  const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/gi;
+  return validField(hora) && regex.test(hora);
+};
+
+export const validDate = (fecha) => {
+  const regex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/gi;
+  return validField(fecha) && regex.test(fecha);
 };

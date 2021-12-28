@@ -143,7 +143,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     } else {
       setForm({ ...form, fecha: newDate });
     }
-    console.log(newDate);
   };
 
   const parseTime = (newTime) => {
@@ -166,7 +165,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
-    console.log(form);
   };
 
   const showSnackbar = (severity, message) => {

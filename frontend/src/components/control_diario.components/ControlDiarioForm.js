@@ -16,14 +16,20 @@ import {
   nuevoControlPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
-import { dateAndTime } from "../../utils/utils";
-import { validDomain, validField, validLegajo } from "../../utils/validations";
-import CustomDateTimePicker from "../datetime-picker/DateTimePicker";
+import {
+  validDomain,
+  validField,
+  validLegajo,
+  validTime,
+} from "../../utils/validations";
+import CustomDatePicker from "../datetime-picker/DatePicker";
+import CustomTimePicker from "../datetime-picker/TimePicker";
 import CustomSnackbar from "../snackbar/CustomSnackbar";
 import "./controlDiarioForm.css";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const [date, setDate] = useState(DateTime.now());
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
@@ -49,6 +55,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const validated = () => {
     return (
+      validField(form.fecha) &&
+      validTime(form.hora) &&
       validField(form.direccion) &&
       validDomain(form.dominio) &&
       validField(form.localidadInfractor) &&
@@ -86,15 +94,14 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         alignment == 1
           ? await nuevoControl(form)
           : await nuevoControlPaseo(form);
+        setTime(null);
         setForm({
           ...form,
-          fecha: "",
           hora: "",
           direccion: "",
           dominio: "",
           acta: "",
           resolucion: "",
-          turno: "",
           motivo: "",
           otroMotivo: "",
           localidadInfractor: "",
@@ -128,10 +135,21 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     return motivos.find((motivo) => motivo.id == form.motivo)?.motivo || "";
   };
 
-  const parseDateTime = (newDate) => {
-    const { fecha, hora } = dateAndTime(newDate);
-    setDate(newDate);
-    setForm({ ...form, fecha, hora });
+  const parseDate = (newDate) => {
+    if (typeof newDate === "object") {
+      setDate(newDate);
+      setForm({ ...form, fecha: newDate.toLocaleString() });
+    }
+  };
+
+  const parseTime = (newTime) => {
+    if (typeof newTime === "object") {
+      setTime(newTime);
+      setForm({
+        ...form,
+        hora: newTime.toLocaleString(DateTime.TIME_24_SIMPLE),
+      });
+    }
   };
 
   const handleChange = (input) => (e) => {
@@ -142,6 +160,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
+    console.log(form);
   };
 
   const showSnackbar = (severity, message) => {
@@ -183,10 +202,43 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         <ToggleButton value={2}>Paseo de la costa</ToggleButton>
       </ToggleButtonGroup>
       <Box component="form" className="form__box">
-        <CustomDateTimePicker
-          label="Fecha y hora"
+        <TextField
+          label="Legajo carga"
+          error={error && !validLegajo(form.lpcarga)}
+          value={form.lpcarga}
+          required
+          helperText={
+            error && !validLegajo(form.lpcarga) && "Inserte un legajo valido"
+          }
+          onChange={handleChange("lpcarga")}
+        />
+        <CustomDatePicker
+          helperText={"Inserte una fecha"}
+          error={error && !validField(form.fecha)}
+          label="Fecha"
           value={date}
-          onChange={parseDateTime}
+          onChange={parseDate}
+        />
+        <TextField
+          select
+          error={error && !validField(form.turno)}
+          label="Turno"
+          required
+          value={form.turno}
+          helperText={error && !validField(form.turno) && "Elija una opcion"}
+          onChange={handleChange("turno")}
+        >
+          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+          {turnos.map((turno) => (
+            <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
+          ))}
+        </TextField>
+        <CustomTimePicker
+          helperText={"Inserte una hora"}
+          error={error && !validTime(form.hora)}
+          label="Hora"
+          value={time}
+          onChange={parseTime}
         />
         <TextField
           error={error && !validField(form.direccion)}
@@ -221,6 +273,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("lp")}
         />
         <TextField
+          type="number"
           label="Acta"
           value={form.acta}
           onChange={handleChange("acta")}
@@ -241,30 +294,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
           ))}
         </TextField>
-        <TextField
-          select
-          error={error && !validField(form.turno)}
-          label="Turno"
-          required
-          value={form.turno}
-          helperText={error && !validField(form.turno) && "Elija una opcion"}
-          onChange={handleChange("turno")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {turnos.map((turno) => (
-            <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Legajo carga"
-          error={error && !validLegajo(form.lpcarga)}
-          value={form.lpcarga}
-          required
-          helperText={
-            error && !validLegajo(form.lpcarga) && "Inserte un legajo valido"
-          }
-          onChange={handleChange("lpcarga")}
-        />
+
         <TextField
           select
           error={error && !validField(form.motivo)}

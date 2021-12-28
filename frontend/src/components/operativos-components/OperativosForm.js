@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, MenuItem, TextField } from "@mui/material";
 import { DateTime } from "luxon";
-import DateTimePicker from "../datetime-picker/DateTimePicker";
+import DateTimePicker from "../datetime-picker/DatePicker";
 import {
   getAllZonas,
   getDel,
@@ -14,7 +14,6 @@ import {
 import { getResolucion, getTurnos } from "../../services/index";
 import { useNavigate } from "react-router-dom";
 import { validDomain, validField, validLegajo } from "../../utils/validations";
-import { dateAndTime } from "../../utils/utils";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const [form, setForm] = useState({
@@ -90,9 +89,8 @@ function OperativosForm({ handleClose, afterCreate }) {
   }, []);
 
   const parseDateTime = (newDate) => {
-    const { fecha, hora } = dateAndTime(newDate);
     setDate(newDate);
-    setForm({ ...form, fecha, hora });
+    setForm({ ...form, fecha: date.toLocaleString() });
   };
 
   const handleChange = (input) => (e) => {

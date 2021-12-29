@@ -137,7 +137,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   const parseDate = (newDate) => {
-    if (typeof newDate === "object") {
+    if (!newDate.isInvalid()) {
       setDate(newDate);
       setForm({ ...form, fecha: newDate.toLocaleString() });
     } else {
@@ -146,7 +146,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   const parseTime = (newTime) => {
-    if (newTime.isInvalid()) {
+    if (!newTime.isInvalid()) {
       setTime(newTime);
       setForm({
         ...form,

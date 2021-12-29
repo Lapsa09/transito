@@ -65,8 +65,22 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       validField(form.turno) &&
       validField(form.resolucion) &&
       validLegajo(form.lpcarga) &&
-      validField(form.motivo)
+      validField(form.motivo) &&
+      validActa() &&
+      validOtro()
     );
+  };
+
+  const validOtro = () => {
+    if (form.motivo === "OTRO") {
+      return validField(form.otroMotivo);
+    }
+  };
+
+  const validActa = () => {
+    if (form.resolucion === "ACTA") {
+      return validField(form.acta);
+    }
   };
 
   const handleChangeAlignment = (event, newAlignment) => {
@@ -279,12 +293,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("lp")}
         />
         <TextField
-          type="number"
-          label="Acta"
-          value={form.acta}
-          onChange={handleChange("acta")}
-        />
-        <TextField
           select
           label="Resolucion"
           error={error && !validField(form.resolucion)}
@@ -300,7 +308,14 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
           ))}
         </TextField>
-
+        {form.resolucion == "ACTA" && (
+          <TextField
+            type="number"
+            label="Acta"
+            value={form.acta}
+            onChange={handleChange("acta")}
+          />
+        )}
         <TextField
           select
           error={error && !validField(form.motivo)}

@@ -80,7 +80,7 @@ input[type="number"] {
   }
 
   .form > .form__box > .buttons {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 
   .form > .MuiTextField-root,
@@ -90,7 +90,7 @@ input[type="number"] {
 
   .buttons > .MuiButton-root ~ .MuiButton-root {
     margin-left: 0;
-    margin-top: 10px;
+    margin-bottom: 10px;
   }
   .buttons > .MuiButton-root {
     width: 100%;

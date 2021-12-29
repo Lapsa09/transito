@@ -207,6 +207,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       </ToggleButtonGroup>
       <Box component="form" className="form__box">
         <TextField
+          type="number"
           label="Legajo carga"
           error={error && !validLegajo(form.lpcarga)}
           value={form.lpcarga}
@@ -267,6 +268,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("dominio")}
         />
         <TextField
+          type="number"
           label="Legajo planilla"
           error={error && !validLegajo(form.lp)}
           value={form.lp}
@@ -277,6 +279,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("lp")}
         />
         <TextField
+          type="number"
           label="Acta"
           value={form.acta}
           onChange={handleChange("acta")}

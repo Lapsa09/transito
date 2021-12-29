@@ -1,8 +1,8 @@
 import { getEnums, getter, setter } from "./index";
 
-export const getMotivos = async () => await getter("/control/motivos");
+export const getMotivos = async () => await getter("/motivos");
 
-export const getLocalidades = async () => await getter("/control/zonas");
+export const getLocalidades = async () => await getter("/zonas");
 
 export const nuevoControl = async (body) => await setter("/control", body);
 

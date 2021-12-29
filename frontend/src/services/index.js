@@ -14,6 +14,6 @@ export const setter = async (route, body) => {
 
 export const getEnums = async (type) => await getter("/api/" + type);
 
-export const getTurnos = async () => await getEnums("turno");
+export const getTurnos = async () => await getEnums("turnos");
 
 export const getResolucion = async () => await getEnums("resolucion");

@@ -277,7 +277,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("lp")}
         />
         <TextField
-          type="number"
           label="Acta"
           value={form.acta}
           onChange={handleChange("acta")}
@@ -343,8 +342,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("localidadInfractor")}
         >
           <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {localidades.map(({ id_localidad, localidad }) => (
-            <MenuItem value={id_localidad}>{localidad}</MenuItem>
+          {localidades.map(({ id_barrio, barrio }) => (
+            <MenuItem value={id_barrio}>{barrio}</MenuItem>
           ))}
         </TextField>
         <div className="buttons">

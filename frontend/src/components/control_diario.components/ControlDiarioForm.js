@@ -312,8 +312,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         >
           <MenuItem>SELECCIONE UNA OPCION</MenuItem>
           {alignment == 1
-            ? motivos.map(({ id, motivo }) => (
-                <MenuItem value={id}>{motivo}</MenuItem>
+            ? motivos.map(({ id_motivo, motivo }) => (
+                <MenuItem value={id_motivo}>{motivo}</MenuItem>
               ))
             : motivos.map((motivo) => (
                 <MenuItem value={motivo.enumlabel}>{motivo.enumlabel}</MenuItem>

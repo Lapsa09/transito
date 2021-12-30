@@ -5,7 +5,7 @@ const pool = require("../pool");
 router.get("/", async (req, res) => {
   try {
     const controles = await pool.query(
-      "select c.id,c.fecha,c.hora,c.direccion,l.localidad,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.mes,m.motivo,c.otro_motivo from control_diario.control c left join control_diario.localidades l on c.id_localidad=l.id_localidad left join control_diario.motivos m on c.id_motivo=m.id"
+      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.mes,m.motivo,c.otro_motivo from control_diario.control c left join public.barrios l on c.id_localidad=l.id_barrio left join public.motivos m on c.id_motivo=m.id_motivo"
     );
     res.json(controles.rows);
   } catch (error) {
@@ -16,27 +16,9 @@ router.get("/", async (req, res) => {
 router.get("/paseo", async (req, res) => {
   try {
     const controles = await pool.query(
-      "select c.id,c.fecha,c.hora,c.direccion,l.localidad,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo from nuevo_control.registros c left join nuevo_control.localidades l on c.id_localidad=l.id_localidad "
+      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo,c.mes from nuevo_control.registros c left join public.barrios l on c.id_localidad=l.id_barrio "
     );
     res.json(controles.rows);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-router.get("/zonas", async (req, res) => {
-  try {
-    const zonas = await pool.query("select * from control_diario.localidades");
-    res.json(zonas.rows);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-router.get("/motivos", async (req, res) => {
-  try {
-    const motivos = await pool.query("select * from control_diario.motivos");
-    res.json(motivos.rows);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -62,8 +44,8 @@ router.post("/", async (req, res) => {
     await pool.query(
       "insert into control_diario.control(fecha, hora, direccion, dominio, lp, acta, resolucion, turno, fechacarga, lpcarga, mes, id_motivo, otro_motivo, id_localidad) values($1, $2, $3, $4, $5, $6, $7, $8, now(), $9, $10, $11, $12, $13)",
       [
-        fecha,
-        hora,
+        DateTime.fromISO(fecha).toLocaleString(),
+        DateTime.fromISO(hora).toLocaleString(DateTime.TIME_24_SIMPLE),
         direccion,
         dominio,
         lp,
@@ -71,7 +53,7 @@ router.post("/", async (req, res) => {
         resolucion,
         turno,
         lpcarga,
-        DateTime.fromFormat(fecha, "D", { locale: "es-AR" }).month,
+        DateTime.fromISO(fecha).month,
         motivo,
         otroMotivo,
         localidadInfractor,
@@ -102,8 +84,8 @@ router.post("/paseo", async (req, res) => {
     await pool.query(
       "insert into nuevo_control.registros(fecha, hora, direccion, motivo, dominio, lp, acta, resolucion, turno, fechacarga, lpcarga, mes, id_localidad) values($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10, $11, $12)",
       [
-        fecha,
-        hora,
+        DateTime.fromISO(fecha).toLocaleString(),
+        DateTime.fromISO(hora).toLocaleString(DateTime.TIME_24_SIMPLE),
         direccion,
         motivo,
         dominio,
@@ -112,7 +94,7 @@ router.post("/paseo", async (req, res) => {
         resolucion,
         turno,
         lpcarga,
-        DateTime.fromFormat(fecha, "D", { locale: "es-AR" }).month,
+        DateTime.fromISO(fecha).month,
         localidadInfractor,
       ]
     );

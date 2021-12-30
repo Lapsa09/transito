@@ -6,7 +6,7 @@ export const validDomain = (dominio) => {
 };
 
 export const validField = (content) => {
-  return content != "";
+  return content != null && content != "";
 };
 
 export const validLegajo = (legajo) => {
@@ -17,10 +17,12 @@ export const validLegajo = (legajo) => {
 
 export const validTime = (hora) => {
   const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/gi;
-  return validField(hora) && regex.test(hora);
+  if (hora == null) return false;
+  return validField(hora) && hora.isValid;
 };
 
 export const validDate = (fecha) => {
   const regex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/gi;
-  return validField(fecha) && regex.test(fecha);
+  if (fecha == null) return false;
+  return validField(fecha) && fecha.isValid;
 };

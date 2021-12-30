@@ -14,4 +14,22 @@ router.get("/api/:type", async (req, res) => {
   }
 });
 
+router.get("/zonas", async (req, res) => {
+  try {
+    const zonas = await pool.query("select * from public.barrios");
+    res.json(zonas.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/motivos", async (req, res) => {
+  try {
+    const motivos = await pool.query("select * from public.motivos");
+    res.json(motivos.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 module.exports = router;

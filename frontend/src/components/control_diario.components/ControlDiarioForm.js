@@ -6,7 +6,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import {
   getLocalidades,
@@ -29,8 +28,6 @@ import CustomSnackbar from "../snackbar/CustomSnackbar";
 import "./controlDiarioForm.css";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
@@ -40,8 +37,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [form, setForm] = useState({
-    fecha: "",
-    hora: "",
+    fecha: null,
+    hora: null,
     direccion: "",
     dominio: "",
     lp: "",
@@ -56,7 +53,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const validated = () => {
     return (
-      validField(form.fecha) &&
+      validDate(form.fecha) &&
       validTime(form.hora) &&
       validField(form.direccion) &&
       validDomain(form.dominio) &&
@@ -65,40 +62,46 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       validField(form.turno) &&
       validField(form.resolucion) &&
       validLegajo(form.lpcarga) &&
-      validField(form.motivo)
+      validField(form.motivo) &&
+      validActa() &&
+      validOtro()
     );
+  };
+
+  const validOtro = () => {
+    if (form.motivo === "OTRO") {
+      return validField(form.otroMotivo);
+    }
+    return true;
+  };
+
+  const validActa = () => {
+    if (form.resolucion === "ACTA") {
+      return validField(form.acta);
+    }
+    return true;
   };
 
   const handleChangeAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
     setForm({
-      fecha: "",
-      hora: "",
-      direccion: "",
-      dominio: "",
-      lp: "",
-      acta: "",
-      resolucion: "",
-      turno: "",
-      lpcarga: "",
+      ...form,
       motivo: "",
       otroMotivo: "",
-      localidadInfractor: "",
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validated()) {
+      setError(false);
       try {
-        setError(false);
         alignment == 1
           ? await nuevoControl(form)
           : await nuevoControlPaseo(form);
-        setTime(null);
         setForm({
           ...form,
-          hora: "",
+          hora: null,
           direccion: "",
           dominio: "",
           acta: "",
@@ -137,23 +140,17 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   const parseDate = (newDate) => {
-    if (typeof newDate === "object") {
-      setDate(newDate);
-      setForm({ ...form, fecha: newDate.toLocaleString() });
-    } else {
+    if (newDate.isValid) {
       setForm({ ...form, fecha: newDate });
     }
   };
 
   const parseTime = (newTime) => {
-    if (newTime.isInvalid()) {
-      setTime(newTime);
+    if (newTime.isValid) {
       setForm({
         ...form,
-        hora: newTime.toLocaleString(DateTime.TIME_24_SIMPLE),
+        hora: newTime,
       });
-    } else {
-      setForm({ ...form, hora: newTime });
     }
   };
 
@@ -165,6 +162,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
+    console.log(form);
   };
 
   const showSnackbar = (severity, message) => {
@@ -207,6 +205,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       </ToggleButtonGroup>
       <Box component="form" className="form__box">
         <TextField
+          type="number"
           label="Legajo carga"
           error={error && !validLegajo(form.lpcarga)}
           value={form.lpcarga}
@@ -220,7 +219,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           helperText={"Inserte una fecha valida"}
           error={error && !validDate(form.fecha)}
           label="Fecha"
-          value={date}
+          value={form.fecha}
           onChange={parseDate}
         />
         <TextField
@@ -241,7 +240,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           helperText={"Inserte una hora valida"}
           error={error && !validTime(form.hora)}
           label="Hora"
-          value={time}
+          value={form.hora}
           onChange={parseTime}
         />
         <TextField
@@ -267,6 +266,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("dominio")}
         />
         <TextField
+          type="number"
           label="Legajo planilla"
           error={error && !validLegajo(form.lp)}
           value={form.lp}
@@ -275,12 +275,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             error && !validLegajo(form.lp) && "Inserte un legajo valido"
           }
           onChange={handleChange("lp")}
-        />
-        <TextField
-          type="number"
-          label="Acta"
-          value={form.acta}
-          onChange={handleChange("acta")}
         />
         <TextField
           select
@@ -298,7 +292,19 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
           ))}
         </TextField>
-
+        {form.resolucion == "ACTA" && (
+          <TextField
+            type="number"
+            label="Acta"
+            required
+            error={error && !validField(form.acta)}
+            helperText={
+              error && !validField(form.acta) && "Ingrese un Nro de Acta valido"
+            }
+            value={form.acta}
+            onChange={handleChange("acta")}
+          />
+        )}
         <TextField
           select
           error={error && !validField(form.motivo)}
@@ -310,8 +316,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         >
           <MenuItem>SELECCIONE UNA OPCION</MenuItem>
           {alignment == 1
-            ? motivos.map(({ id, motivo }) => (
-                <MenuItem value={id}>{motivo}</MenuItem>
+            ? motivos.map(({ id_motivo, motivo }) => (
+                <MenuItem value={id_motivo}>{motivo}</MenuItem>
               ))
             : motivos.map((motivo) => (
                 <MenuItem value={motivo.enumlabel}>{motivo.enumlabel}</MenuItem>
@@ -343,8 +349,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           onChange={handleChange("localidadInfractor")}
         >
           <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {localidades.map(({ id_localidad, localidad }) => (
-            <MenuItem value={id_localidad}>{localidad}</MenuItem>
+          {localidades.map(({ id_barrio, barrio }) => (
+            <MenuItem value={id_barrio}>{barrio}</MenuItem>
           ))}
         </TextField>
         <div className="buttons">

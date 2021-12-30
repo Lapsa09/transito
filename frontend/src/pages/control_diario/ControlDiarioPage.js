@@ -36,12 +36,18 @@ function ControlDiarioPage() {
     {
       field: "fecha",
       headerName: "Fecha",
-      width: 150,
       valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
+      width: 100,
     },
-    { field: "hora", headerName: "Hora", width: 150 },
+    {
+      field: "hora",
+      headerName: "Hora",
+      width: 100,
+      valueFormatter: ({ value }) =>
+        DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE),
+    },
     { field: "direccion", headerName: "Direccion", width: 250 },
-    { field: "localidad", headerName: "Localidad", width: 150 },
+    { field: "barrio", headerName: "Localidad", width: 150 },
     { field: "dominio", headerName: "Dominio", width: 150 },
     { field: "lp", headerName: "Legajo planilla", width: 150 },
     { field: "acta", headerName: "Acta", width: 150 },
@@ -49,7 +55,13 @@ function ControlDiarioPage() {
     { field: "motivo", headerName: "Motivo", width: 250 },
     { field: "otro_motivo", headerName: "Otro motivo", width: 250 },
     { field: "turno", headerName: "Turno", width: 150 },
-    { field: "fechacarga", headerName: "Fecha carga", width: 150 },
+    {
+      field: "fechacarga",
+      headerName: "Fecha carga",
+      width: 150,
+      valueFormatter: ({ value }) =>
+        DateTime.fromSQL(value).toLocaleString(DateTime.DATETIME_SHORT),
+    },
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
     { field: "fecha", headerName: "Fecha", width: 150 },
     { field: "mes", headerName: "Mes", width: 150 },
@@ -79,7 +91,12 @@ function ControlDiarioPage() {
           handleClose={handleClose}
         />
       </Modal>
-      <DataGrid rows={controles} columns={columns} pageSize={50} />
+      <DataGrid
+        sx={{ textAlign: "center" }}
+        rows={controles}
+        columns={columns}
+        pageSize={50}
+      />
     </div>
   );
 }

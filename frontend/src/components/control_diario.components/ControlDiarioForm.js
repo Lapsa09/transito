@@ -15,7 +15,13 @@ import {
   nuevoControlPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
-import { validDomain, validField, validLegajo } from "../../utils/validations";
+import {
+  validDate,
+  validDomain,
+  validField,
+  validLegajo,
+  validTime,
+} from "../../utils/validations";
 import CustomDatePicker from "../datetime-picker/DatePicker";
 import CustomTimePicker from "../datetime-picker/TimePicker";
 import CustomSnackbar from "../snackbar/CustomSnackbar";
@@ -47,8 +53,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const validated = () => {
     return (
-      form.fecha.isValid &&
-      form.hora.isValid &&
+      validDate(form.fecha) &&
+      validTime(form.hora) &&
       validField(form.direccion) &&
       validDomain(form.dominio) &&
       validField(form.localidadInfractor) &&
@@ -87,8 +93,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(false);
     if (validated()) {
+      setError(false);
       try {
         alignment == 1
           ? await nuevoControl(form)
@@ -211,7 +217,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         />
         <CustomDatePicker
           helperText={"Inserte una fecha valida"}
-          error={error && !form.fecha.isValid}
+          error={error && !validDate(form.fecha)}
           label="Fecha"
           value={form.fecha}
           onChange={parseDate}
@@ -232,7 +238,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         </TextField>
         <CustomTimePicker
           helperText={"Inserte una hora valida"}
-          error={error && !form.hora.isValid}
+          error={error && !validTime(form.hora)}
           label="Hora"
           value={form.hora}
           onChange={parseTime}

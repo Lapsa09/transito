@@ -75,12 +75,14 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     if (form.motivo === "OTRO") {
       return validField(form.otroMotivo);
     }
+    return true;
   };
 
   const validActa = () => {
     if (form.resolucion === "ACTA") {
       return validField(form.acta);
     }
+    return true;
   };
 
   const handleChangeAlignment = (event, newAlignment) => {
@@ -103,9 +105,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(false);
     if (validated()) {
       try {
-        setError(false);
         alignment == 1
           ? await nuevoControl(form)
           : await nuevoControlPaseo(form);
@@ -312,6 +314,11 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           <TextField
             type="number"
             label="Acta"
+            required
+            error={error && !validField(form.acta)}
+            helperText={
+              error && !validField(form.acta) && "Ingrese un Nro de Acta valido"
+            }
             value={form.acta}
             onChange={handleChange("acta")}
           />

@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 router.get("/paseo", async (req, res) => {
   try {
     const controles = await pool.query(
-      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo from nuevo_control.registros c left join public.barrios l on c.id_localidad=l.id_barrio "
+      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo,c.mes from nuevo_control.registros c left join public.barrios l on c.id_localidad=l.id_barrio "
     );
     res.json(controles.rows);
   } catch (error) {

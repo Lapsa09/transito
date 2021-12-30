@@ -6,7 +6,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import {
   getLocalidades,
@@ -16,21 +15,13 @@ import {
   nuevoControlPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
-import {
-  validDate,
-  validDomain,
-  validField,
-  validLegajo,
-  validTime,
-} from "../../utils/validations";
+import { validDomain, validField, validLegajo } from "../../utils/validations";
 import CustomDatePicker from "../datetime-picker/DatePicker";
 import CustomTimePicker from "../datetime-picker/TimePicker";
 import CustomSnackbar from "../snackbar/CustomSnackbar";
 import "./controlDiarioForm.css";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
@@ -40,8 +31,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [form, setForm] = useState({
-    fecha: "",
-    hora: "",
+    fecha: null,
+    hora: null,
     direccion: "",
     dominio: "",
     lp: "",
@@ -56,8 +47,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const validated = () => {
     return (
-      validField(form.fecha) &&
-      validTime(form.hora) &&
+      form.fecha.isValid &&
+      form.hora.isValid &&
       validField(form.direccion) &&
       validDomain(form.dominio) &&
       validField(form.localidadInfractor) &&
@@ -88,18 +79,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const handleChangeAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
     setForm({
-      fecha: "",
-      hora: "",
-      direccion: "",
-      dominio: "",
-      lp: "",
-      acta: "",
-      resolucion: "",
-      turno: "",
-      lpcarga: "",
+      ...form,
       motivo: "",
       otroMotivo: "",
-      localidadInfractor: "",
     });
   };
 
@@ -111,10 +93,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         alignment == 1
           ? await nuevoControl(form)
           : await nuevoControlPaseo(form);
-        setTime(null);
         setForm({
           ...form,
-          hora: "",
+          hora: null,
           direccion: "",
           dominio: "",
           acta: "",
@@ -154,22 +135,16 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const parseDate = (newDate) => {
     if (newDate.isValid) {
-      setDate(newDate);
-      setForm({ ...form, fecha: newDate.toLocaleString() });
-    } else {
       setForm({ ...form, fecha: newDate });
     }
   };
 
   const parseTime = (newTime) => {
     if (newTime.isValid) {
-      setTime(newTime);
       setForm({
         ...form,
-        hora: newTime.toLocaleString(DateTime.TIME_24_SIMPLE),
+        hora: newTime,
       });
-    } else {
-      setForm({ ...form, hora: newTime });
     }
   };
 
@@ -181,6 +156,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
+    console.log(form);
   };
 
   const showSnackbar = (severity, message) => {
@@ -235,9 +211,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         />
         <CustomDatePicker
           helperText={"Inserte una fecha valida"}
-          error={error && !validDate(form.fecha)}
+          error={error && !form.fecha.isValid}
           label="Fecha"
-          value={date}
+          value={form.fecha}
           onChange={parseDate}
         />
         <TextField
@@ -256,9 +232,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         </TextField>
         <CustomTimePicker
           helperText={"Inserte una hora valida"}
-          error={error && !validTime(form.hora)}
+          error={error && !form.hora.isValid}
           label="Hora"
-          value={time}
+          value={form.hora}
           onChange={parseTime}
         />
         <TextField

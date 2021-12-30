@@ -44,8 +44,8 @@ router.post("/", async (req, res) => {
     await pool.query(
       "insert into control_diario.control(fecha, hora, direccion, dominio, lp, acta, resolucion, turno, fechacarga, lpcarga, mes, id_motivo, otro_motivo, id_localidad) values($1, $2, $3, $4, $5, $6, $7, $8, now(), $9, $10, $11, $12, $13)",
       [
-        fecha,
-        hora,
+        DateTime.fromISO(fecha).toLocaleString(),
+        DateTime.fromISO(hora).toLocaleString(DateTime.TIME_24_SIMPLE),
         direccion,
         dominio,
         lp,
@@ -53,7 +53,7 @@ router.post("/", async (req, res) => {
         resolucion,
         turno,
         lpcarga,
-        DateTime.fromFormat(fecha, "D", { locale: "es-AR" }).month,
+        DateTime.fromISO(fecha).month,
         motivo,
         otroMotivo,
         localidadInfractor,
@@ -84,8 +84,8 @@ router.post("/paseo", async (req, res) => {
     await pool.query(
       "insert into nuevo_control.registros(fecha, hora, direccion, motivo, dominio, lp, acta, resolucion, turno, fechacarga, lpcarga, mes, id_localidad) values($1, $2, $3, $4, $5, $6, $7, $8, $9, now(), $10, $11, $12)",
       [
-        fecha,
-        hora,
+        DateTime.fromISO(fecha).toLocaleString(),
+        DateTime.fromISO(hora).toLocaleString(DateTime.TIME_24_SIMPLE),
         direccion,
         motivo,
         dominio,
@@ -94,7 +94,7 @@ router.post("/paseo", async (req, res) => {
         resolucion,
         turno,
         lpcarga,
-        DateTime.fromFormat(fecha, "D", { locale: "es-AR" }).month,
+        DateTime.fromISO(fecha).month,
         localidadInfractor,
       ]
     );

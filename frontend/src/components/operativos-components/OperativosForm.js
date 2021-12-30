@@ -12,7 +12,6 @@ import {
   nuevoOperativo,
 } from "../../services/operativosService";
 import { getResolucion, getTurnos } from "../../services/index";
-import { useNavigate } from "react-router-dom";
 import { validDomain, validField, validLegajo } from "../../utils/validations";
 
 function OperativosForm({ handleClose, afterCreate }) {
@@ -49,7 +48,6 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [es_del, setEs_del] = useState([]);
   const [resultado, setResultado] = useState([]);
   const [error, setError] = useState(false);
-  const navigate = useNavigate();
 
   const fillSelects = async () => {
     setLicencias(await getLicencias());

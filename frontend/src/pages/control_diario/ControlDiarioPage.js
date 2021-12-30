@@ -39,7 +39,13 @@ function ControlDiarioPage() {
       valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
       width: 100,
     },
-    { field: "hora", headerName: "Hora", width: 100 },
+    {
+      field: "hora",
+      headerName: "Hora",
+      width: 100,
+      valueFormatter: ({ value }) =>
+        DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE),
+    },
     { field: "direccion", headerName: "Direccion", width: 250 },
     { field: "barrio", headerName: "Localidad", width: 150 },
     { field: "dominio", headerName: "Dominio", width: 150 },

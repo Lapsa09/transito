@@ -17,5 +17,6 @@ app.use(
 app.use("/", require("./routes/index"));
 app.use("/operativos", require("./routes/operativos"));
 app.use("/control", require("./routes/controlDiario"));
+app.use("/auth", require("./routes/jwtAuth"));
 
 app.listen(port);

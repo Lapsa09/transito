@@ -40,7 +40,6 @@ router.post("/register", validInfo, async (req, res) => {
 
     return res.json({ jwtToken });
   } catch (err) {
-    console.error(err.message);
     res.status(500).json("Server error");
   }
 });
@@ -68,7 +67,6 @@ router.post("/login", validInfo, async (req, res) => {
     const jwtToken = jwtGenerator(user.rows[0].legajo);
     return res.json({ jwtToken });
   } catch (err) {
-    console.error(err.message);
     res.status(500).send("Server error");
   }
 });
@@ -77,7 +75,6 @@ router.post("/verify", authorize, (req, res) => {
   try {
     res.json(true);
   } catch (err) {
-    console.error(err.message);
     res.status(500).send("Server error");
   }
 });

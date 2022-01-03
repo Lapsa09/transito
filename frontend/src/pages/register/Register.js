@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { register } from "../../services/userService";
 import { getTurnos } from "../../services";
+import { useNavigate } from "react-router-dom";
 
 function Register({ setAuth }) {
   const [form, setForm] = useState({
@@ -22,6 +23,7 @@ function Register({ setAuth }) {
   const [confirmaPassword, setConfirmaPassword] = useState("");
   const [error, setError] = useState("");
   const [turnos, setTurnos] = useState([]);
+  const navigate = useNavigate();
 
   const handleChange = (input) => (e) => {
     setForm({
@@ -41,6 +43,10 @@ function Register({ setAuth }) {
     setTurnos(await getTurnos());
   };
 
+  const login = () => {
+    navigate("/login");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password !== confirmaPassword) {
@@ -52,6 +58,7 @@ function Register({ setAuth }) {
         if (res.jwtToken) {
           localStorage.setItem("token", res.jwtToken);
           setAuth(true);
+          navigate("/");
         } else {
           setError(res);
         }
@@ -113,7 +120,9 @@ function Register({ setAuth }) {
         />
         {error && <FormHelperText error>{error}</FormHelperText>}
         <div className="buttons">
-          <Button>Ya te registraste? ir a iniciar Sesion</Button>
+          <Button onClick={login}>
+            Ya te registraste? ir a iniciar Sesion
+          </Button>
           <Button onClick={handleSubmit} variant="contained">
             Registrarse
           </Button>

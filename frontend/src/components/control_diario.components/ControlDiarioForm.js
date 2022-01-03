@@ -162,7 +162,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
-    console.log(form);
   };
 
   const showSnackbar = (severity, message) => {

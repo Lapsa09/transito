@@ -17,3 +17,10 @@ export const getEnums = async (type) => await getter("/api/" + type);
 export const getTurnos = async () => await getEnums("turnos");
 
 export const getResolucion = async () => await getEnums("resolucion");
+
+export const verifyAuth = async () => {
+  const { data } = await axios.post(BASE_URL + "/auth/verify", {
+    headers: { jwt_token: localStorage.token },
+  });
+  return data;
+};

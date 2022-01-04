@@ -10,8 +10,10 @@ import {
 import { register } from "../../services/userService";
 import { getTurnos } from "../../services";
 import { useNavigate } from "react-router-dom";
+import { login } from "../../utils/redux/userSlice";
+import { useDispatch } from "react-redux";
 
-function Register({ setAuth }) {
+function Register() {
   const [form, setForm] = useState({
     legajo: "",
     nombre: "",
@@ -24,6 +26,7 @@ function Register({ setAuth }) {
   const [error, setError] = useState("");
   const [turnos, setTurnos] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (input) => (e) => {
     setForm({
@@ -43,7 +46,7 @@ function Register({ setAuth }) {
     setTurnos(await getTurnos());
   };
 
-  const login = () => {
+  const loginNav = () => {
     navigate("/login");
   };
 
@@ -57,7 +60,15 @@ function Register({ setAuth }) {
         const res = await register(form);
         if (res.jwtToken) {
           localStorage.setItem("token", res.jwtToken);
-          setAuth(true);
+          dispatch(
+            login({
+              legajo: form.legajo,
+              nombre: form.nombre,
+              apellido: form.apellido,
+              turno: form.turno,
+              telefono: form.telefono,
+            })
+          );
           navigate("/");
         } else {
           setError(res);
@@ -120,7 +131,7 @@ function Register({ setAuth }) {
         />
         {error && <FormHelperText error>{error}</FormHelperText>}
         <div className="buttons">
-          <Button onClick={login}>
+          <Button onClick={loginNav}>
             Ya te registraste? ir a iniciar Sesion
           </Button>
           <Button onClick={handleSubmit} variant="contained">

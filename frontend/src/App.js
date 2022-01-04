@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,21 +13,22 @@ import "./App.css";
 import Home from "./pages/home/Home";
 import { verifyAuth } from "./services";
 import Login from "./pages/login/Login";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectUser } from "./utils/redux/userSlice";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
   const checkAuthenticated = async () => {
     try {
       const parseRes = await verifyAuth();
-      setIsAuthenticated(parseRes);
+      if (!parseRes) {
+        dispatch(logout());
+      }
     } catch (err) {
-      console.error(err.message);
+      console.error(err.response.data.msg);
     }
-  };
-
-  const setAuth = (boolean) => {
-    setIsAuthenticated(boolean);
   };
 
   useEffect(() => {
@@ -36,43 +37,26 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={isAuthenticated ? <Home /> : <Navigate to="/login" />}
-        />
+        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route
           path="/accidentes"
-          element={
-            isAuthenticated ? <AccidentesPage /> : <Navigate to="/login" />
-          }
+          element={user ? <AccidentesPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/operativos"
-          element={
-            isAuthenticated ? <OperativosPage /> : <Navigate to="/login" />
-          }
+          element={user ? <OperativosPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/control"
-          element={
-            isAuthenticated ? <ControlDiarioPage /> : <Navigate to="/login" />
-          }
+          element={user ? <ControlDiarioPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/register"
-          element={
-            !isAuthenticated ? (
-              <Register setAuth={setAuth} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
+          element={!user ? <Register /> : <Navigate to="/" />}
         />
         <Route
           path="/login"
-          element={
-            !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/" />
-          }
+          element={!user ? <Login /> : <Navigate to="/" />}
         />
       </Routes>
     </Router>

@@ -1,23 +1,26 @@
 import React, { useState } from "react";
 import { Box, Button, FormHelperText, TextField } from "@mui/material";
-import { login } from "../../services/userService";
+import { loginCall } from "../../services/userService";
+import { login } from "../../utils/redux/userSlice";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import "./login.css";
 
-function Login({ setAuth }) {
+function Login() {
   const [legajo, setLegajo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setError("");
-      const res = await login({ legajo, password });
+      const res = await loginCall({ legajo, password });
       if (res.jwtToken) {
         localStorage.setItem("token", res.jwtToken);
-        setAuth(true);
+        dispatch(login(res.user));
         navigate("/");
       } else {
         setError(res);

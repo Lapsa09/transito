@@ -1,10 +1,14 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
+import { logout } from "../../utils/redux/userSlice";
+import { useDispatch } from "react-redux";
 
 function App() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("token");
+    dispatch(logout());
     navigate(0);
   };
   return (
@@ -15,7 +19,7 @@ function App() {
         <NavLink to="/accidentes">Accidentes</NavLink>
         <NavLink to="/operativos">Operativos</NavLink>
         <NavLink to="/control">Control Diario</NavLink>
-        <Logout onClick={logout} />
+        <Logout onClick={handleLogout} />
       </nav>
     </div>
   );

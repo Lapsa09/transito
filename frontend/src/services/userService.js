@@ -5,6 +5,6 @@ export const register = async (body) => {
   return res;
 };
 
-export const login = async (body) => {
+export const loginCall = async (body) => {
   return await setter("/auth/login", body);
 };

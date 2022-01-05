@@ -116,7 +116,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         await afterCreate();
         showSnackbar("success", "Cargado con exito");
       } catch (error) {
-        showSnackbar("error", error.message);
+        showSnackbar("error", error.response.data);
       }
     } else {
       setError(true);

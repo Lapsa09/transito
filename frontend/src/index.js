@@ -1,20 +1,20 @@
 import ReactDOM from "react-dom";
 import App from "./App";
+import store from "./utils/store";
+import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AccidentesPage from "./pages/accidentes/Accidentes.page";
-import OperativosPage from "./pages/operativos/Operativos.page";
-import ControlDiarioPage from "./pages/control_diario/ControlDiarioPage";
+import "./index.css";
+import persistStore from "redux-persist/lib/persistStore";
+import { PersistGate } from "redux-persist/integration/react";
+
+let persistor = persistStore(store);
 
 ReactDOM.render(
-  <Router>
-    <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="/accidentes" element={<AccidentesPage />} />
-      <Route path="/operativos" element={<OperativosPage />} />
-      <Route path="/control" element={<ControlDiarioPage />} />
-    </Routes>
-  </Router>,
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <App />
+    </PersistGate>
+  </Provider>,
   document.getElementById("root")
 );
 

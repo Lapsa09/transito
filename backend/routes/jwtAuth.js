@@ -40,7 +40,6 @@ router.post("/register", validInfo, async (req, res) => {
 
     return res.json({ jwtToken });
   } catch (err) {
-    console.error(err.message);
     res.status(500).json("Server error");
   }
 });
@@ -66,10 +65,18 @@ router.post("/login", validInfo, async (req, res) => {
       return res.status(401).json("Contraseña incorrecta");
     }
     const jwtToken = jwtGenerator(user.rows[0].legajo);
-    return res.json({ jwtToken });
+    return res.json({
+      jwtToken,
+      user: {
+        legajo: user.rows[0].legajo,
+        nombre: user.rows[0].nombre,
+        apellido: user.rows[0].apellido,
+        turno: user.rows[0].turno,
+        telefono: user.rows[0].telefono,
+      },
+    });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(500).json("Server error");
   }
 });
 
@@ -77,8 +84,7 @@ router.post("/verify", authorize, (req, res) => {
   try {
     res.json(true);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
+    res.status(500).json("Server error");
   }
 });
 

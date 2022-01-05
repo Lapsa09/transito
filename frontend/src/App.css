@@ -17,15 +17,14 @@ input[type="number"] {
   max-width: 1150px;
   width: 95%;
   display: flex;
-  /* flex-direction: column; */
-  /* align-items: center; */
+  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
 }
 
 .form > .form__box {
   display: grid;
   grid-template-columns: repeat(2, 400px);
-  grid-template-rows: repeat(6, 1fr);
   grid-column-gap: 20px;
   grid-row-gap: 20px;
 }
@@ -38,6 +37,10 @@ input[type="number"] {
   grid-row: 6/7;
   margin-left: auto;
   grid-column: 2/3;
+}
+
+.form > .form__box.op > .buttons {
+  grid-row: 10/11;
 }
 
 .form .MuiFormControl-root .MuiTextField-root {
@@ -54,6 +57,10 @@ input[type="number"] {
 }
 
 @media (max-width: 835px) {
+  .form {
+    flex-wrap: nowrap !important;
+    max-height: 100vh !important;
+  }
   .form > .form__box {
     grid-template-columns: repeat(1, minmax(300px, 1100px));
     overflow-y: overlay;
@@ -66,16 +73,18 @@ input[type="number"] {
     margin: 20px auto;
     grid-row: initial;
   }
+
+  .form > .form__box.op > .buttons {
+    grid-row: initial;
+  }
 }
 
 @media (max-width: 766px) {
   .form {
-    flex-wrap: nowrap !important;
     flex-direction: column;
     overflow-y: overlay;
     align-items: center;
     justify-content: flex-start;
-    max-height: 100vh !important;
   }
 
   .form > .form__box {

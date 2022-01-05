@@ -31,7 +31,7 @@ function OperativosPage() {
     },
     { field: "hora", headerName: "Hora", width: 300 },
     { field: "direccion", headerName: "Direccion", width: 300 },
-    { field: "zona", headerName: "Localidad", width: 300 },
+    { field: "barrio", headerName: "Localidad", width: 300 },
     { field: "cp", headerName: "Codigo postal", width: 300 },
     { field: "legajo_a_cargo", headerName: "Legajo a cargo", width: 300 },
     { field: "legajo_planilla", headerName: "Legajo planilla", width: 300 },

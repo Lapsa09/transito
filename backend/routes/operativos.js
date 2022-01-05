@@ -18,7 +18,7 @@ const VICENTE_LOPEZ = [
 router.get("/", async (req, res) => {
   try {
     const operativos = await pool.query(
-      "select r.fecha,r.hora,r.direccion,z.barrio,r.legajo_a_cargo,r.legajo_planilla,r.turno,r.seguridad,r.dominio,r.licencia,l.tipo as tipo_licencia,l.vehiculo as tipo_vehiculo,zi.barrio as zona_infractor,r.acta,r.motivo,r.graduacion_alcoholica,r.resolucion,r.fechacarga,r.lpcarga,r.mes,r.semana,r.es_del,r.resultado,r.id from operativos.registros r left join public.tipo_licencias l on r.id_licencia=l.id_tipo left join public.barrios z on r.id_zona=z.id_barrio left join public.barrios zi on r.id_zona_infractor=zi.id_barrio order by r.id asc"
+      "select r.fecha,r.hora,r.direccion,z.barrio,z.cp,r.legajo_a_cargo,r.legajo_planilla,r.turno,r.seguridad,r.dominio,r.licencia,l.tipo as tipo_licencia,l.vehiculo as tipo_vehiculo,zi.barrio as zona_infractor,r.acta,r.motivo,r.graduacion_alcoholica,r.resolucion,r.fechacarga,r.lpcarga,r.mes,r.semana,r.es_del,r.resultado,r.id from operativos.registros r left join public.tipo_licencias l on r.id_licencia=l.id_tipo left join vicente_lopez z on r.id_zona=z.id_barrio left join public.barrios zi on r.id_zona_infractor=zi.id_barrio order by r.id asc"
     );
     res.json(operativos.rows);
   } catch (error) {

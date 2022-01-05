@@ -18,7 +18,7 @@ const VICENTE_LOPEZ = [
 router.get("/", async (req, res) => {
   try {
     const operativos = await pool.query(
-      "select r.fecha,r.hora,r.direccion,z.barrio,r.legajo_a_cargo,r.legajo_planilla,r.turno,r.seguridad,r.dominio,r.licencia,l.tipo as tipo_licencia,l.vehiculo as tipo_vehiculo,zi.barrio as zona_infractor,r.acta,r.motivo,r.graduacion_alcoholica,r.resolucion,r.fechacarga,r.lpcarga,r.mes,r.semana,r.es_del,r.resultado,r.id from operativos.registros r left join public.tipo_licencias l on r.id_licencia=l.id_tipo left join public.barrios z on r.id_zona=z.id_barrio left join public.barrios zi on r.id_zona_infractor=zi.id_barrio"
+      "select r.fecha,r.hora,r.direccion,z.barrio,r.legajo_a_cargo,r.legajo_planilla,r.turno,r.seguridad,r.dominio,r.licencia,l.tipo as tipo_licencia,l.vehiculo as tipo_vehiculo,zi.barrio as zona_infractor,r.acta,r.motivo,r.graduacion_alcoholica,r.resolucion,r.fechacarga,r.lpcarga,r.mes,r.semana,r.es_del,r.resultado,r.id from operativos.registros r left join public.tipo_licencias l on r.id_licencia=l.id_tipo left join public.barrios z on r.id_zona=z.id_barrio left join public.barrios zi on r.id_zona_infractor=zi.id_barrio order by r.id asc"
     );
     res.json(operativos.rows);
   } catch (error) {
@@ -28,28 +28,7 @@ router.get("/", async (req, res) => {
 
 router.get("/zonas/vl", async (req, res) => {
   try {
-    const zonas = await pool.query(
-      "select * from public.barrios where barrio in ($1)",
-      [VICENTE_LOPEZ]
-    );
-    res.json(zonas.rows);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-router.get("/licencias", async (req, res) => {
-  try {
-    const licencias = await pool.query("select * from public.tipo_licencias");
-    res.json(licencias.rows);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-router.get("/zonas/all", async (req, res) => {
-  try {
-    const zonas = await pool.query("select * from public.barrios");
+    const zonas = await pool.query("select * from vicente_lopez");
     res.json(zonas.rows);
   } catch (error) {
     res.status(500).json(error);

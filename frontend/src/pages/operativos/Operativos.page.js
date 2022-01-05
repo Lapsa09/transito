@@ -69,8 +69,8 @@ function OperativosPage() {
 
   return (
     <div className="Operativos">
-      <div className="buttons">
-        <Button variant="contained" onClick={() => navigate("/")}>
+      <div className="control_buttons">
+        <Button color="error" variant="contained" onClick={() => navigate("/")}>
           Atras
         </Button>
         <Button variant="contained" onClick={handleOpen}>

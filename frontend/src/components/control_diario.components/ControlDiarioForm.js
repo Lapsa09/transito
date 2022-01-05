@@ -7,6 +7,7 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   getLocalidades,
   getMotivos,
@@ -15,6 +16,7 @@ import {
   nuevoControlPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
+import { selectUser } from "../../utils/redux/userSlice";
 import {
   validDate,
   validDomain,
@@ -36,6 +38,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [alignment, setAlignment] = useState(1);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
+  const user = useSelector(selectUser);
   const [form, setForm] = useState({
     fecha: null,
     hora: null,
@@ -45,7 +48,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     acta: "",
     resolucion: "",
     turno: "",
-    lpcarga: "",
+    lpcarga: user.legajo,
     motivo: "",
     otroMotivo: "",
     localidadInfractor: "",
@@ -203,17 +206,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         <ToggleButton value={2}>Paseo de la costa</ToggleButton>
       </ToggleButtonGroup>
       <Box component="form" className="form__box">
-        <TextField
-          type="number"
-          label="Legajo carga"
-          error={error && !validLegajo(form.lpcarga)}
-          value={form.lpcarga}
-          required
-          helperText={
-            error && !validLegajo(form.lpcarga) && "Inserte un legajo valido"
-          }
-          onChange={handleChange("lpcarga")}
-        />
         <CustomDatePicker
           helperText={"Inserte una fecha valida"}
           error={error && !validDate(form.fecha)}

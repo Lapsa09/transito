@@ -16,7 +16,7 @@ router.get("/api/:type", async (req, res) => {
 
 router.get("/zonas", async (req, res) => {
   try {
-    const zonas = await pool.query("select * from public.barrios");
+    const zonas = await pool.query("select * from barrios");
     res.json(zonas.rows);
   } catch (error) {
     res.status(500).json(error);
@@ -25,8 +25,17 @@ router.get("/zonas", async (req, res) => {
 
 router.get("/motivos", async (req, res) => {
   try {
-    const motivos = await pool.query("select * from public.motivos");
+    const motivos = await pool.query("select * from motivos");
     res.json(motivos.rows);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/licencias", async (req, res) => {
+  try {
+    const licencias = await pool.query("select * from tipo_licencias");
+    res.json(licencias.rows);
   } catch (error) {
     res.status(500).json(error);
   }

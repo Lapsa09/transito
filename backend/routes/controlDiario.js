@@ -5,7 +5,7 @@ const pool = require("../pool");
 router.get("/", async (req, res) => {
   try {
     const controles = await pool.query(
-      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.mes,m.motivo,c.otro_motivo from control_diario.control c left join public.barrios l on c.id_localidad=l.id_barrio left join public.motivos m on c.id_motivo=m.id_motivo"
+      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.mes,m.motivo,c.otro_motivo from control_diario.control c left join public.barrios l on c.id_localidad=l.id_barrio left join public.motivos m on c.id_motivo=m.id_motivo order by c.id asc"
     );
     res.json(controles.rows);
   } catch (error) {
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 router.get("/paseo", async (req, res) => {
   try {
     const controles = await pool.query(
-      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo,c.mes from nuevo_control.registros c left join public.barrios l on c.id_localidad=l.id_barrio "
+      "select c.id,c.fecha,c.hora,c.direccion,l.barrio,c.dominio,c.lp,c.acta,c.resolucion,c.turno,c.fechacarga,c.lpcarga,c.motivo,c.mes from nuevo_control.registros c left join public.barrios l on c.id_localidad=l.id_barrio order by c.id asc"
     );
     res.json(controles.rows);
   } catch (error) {

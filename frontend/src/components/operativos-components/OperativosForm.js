@@ -134,8 +134,8 @@ function OperativosForm({ handleClose, afterCreate }) {
         helperText={error && !validField(form.zona) && "Elija una localidad"}
       >
         <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {zonasVL.map(({ id_zona, zona }) => (
-          <MenuItem value={id_zona}>{zona}</MenuItem>
+        {zonasVL.map(({ id_barrio, barrio }) => (
+          <MenuItem value={id_barrio}>{barrio}</MenuItem>
         ))}
       </TextField>
       <TextField
@@ -209,8 +209,8 @@ function OperativosForm({ handleClose, afterCreate }) {
         onChange={handleChange("tipo_licencia")}
       >
         <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {licencias.map(({ id_lic, licencia }) => (
-          <MenuItem value={id_lic}>{licencia}</MenuItem>
+        {licencias.map(({ id_tipo, tipo }) => (
+          <MenuItem value={id_tipo}>{tipo}</MenuItem>
         ))}
       </TextField>
       <TextField
@@ -220,8 +220,8 @@ function OperativosForm({ handleClose, afterCreate }) {
         onChange={handleChange("zona_infractor")}
       >
         <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-        {allZonas.map(({ id_zona, zona }) => (
-          <MenuItem value={id_zona}>{zona}</MenuItem>
+        {allZonas.map(({ id_barrio, barrio }) => (
+          <MenuItem value={id_barrio}>{barrio}</MenuItem>
         ))}
       </TextField>
       <TextField

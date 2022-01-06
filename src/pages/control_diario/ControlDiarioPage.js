@@ -36,8 +36,7 @@ function ControlDiarioPage() {
     {
       field: "fecha",
       headerName: "Fecha",
-      valueFormatter: ({ value }) =>
-        DateTime.fromISO(value).setLocale("es-AR").toLocaleString(),
+      valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
       width: 100,
     },
     {
@@ -45,9 +44,7 @@ function ControlDiarioPage() {
       headerName: "Hora",
       width: 100,
       valueFormatter: ({ value }) =>
-        DateTime.fromISO(value)
-          .setLocale("es-AR")
-          .toLocaleString(DateTime.TIME_24_SIMPLE),
+        DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE),
     },
     { field: "direccion", headerName: "Direccion", width: 250 },
     { field: "barrio", headerName: "Localidad", width: 150 },
@@ -64,9 +61,7 @@ function ControlDiarioPage() {
       width: 150,
       valueFormatter: ({ value }) =>
         value
-          ? DateTime.fromSQL(value)
-              .setLocale("es-AR")
-              .toLocaleString(DateTime.DATETIME_SHORT)
+          ? DateTime.fromSQL(value).toLocaleString(DateTime.DATETIME_SHORT)
           : "",
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },

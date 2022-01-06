@@ -91,6 +91,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       ...form,
       motivo: "",
       otroMotivo: "",
+      direccion: newAlignment === 2 ? "PASEO DE LA COSTA" : "",
     });
   };
 
@@ -105,7 +106,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         setForm({
           ...form,
           hora: null,
-          direccion: "",
           dominio: "",
           acta: "",
           resolucion: "",
@@ -238,6 +238,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           error={error && !validField(form.direccion)}
           label="Direccion"
           value={form.direccion}
+          disabled={alignment === 2}
           required
           onChange={handleChange("direccion")}
           helperText={

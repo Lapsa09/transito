@@ -31,7 +31,7 @@ function OperativosPage() {
     },
     { field: "hora", headerName: "Hora", width: 300 },
     { field: "direccion", headerName: "Direccion", width: 300 },
-    { field: "zona", headerName: "Localidad", width: 300 },
+    { field: "barrio", headerName: "Localidad", width: 300 },
     { field: "cp", headerName: "Codigo postal", width: 300 },
     { field: "legajo_a_cargo", headerName: "Legajo a cargo", width: 300 },
     { field: "legajo_planilla", headerName: "Legajo planilla", width: 300 },
@@ -69,8 +69,8 @@ function OperativosPage() {
 
   return (
     <div className="Operativos">
-      <div className="buttons">
-        <Button variant="contained" onClick={() => navigate("/")}>
+      <div className="control_buttons">
+        <Button color="error" variant="contained" onClick={() => navigate("/")}>
           Atras
         </Button>
         <Button variant="contained" onClick={handleOpen}>

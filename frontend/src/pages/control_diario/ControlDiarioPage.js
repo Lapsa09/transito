@@ -60,16 +60,17 @@ function ControlDiarioPage() {
       headerName: "Fecha carga",
       width: 150,
       valueFormatter: ({ value }) =>
-        DateTime.fromSQL(value).toLocaleString(DateTime.DATETIME_SHORT),
+        value
+          ? DateTime.fromSQL(value).toLocaleString(DateTime.DATETIME_SHORT)
+          : "",
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
-    { field: "fecha", headerName: "Fecha", width: 150 },
     { field: "mes", headerName: "Mes", width: 150 },
   ];
   return (
     <div className="control_diario">
-      <div className="buttons">
-        <Button variant="contained" onClick={() => navigate("/")}>
+      <div className="control_buttons">
+        <Button color="error" variant="contained" onClick={() => navigate("/")}>
           Atras
         </Button>
         <Button variant="contained" onClick={handleOpen}>

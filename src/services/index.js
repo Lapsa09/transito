@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = "https://fathomless-falls-28948.herokuapp.com";
 
 export const getter = async (route) => {
   const { data } = await axios.get(BASE_URL + route);

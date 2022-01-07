@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Button,
   MenuItem,
@@ -38,6 +39,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [alignment, setAlignment] = useState(1);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
+  const [autoCompleter, setAutoCompleter] = useState(null);
   const user = useSelector(selectUser);
   const [form, setForm] = useState({
     fecha: null,
@@ -113,6 +115,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           otroMotivo: "",
           localidadInfractor: "",
         });
+        setAutoCompleter(null);
         await afterCreate();
         showSnackbar("success", "Cargado con exito");
       } catch (error) {
@@ -121,6 +124,14 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     } else {
       setError(true);
     }
+  };
+
+  const setBarrios = () => {
+    return [
+      ...new Map(
+        localidades.map((localidad) => [localidad.barrio, localidad])
+      ).values(),
+    ];
   };
 
   const fillSelects = async () => {
@@ -329,22 +340,31 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             onChange={handleChange("otroMotivo")}
           />
         )}
-        <TextField
-          select
-          error={error && !validField(form.localidadInfractor)}
-          label="Localidad del infractor"
-          required
-          value={form.localidadInfractor}
-          helperText={
-            error && !validField(form.localidadInfractor) && "Elija una opcion"
-          }
-          onChange={handleChange("localidadInfractor")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {localidades.map(({ id_barrio, barrio }) => (
-            <MenuItem value={id_barrio}>{barrio}</MenuItem>
-          ))}
-        </TextField>
+        <Autocomplete
+          options={setBarrios()}
+          getOptionLabel={(option) => option.barrio}
+          value={autoCompleter}
+          onChange={(e, value, reason) => {
+            setForm({
+              ...form,
+              localidadInfractor: reason === "clear" ? "" : value.id_barrio,
+            });
+            setAutoCompleter(value);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Localidad del infractor"
+              required
+              error={error && !validField(form.localidadInfractor)}
+              helperText={
+                error &&
+                !validField(form.localidadInfractor) &&
+                "Elija una opcion"
+              }
+            />
+          )}
+        />
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar

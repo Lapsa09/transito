@@ -88,13 +88,15 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   const handleChangeAlignment = (event, newAlignment) => {
-    setAlignment(newAlignment);
-    setForm({
-      ...form,
-      motivo: "",
-      otroMotivo: "",
-      direccion: newAlignment === 2 ? "PASEO DE LA COSTA" : "",
-    });
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+      setForm({
+        ...form,
+        motivo: "",
+        otroMotivo: "",
+        direccion: newAlignment === 2 ? "PASEO DE LA COSTA" : "",
+      });
+    }
   };
 
   const handleSubmit = async (e) => {

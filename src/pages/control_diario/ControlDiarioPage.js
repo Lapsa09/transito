@@ -29,7 +29,9 @@ function ControlDiarioPage() {
   };
 
   const handleChangeAlignment = (event, newAlignment) => {
-    setAlignment(newAlignment);
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
   };
 
   const columns = [

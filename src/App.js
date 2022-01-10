@@ -8,6 +8,7 @@ import {
 import AccidentesPage from "./pages/accidentes/Accidentes.page";
 import OperativosPage from "./pages/operativos/Operativos.page";
 import ControlDiarioPage from "./pages/control_diario/ControlDiarioPage";
+import ControlInspectores from "./components/control_diario.components/ControlInspectores";
 import Register from "./pages/register/Register";
 import "./App.css";
 import Home from "./pages/home/Home";
@@ -40,15 +41,45 @@ function App() {
         <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route
           path="/accidentes"
-          element={user ? <AccidentesPage /> : <Navigate to="/login" />}
+          element={
+            user ? (
+              user.rol === "ADMIN" ? (
+                <AccidentesPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
         <Route
           path="/operativos"
-          element={user ? <OperativosPage /> : <Navigate to="/login" />}
+          element={
+            user ? (
+              user.rol === "ADMIN" ? (
+                <OperativosPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
         <Route
           path="/control"
-          element={user ? <ControlDiarioPage /> : <Navigate to="/login" />}
+          element={
+            user ? (
+              user.rol === "ADMIN" ? (
+                <ControlDiarioPage />
+              ) : (
+                <ControlInspectores />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
         <Route
           path="/register"

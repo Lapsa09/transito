@@ -1,14 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./register.css";
-import {
-  Box,
-  Button,
-  FormHelperText,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { Box, Button, FormHelperText, TextField } from "@mui/material";
 import { register } from "../../services/userService";
-import { getTurnos } from "../../services";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../utils/redux/userSlice";
 import { useDispatch } from "react-redux";
@@ -18,13 +11,11 @@ function Register() {
     legajo: "",
     nombre: "",
     apellido: "",
-    turno: "",
     telefono: "",
     password: "",
   });
   const [confirmaPassword, setConfirmaPassword] = useState("");
   const [error, setError] = useState("");
-  const [turnos, setTurnos] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -36,14 +27,6 @@ function Register() {
           ? e.target.value.toUpperCase()
           : e.target.value,
     });
-  };
-
-  useEffect(() => {
-    initialFetch();
-  }, []);
-
-  const initialFetch = async () => {
-    setTurnos(await getTurnos());
   };
 
   const loginNav = () => {
@@ -65,7 +48,6 @@ function Register() {
               legajo: form.legajo,
               nombre: form.nombre,
               apellido: form.apellido,
-              turno: form.turno,
               telefono: form.telefono,
             })
           );
@@ -98,19 +80,6 @@ function Register() {
           onChange={handleChange("apellido")}
           label="Apellido"
         />
-        <TextField
-          select
-          value={form.turno}
-          onChange={handleChange("turno")}
-          label="Turno"
-        >
-          <MenuItem>ELIJA UNA OPCION</MenuItem>
-          {turnos.map((turno, index) => (
-            <MenuItem key={index} value={turno.enumlabel}>
-              {turno.enumlabel}
-            </MenuItem>
-          ))}
-        </TextField>
         <TextField
           type="number"
           value={form.telefono}

@@ -4,7 +4,14 @@ import DateAdapter from "@mui/lab/AdapterLuxon";
 import { TextField } from "@mui/material";
 import { DateTime } from "luxon";
 
-function CustomDatePicker({ label, value, onChange, helperText, error }) {
+function CustomDatePicker({
+  label,
+  value,
+  onChange,
+  helperText,
+  error,
+  disabled = false,
+}) {
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <DatePicker
@@ -12,6 +19,7 @@ function CustomDatePicker({ label, value, onChange, helperText, error }) {
           <TextField
             {...props}
             required
+            disabled
             helperText={error && helperText}
             error={error}
           />

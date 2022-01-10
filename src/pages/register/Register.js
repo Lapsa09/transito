@@ -43,14 +43,7 @@ function Register() {
         const res = await register(form);
         if (res.jwtToken) {
           localStorage.setItem("token", res.jwtToken);
-          dispatch(
-            login({
-              legajo: form.legajo,
-              nombre: form.nombre,
-              apellido: form.apellido,
-              telefono: form.telefono,
-            })
-          );
+          dispatch(login(res.user));
           navigate("/");
         } else {
           setError(res);

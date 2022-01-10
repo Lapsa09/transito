@@ -15,11 +15,11 @@ function CustomDatePicker({
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <DatePicker
+        disabled={disabled}
         renderInput={(props) => (
           <TextField
             {...props}
             required
-            disabled
             helperText={error && helperText}
             error={error}
           />

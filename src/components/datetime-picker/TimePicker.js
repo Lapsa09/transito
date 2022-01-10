@@ -14,10 +14,10 @@ function CustomTimePicker({
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <TimePicker
+        disabled={disabled}
         renderInput={(props) => (
           <TextField
             {...props}
-            disabled
             helperText={error && helperText}
             error={error}
             required

@@ -34,6 +34,7 @@ function App() {
 
   useEffect(() => {
     checkAuthenticated();
+    console.log(user);
   }, []);
   return (
     <Router>

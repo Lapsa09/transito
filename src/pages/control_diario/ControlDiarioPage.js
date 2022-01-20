@@ -9,6 +9,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import "./controlDiarioPage.css";
 import { useNavigate } from "react-router-dom";
 import { DateTime } from "luxon";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../utils/redux/userSlice";
 
 function ControlDiarioPage() {
   const [controles, setControles] = useState([]);
@@ -16,6 +18,7 @@ function ControlDiarioPage() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const user = useSelector(selectUser);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,7 +81,7 @@ function ControlDiarioPage() {
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
     { field: "mes", headerName: "Mes", width: 150 },
   ];
-  return (
+  return user.rol === "ADMIN" ? (
     <div className="control_diario">
       <div className="control_buttons">
         <Button color="error" variant="contained" onClick={() => navigate("/")}>
@@ -108,6 +111,13 @@ function ControlDiarioPage() {
         rows={controles}
         columns={columns}
         pageSize={50}
+      />
+    </div>
+  ) : (
+    <div className="control_diario">
+      <ControlDiarioForm
+        afterCreate={handleFetch}
+        handleClose={() => navigate(-1)}
       />
     </div>
   );

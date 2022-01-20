@@ -41,27 +41,13 @@ function App() {
       <Routes>
         <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route
-          path="/accidentes"
-          element={
-            user ? (
-              user.rol === "ADMIN" ? (
-                <AccidentesPage />
-              ) : (
-                <Navigate to="/login" />
-              )
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
           path="/operativos"
           element={
             user ? (
               user.rol === "ADMIN" ? (
                 <OperativosPage />
               ) : (
-                <Navigate to="/login" />
+                <Navigate to="/" />
               )
             ) : (
               <Navigate to="/login" />
@@ -70,17 +56,7 @@ function App() {
         />
         <Route
           path="/control"
-          element={
-            user ? (
-              user.rol === "ADMIN" ? (
-                <ControlDiarioPage />
-              ) : (
-                <ControlInspectores />
-              )
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <ControlDiarioPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/register"

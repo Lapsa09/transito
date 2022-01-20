@@ -29,6 +29,7 @@ import CustomDatePicker from "../datetime-picker/DatePicker";
 import CustomTimePicker from "../datetime-picker/TimePicker";
 import CustomSnackbar from "../snackbar/CustomSnackbar";
 import "./controlDiarioForm.css";
+import { adminForm, adminStyle, inspectorForm, inspectorStyle } from "./utils";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const [resolucion, setResolucion] = useState([]);
@@ -41,20 +42,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [autoCompleter, setAutoCompleter] = useState(null);
   const user = useSelector(selectUser);
-  const [form, setForm] = useState({
-    fecha: null,
-    hora: null,
-    direccion: "",
-    dominio: "",
-    lp: "",
-    acta: "",
-    resolucion: "",
-    turno: "",
-    lpcarga: user.legajo,
-    motivo: "",
-    otroMotivo: "",
-    localidadInfractor: "",
-  });
+  const [form, setForm] = useState(
+    handleRol() ? adminForm(user.legajo) : inspectorForm(user.legajo)
+  );
 
   const validated = () => {
     return (
@@ -71,6 +61,10 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       validActa() &&
       validOtro()
     );
+  };
+
+  const handleRol = () => {
+    return user.rol === "ADMIN";
   };
 
   const validOtro = () => {
@@ -118,8 +112,17 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           localidadInfractor: "",
         });
         setAutoCompleter(null);
-        await afterCreate();
-        showSnackbar("success", "Cargado con exito");
+        {
+          handleRol()
+            ? () => {
+                await afterCreate();
+                showSnackbar("success", "Cargado con exito");
+              }
+            : () => {
+                showSnackbar("success", "Cargado con exito");
+                setTimeout(handleClose, 2000);
+              };
+        }
       } catch (error) {
         showSnackbar("error", error.response.data);
       }
@@ -208,7 +211,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   return (
-    <Box sx={style} className="form">
+    <Box sx={handleRol() ? adminStyle : inspectorStyle} className="form">
       <ToggleButtonGroup
         color="primary"
         value={alignment}
@@ -223,6 +226,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           helperText={"Inserte una fecha valida"}
           error={error && !validDate(form.fecha)}
           label="Fecha"
+          disabled={!handleRol()}
           value={form.fecha}
           onChange={parseDate}
         />
@@ -244,6 +248,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           helperText={"Inserte una hora valida"}
           error={error && !validTime(form.hora)}
           label="Hora"
+          disabled={!handleRol()}
           value={form.hora}
           onChange={parseTime}
         />
@@ -270,17 +275,19 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           }
           onChange={handleChange("dominio")}
         />
-        <TextField
-          type="number"
-          label="Legajo planilla"
-          error={error && !validLegajo(form.lp)}
-          value={form.lp}
-          required
-          helperText={
-            error && !validLegajo(form.lp) && "Inserte un legajo valido"
-          }
-          onChange={handleChange("lp")}
-        />
+        {handleRol() && (
+          <TextField
+            type="number"
+            label="Legajo planilla"
+            error={error && !validLegajo(form.lp)}
+            value={form.lp}
+            required
+            helperText={
+              error && !validLegajo(form.lp) && "Inserte un legajo valido"
+            }
+            onChange={handleChange("lp")}
+          />
+        )}
         <TextField
           select
           label="Resolucion"

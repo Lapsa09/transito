@@ -1,0 +1,10 @@
+.control_diario {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: calc(100vh - 17px);
+}
+
+.control_diario > .MuiToggleButtonGroup-root {
+  margin: 10px auto 20px;
+}

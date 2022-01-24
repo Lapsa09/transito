@@ -1,0 +1,28 @@
+.register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.register > .form {
+  width: 40%;
+  flex-direction: column;
+}
+
+.register > .form > .MuiTextField-root ~ .MuiTextField-root {
+  margin-top: 15px;
+}
+
+.register > .form > .buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.register > .form > .buttons > .MuiButton-root {
+  width: 100%;
+}
+
+.register > .form > .buttons > .MuiButton-root ~ .MuiButton-root {
+  margin: 0;
+  margin-top: 10px;
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { verifyAuth } from "../services/index";
-import { logout, selectUser } from "../utils/redux/userSlice";
+import { login, logout, selectUser } from "../utils/redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function Redirect({ children }) {
@@ -10,10 +10,10 @@ function Redirect({ children }) {
   const dispatch = useDispatch();
   const [authorized, setAuthorized] = useState(false);
   useEffect(() => {
-    authCheck(router.asPath);
     const hideContent = () => setAuthorized(false);
     router.events.on("routeChangeStart", hideContent);
     router.events.on("routeChangeComplete", authCheck);
+    authCheck(router.asPath);
     return () => {
       router.events.off("routeChangeStart", hideContent);
       router.events.off("routeChangeComplete", authCheck);
@@ -25,8 +25,10 @@ function Redirect({ children }) {
     const path = url.split("?")[0];
     await checkAuthenticated();
     if (!user && !publicPaths.includes(path)) {
+      setAuthorized(false);
       router.push("/login");
     } else if (user && publicPaths.includes(path)) {
+      setAuthorized(false);
       router.push("/");
     } else {
       setAuthorized(true);
@@ -37,8 +39,9 @@ function Redirect({ children }) {
     try {
       const parseRes = await verifyAuth();
       if (!parseRes) {
-        localStorage.removeItem("token");
         dispatch(logout());
+      } else if (!user) {
+        dispatch(login(localStorage.getItem("token")));
       }
     } catch (err) {
       console.error(err.response.data.msg);

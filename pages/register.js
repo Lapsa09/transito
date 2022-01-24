@@ -42,8 +42,7 @@ function Register() {
       try {
         setError("");
         const res = await register(form);
-        localStorage.setItem("token", res);
-        dispatch(login(jwt_decode(res)));
+        dispatch(login(res));
       } catch (error) {
         setError(error.response.data);
       }

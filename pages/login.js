@@ -19,9 +19,7 @@ function Login() {
     try {
       setError("");
       const res = await loginCall({ legajo, password });
-      localStorage.setItem("token", res);
-      const user = jwt_decode(res);
-      dispatch(login(user));
+      dispatch(login(res));
     } catch (error) {
       setError(error.response.data);
     }
@@ -49,15 +47,15 @@ function Login() {
         />
         {error && <FormHelperText error>{error}</FormHelperText>}
         <div className={`buttons ${style.buttons}`}>
-          <Button className={style["MuiButton-root"]} onClick={register}>
-            No te registraste? Registrarse
-          </Button>
           <Button
             className={style["MuiButton-root"]}
             onClick={handleSubmit}
             variant="contained"
           >
             Iniciar sesion
+          </Button>
+          <Button className={style["MuiButton-root"]} onClick={register}>
+            No te registraste? Registrarse
           </Button>
         </div>
       </Box>

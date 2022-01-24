@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import jwt_decode from "jwt-decode";
 
 export const userSlice = createSlice({
   name: "user",
@@ -7,9 +8,11 @@ export const userSlice = createSlice({
   },
   reducers: {
     login: (state, action) => {
-      state.user = action.payload;
+      localStorage.setItem("token", action.payload);
+      state.user = jwt_decode(localStorage.getItem("token"));
     },
     logout: (state) => {
+      localStorage.removeItem("token");
       state.user = null;
     },
   },

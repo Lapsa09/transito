@@ -20,9 +20,6 @@
 
 .login > .form > .buttons > .MuiButton-root {
   width: 100%;
-}
-
-.login > .form > .buttons > .MuiButton-root ~ .MuiButton-root {
   margin: 0;
-  margin-top: 10px;
+  margin-top: 15px;
 }

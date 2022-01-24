@@ -7,7 +7,6 @@ export default function Home() {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const handleLogout = () => {
-    localStorage.removeItem("token");
     dispatch(logout());
   };
   return (

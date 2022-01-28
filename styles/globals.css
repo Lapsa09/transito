@@ -24,7 +24,7 @@ input[type="number"] {
 
 .form > .form__box {
   display: grid;
-  grid-template-columns: repeat(2, 400px);
+  grid-template-columns: repeat(2, minmax(300px, 400px));
   grid-column-gap: 20px;
   grid-row-gap: 20px;
 }
@@ -60,9 +60,11 @@ input[type="number"] {
   .form {
     flex-wrap: nowrap !important;
     max-height: 100vh !important;
+    width: 100%;
+    padding: 20px;
   }
   .form > .form__box {
-    grid-template-columns: repeat(1, minmax(300px, 1100px));
+    grid-template-columns: repeat(1, minmax(200px, 1100px));
     overflow-y: overlay;
   }
   .form > .form__box > .buttons {

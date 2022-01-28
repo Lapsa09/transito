@@ -9,7 +9,7 @@ export const userSlice = createSlice({
   reducers: {
     login: (state, action) => {
       localStorage.setItem("token", action.payload);
-      state.user = jwt_decode(localStorage.getItem("token"));
+      state.user = jwt_decode(action.payload);
     },
     logout: (state) => {
       localStorage.removeItem("token");

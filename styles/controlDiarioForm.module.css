@@ -1,3 +1,43 @@
-.form > .MuiToggleButtonGroup-root {
+.header {
+  /* max-width: 850px; */
+  width: 100%;
   margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.header > span {
+  position: absolute !important;
+}
+
+.header > span:nth-child(1) {
+  left: 0;
+}
+
+.header > span:nth-child(2) {
+  right: 0;
+}
+
+@media (max-width: 805px) {
+  .header {
+    margin-top: 80px;
+  }
+
+  .header > span {
+    top: -80px;
+  }
+}
+
+@media (max-width: 460px) {
+  .header {
+    flex-direction: column;
+    margin-top: 0;
+  }
+  .header > span {
+    position: relative !important;
+    top: 0;
+    margin-bottom: 20px !important;
+  }
 }

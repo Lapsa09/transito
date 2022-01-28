@@ -11,9 +11,9 @@ function Redirect({ children }) {
   const [authorized, setAuthorized] = useState(false);
   useEffect(() => {
     const hideContent = () => setAuthorized(false);
+    authCheck(router.asPath);
     router.events.on("routeChangeStart", hideContent);
     router.events.on("routeChangeComplete", authCheck);
-    authCheck(router.asPath);
     return () => {
       router.events.off("routeChangeStart", hideContent);
       router.events.off("routeChangeComplete", authCheck);
@@ -44,7 +44,9 @@ function Redirect({ children }) {
         dispatch(login(localStorage.getItem("token")));
       }
     } catch (err) {
-      console.error(err.response.data.msg);
+      err.response
+        ? console.error(err.response.data.msg)
+        : console.log(err.message);
     }
   };
 

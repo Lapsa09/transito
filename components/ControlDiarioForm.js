@@ -30,6 +30,7 @@ import style from "../styles/controlDiarioForm.module.css";
 import { selectUser } from "../utils/redux/userSlice";
 import { adminForm, adminStyle, inspectorForm, inspectorStyle } from "./utils";
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const [resolucion, setResolucion] = useState([]);
@@ -42,6 +43,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [autoCompleter, setAutoCompleter] = useState(null);
   const user = useSelector(selectUser);
+  const handleRol = () => user.rol === "ADMIN";
   const [form, setForm] = useState(
     handleRol()
       ? adminForm(user.legajo)
@@ -63,10 +65,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       validActa() &&
       validOtro()
     );
-  };
-
-  const handleRol = () => {
-    return user.rol === "ADMIN";
   };
 
   const validOtro = () => {
@@ -203,16 +201,32 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       sx={handleRol() ? adminStyle : inspectorStyle}
       className={`form ${style.form}`}
     >
-      <ToggleButtonGroup
-        color="primary"
-        value={alignment}
-        exclusive
-        className={style["MuiToggleButtonGroup-root"]}
-        onChange={handleChangeAlignment}
-      >
-        <ToggleButton value={1}>Normal</ToggleButton>
-        <ToggleButton value={2}>Paseo de la costa</ToggleButton>
-      </ToggleButtonGroup>
+      <div className={style.header}>
+        <Image
+          className={style.logo}
+          src="/LOGO V LOPEZ.png"
+          width={250}
+          height={70}
+          layout="fixed"
+        />
+        <Image
+          className={style.logo}
+          src="/OVT LETRAS NEGRAS.png"
+          width={150}
+          height={70}
+          layout="fixed"
+        />
+        <ToggleButtonGroup
+          color="primary"
+          value={alignment}
+          exclusive
+          className={style["MuiToggleButtonGroup-root"]}
+          onChange={handleChangeAlignment}
+        >
+          <ToggleButton value={1}>Normal</ToggleButton>
+          <ToggleButton value={2}>Paseo de la costa</ToggleButton>
+        </ToggleButtonGroup>
+      </div>
       <Box component="form" className="form__box">
         <CustomDatePicker
           helperText={"Inserte una fecha valida"}

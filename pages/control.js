@@ -11,6 +11,7 @@ import { DateTime } from "luxon";
 import styles from "../styles/Control.module.css";
 import { useSelector } from "react-redux";
 import { selectUser } from "../utils/redux/userSlice";
+import Image from "next/image";
 
 function ControlDiarioPage() {
   const [controles, setControles] = useState([]);
@@ -83,17 +84,26 @@ function ControlDiarioPage() {
   ];
   return user.rol === "ADMIN" ? (
     <div className={styles.control_diario}>
-      <div className="control_buttons">
-        <Button
-          color="error"
-          variant="contained"
-          onClick={() => navigate.push("/")}
-        >
-          Atras
-        </Button>
-        <Button variant="contained" onClick={handleOpen}>
-          Nuevo
-        </Button>
+      <div className={styles.header}>
+        <Image src="/LOGO V LOPEZ.png" width={300} height={70} layout="fixed" />
+        <Image
+          src="/OVT LETRAS NEGRAS.png"
+          width={150}
+          height={70}
+          layout="fixed"
+        />
+        <div className="control_buttons">
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => navigate.push("/")}
+          >
+            Atras
+          </Button>
+          <Button variant="contained" onClick={handleOpen}>
+            Nuevo
+          </Button>
+        </div>
       </div>
       <ToggleButtonGroup
         color="primary"

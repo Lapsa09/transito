@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://MVLS-TRAN-80:3001";
+const BASE_URL = "https://MVLS-TRAN-80:3001";
 
 export const getter = async (route) => {
   const { data } = await axios.get(BASE_URL + route);

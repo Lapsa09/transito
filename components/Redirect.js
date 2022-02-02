@@ -22,16 +22,26 @@ function Redirect({ children }) {
 
   async function authCheck(url) {
     const publicPaths = ["/login", "/register"];
+    const adminPaths = ["/operativos"];
     const path = url.split("?")[0];
     await checkAuthenticated();
-    if (!user && !publicPaths.includes(path)) {
-      setAuthorized(false);
-      router.push("/login");
-    } else if (user && publicPaths.includes(path)) {
-      setAuthorized(false);
-      router.push("/");
-    } else {
-      setAuthorized(true);
+    if (user) {
+      if (publicPaths.includes(path)) {
+        setAuthorized(false);
+        router.push("/");
+      } else if (user.rol !== "ADMIN" && adminPaths.includes(path)) {
+        setAuthorized(false);
+        router.push("/");
+      } else {
+        setAuthorized(true);
+      }
+    } else if (!user) {
+      if (!publicPaths.includes(path)) {
+        setAuthorized(false);
+        router.push("/login");
+      } else {
+        setAuthorized(true);
+      }
     }
   }
 

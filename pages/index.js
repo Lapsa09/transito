@@ -15,6 +15,7 @@ export default function Home() {
       <nav>
         <Link href="/">Home</Link>
         <Link href="/control">Control Diario</Link>
+        {user.rol === "ADMIN" && <Link href="/operativos">Operativos</Link>}
         <Logout onClick={handleLogout} />
       </nav>
     </div>

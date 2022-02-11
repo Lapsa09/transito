@@ -54,6 +54,7 @@ function Redirect({ children }) {
         dispatch(login(localStorage.getItem("token")));
       }
     } catch (err) {
+      dispatch(logout());
       err.response
         ? console.error(err.response.data.msg)
         : console.log(err.message);

@@ -4,10 +4,6 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-.home .MuiSvgIcon-root {
-  cursor: pointer;
-}
-
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
@@ -27,6 +23,14 @@ input[type="number"] {
   grid-template-columns: repeat(2, minmax(300px, 400px));
   grid-column-gap: 20px;
   grid-row-gap: 20px;
+}
+
+.controller {
+  display: flex;
+  width: 40%;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
 }
 
 .control_buttons {

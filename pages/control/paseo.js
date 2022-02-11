@@ -1,42 +1,32 @@
-import { Button, Modal, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Button, Modal } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ControlDiarioForm from "../components/ControlDiarioForm";
-import {
-  getControles,
-  getControlesPaseo,
-} from "../services/controlDiarioService";
+import ControlDiarioForm from "../../components/ControlDiarioForm";
+import { getControlesPaseo } from "../../services/controlDiarioService";
 import { DataGrid } from "@mui/x-data-grid";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
-import styles from "../styles/Control.module.css";
+import styles from "../../styles/Control.module.css";
 import { useSelector } from "react-redux";
-import { selectUser } from "../utils/redux/userSlice";
+import { selectUser } from "../../utils/redux/userSlice";
+import LogoVL from "../../public/LOGO_V_LOPEZ.png";
+import LogoOVT from "../../public/OVT_LETRAS_NEGRAS.png";
 import Image from "next/image";
 
-function ControlDiarioPage() {
+function ControlPaseoPage() {
   const [controles, setControles] = useState([]);
-  const [alignment, setAlignment] = useState(1);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
 
+  const handleFetch = async () => {
+    setControles(await getControlesPaseo());
+  };
+
   useEffect(() => {
     handleFetch();
-  }, [alignment]);
-
-  const handleFetch = async () => {
-    setControles(
-      alignment === 1 ? await getControles() : await getControlesPaseo()
-    );
-  };
-
-  const handleChangeAlignment = (event, newAlignment) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-    }
-  };
+  }, []);
 
   const columns = [
     {
@@ -85,13 +75,8 @@ function ControlDiarioPage() {
   return user.rol === "ADMIN" ? (
     <div className={styles.control_diario}>
       <div className={styles.header}>
-        <Image src="/LOGO V LOPEZ.png" width={300} height={70} layout="fixed" />
-        <Image
-          src="/OVT LETRAS NEGRAS.png"
-          width={150}
-          height={70}
-          layout="fixed"
-        />
+        <Image src={LogoVL} width={300} height={70} layout="fixed" />
+        <Image src={LogoOVT} width={150} height={70} layout="fixed" />
         <div className="control_buttons">
           <Button
             color="error"
@@ -105,20 +90,11 @@ function ControlDiarioPage() {
           </Button>
         </div>
       </div>
-      <ToggleButtonGroup
-        color="primary"
-        className={styles["MuiToggleButtonGroup-root"]}
-        value={alignment}
-        exclusive
-        onChange={handleChangeAlignment}
-      >
-        <ToggleButton value={1}>Normal</ToggleButton>
-        <ToggleButton value={2}>Paseo de la costa</ToggleButton>
-      </ToggleButtonGroup>
       <Modal open={open} onClose={handleClose}>
         <ControlDiarioForm
           afterCreate={handleFetch}
           handleClose={handleClose}
+          alignment={2}
         />
       </Modal>
       <DataGrid
@@ -138,4 +114,4 @@ function ControlDiarioPage() {
   );
 }
 
-export default ControlDiarioPage;
+export default ControlPaseoPage;

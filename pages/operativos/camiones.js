@@ -2,13 +2,12 @@ import { Button, Modal } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
-import OperativosForm from "../components/OperativosForm";
-import { getOperativos } from "../services/operativosService";
+import OperativosForm from "../../components/CamionesForm";
+import { getOperativosCamiones } from "../../services/operativosService";
 import { useRouter } from "next/router";
-import styles from "../styles/operativos.page.module.css";
-// import "./operativos.page.css";
+import styles from "../../styles/operativos.page.module.css";
 
-function OperativosPage() {
+function CamionesPage() {
   const [operativos, setOperativos] = useState([]);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -20,7 +19,7 @@ function OperativosPage() {
   }, []);
 
   const handleFetch = async () => {
-    setOperativos(await getOperativos());
+    setOperativos(await getOperativosCamiones());
   };
 
   const columns = [
@@ -31,41 +30,40 @@ function OperativosPage() {
       valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
     },
     { field: "hora", headerName: "Hora", width: 300 },
-    { field: "direccion", headerName: "Direccion", width: 300 },
-    { field: "barrio", headerName: "Localidad", width: 300 },
-    { field: "cp", headerName: "Codigo postal", width: 300 },
-    { field: "legajo_a_cargo", headerName: "Legajo a cargo", width: 300 },
-    { field: "legajo_planilla", headerName: "Legajo planilla", width: 300 },
     { field: "turno", headerName: "Turno", width: 300 },
-    { field: "seguridad", headerName: "Seguridad", width: 300 },
+    { field: "legajo", headerName: "Legajo", width: 300 },
+    { field: "direccion", headerName: "Direccion", width: 300 },
+    { field: "localidad", headerName: "Localidad", width: 300 },
+    { field: "cp", headerName: "Codigo postal", width: 300 },
     { field: "dominio", headerName: "Dominio", width: 300 },
+    { field: "origen", headerName: "Origen", width: 300 },
+    { field: "localidad_origen", headerName: "Localidad Origen", width: 300 },
+    { field: "destino", headerName: "Destino", width: 300 },
+    { field: "localidad_destino", headerName: "Localidad Destino", width: 300 },
     { field: "licencia", headerName: "Nro licencia", width: 300 },
-    { field: "tipo_licencia", headerName: "Tipo licencia", width: 300 },
-    { field: "tipo_vehiculo", headerName: "Tipo licencia", width: 300 },
     {
-      field: "zona_infractor",
-      headerName: "Localidad del infractor",
+      field: "remito",
+      headerName: "Remito",
       width: 300,
+      valueFormatter: ({ value }) => (value ? "SI" : "NO"),
     },
+    {
+      field: "carga",
+      headerName: "Carga",
+      width: 300,
+      valueFormatter: ({ value }) => (value ? "SI" : "NO"),
+    },
+    { field: "resolucion", headerName: "Resolucion", width: 300 },
     { field: "acta", headerName: "Acta", width: 300 },
     { field: "motivo", headerName: "Motivo", width: 300 },
     {
-      field: "graduacion_alcoholica",
-      headerName: "Graduacion Alcoholica",
+      field: "hora_carga",
+      headerName: "Hora de carga",
       width: 300,
+      valueFormatter: ({ value }) =>
+        DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE),
     },
-    { field: "resolucion", headerName: "Resolucion", width: 300 },
-    {
-      field: "fechacarga",
-      headerName: "Fecha de carga",
-      width: 300,
-      valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
-    },
-    { field: "lpcarga", headerName: "Legajo carga", width: 300 },
-    { field: "mes", headerName: "Mes", width: 300 },
-    { field: "semana", headerName: "Semana", width: 300 },
-    { field: "es_del", headerName: "Es del", width: 300 },
-    { field: "resultado", headerName: "Resultado", width: 300 },
+    { field: "legajo_carga", headerName: "Legajo carga", width: 300 },
   ];
 
   return (
@@ -90,4 +88,4 @@ function OperativosPage() {
   );
 }
 
-export default OperativosPage;
+export default CamionesPage;

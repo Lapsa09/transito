@@ -30,15 +30,16 @@ import style from "../styles/controlDiarioForm.module.css";
 import { selectUser } from "../utils/redux/userSlice";
 import { adminForm, adminStyle, inspectorForm, inspectorStyle } from "./utils";
 import { useSelector } from "react-redux";
+import LogoVL from "../public/LOGO_V_LOPEZ.png";
+import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
 import Image from "next/image";
 
-function ControlDiarioForm({ handleClose, afterCreate }) {
+function ControlDiarioForm({ handleClose, afterCreate, alignment }) {
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
   const [motivos, setMotivos] = useState([]);
   const [error, setError] = useState("");
-  const [alignment, setAlignment] = useState(1);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [autoCompleter, setAutoCompleter] = useState(null);
@@ -81,18 +82,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     return true;
   };
 
-  const handleChangeAlignment = (event, newAlignment) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-      setForm({
-        ...form,
-        motivo: "",
-        otroMotivo: "",
-        direccion: newAlignment === 2 ? "PASEO DE LA COSTA" : "",
-      });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validated()) {
@@ -103,25 +92,17 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           : await nuevoControlPaseo(form);
         setForm({
           ...form,
-          hora: null,
           dominio: "",
           acta: "",
-          resolucion: "",
-          motivo: "",
-          otroMotivo: "",
           localidadInfractor: "",
         });
         setAutoCompleter(null);
-        {
-          handleRol()
-            ? async () => {
-                await afterCreate();
-                showSnackbar("success", "Cargado con exito");
-              }
-            : () => {
-                showSnackbar("success", "Cargado con exito");
-                setTimeout(handleClose, 2000);
-              };
+        if (handleRol()) {
+          await afterCreate();
+          showSnackbar("success", "Cargado con exito");
+        } else {
+          showSnackbar("success", "Cargado con exito");
+          setTimeout(handleClose, 2000);
         }
       } catch (error) {
         showSnackbar("error", error.response.data);
@@ -204,28 +185,18 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       <div className={style.header}>
         <Image
           className={style.logo}
-          src="/LOGO V LOPEZ.png"
+          src={LogoVL}
           width={250}
           height={70}
           layout="fixed"
         />
         <Image
           className={style.logo}
-          src="/OVT LETRAS NEGRAS.png"
+          src={LogoOVT}
           width={150}
           height={70}
           layout="fixed"
         />
-        <ToggleButtonGroup
-          color="primary"
-          value={alignment}
-          exclusive
-          className={style["MuiToggleButtonGroup-root"]}
-          onChange={handleChangeAlignment}
-        >
-          <ToggleButton value={1}>Normal</ToggleButton>
-          <ToggleButton value={2}>Paseo de la costa</ToggleButton>
-        </ToggleButtonGroup>
       </div>
       <Box component="form" className="form__box">
         <CustomDatePicker

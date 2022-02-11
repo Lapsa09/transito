@@ -1,0 +1,25 @@
+.links > a,
+.popover {
+  color: #93af37;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-family: sans-serif;
+  transition: all 0.3s;
+  width: fit-content;
+}
+
+.links > a:hover,
+.popover:hover {
+  color: #b7e912;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+}
+
+.links > a ~ a {
+  margin-top: 10px;
+}

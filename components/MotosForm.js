@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, MenuItem, TextField } from "@mui/material";
-import { DateTime } from "luxon";
+import { Autocomplete, Box, Button, MenuItem, TextField } from "@mui/material";
 import DateTimePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
 import {
   getAllZonas,
-  getDel,
   getLicencias,
-  getResultado,
+  getMotivosMoto,
   getSeguridad,
   getZonasVL,
-  nuevoOperativo,
+  nuevoOperativoMoto,
 } from "../services/operativosService";
 import { getResolucion, getTurnos } from "../services/index";
 import { validDomain, validField, validLegajo } from "../utils/validations";
+import { useSelector } from "react-redux";
+import { selectUser } from "../utils/redux/userSlice";
+import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
+import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
 
-function OperativosForm({ handleClose, afterCreate }) {
+function MotosForm({ handleClose, afterCreate }) {
+  const user = useSelector(selectUser);
   const [form, setForm] = useState({
     fecha: null,
     hora: null,
@@ -27,14 +30,13 @@ function OperativosForm({ handleClose, afterCreate }) {
     dominio: "",
     licencia: "",
     acta: "",
-    motivo: "",
-    graduacion_alcoholica: "",
+    motivo1: "",
+    motivo2: "",
+    motivo3: "",
+    motivo4: "",
+    motivo5: "",
     resolucion: "",
-    lpcarga: "",
-    es_del: "",
-    resultado: "",
-    latitud: "",
-    longitud: "",
+    lpcarga: user.legajo,
     tipo_licencia: "",
     zona: "",
     zona_infractor: "",
@@ -45,9 +47,10 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [turnos, setTurnos] = useState([]);
   const [seguridad, setSeguridad] = useState([]);
   const [resolucion, setResolucion] = useState([]);
-  const [es_del, setEs_del] = useState([]);
-  const [resultado, setResultado] = useState([]);
+  const [autoCompleter, setAutoCompleter] = useState(null);
   const [error, setError] = useState(false);
+  const [motivos, setMotivos] = useState([]);
+  const [cantMotivos, setCantMotivos] = useState(1);
 
   const fillSelects = async () => {
     setLicencias(await getLicencias());
@@ -56,8 +59,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     setTurnos(await getTurnos());
     setSeguridad(await getSeguridad());
     setResolucion(await getResolucion());
-    setEs_del(await getDel());
-    setResultado(await getResultado());
+    setMotivos(await getMotivosMoto());
   };
 
   const validated = () => {
@@ -69,17 +71,73 @@ function OperativosForm({ handleClose, afterCreate }) {
       validLegajo(form.legajo_planilla) &&
       validField(form.turno) &&
       validField(form.resolucion) &&
-      validLegajo(form.lpcarga)
+      validField(form.zona_infractor) &&
+      opcional()
     );
+  };
+
+  const sumarMotivos = () => {
+    if (cantMotivos < 5) {
+      setCantMotivos(cantMotivos + 1);
+    }
+  };
+
+  const restarMotivos = () => {
+    if (cantMotivos > 1) {
+      setCantMotivos(cantMotivos - 1);
+    }
+  };
+
+  const opcional = () => {
+    switch (cantMotivos) {
+      case 1:
+        return validField(form.motivo1);
+      case 2:
+        return validField(form.motivo1) && validField(form.motivo2);
+      case 3:
+        return (
+          validField(form.motivo1) &&
+          validField(form.motivo2) &&
+          validField(form.motivo3)
+        );
+      case 4:
+        return (
+          validField(form.motivo1) &&
+          validField(form.motivo2) &&
+          validField(form.motivo3) &&
+          validField(form.motivo4)
+        );
+      case 5:
+        return (
+          validField(form.motivo1) &&
+          validField(form.motivo2) &&
+          validField(form.motivo3) &&
+          validField(form.motivo4) &&
+          validField(form.motivo5)
+        );
+    }
   };
 
   const handleSubmit = async () => {
     if (validated()) {
-      await nuevoOperativo(form);
+      setForm({
+        ...form,
+        es_del: findMunicipio(),
+        resultado: handleResultado(),
+      });
+      await nuevoOperativoMoto(form);
       afterCreate();
     } else {
       setError(true);
     }
+  };
+
+  const setBarrios = () => {
+    return [
+      ...new Map(
+        allZonas.map((localidad) => [localidad.barrio, localidad])
+      ).values(),
+    ];
   };
 
   useEffect(() => {
@@ -95,7 +153,13 @@ function OperativosForm({ handleClose, afterCreate }) {
   };
 
   const handleChange = (input) => (e) => {
-    setForm({ ...form, [input]: e.target.value });
+    setForm({
+      ...form,
+      [input]:
+        typeof e.target.value == "string"
+          ? e.target.value.toUpperCase()
+          : e.target.value,
+    });
   };
 
   const style = {
@@ -111,6 +175,11 @@ function OperativosForm({ handleClose, afterCreate }) {
   };
   return (
     <Box sx={style} className="form">
+      <div className="controller">
+        <h4>Motivos: {cantMotivos}</h4>
+        <AddBoxSharpIcon onClick={sumarMotivos} />
+        <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
+      </div>
       <Box component="form" className="form__box op" autoComplete="off">
         <DateTimePicker label="Fecha" value={form.fecha} onChange={parseDate} />
         <TimePicker label="Hora" value={form.hora} onChange={parseTime} />
@@ -215,38 +284,28 @@ function OperativosForm({ handleClose, afterCreate }) {
             <MenuItem value={id_tipo}>{tipo}</MenuItem>
           ))}
         </TextField>
-        <TextField
-          select
-          label="Zona del infractor"
-          value={form.zona_infractor}
-          onChange={handleChange("zona_infractor")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {allZonas.map(({ id_barrio, barrio }) => (
-            <MenuItem value={id_barrio}>{barrio}</MenuItem>
-          ))}
-        </TextField>
-        {form.resolucion === "ACTA" && (
-          <TextField
-            label="Acta"
-            value={form.acta}
-            onChange={handleChange("acta")}
-          />
-        )}
-        <TextField
-          label="Motivo"
-          error={error && validField(form.motivo)}
-          value={form.motivo}
-          required
-          helperText={
-            error && !validField(form.motivo) && "Inserte un motivo valido"
-          }
-          onChange={handleChange("motivo")}
-        />
-        <TextField
-          label="Graduacion Alcoholica"
-          value={form.graduacion_alcoholica}
-          onChange={"graduacion_alcoholica"}
+        <Autocomplete
+          options={setBarrios()}
+          getOptionLabel={(option) => option.barrio}
+          value={autoCompleter}
+          onChange={(e, value, reason) => {
+            setForm({
+              ...form,
+              zona_infractor: reason === "clear" ? "" : value.id_barrio,
+            });
+            setAutoCompleter(value);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Localidad del infractor"
+              required
+              error={error && !validField(form.zona_infractor)}
+              helperText={
+                error && !validField(form.zona_infractor) && "Elija una opcion"
+              }
+            />
+          )}
         />
         <TextField
           select
@@ -264,28 +323,100 @@ function OperativosForm({ handleClose, afterCreate }) {
             <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
           ))}
         </TextField>
+        {form.resolucion === "ACTA" && (
+          <TextField
+            label="Acta"
+            value={form.acta}
+            onChange={handleChange("acta")}
+          />
+        )}
+
         <TextField
           select
-          label="Es Del"
-          value={form.es_del}
-          onChange={handleChange("es_del")}
+          label="Motivo 1"
+          error={error && validField(form.motivo1)}
+          value={form.motivo1}
+          required
+          helperText={
+            error && !validField(form.motivo1) && "Inserte un motivo valido"
+          }
+          onChange={handleChange("motivo1")}
         >
           <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {es_del.map((ed) => (
-            <MenuItem value={ed.enumlabel}>{ed.enumlabel}</MenuItem>
+          {motivos.map(({ id_motivo, motivo }) => (
+            <MenuItem value={id_motivo}>{motivo}</MenuItem>
           ))}
         </TextField>
-        <TextField
-          select
-          label="Resultado"
-          value={form.resultado}
-          onChange={handleChange("resultado")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {resultado.map((res) => (
-            <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
-          ))}
-        </TextField>
+
+        {cantMotivos >= 2 && (
+          <TextField
+            label="Motivo 2"
+            error={error && validField(form.motivo2)}
+            value={form.motivo2}
+            required
+            helperText={
+              error && !validField(form.motivo1) && "Inserte un motivo valido"
+            }
+            onChange={handleChange("motivo2")}
+          >
+            <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+            {motivos.map(({ id_motivo, motivo }) => (
+              <MenuItem value={id_motivo}>{motivo}</MenuItem>
+            ))}
+          </TextField>
+        )}
+        {cantMotivos >= 3 && (
+          <TextField
+            label="Motivo 3"
+            error={error && validField(form.motivo3)}
+            value={form.motivo3}
+            required
+            helperText={
+              error && !validField(form.motivo3) && "Inserte un motivo valido"
+            }
+            onChange={handleChange("motivo3")}
+          >
+            <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+            {motivos.map(({ id_motivo, motivo }) => (
+              <MenuItem value={id_motivo}>{motivo}</MenuItem>
+            ))}
+          </TextField>
+        )}
+        {cantMotivos >= 4 && (
+          <TextField
+            label="Motivo 4"
+            error={error && validField(form.motivo4)}
+            value={form.motivo4}
+            required
+            helperText={
+              error && !validField(form.motivo4) && "Inserte un motivo valido"
+            }
+            onChange={handleChange("motivo4")}
+          >
+            <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+            {motivos.map(({ id_motivo, motivo }) => (
+              <MenuItem value={id_motivo}>{motivo}</MenuItem>
+            ))}
+          </TextField>
+        )}
+        {cantMotivos === 5 && (
+          <TextField
+            label="Motivo 5"
+            error={error && validField(form.motivo5)}
+            value={form.motivo5}
+            required
+            helperText={
+              error && !validField(form.motivo5) && "Inserte un motivo valido"
+            }
+            onChange={handleChange("motivo5")}
+          >
+            <MenuItem>SELECCIONE UNA OPCION</MenuItem>
+            {motivos.map(({ id_motivo, motivo }) => (
+              <MenuItem value={id_motivo}>{motivo}</MenuItem>
+            ))}
+          </TextField>
+        )}
+
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar
@@ -299,4 +430,4 @@ function OperativosForm({ handleClose, afterCreate }) {
   );
 }
 
-export default OperativosForm;
+export default MotosForm;

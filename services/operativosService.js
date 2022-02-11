@@ -8,10 +8,23 @@ export const getAllZonas = async () => await getter("/zonas");
 
 export const getSeguridad = async () => await getEnums("seguridad");
 
-export const getDel = async () => await getEnums("del");
+export const getMotivosCamion = async () => await getEnums("motivos_camion");
 
-export const getResultado = async () => await getEnums("resultado");
+export const getMotivosMoto = async () =>
+  await getter("/operativos/motos/motivos");
 
-export const nuevoOperativo = async (body) => await setter("/operativos", body);
+export const nuevoOperativoAuto = async (body) =>
+  await setter("/operativos/autos", body);
 
-export const getOperativos = async () => await getter("/operativos");
+export const getOperativosAutos = async () => await getter("/operativos/autos");
+
+export const getOperativosMotos = async () => await getter("/operativos/motos");
+
+export const nuevoOperativoMoto = async (body) =>
+  await setter("/operativos/motos", body);
+
+export const getOperativosCamiones = async () =>
+  await getter("/operativos/camiones");
+
+export const nuevoOperativoCamiones = async (body) =>
+  await setter("/operativos/camiones", body);

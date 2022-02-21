@@ -21,11 +21,16 @@ function Redirect({ children }) {
   }, [user]);
 
   async function authCheck(url) {
+    const token = localStorage.getItem("token");
     const publicPaths = ["/login", "/register"];
-    const adminPaths = ["/operativos"];
+    const adminPaths = [
+      "/operativos/autos",
+      "/operativos/motos",
+      "/operativos/camiones",
+    ];
     const path = url.split("?")[0];
     await checkAuthenticated();
-    if (user) {
+    if (token) {
       if (publicPaths.includes(path)) {
         setAuthorized(false);
         router.push("/");
@@ -35,7 +40,7 @@ function Redirect({ children }) {
       } else {
         setAuthorized(true);
       }
-    } else if (!user) {
+    } else if (!token) {
       if (!publicPaths.includes(path)) {
         setAuthorized(false);
         router.push("/login");

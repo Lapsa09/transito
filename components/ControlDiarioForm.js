@@ -1,12 +1,4 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  MenuItem,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
+import { Box, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
   getLocalidades,
@@ -16,13 +8,6 @@ import {
   nuevoControlPaseo,
 } from "../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../services/index";
-import {
-  validDate,
-  validDomain,
-  validField,
-  validLegajo,
-  validTime,
-} from "../utils/validations";
 import CustomDatePicker from "./DatePicker";
 import CustomTimePicker from "./TimePicker";
 import CustomSnackbar from "./CustomSnackbar";
@@ -33,82 +18,40 @@ import { useSelector } from "react-redux";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import CustomTextField from "./CustomTextField";
+import CustomSelect from "./CustomSelect";
+import CustomAutocomplete from "./CustomAutocomplete";
+import { useRouter } from "next/router";
+import { DateTime } from "luxon";
 
-function ControlDiarioForm({ handleClose, afterCreate, alignment }) {
+function ControlDiarioForm({ handleClose, afterCreate }) {
+  const { handleSubmit, control, reset, getValues } = useForm();
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
   const [motivos, setMotivos] = useState([]);
-  const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [autoCompleter, setAutoCompleter] = useState(null);
   const user = useSelector(selectUser);
+  const router = useRouter();
   const handleRol = () => user.rol === "ADMIN";
-  const [form, setForm] = useState(
-    handleRol()
-      ? adminForm(user.legajo)
-      : inspectorForm(user.legajo, user.turno)
-  );
 
-  const validated = () => {
-    return (
-      validDate(form.fecha) &&
-      validTime(form.hora) &&
-      validField(form.direccion) &&
-      validDomain(form.dominio) &&
-      validField(form.localidadInfractor) &&
-      validLegajo(form.lp) &&
-      validField(form.turno) &&
-      validField(form.resolucion) &&
-      validLegajo(form.lpcarga) &&
-      validField(form.motivo) &&
-      validActa() &&
-      validOtro()
-    );
-  };
-
-  const validOtro = () => {
-    if (form.motivo === "OTRO") {
-      return validField(form.otroMotivo);
-    }
-    return true;
-  };
-
-  const validActa = () => {
-    if (form.resolucion === "ACTA") {
-      return validField(form.acta);
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validated()) {
-      setError(false);
-      try {
-        alignment == 1
-          ? await nuevoControl(form)
-          : await nuevoControlPaseo(form);
-        setForm({
-          ...form,
-          dominio: "",
-          acta: "",
-          localidadInfractor: "",
-        });
-        setAutoCompleter(null);
-        if (handleRol()) {
-          await afterCreate();
-          showSnackbar("success", "Cargado con exito");
-        } else {
-          showSnackbar("success", "Cargado con exito");
-          setTimeout(handleClose, 2000);
-        }
-      } catch (error) {
-        showSnackbar("error", error.response.data);
+  const submitting = async (data) => {
+    try {
+      checkPath() ? await nuevoControl(data) : await nuevoControlPaseo(data);
+      reset({ ...data, dominio: "", localidadInfractor: "" });
+      setAutoCompleter(null);
+      if (handleRol()) {
+        await afterCreate();
+        showSnackbar("success", "Cargado con exito");
+      } else {
+        showSnackbar("success", "Cargado con exito");
+        setTimeout(handleClose, 2000);
       }
-    } else {
-      setError(true);
+    } catch (error) {
+      showSnackbar("error", error.response.data);
     }
   };
 
@@ -120,10 +63,15 @@ function ControlDiarioForm({ handleClose, afterCreate, alignment }) {
     ];
   };
 
+  const checkPath = () => {
+    const path = router.asPath.split("?")[0];
+    return path === "/control/diario";
+  };
+
   const fillSelects = async () => {
     try {
       setLocalidades(await getLocalidades());
-      setMotivos(alignment == 1 ? await getMotivos() : await getMotivosPaseo());
+      setMotivos(checkPath() ? await getMotivos() : await getMotivosPaseo());
       setTurnos(await getTurnos());
       setResolucion(await getResolucion());
     } catch (error) {
@@ -133,35 +81,12 @@ function ControlDiarioForm({ handleClose, afterCreate, alignment }) {
 
   useEffect(() => {
     fillSelects();
-  }, [alignment]);
+  }, []);
 
   const getMotivo = () => {
-    return motivos.find((motivo) => motivo.id == form.motivo)?.motivo || "";
-  };
-
-  const parseDate = (newDate) => {
-    if (newDate.isValid) {
-      setForm({ ...form, fecha: newDate });
-    }
-  };
-
-  const parseTime = (newTime) => {
-    if (newTime.isValid) {
-      setForm({
-        ...form,
-        hora: newTime,
-      });
-    }
-  };
-
-  const handleChange = (input) => (e) => {
-    setForm({
-      ...form,
-      [input]:
-        typeof e.target.value == "string"
-          ? e.target.value.toUpperCase()
-          : e.target.value,
-    });
+    return (
+      motivos.find((motivo) => motivo.id == getValues("motivo"))?.motivo || ""
+    );
   };
 
   const showSnackbar = (severity, message) => {
@@ -200,163 +125,124 @@ function ControlDiarioForm({ handleClose, afterCreate, alignment }) {
       </div>
       <Box component="form" className="form__box">
         <CustomDatePicker
-          helperText={"Inserte una fecha valida"}
-          error={error && !validDate(form.fecha)}
+          control={control}
           label="Fecha"
+          name="fecha"
+          defaultValue={!handleRol() ? DateTime.now() : null}
           disabled={!handleRol()}
-          value={form.fecha}
-          onChange={parseDate}
         />
-        <TextField
-          select
-          error={error && !validField(form.turno)}
+        <CustomSelect
+          control={control}
+          name="turno"
+          rules={{ required: "Elija una opcion" }}
           label="Turno"
+          defaultValue={!handleRol() ? "MAÑANA" : ""}
           disabled={!handleRol()}
-          required
-          value={form.turno}
-          helperText={error && !validField(form.turno) && "Elija una opcion"}
-          onChange={handleChange("turno")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {turnos.map((turno) => (
-            <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
-          ))}
-        </TextField>
+          options={turnos}
+        />
         <CustomTimePicker
-          helperText={"Inserte una hora valida"}
-          error={error && !validTime(form.hora)}
+          control={control}
+          name="hora"
           label="Hora"
+          defaultValue={
+            !handleRol() ? DateTime.now(DateTime.TIME_24_SIMPLE) : null
+          }
           disabled={!handleRol()}
-          value={form.hora}
-          onChange={parseTime}
         />
-        <TextField
-          error={error && !validField(form.direccion)}
+        <CustomTextField
+          control={control}
+          name="direccion"
+          disabled={!checkPath()}
+          rules={{ required: "Ingrese una direccion valida" }}
           label="Direccion"
-          value={form.direccion}
-          disabled={alignment === 2}
-          required
-          onChange={handleChange("direccion")}
-          helperText={
-            error &&
-            !validField(form.direccion) &&
-            "Inserte una direccion valida"
-          }
+          defaultValue={!checkPath() ? "PASEO DE LA COSTA" : ""}
         />
-        <TextField
+        <CustomTextField
+          control={control}
+          name="dominio"
           label="Dominio"
-          error={error && !validDomain(form.dominio)}
-          value={form.dominio}
-          required
-          helperText={
-            error && !validDomain(form.dominio) && "Inserte una patente valida"
-          }
-          onChange={handleChange("dominio")}
+          rules={{
+            required: "Ingrese una patente valida",
+            pattern: {
+              value:
+                /([A-Z]{3}[0-9]{3})|([A-Z]{2}[0-9]{3}[A-Z]{2})|([0-9]{3}[A-Z]{3})|([A-Z]{1}[0-9]{3}[A-Z]{3})/,
+              message: "Ingrese una patente valida",
+            },
+          }}
         />
         {handleRol() && (
-          <TextField
+          <CustomTextField
             type="number"
+            control={control}
+            name="lp"
+            rules={{
+              required: {
+                value: handleRol(),
+                message: "Inserte un legajo valido",
+              },
+              pattern: {
+                value: /[0-9]{5}/,
+                message: "Inserte un legajo valido",
+              },
+            }}
             label="Legajo planilla"
-            error={error && !validLegajo(form.lp)}
-            value={form.lp}
-            required
-            helperText={
-              error && !validLegajo(form.lp) && "Inserte un legajo valido"
-            }
-            onChange={handleChange("lp")}
           />
         )}
-        <TextField
-          select
+        <CustomSelect
+          control={control}
+          name="resolucion"
+          rules={{ required: "Elija una opcion valida" }}
           label="Resolucion"
-          error={error && !validField(form.resolucion)}
-          value={form.resolucion}
-          required
-          helperText={
-            error && !validField(form.resolucion) && "Elija una opcion valida"
-          }
-          onChange={handleChange("resolucion")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {resolucion.map((res) => (
-            <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-        {form.resolucion == "ACTA" && (
-          <TextField
+          options={resolucion}
+        />
+        {getValues("resolucion") == "ACTA" && (
+          <CustomTextField
             type="number"
+            control={control}
+            name="acta"
+            rules={{
+              required: {
+                value: getValues("resolucion") == "ACTA",
+                message: "Ingrese un Nro de Acta valido",
+              },
+            }}
             label="Acta"
-            required
-            error={error && !validField(form.acta)}
-            helperText={
-              error && !validField(form.acta) && "Ingrese un Nro de Acta valido"
-            }
-            value={form.acta}
-            onChange={handleChange("acta")}
           />
         )}
-        <TextField
-          select
-          error={error && !validField(form.motivo)}
+        <CustomSelect
+          control={control}
+          name="motivo"
+          rules={{ required: "Elija una opcion" }}
           label="Motivo"
-          required
-          value={form.motivo}
-          helperText={error && !validField(form.motivo) && "Elija una opcion"}
-          onChange={handleChange("motivo")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {alignment == 1
-            ? motivos.map(({ id_motivo, motivo }) => (
-                <MenuItem value={id_motivo}>{motivo}</MenuItem>
-              ))
-            : motivos.map((motivo) => (
-                <MenuItem value={motivo.enumlabel}>{motivo.enumlabel}</MenuItem>
-              ))}
-        </TextField>
+          options={motivos}
+        />
         {motivos.length > 0 && getMotivo() == "OTRO" && (
-          <TextField
+          <CustomTextField
+            control={control}
+            name="otroMotivo"
+            rules={{
+              required: {
+                value: getMotivo() == "OTRO",
+                message: "Inserte un motivo valido",
+              },
+            }}
             label="Otro motivo"
-            error={error && validField(form.otroMotivo)}
-            value={form.otroMotivo}
-            required
-            helperText={
-              error &&
-              !validField(form.otroMotivo) &&
-              "Inserte un motivo valido"
-            }
-            onChange={handleChange("otroMotivo")}
           />
         )}
-        <Autocomplete
+        <CustomAutocomplete
+          control={control}
+          name="localidadInfractor"
+          rules={{ required: "Elija una opcion" }}
+          label="Localidad del infractor"
           options={setBarrios()}
-          getOptionLabel={(option) => option.barrio}
-          value={autoCompleter}
-          onChange={(e, value, reason) => {
-            setForm({
-              ...form,
-              localidadInfractor: reason === "clear" ? "" : value.id_barrio,
-            });
-            setAutoCompleter(value);
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Localidad del infractor"
-              required
-              error={error && !validField(form.localidadInfractor)}
-              helperText={
-                error &&
-                !validField(form.localidadInfractor) &&
-                "Elija una opcion"
-              }
-            />
-          )}
+          autoCompleter={autoCompleter}
+          setAutoCompleter={setAutoCompleter}
         />
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} variant="contained">
+          <Button onClick={handleSubmit(submitting)} variant="contained">
             Guardar
           </Button>
         </div>

@@ -20,7 +20,7 @@ export const getResolucion = async () => await getEnums("resolucion");
 
 export const verifyAuth = async () => {
   const res = await axios.post(BASE_URL + "/auth/verify", null, {
-    headers: { jwt_token: localStorage.token },
+    headers: { jwt_token: localStorage.getItem("token") },
   });
   return res;
 };

@@ -13,6 +13,23 @@
   box-shadow: 0px 0px 21px -7px rgba(0, 0, 0, 0.41);
 }
 
+.nav-link {
+  width: 150px;
+}
+
+.item {
+  color: #93af37;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+.item:hover {
+  color: #b7e912;
+}
+
 .header > a,
 .links > a {
   color: #93af37;

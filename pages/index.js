@@ -6,10 +6,12 @@ import styles from "../styles/Home.module.css";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
 import CustomPopover from "../components/Popover";
+import { useState } from "react";
 
 export default function Home() {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
+  const [dropdown, setDropdown] = useState(null);
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -25,13 +27,43 @@ export default function Home() {
     { link: "/operativos/camiones", title: "Camiones" },
   ];
 
+  const onMouseEnter = (_menu) => {
+    if (window.innerWidth < 960) {
+      setDropdown(null);
+    } else {
+      setDropdown(_menu);
+    }
+  };
+
+  const onMouseLeave = () => {
+    if (window.innerWidth < 960) {
+      setDropdown(false);
+    } else {
+      setDropdown(false);
+    }
+  };
+
   return (
     <div className={styles.home}>
       <nav className={styles.header}>
         <Image src={LogoVL} width={300} height={70} layout="fixed" />
-        <CustomPopover title="Control" links={controles} />
+        <div
+          onMouseEnter={() => onMouseEnter("control")}
+          onMouseLeave={onMouseLeave}
+          className={styles["nav-link"]}
+        >
+          <h3 className={styles.item}>Control</h3>
+          {dropdown === "control" && <CustomPopover links={controles} />}
+        </div>
         {user.rol === "ADMIN" && (
-          <CustomPopover title="Operativos" links={operativos} />
+          <div
+            onMouseEnter={() => onMouseEnter("operativos")}
+            onMouseLeave={onMouseLeave}
+            className={styles["nav-link"]}
+          >
+            <h3 className={styles.item}>Operativos</h3>
+            {dropdown === "operativos" && <CustomPopover links={operativos} />}
+          </div>
         )}
         <Logout className={styles.logout} onClick={handleLogout} />
         <Image src={LogoOVT} width={150} height={70} layout="fixed" />

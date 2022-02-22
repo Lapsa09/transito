@@ -13,7 +13,7 @@ function CustomTextField({
 }) {
   const {
     field,
-    fieldState: { invalid },
+    fieldState: { error },
     formState: { errors },
   } = useController({
     name,
@@ -36,9 +36,9 @@ function CustomTextField({
       onChange={handleChange}
       type={type}
       helperText={errors[name] && errors[name].message}
-      required={rules !== null}
+      required={rules !== undefined}
       disabled={disabled}
-      error={invalid}
+      error={error}
       label={label}
     />
   );

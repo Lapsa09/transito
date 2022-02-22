@@ -13,7 +13,7 @@ function CustomSelect({
 }) {
   const {
     field,
-    fieldState: { invalid },
+    fieldState: { error },
     formState: { errors },
   } = useController({
     name,
@@ -25,10 +25,10 @@ function CustomSelect({
     <TextField
       {...field}
       select
-      error={invalid}
+      error={error}
       label={label}
       disabled={disabled}
-      required
+      required={rules !== undefined}
       helperText={errors[name] && errors[name].message}
     >
       <MenuItem>SELECCIONE UNA OPCION</MenuItem>

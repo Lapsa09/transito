@@ -33,7 +33,6 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [turnos, setTurnos] = useState([]);
   const [seguridad, setSeguridad] = useState([]);
   const [resolucion, setResolucion] = useState([]);
-  const [autoCompleter, setAutoCompleter] = useState(null);
   const [response, setResponse] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -61,21 +60,21 @@ function OperativosForm({ handleClose, afterCreate }) {
         ...data,
         dominio: "",
         direccion: "",
-        zona_infractor: "",
+        zona_infractor: null,
         resolucion: "",
         motivo: "",
       });
-      setAutoCompleter(null);
       showSnackbar("success", "Cargado con exito");
     } catch (error) {
-      showSnackbar("error", error.response.data);
+      showSnackbar("error", error.response?.data);
     }
   };
 
   const findMunicipio = () => {
+    console.log(getValues("zona_infractor").id_barrio);
     const zona = allZonas.find(
-      (zona) => zona.id_barrio === getValues("zona_infractor")
-    ).barrio;
+      (zona) => zona.id_barrio === getValues("zona_infractor").id_barrio
+    );
     const zonas = zonasVL.map((zona) => zona.barrio);
     if (zonas.includes(zona)) return "VILO";
     else return "FUERA DEL MUNICIPIO";
@@ -93,14 +92,6 @@ function OperativosForm({ handleClose, afterCreate }) {
     )
       return "NO PUNITIVA";
     return "PUNITIVA";
-  };
-
-  const setBarrios = () => {
-    return [
-      ...new Map(
-        allZonas.map((localidad) => [localidad.barrio, localidad])
-      ).values(),
-    ];
   };
 
   useEffect(() => {
@@ -144,8 +135,18 @@ function OperativosForm({ handleClose, afterCreate }) {
         />
       </div>
       <Box component="form" className="form__box op" autoComplete="off">
-        <DateTimePicker control={control} name="fecha" label="Fecha" />
-        <TimePicker control={control} name="hora" label="Hora" />
+        <DateTimePicker
+          control={control}
+          name="fecha"
+          label="Fecha"
+          defaultValue={null}
+        />
+        <TimePicker
+          control={control}
+          name="hora"
+          label="Hora"
+          defaultValue={null}
+        />
         <CustomTextField
           control={control}
           name="direccion"
@@ -162,6 +163,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         <CustomTextField
           control={control}
           name="legajo_a_cargo"
+          type="number"
           label="Legajo a cargo"
           rules={{
             required: "Inserte un legajo",
@@ -173,6 +175,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         />
         <CustomTextField
           control={control}
+          type="number"
           name="legajo_planilla"
           label="Legajo planilla"
           rules={{
@@ -225,9 +228,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="zona_infractor"
           rules={{ required: "Elija una opcion" }}
           label="Localidad del infractor"
-          options={setBarrios()}
-          autoCompleter={autoCompleter}
-          setAutoCompleter={setAutoCompleter}
+          options={allZonas}
         />
         {getValues("resolucion") === "ACTA" && (
           <CustomTextField

@@ -2,15 +2,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import React from "react";
 import { useController } from "react-hook-form";
 
-function CustomAutocomplete({
-  control,
-  name,
-  rules,
-  label,
-  options,
-  autoCompleter,
-  setAutoCompleter,
-}) {
+function CustomAutocomplete({ control, name, rules, label, options }) {
   const {
     field,
     fieldState: { invalid },
@@ -19,18 +11,21 @@ function CustomAutocomplete({
     name,
     control,
     rules,
-    defaultValue: "",
+    defaultValue: null,
   });
+
+  const optionLabel = (option) => {
+    return Object.entries(option)[1][1];
+  };
+
   return (
     <Autocomplete
       {...field}
-      value={autoCompleter}
       options={options}
-      getOptionLabel={(option) => option.barrio}
-      onChange={(e, value, reason) => {
-        field.onChange(reason === "clear" ? "" : value.id_barrio);
-        setAutoCompleter(value);
-      }}
+      getOptionLabel={optionLabel}
+      onChange={(e, value, reason) =>
+        field.onChange(reason === "clear" ? null : value)
+      }
       renderInput={(params) => (
         <TextField
           {...params}

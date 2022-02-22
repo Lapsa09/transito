@@ -34,7 +34,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const [motivos, setMotivos] = useState([]);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
-  const [autoCompleter, setAutoCompleter] = useState(null);
   const user = useSelector(selectUser);
   const router = useRouter();
   const handleRol = () => user.rol === "ADMIN";
@@ -43,8 +42,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     try {
       setValue("lpcarga", user.legajo);
       checkPath() ? await nuevoControl(data) : await nuevoControlPaseo(data);
-      reset({ ...data, dominio: "", localidadInfractor: "" });
-      setAutoCompleter(null);
+      reset({ ...data, dominio: "", localidadInfractor: null });
       if (handleRol()) {
         await afterCreate();
         showSnackbar("success", "Cargado con exito");
@@ -237,8 +235,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion" }}
           label="Localidad del infractor"
           options={setBarrios()}
-          autoCompleter={autoCompleter}
-          setAutoCompleter={setAutoCompleter}
         />
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">

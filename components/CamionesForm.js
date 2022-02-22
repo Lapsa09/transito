@@ -30,8 +30,6 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [allZonas, setAllZonas] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [resolucion, setResolucion] = useState([]);
-  const [autoCompleterOrigen, setAutoCompleterOrigen] = useState(null);
-  const [autoCompleterDestino, setAutoCompleterDestino] = useState(null);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState("");
 
@@ -57,11 +55,9 @@ function OperativosForm({ handleClose, afterCreate }) {
         direccion: "",
         origen: "",
         destino: "",
-        localidad_origen: "",
-        localidad_destino: "",
+        localidad_origen: null,
+        localidad_destino: null,
       });
-      setAutoCompleterOrigen(null);
-      setAutoCompleterDestino(null);
       showSnackbar("success", "Cargado con exito");
       await afterCreate();
     } catch (error) {
@@ -164,8 +160,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           label="Localidad de origen"
           rules={{ required: "Elija una opcion" }}
           options={setBarrios()}
-          autoCompleter={autoCompleterOrigen}
-          setAutoCompleter={setAutoCompleterOrigen}
         />
         <CustomTextField control={control} name="destino" label="Destino" />
         <CustomAutocomplete
@@ -174,8 +168,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           label="Localidad de destino"
           rules={{ required: "Elija una opcion" }}
           options={setBarrios()}
-          autoCompleter={autoCompleterDestino}
-          setAutoCompleter={setAutoCompleterDestino}
         />
         <CustomSwitch control={control} name="remito" label="Remito" />
         <CustomSwitch control={control} name="carga" label="Carga" />

@@ -2,7 +2,7 @@ import { getEnums, getter, setter } from "./index";
 
 export const getLicencias = async () => await getter("/licencias");
 
-export const getZonasVL = async () => await getter("/operativos/zonas/vl");
+export const getZonasVL = async () => await getter("/zonas/vl");
 
 export const getAllZonas = async () => await getter("/zonas");
 

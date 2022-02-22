@@ -33,7 +33,6 @@ function MotosForm({ handleClose, afterCreate }) {
   const [turnos, setTurnos] = useState([]);
   const [seguridad, setSeguridad] = useState([]);
   const [resolucion, setResolucion] = useState([]);
-  const [autoCompleter, setAutoCompleter] = useState(null);
   const [motivos, setMotivos] = useState([]);
   const [cantMotivos, setCantMotivos] = useState(1);
   const [response, setResponse] = useState("");
@@ -206,8 +205,6 @@ function MotosForm({ handleClose, afterCreate }) {
           label="Localidad del infractor"
           rules={{ required: "Elija una opcion" }}
           options={setBarrios()}
-          autoCompleter={autoCompleter}
-          setAutoCompleter={setAutoCompleter}
         />
         <CustomSelect
           control={control}

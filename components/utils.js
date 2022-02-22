@@ -1,39 +1,3 @@
-import { DateTime } from "luxon";
-
-export const adminForm = (legajo, alignment) => {
-  return {
-    fecha: null,
-    hora: null,
-    direccion: alignment === 1 ? "" : "PASEO DE LA COSTA",
-    dominio: "",
-    lp: "",
-    acta: "",
-    resolucion: "",
-    turno: "",
-    lpcarga: legajo,
-    motivo: "",
-    otroMotivo: "",
-    localidadInfractor: "",
-  };
-};
-
-export const inspectorForm = (legajo, turno, alignment) => {
-  return {
-    fecha: DateTime.now().setLocale("es-AR"),
-    hora: DateTime.now().setLocale("es-AR"),
-    direccion: alignment === 1 ? "" : "PASEO DE LA COSTA",
-    dominio: "",
-    lp: legajo,
-    acta: "",
-    resolucion: "",
-    turno,
-    lpcarga: legajo,
-    motivo: "",
-    otroMotivo: "",
-    localidadInfractor: "",
-  };
-};
-
 export const adminStyle = {
   position: "absolute",
   top: "50%",

@@ -3,13 +3,16 @@ import { useRouter } from "next/router";
 import { verifyAuth } from "../services/index";
 import { login, logout, selectUser } from "../utils/redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import jwtDecode from "jwt-decode";
 
 function Redirect({ children }) {
   const router = useRouter();
-  const user = useSelector(selectUser);
+  let token;
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const [authorized, setAuthorized] = useState(false);
   useEffect(() => {
+    token = localStorage.getItem("token");
     const hideContent = () => setAuthorized(false);
     authCheck(router.asPath);
     router.events.on("routeChangeStart", hideContent);
@@ -18,10 +21,9 @@ function Redirect({ children }) {
       router.events.off("routeChangeStart", hideContent);
       router.events.off("routeChangeComplete", authCheck);
     };
-  }, [user]);
+  }, [token]);
 
   async function authCheck(url) {
-    const token = localStorage.getItem("token");
     const publicPaths = ["/login", "/register"];
     const adminPaths = [
       "/operativos/autos",
@@ -29,12 +31,12 @@ function Redirect({ children }) {
       "/operativos/camiones",
     ];
     const path = url.split("?")[0];
-    await checkAuthenticated();
     if (token) {
+      await checkAuthenticated();
       if (publicPaths.includes(path)) {
         setAuthorized(false);
         router.push("/");
-      } else if (user.rol !== "ADMIN" && adminPaths.includes(path)) {
+      } else if (user && user.rol !== "ADMIN" && adminPaths.includes(path)) {
         setAuthorized(false);
         router.push("/");
       } else {

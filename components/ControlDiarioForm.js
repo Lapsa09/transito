@@ -13,7 +13,7 @@ import CustomTimePicker from "./TimePicker";
 import CustomSnackbar from "./CustomSnackbar";
 import style from "../styles/controlDiarioForm.module.css";
 import { selectUser } from "../utils/redux/userSlice";
-import { adminForm, adminStyle, inspectorForm, inspectorStyle } from "./utils";
+import { adminStyle, inspectorStyle } from "./utils";
 import { useSelector } from "react-redux";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
@@ -24,9 +24,10 @@ import CustomSelect from "./CustomSelect";
 import CustomAutocomplete from "./CustomAutocomplete";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
+import { DOMINIO_PATTERN } from "../utils/validations";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const { handleSubmit, control, reset, getValues } = useForm();
+  const { handleSubmit, control, reset, getValues, setValue } = useForm();
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
@@ -40,6 +41,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const submitting = async (data) => {
     try {
+      setValue("lpcarga", user.legajo);
       checkPath() ? await nuevoControl(data) : await nuevoControlPaseo(data);
       reset({ ...data, dominio: "", localidadInfractor: "" });
       setAutoCompleter(null);
@@ -68,19 +70,22 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     return path === "/control/diario";
   };
 
-  const fillSelects = async () => {
-    try {
-      setLocalidades(await getLocalidades());
-      setMotivos(checkPath() ? await getMotivos() : await getMotivosPaseo());
-      setTurnos(await getTurnos());
-      setResolucion(await getResolucion());
-    } catch (error) {
-      showSnackbar("error", error.message);
-    }
-  };
-
   useEffect(() => {
-    fillSelects();
+    Promise.all([
+      getLocalidades(),
+      checkPath() ? getMotivos() : getMotivosPaseo(),
+      getTurnos(),
+      getResolucion(),
+    ])
+      .then(([barrios, motivos, turnos, resoluciones]) => {
+        setLocalidades(barrios);
+        setMotivos(motivos);
+        setTurnos(turnos);
+        setResolucion(resoluciones);
+      })
+      .catch((error) => {
+        showSnackbar("error", error.message);
+      });
   }, []);
 
   const getMotivo = () => {
@@ -128,7 +133,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           control={control}
           label="Fecha"
           name="fecha"
-          defaultValue={!handleRol() ? DateTime.now() : null}
+          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
           disabled={!handleRol()}
         />
         <CustomSelect
@@ -144,9 +149,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           control={control}
           name="hora"
           label="Hora"
-          defaultValue={
-            !handleRol() ? DateTime.now(DateTime.TIME_24_SIMPLE) : null
-          }
+          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
           disabled={!handleRol()}
         />
         <CustomTextField
@@ -164,8 +167,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           rules={{
             required: "Ingrese una patente valida",
             pattern: {
-              value:
-                /([A-Z]{3}[0-9]{3})|([A-Z]{2}[0-9]{3}[A-Z]{2})|([0-9]{3}[A-Z]{3})|([A-Z]{1}[0-9]{3}[A-Z]{3})/,
+              value: DOMINIO_PATTERN,
               message: "Ingrese una patente valida",
             },
           }}

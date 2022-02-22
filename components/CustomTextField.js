@@ -36,7 +36,7 @@ function CustomTextField({
       onChange={handleChange}
       type={type}
       helperText={errors[name] && errors[name].message}
-      required
+      required={rules !== null}
       disabled={disabled}
       error={invalid}
       label={label}

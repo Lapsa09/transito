@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, MenuItem, TextField } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import DateTimePicker from "./DatePicker";
 import TimePicker from "./TimePicker";
 import {
@@ -10,35 +10,23 @@ import {
   nuevoOperativoAuto,
 } from "../services/operativosService";
 import { getResolucion, getTurnos } from "../services/index";
-import { validDomain, validField, validLegajo } from "../utils/validations";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../utils/validations";
 import { useSelector } from "react-redux";
 import { selectUser } from "../utils/redux/userSlice";
+import { useForm } from "react-hook-form";
+import CustomTextField from "./CustomTextField";
+import CustomSelect from "./CustomSelect";
+import CustomAutocomplete from "./CustomAutocomplete";
+import CustomSnackbar from "./CustomSnackbar";
+import LogoVL from "../public/LOGO_V_LOPEZ.png";
+import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
+import Image from "next/image";
+import { adminStyle } from "./utils";
+import style from "../styles/controlDiarioForm.module.css";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
-  const [form, setForm] = useState({
-    fecha: null,
-    hora: null,
-    direccion: "",
-    legajo_a_cargo: "",
-    legajo_planilla: "",
-    turno: "",
-    seguridad: "",
-    dominio: "",
-    licencia: "",
-    acta: "",
-    motivo: "",
-    graduacion_alcoholica: "",
-    resolucion: "",
-    lpcarga: user.legajo,
-    es_del: "",
-    resultado: "",
-    latitud: "",
-    longitud: "",
-    tipo_licencia: "",
-    zona: "",
-    zona_infractor: "",
-  });
+  const { handleSubmit, control, reset, getValues, setValue } = useForm();
   const [licencias, setLicencias] = useState([]);
   const [zonasVL, setZonasVL] = useState([]);
   const [allZonas, setAllZonas] = useState([]);
@@ -46,47 +34,47 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [seguridad, setSeguridad] = useState([]);
   const [resolucion, setResolucion] = useState([]);
   const [autoCompleter, setAutoCompleter] = useState(null);
-  const [error, setError] = useState(false);
+  const [response, setResponse] = useState("");
+  const [open, setOpen] = useState(false);
 
-  const fillSelects = async () => {
-    setLicencias(await getLicencias());
-    setZonasVL(await getZonasVL());
-    setAllZonas(await getAllZonas());
-    setTurnos(await getTurnos());
-    setSeguridad(await getSeguridad());
-    setResolucion(await getResolucion());
+  const showSnackbar = (severity, message) => {
+    setResponse({ severity, message });
+    setOpen(true);
   };
 
-  const validated = () => {
-    return (
-      validDomain(form.dominio) &&
-      validField(form.direccion) &&
-      validField(form.zona) &&
-      validLegajo(form.legajo_a_cargo) &&
-      validLegajo(form.legajo_planilla) &&
-      validField(form.turno) &&
-      validField(form.resolucion) &&
-      validField(form.zona_infractor)
-    );
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
   };
 
-  const handleSubmit = async () => {
-    if (validated()) {
-      setForm({
-        ...form,
-        es_del: findMunicipio(),
-        resultado: handleResultado(),
+  const submitEvent = async (data) => {
+    try {
+      setValue("lpcarga", user.legajo);
+      setValue("es_del", findMunicipio());
+      setValue("resultado", handleResultado());
+      await nuevoOperativoAuto(data);
+      await afterCreate();
+      reset({
+        ...data,
+        dominio: "",
+        direccion: "",
+        zona_infractor: "",
+        resolucion: "",
+        motivo: "",
       });
-      await nuevoOperativoAuto(form);
-      afterCreate();
-    } else {
-      setError(true);
+      setAutoCompleter(null);
+      showSnackbar("success", "Cargado con exito");
+    } catch (error) {
+      showSnackbar("error", error.response.data);
     }
   };
 
   const findMunicipio = () => {
     const zona = allZonas.find(
-      (zona) => zona.id_barrio === form.zona_infractor
+      (zona) => zona.id_barrio === getValues("zona_infractor")
     ).barrio;
     const zonas = zonasVL.map((zona) => zona.barrio);
     if (zonas.includes(zona)) return "VILO";
@@ -94,9 +82,15 @@ function OperativosForm({ handleClose, afterCreate }) {
   };
 
   const handleResultado = () => {
-    if (form.graduacion_alcoholica == 0 || form.graduacion_alcoholica == "")
+    if (
+      getValues("graduacion_alcoholica") == 0 ||
+      getValues("graduacion_alcoholica") == ""
+    )
       return "NEGATIVA";
-    if (form.graduacion_alcoholica > 0.05 && form.graduacion_alcoholica < 0.5)
+    if (
+      getValues("graduacion_alcoholica") > 0.05 &&
+      getValues("graduacion_alcoholica") < 0.5
+    )
       return "NO PUNITIVA";
     return "PUNITIVA";
   };
@@ -110,216 +104,174 @@ function OperativosForm({ handleClose, afterCreate }) {
   };
 
   useEffect(() => {
-    fillSelects();
+    Promise.all([
+      getLicencias(),
+      getZonasVL(),
+      getAllZonas(),
+      getTurnos(),
+      getSeguridad(),
+      getResolucion(),
+    ])
+      .then(([licencias, zonasVL, zonas, turnos, seguridad, resolucion]) => {
+        setLicencias(licencias);
+        setZonasVL(zonasVL);
+        setAllZonas(zonas);
+        setTurnos(turnos);
+        setSeguridad(seguridad);
+        setResolucion(resolucion);
+      })
+      .catch((error) => {
+        showSnackbar("error", error.message);
+      });
   }, []);
 
-  const parseDate = (newDate) => {
-    setForm({ ...form, fecha: newDate });
-  };
-
-  const parseTime = (newTime) => {
-    setForm({ ...form, hora: newTime });
-  };
-
-  const handleChange = (input) => (e) => {
-    setForm({
-      ...form,
-      [input]:
-        typeof e.target.value == "string"
-          ? e.target.value.toUpperCase()
-          : e.target.value,
-    });
-    console.log(typeof form[input]);
-  };
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-    flexWrap: "wrap",
-  };
   return (
-    <Box sx={style} className="form">
+    <Box sx={adminStyle} className="form">
+      <div className={style.header}>
+        <Image
+          className={style.logo}
+          src={LogoVL}
+          width={250}
+          height={70}
+          layout="fixed"
+        />
+        <Image
+          className={style.logo}
+          src={LogoOVT}
+          width={150}
+          height={70}
+          layout="fixed"
+        />
+      </div>
       <Box component="form" className="form__box op" autoComplete="off">
-        <DateTimePicker label="Fecha" value={form.fecha} onChange={parseDate} />
-        <TimePicker label="Hora" value={form.hora} onChange={parseTime} />
-        <TextField
-          error={error && !validField(form.direccion)}
+        <DateTimePicker control={control} name="fecha" label="Fecha" />
+        <TimePicker control={control} name="hora" label="Hora" />
+        <CustomTextField
+          control={control}
+          name="direccion"
           label="Direccion"
-          value={form.direccion}
-          required
-          onChange={handleChange("direccion")}
-          helperText={
-            error &&
-            !validField(form.direccion) &&
-            "Inserte una direccion valida"
-          }
+          rules={{ required: "Inserte una direccion valida" }}
         />
-        <TextField
-          select
-          error={error && !validField(form.zona)}
+        <CustomSelect
+          control={control}
+          name="zona"
           label="Zona"
-          required
-          value={form.zona}
-          onChange={handleChange("zona")}
-          helperText={error && !validField(form.zona) && "Elija una localidad"}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {zonasVL.map(({ id_barrio, barrio }) => (
-            <MenuItem value={id_barrio}>{barrio}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          error={error && !validLegajo(form.legajo_a_cargo)}
+          rules={{ required: "Elija una localidad" }}
+          options={zonasVL}
+        />
+        <CustomTextField
+          control={control}
+          name="legajo_a_cargo"
           label="Legajo a cargo"
-          required
-          value={form.legajo_a_cargo}
-          onChange={handleChange("legajo_a_cargo")}
-          helperText={
-            error &&
-            !validLegajo(form.legajo_a_cargo) &&
-            "Inserte un legajo valido"
-          }
-        />
-        <TextField
-          label="Legajo planilla"
-          error={error && !validLegajo(form.legajo_planilla)}
-          value={form.legajo_planilla}
-          required
-          helperText={
-            error &&
-            !validLegajo(form.legajo_planilla) &&
-            "Inserte un legajo valido"
-          }
-          onChange={handleChange("legajo_planilla")}
-        />
-        <TextField
-          select
-          error={error && !validField(form.turno)}
-          label="Turno"
-          required
-          value={form.turno}
-          helperText={error && !validField(form.turno) && "Elija una opcion"}
-          onChange={handleChange("turno")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {turnos.map((turno) => (
-            <MenuItem value={turno.enumlabel}>{turno.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          label="Seguridad"
-          value={form.seguridad}
-          onChange={handleChange("seguridad")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {seguridad.map((seg) => (
-            <MenuItem value={seg.enumlabel}>{seg.enumlabel}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Dominio"
-          error={error && !validDomain(form.dominio)}
-          value={form.dominio}
-          required
-          helperText={
-            error && !validDomain(form.dominio) && "Inserte una patente valida"
-          }
-          onChange={handleChange("dominio")}
-        />
-        <TextField
-          label="Licencia"
-          value={form.licencia}
-          onChange={handleChange("licencia")}
-        />
-        <TextField
-          select
-          label="Tipo de licencia"
-          value={form.tipo_licencia}
-          onChange={handleChange("tipo_licencia")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {licencias.map(({ id_tipo, tipo }) => (
-            <MenuItem value={id_tipo}>{tipo}</MenuItem>
-          ))}
-        </TextField>
-        <Autocomplete
-          options={setBarrios()}
-          getOptionLabel={(option) => option.barrio}
-          value={autoCompleter}
-          onChange={(e, value, reason) => {
-            setForm({
-              ...form,
-              zona_infractor: reason === "clear" ? "" : value.id_barrio,
-            });
-            setAutoCompleter(value);
+          rules={{
+            required: "Inserte un legajo",
+            pattern: {
+              value: LEGAJO_PATTERN,
+              message: "Inserte un legajo valido",
+            },
           }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Localidad del infractor"
-              required
-              error={error && !validField(form.zona_infractor)}
-              helperText={
-                error && !validField(form.zona_infractor) && "Elija una opcion"
-              }
-            />
-          )}
         />
-        {form.resolucion === "ACTA" && (
-          <TextField
+        <CustomTextField
+          control={control}
+          name="legajo_planilla"
+          label="Legajo planilla"
+          rules={{
+            required: "Inserte un legajo",
+            pattern: {
+              value: LEGAJO_PATTERN,
+              message: "Inserte un legajo valido",
+            },
+          }}
+        />
+        <CustomSelect
+          control={control}
+          name="turno"
+          label="Turno"
+          rules={{ required: "Elija una opcion" }}
+          options={turnos}
+        />
+        <CustomSelect
+          control={control}
+          name="seguridad"
+          label="Seguridad"
+          options={seguridad}
+        />
+        <CustomTextField
+          control={control}
+          name="dominio"
+          label="Dominio"
+          rules={{
+            required: "Inserte una patente",
+            pattern: {
+              value: DOMINIO_PATTERN,
+              message: "Inserte una patente valida",
+            },
+          }}
+        />
+        <CustomTextField
+          type="number"
+          control={control}
+          name="licencia"
+          label="Licencia"
+        />
+        <CustomSelect
+          control={control}
+          name="tipo_licencia"
+          label="Tipo de licencia"
+          options={licencias}
+        />
+        <CustomAutocomplete
+          control={control}
+          name="zona_infractor"
+          rules={{ required: "Elija una opcion" }}
+          label="Localidad del infractor"
+          options={setBarrios()}
+          autoCompleter={autoCompleter}
+          setAutoCompleter={setAutoCompleter}
+        />
+        {getValues("resolucion") === "ACTA" && (
+          <CustomTextField
+            type="number"
+            control={control}
+            name="acta"
             label="Acta"
-            value={form.acta}
-            onChange={handleChange("acta")}
+            rules={{
+              required: {
+                value: getValues("resolucion") === "ACTA",
+                message: "Ingrese un nro de acta",
+              },
+            }}
           />
         )}
-        <TextField
+        <CustomTextField
+          control={control}
+          name="motivo"
           label="Motivo"
-          error={error && validField(form.motivo)}
-          value={form.motivo}
-          required
-          helperText={
-            error && !validField(form.motivo) && "Inserte un motivo valido"
-          }
-          onChange={handleChange("motivo")}
+          rules={{ required: "Inserte un motivo" }}
         />
-        <TextField
+        <CustomTextField
           type="number"
-          label="Graduacion Alcoholica"
-          value={form.graduacion_alcoholica}
-          onChange={handleChange("graduacion_alcoholica")}
+          control={control}
+          name="graduacion_alcoholica"
+          label="Graduacion alcoholica"
         />
-        <TextField
-          select
+        <CustomSelect
+          control={control}
+          name="resolucion"
           label="Resolucion"
-          error={error && !validField(form.resolucion)}
-          value={form.resolucion}
-          required
-          helperText={
-            error && !validField(form.resolucion) && "Elija una opcion valida"
-          }
-          onChange={handleChange("resolucion")}
-        >
-          <MenuItem>SELECCIONE UNA OPCION</MenuItem>
-          {resolucion.map((res) => (
-            <MenuItem value={res.enumlabel}>{res.enumlabel}</MenuItem>
-          ))}
-        </TextField>
+          rules={{ required: "Elija una opcion valida" }}
+          options={resolucion}
+        />
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} variant="contained">
+          <Button onClick={handleSubmit(submitEvent)} variant="contained">
             Guardar
           </Button>
         </div>
       </Box>
+      <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Box>
   );
 }

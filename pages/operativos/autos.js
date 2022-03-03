@@ -1,4 +1,4 @@
-import { Button, Modal } from "@mui/material";
+import { Button, Modal, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
@@ -10,16 +10,23 @@ import styles from "../../styles/operativos.page.module.css";
 function AutosPage() {
   const [operativos, setOperativos] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const navigate = useRouter();
 
   useEffect(() => {
-    handleFetch();
+    firstCall();
   }, []);
 
   const handleFetch = async () => {
     setOperativos(await getOperativosAutos());
+  };
+
+  const firstCall = async () => {
+    setLoading(true);
+    await handleFetch();
+    setLoading(false);
   };
 
   const columns = [
@@ -84,7 +91,15 @@ function AutosPage() {
       <Modal open={open} onClose={handleClose}>
         <OperativosForm afterCreate={handleFetch} handleClose={handleClose} />
       </Modal>
-      <DataGrid rows={operativos} columns={columns} pageSize={50} />
+      {loading ? (
+        <Skeleton
+          variant="rectangular"
+          width={window.innerWidth}
+          height={window.innerHeight}
+        />
+      ) : (
+        <DataGrid rows={operativos} columns={columns} />
+      )}
     </div>
   );
 }

@@ -71,12 +71,11 @@ function OperativosForm({ handleClose, afterCreate }) {
   };
 
   const findMunicipio = () => {
-    console.log(getValues("zona_infractor").id_barrio);
     const zona = allZonas.find(
       (zona) => zona.id_barrio === getValues("zona_infractor").id_barrio
     );
     const zonas = zonasVL.map((zona) => zona.barrio);
-    if (zonas.includes(zona)) return "VILO";
+    if (zonas.includes(zona.barrio)) return "VILO";
     else return "FUERA DEL MUNICIPIO";
   };
 

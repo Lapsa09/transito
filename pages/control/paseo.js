@@ -1,4 +1,4 @@
-import { Button, Modal } from "@mui/material";
+import { Button, Modal, Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ControlDiarioForm from "../../components/ControlDiarioForm";
 import { getControlesPaseo } from "../../services/controlDiarioService";
@@ -15,17 +15,24 @@ import Image from "next/image";
 function ControlPaseoPage() {
   const [controles, setControles] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
+
+  const firstCall = async () => {
+    setLoading(true);
+    await handleFetch();
+    setLoading(false);
+  };
 
   const handleFetch = async () => {
     setControles(await getControlesPaseo());
   };
 
   useEffect(() => {
-    handleFetch();
+    firstCall();
   }, []);
 
   const columns = [
@@ -94,15 +101,21 @@ function ControlPaseoPage() {
         <ControlDiarioForm
           afterCreate={handleFetch}
           handleClose={handleClose}
-          alignment={2}
         />
       </Modal>
-      <DataGrid
-        sx={{ textAlign: "center" }}
-        rows={controles}
-        columns={columns}
-        pageSize={50}
-      />
+      {loading ? (
+        <Skeleton
+          variant="rectangular"
+          width={window.innerWidth}
+          height={window.innerHeight}
+        />
+      ) : (
+        <DataGrid
+          sx={{ textAlign: "center" }}
+          rows={controles}
+          columns={columns}
+        />
+      )}
     </div>
   ) : (
     <div className={styles.control_diario}>

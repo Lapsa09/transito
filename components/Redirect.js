@@ -62,9 +62,6 @@ function Redirect({ children }) {
       }
     } catch (err) {
       dispatch(logout());
-      err.response
-        ? console.error(err.response.data.msg)
-        : console.log(err.message);
     }
   };
 

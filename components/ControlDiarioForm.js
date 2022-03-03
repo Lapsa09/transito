@@ -40,12 +40,11 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const submitting = async (data) => {
     try {
-      setValue("lpcarga", user.legajo);
       checkPath() ? await nuevoControl(data) : await nuevoControlPaseo(data);
       reset({ ...data, dominio: "", localidadInfractor: null });
       if (handleRol()) {
-        await afterCreate();
         showSnackbar("success", "Cargado con exito");
+        await afterCreate();
       } else {
         showSnackbar("success", "Cargado con exito");
         setTimeout(handleClose, 2000);
@@ -80,6 +79,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         setMotivos(motivos);
         setTurnos(turnos);
         setResolucion(resoluciones);
+        setValue("lpcarga", user.legajo);
       })
       .catch((error) => {
         showSnackbar("error", error.message);

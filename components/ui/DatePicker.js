@@ -22,20 +22,14 @@ function CustomDatePicker({
     rules: {
       required: "Ingrese una fecha",
       validate: {
-        minDate: (v) =>
-          v >= DateTime.now().minus({ month: 6 }) ||
-          "Ingrese una fecha dentro del rango de 6 meses",
-        maxDate: (v) =>
-          v <= DateTime.now() || "No se puede ingresar una fecha futura",
+        validDate: (v) => v.isValid,
       },
     },
     defaultValue,
   });
 
   const parseDate = (newDate) => {
-    if (newDate.isValid) {
-      field.onChange(newDate);
-    }
+    field.onChange(newDate);
   };
 
   return (
@@ -44,11 +38,13 @@ function CustomDatePicker({
         {...field}
         onChange={parseDate}
         disabled={disabled}
+        inputFormat="dd/MM/yyyy"
         renderInput={(props) => (
           <TextField
             {...props}
             required
-            helperText={errors[name] && errors[name].message}
+            placeholder="dd/MM/yyyy"
+            helperText={errors[name]?.message}
             error={invalid}
           />
         )}

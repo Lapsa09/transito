@@ -2,7 +2,7 @@ import { Button, Modal, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
-import OperativosForm from "../../components/AutosForm";
+import OperativosForm from "../../components/forms/AutosForm";
 import { getOperativosAutos } from "../../services/operativosService";
 import { useRouter } from "next/router";
 import styles from "../../styles/operativos.page.module.css";
@@ -47,7 +47,7 @@ function AutosPage() {
     { field: "dominio", headerName: "Dominio", width: 300 },
     { field: "licencia", headerName: "Nro licencia", width: 300 },
     { field: "tipo_licencia", headerName: "Tipo licencia", width: 300 },
-    { field: "tipo_vehiculo", headerName: "Tipo licencia", width: 300 },
+    { field: "tipo_vehiculo", headerName: "Tipo Vehiculo", width: 300 },
     {
       field: "zona_infractor",
       headerName: "Localidad del infractor",

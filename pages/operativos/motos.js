@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { getOperativosMotos } from "../../services/operativosService";
 import { useRouter } from "next/router";
 import styles from "../../styles/operativos.page.module.css";
-import MotosForm from "../../components/MotosForm";
+import MotosForm from "../../components/forms/MotosForm";
 
 function MotosPage() {
   const [operativos, setOperativos] = useState([]);

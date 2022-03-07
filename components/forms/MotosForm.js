@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
-import DateTimePicker from "./DatePicker";
-import TimePicker from "./TimePicker";
+import DateTimePicker from "../ui/DatePicker";
+import TimePicker from "../ui/TimePicker";
 import {
   getAllZonas,
   getLicencias,
@@ -9,20 +9,20 @@ import {
   getSeguridad,
   getZonasVL,
   nuevoOperativoMoto,
-} from "../services/operativosService";
-import { getResolucion, getTurnos } from "../services/index";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../utils/validations";
+} from "../../services/operativosService";
+import { getResolucion, getTurnos } from "../../services/index";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 import { useSelector } from "react-redux";
-import { selectUser } from "../utils/redux/userSlice";
+import { selectUser } from "../../utils/redux/userSlice";
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
-import { adminStyle } from "./utils";
-import style from "../styles/controlDiarioForm.module.css";
+import { adminStyle } from "../utils";
+import style from "../../styles/controlDiarioForm.module.css";
 import { useForm } from "react-hook-form";
-import CustomTextField from "./CustomTextField";
-import CustomSelect from "./CustomSelect";
-import CustomAutocomplete from "./CustomAutocomplete";
-import CustomSnackbar from "./CustomSnackbar";
+import CustomTextField from "../ui/CustomTextField";
+import CustomSelect from "../ui/CustomSelect";
+import CustomAutocomplete from "../ui/CustomAutocomplete";
+import CustomSnackbar from "../ui/CustomSnackbar";
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
@@ -284,7 +284,11 @@ function MotosForm({ handleClose, afterCreate }) {
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit(submitEvent)} variant="contained">
+          <Button
+            type="submit"
+            onClick={handleSubmit(submitEvent)}
+            variant="contained"
+          >
             Guardar
           </Button>
         </div>

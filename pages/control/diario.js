@@ -1,6 +1,6 @@
 import { Button, Modal, Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ControlDiarioForm from "../../components/ControlDiarioForm";
+import ControlDiarioForm from "../../components/forms/ControlDiarioForm";
 import { getControles } from "../../services/controlDiarioService";
 import { DataGrid } from "@mui/x-data-grid";
 import { useRouter } from "next/router";

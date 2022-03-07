@@ -29,7 +29,7 @@ function CustomSelect({
       label={label}
       disabled={disabled}
       required={rules !== undefined}
-      helperText={errors[name] && errors[name].message}
+      helperText={errors[name]?.message}
     >
       <MenuItem>SELECCIONE UNA OPCION</MenuItem>
       {options.map((option) =>

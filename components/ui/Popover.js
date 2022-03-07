@@ -1,7 +1,6 @@
-import { Popover } from "@mui/material";
 import Link from "next/link";
-import React, { useState } from "react";
-import styles from "../styles/Popover.module.css";
+import React from "react";
+import styles from "../../styles/Popover.module.css";
 
 function CustomPopover({ links }) {
   return (

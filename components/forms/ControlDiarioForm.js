@@ -6,25 +6,25 @@ import {
   getMotivosPaseo,
   nuevoControl,
   nuevoControlPaseo,
-} from "../services/controlDiarioService";
-import { getResolucion, getTurnos } from "../services/index";
-import CustomDatePicker from "./DatePicker";
-import CustomTimePicker from "./TimePicker";
-import CustomSnackbar from "./CustomSnackbar";
-import style from "../styles/controlDiarioForm.module.css";
-import { selectUser } from "../utils/redux/userSlice";
-import { adminStyle, inspectorStyle } from "./utils";
+} from "../../services/controlDiarioService";
+import { getResolucion, getTurnos } from "../../services/index";
+import CustomDatePicker from "../ui/DatePicker";
+import CustomTimePicker from "../ui/TimePicker";
+import CustomSnackbar from "../ui/CustomSnackbar";
+import style from "../../styles/controlDiarioForm.module.css";
+import { selectUser } from "../../utils/redux/userSlice";
+import { adminStyle, inspectorStyle } from "../utils";
 import { useSelector } from "react-redux";
-import LogoVL from "../public/LOGO_V_LOPEZ.png";
-import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
+import LogoVL from "../../public/LOGO_V_LOPEZ.png";
+import LogoOVT from "../../public/OVT_LETRAS_NEGRAS.png";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import CustomTextField from "./CustomTextField";
-import CustomSelect from "./CustomSelect";
-import CustomAutocomplete from "./CustomAutocomplete";
+import CustomTextField from "../ui/CustomTextField";
+import CustomSelect from "../ui/CustomSelect";
+import CustomAutocomplete from "../ui/CustomAutocomplete";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
-import { DOMINIO_PATTERN } from "../utils/validations";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const { handleSubmit, control, reset, getValues, setValue } = useForm();
@@ -52,14 +52,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     } catch (error) {
       showSnackbar("error", error.response.data);
     }
-  };
-
-  const setBarrios = () => {
-    return [
-      ...new Map(
-        localidades.map((localidad) => [localidad.barrio, localidad])
-      ).values(),
-    ];
   };
 
   const checkPath = () => {
@@ -181,7 +173,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
                 message: "Inserte un legajo valido",
               },
               pattern: {
-                value: /[0-9]{5}/,
+                value: LEGAJO_PATTERN,
                 message: "Inserte un legajo valido",
               },
             }}
@@ -234,13 +226,17 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           name="localidadInfractor"
           rules={{ required: "Elija una opcion" }}
           label="Localidad del infractor"
-          options={setBarrios()}
+          options={localidades}
         />
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit(submitting)} variant="contained">
+          <Button
+            type="submit"
+            onClick={handleSubmit(submitting)}
+            variant="contained"
+          >
             Guardar
           </Button>
         </div>

@@ -5,7 +5,7 @@ import { logout, selectUser } from "../utils/redux/userSlice";
 import styles from "../styles/Home.module.css";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
-import CustomPopover from "../components/Popover";
+import CustomPopover from "../components/ui/Popover";
 import { useState } from "react";
 
 export default function Home() {
@@ -55,7 +55,7 @@ export default function Home() {
           <h3 className={styles.item}>Control</h3>
           {dropdown === "control" && <CustomPopover links={controles} />}
         </div>
-        {user.rol === "ADMIN" && (
+        {user?.rol === "ADMIN" && (
           <div
             onMouseEnter={() => onMouseEnter("operativos")}
             onMouseLeave={onMouseLeave}
@@ -69,7 +69,7 @@ export default function Home() {
         <Image src={LogoOVT} width={150} height={70} layout="fixed" />
       </nav>
       <h1>
-        BIENVENIDO {user.nombre} {user.apellido} LP {user.legajo}
+        BIENVENIDO {user?.nombre} {user?.apellido} LP {user?.legajo}
       </h1>
     </div>
   );

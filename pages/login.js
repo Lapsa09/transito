@@ -1,25 +1,25 @@
 import React, { useState } from "react";
-import { Box, Button, FormHelperText, TextField } from "@mui/material";
+import { Box, Button, FormHelperText } from "@mui/material";
 import { loginCall } from "../services/userService";
 import style from "../styles/Login.module.css";
 import { login } from "../utils/redux/userSlice";
 import { useRouter } from "next/router";
-import jwt_decode from "jwt-decode";
+import CustomTextField from "../components/ui/CustomTextField";
 import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
 
 function Login() {
-  const [legajo, setLegajo] = useState("");
-  const [password, setPassword] = useState("");
+  const { control, handleSubmit } = useForm();
   const [error, setError] = useState("");
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const submitEvent = async (data) => {
     try {
       setError("");
-      const res = await loginCall({ legajo, password });
+      const res = await loginCall(data);
       dispatch(login(res));
+      // router.replace("/");
     } catch (error) {
       setError(error.response.data);
     }
@@ -31,17 +31,17 @@ function Login() {
   return (
     <div className={style.login}>
       <Box component="form" className={`form ${style.form}`}>
-        <TextField
+        <CustomTextField
           type="number"
-          value={legajo}
-          onChange={(e) => setLegajo(e.target.value)}
+          control={control}
+          name="legajo"
           label="Legajo"
           className={style["MuiTextField-root"]}
         />
-        <TextField
+        <CustomTextField
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          control={control}
+          name="password"
           label="Contraseña"
           className={style["MuiTextField-root"]}
         />
@@ -49,7 +49,8 @@ function Login() {
         <div className={`buttons ${style.buttons}`}>
           <Button
             className={style["MuiButton-root"]}
-            onClick={handleSubmit}
+            onClick={handleSubmit(submitEvent)}
+            type="submit"
             variant="contained"
           >
             Iniciar sesion

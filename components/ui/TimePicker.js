@@ -36,11 +36,12 @@ function CustomTimePicker({
         onChange={parseTime}
         disabled={disabled}
         label={label}
+        inputFormat="HH:mm"
         renderInput={(props) => (
           <TextField
             {...props}
             required
-            helperText={errors[name] && errors[name].message}
+            helperText={errors[name]?.message}
             error={invalid}
           />
         )}

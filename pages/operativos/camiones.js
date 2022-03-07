@@ -2,7 +2,7 @@ import { Button, Modal, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
-import OperativosForm from "../../components/CamionesForm";
+import OperativosForm from "../../components/forms/CamionesForm";
 import { getOperativosCamiones } from "../../services/operativosService";
 import { useRouter } from "next/router";
 import styles from "../../styles/operativos.page.module.css";

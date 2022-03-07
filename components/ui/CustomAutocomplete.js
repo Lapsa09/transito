@@ -32,7 +32,7 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
           label={label}
           required
           error={invalid}
-          helperText={errors[name] && errors[name].message}
+          helperText={errors[name]?.message}
         />
       )}
     />

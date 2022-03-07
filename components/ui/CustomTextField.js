@@ -10,6 +10,7 @@ function CustomTextField({
   label,
   type = "text",
   disabled = false,
+  className,
 }) {
   const {
     field,
@@ -24,7 +25,7 @@ function CustomTextField({
 
   const handleChange = (e) => {
     field.onChange(
-      typeof e.target.value == "string"
+      typeof e.target.value == "string" && type !== "password"
         ? e.target.value.toUpperCase()
         : e.target.value
     );
@@ -35,9 +36,10 @@ function CustomTextField({
       {...field}
       onChange={handleChange}
       type={type}
-      helperText={errors[name] && errors[name].message}
+      helperText={errors[name]?.message}
       required={rules !== undefined}
       disabled={disabled}
+      className={className}
       error={error}
       label={label}
     />

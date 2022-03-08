@@ -11,17 +11,13 @@ import { getResolucion, getTurnos } from "../../services/index";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
-import LogoVL from "../../public/LOGO_V_LOPEZ.png";
-import LogoOVT from "../../public/OVT_LETRAS_NEGRAS.png";
-import Image from "next/image";
-import style from "../../styles/controlDiarioForm.module.css";
-import { adminStyle } from "../utils";
 import CustomTextField from "../ui/CustomTextField";
 import CustomSelect from "../ui/CustomSelect";
 import { useForm } from "react-hook-form";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSwitch from "../ui/CustomSwitch";
 import CustomSnackbar from "../ui/CustomSnackbar";
+import Layout from "../../layouts/FormLayout";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
@@ -87,23 +83,7 @@ function OperativosForm({ handleClose, afterCreate }) {
   }, []);
 
   return (
-    <Box sx={adminStyle} className="form">
-      <div className={style.header}>
-        <Image
-          className={style.logo}
-          src={LogoVL}
-          width={250}
-          height={70}
-          layout="fixed"
-        />
-        <Image
-          className={style.logo}
-          src={LogoOVT}
-          width={150}
-          height={70}
-          layout="fixed"
-        />
-      </div>
+    <Layout>
       <Box component="form" className="form__box op" autoComplete="off">
         <DateTimePicker control={control} name="fecha" label="Fecha" />
         <TimePicker control={control} name="hora" label="Hora" />
@@ -212,7 +192,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         </div>
       </Box>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </Box>
+    </Layout>
   );
 }
 

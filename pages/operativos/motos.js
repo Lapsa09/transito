@@ -1,26 +1,24 @@
-import { Button, Modal, Skeleton } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { getOperativosMotos } from "../../services/operativosService";
-import { useRouter } from "next/router";
-import styles from "../../styles/operativos.page.module.css";
 import MotosForm from "../../components/forms/MotosForm";
+import Layout from "../../layouts/OperativosLayout";
 
 function MotosPage() {
   const [operativos, setOperativos] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const navigate = useRouter();
+  const handleOpen = () => setOpen(true);
 
   useEffect(() => {
     handleFetch();
   }, []);
 
   const handleFetch = async () => {
+    setLoading(true);
     setOperativos(await getOperativosMotos());
+    setLoading(false);
   };
 
   const columns = [
@@ -63,32 +61,16 @@ function MotosPage() {
   ];
 
   return (
-    <div className={styles.Operativos}>
-      <div className="control_buttons">
-        <Button
-          color="error"
-          variant="contained"
-          onClick={() => navigate.push("/")}
-        >
-          Atras
-        </Button>
-        <Button variant="contained" onClick={handleOpen}>
-          Nuevo
-        </Button>
-      </div>
-      <Modal open={open} onClose={handleClose}>
-        <MotosForm afterCreate={handleFetch} handleClose={handleClose} />
-      </Modal>
-      {loading ? (
-        <Skeleton
-          variant="rectangular"
-          width={window.innerWidth}
-          height={window.innerHeight}
-        />
-      ) : (
-        <DataGrid rows={operativos} columns={columns} pageSize={50} />
-      )}
-    </div>
+    <Layout
+      open={open}
+      handleOpen={handleOpen}
+      handleClose={handleClose}
+      columns={columns}
+      operativos={operativos}
+      loading={loading}
+    >
+      <MotosForm afterCreate={handleFetch} handleClose={handleClose} />
+    </Layout>
   );
 }
 

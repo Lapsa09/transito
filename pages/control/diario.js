@@ -1,23 +1,18 @@
-import { Button, Modal, Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ControlDiarioForm from "../../components/forms/ControlDiarioForm";
 import { getControles } from "../../services/controlDiarioService";
-import { DataGrid } from "@mui/x-data-grid";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
-import styles from "../../styles/Control.module.css";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
-import LogoVL from "../../public/LOGO_V_LOPEZ.png";
-import LogoOVT from "../../public/OVT_LETRAS_NEGRAS.png";
-import Image from "next/image";
+import Layout from "../../layouts/OperativosLayout";
 
 function ControlDiarioPage() {
   const [controles, setControles] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [loading, setLoading] = useState(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
 
@@ -79,51 +74,20 @@ function ControlDiarioPage() {
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
     { field: "mes", headerName: "Mes", width: 150 },
   ];
-  return user.rol === "ADMIN" ? (
-    <div className={styles.control_diario}>
-      <div className={styles.header}>
-        <Image src={LogoVL} width={300} height={70} layout="fixed" />
-        <Image src={LogoOVT} width={150} height={70} layout="fixed" />
-        <div className="control_buttons">
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => navigate.push("/")}
-          >
-            Atras
-          </Button>
-          <Button variant="contained" onClick={handleOpen}>
-            Nuevo
-          </Button>
-        </div>
-      </div>
-      <Modal open={open} onClose={handleClose}>
-        <ControlDiarioForm
-          afterCreate={handleFetch}
-          handleClose={handleClose}
-        />
-      </Modal>
-      {loading ? (
-        <Skeleton
-          variant="rectangular"
-          width={window.innerWidth}
-          height={window.innerHeight}
-        />
-      ) : (
-        <DataGrid
-          sx={{ textAlign: "center" }}
-          rows={controles}
-          columns={columns}
-        />
-      )}
-    </div>
-  ) : (
-    <div className={styles.control_diario}>
+  return (
+    <Layout
+      open={open}
+      handleOpen={handleOpen}
+      handleClose={handleClose}
+      loading={loading}
+      columns={columns}
+      operativos={controles}
+    >
       <ControlDiarioForm
         afterCreate={handleFetch}
-        handleClose={() => navigate.back()}
+        handleClose={user.rol === "ADMIN" ? handleClose : navigate.back()}
       />
-    </div>
+    </Layout>
   );
 }
 

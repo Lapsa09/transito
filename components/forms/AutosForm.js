@@ -18,11 +18,7 @@ import CustomTextField from "../ui/CustomTextField";
 import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSnackbar from "../ui/CustomSnackbar";
-import LogoVL from "../../public/LOGO_V_LOPEZ.png";
-import LogoOVT from "../../public/OVT_LETRAS_NEGRAS.png";
-import Image from "next/image";
-import { adminStyle } from "../utils";
-import style from "../../styles/controlDiarioForm.module.css";
+import Layout from "../../layouts/FormLayout";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
@@ -51,8 +47,6 @@ function OperativosForm({ handleClose, afterCreate }) {
 
   const submitEvent = async (data) => {
     try {
-      data["es_del"] = findMunicipio();
-      data["resultado"] = handleResultado();
       await nuevoOperativoAuto(data);
       await afterCreate();
       reset({
@@ -69,39 +63,19 @@ function OperativosForm({ handleClose, afterCreate }) {
     }
   };
 
-  const findMunicipio = () => {
-    const zona = allZonas.find(
-      (zona) => zona.id_barrio === getValues("zona_infractor").id_barrio
-    );
-    const zonas = zonasVL.map((zona) => zona.barrio);
-    if (zonas.includes(zona.barrio)) return "VILO";
-    else return "FUERA DEL MUNICIPIO";
-  };
-
-  const handleResultado = () => {
-    if (
-      getValues("graduacion_alcoholica") == 0 ||
-      !getValues("graduacion_alcoholica")
-    )
-      return "NEGATIVA";
-    if (
-      getValues("graduacion_alcoholica") > 0.05 &&
-      getValues("graduacion_alcoholica") < 0.5
-    )
-      return "NO PUNITIVA";
-    return "PUNITIVA";
-  };
-
   useEffect(() => {
-    Promise.all([
-      getLicencias(),
-      getZonasVL(),
-      getAllZonas(),
-      getTurnos(),
-      getSeguridad(),
-      getResolucion(),
-    ])
-      .then(([licencias, zonasVL, zonas, turnos, seguridad, resolucion]) => {
+    const fetchItems = async () => {
+      try {
+        const [licencias, zonasVL, zonas, turnos, seguridad, resolucion] =
+          await Promise.all([
+            getLicencias(),
+            getZonasVL(),
+            getAllZonas(),
+            getTurnos(),
+            getSeguridad(),
+            getResolucion(),
+          ]);
+
         setLicencias(licencias);
         setZonasVL(zonasVL);
         setAllZonas(zonas);
@@ -109,30 +83,15 @@ function OperativosForm({ handleClose, afterCreate }) {
         setSeguridad(seguridad);
         setResolucion(resolucion);
         setValue("lpcarga", user.legajo);
-      })
-      .catch((error) => {
-        showSnackbar("error", error.message);
-      });
+      } catch (error) {
+        showSnackbar("error", error.response.data);
+      }
+    };
+    fetchItems();
   }, []);
 
   return (
-    <Box sx={adminStyle} className="form">
-      <div className={style.header}>
-        <Image
-          className={style.logo}
-          src={LogoVL}
-          width={250}
-          height={70}
-          layout="fixed"
-        />
-        <Image
-          className={style.logo}
-          src={LogoOVT}
-          width={150}
-          height={70}
-          layout="fixed"
-        />
-      </div>
+    <Layout>
       <Box component="form" className="form__box op" autoComplete="off">
         <DateTimePicker
           control={control}
@@ -276,7 +235,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         </div>
       </Box>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </Box>
+    </Layout>
   );
 }
 

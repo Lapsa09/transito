@@ -1,11 +1,8 @@
-import { Button, Modal, Skeleton } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import OperativosForm from "../../components/forms/AutosForm";
 import { getOperativosAutos } from "../../services/operativosService";
-import { useRouter } from "next/router";
-import styles from "../../styles/operativos.page.module.css";
+import Layout from "../../layouts/OperativosLayout";
 
 function AutosPage() {
   const [operativos, setOperativos] = useState([]);
@@ -13,19 +10,14 @@ function AutosPage() {
   const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const navigate = useRouter();
 
   useEffect(() => {
-    firstCall();
+    handleFetch();
   }, []);
 
   const handleFetch = async () => {
-    setOperativos(await getOperativosAutos());
-  };
-
-  const firstCall = async () => {
     setLoading(true);
-    await handleFetch();
+    setOperativos(await getOperativosAutos());
     setLoading(false);
   };
 
@@ -75,32 +67,16 @@ function AutosPage() {
   ];
 
   return (
-    <div className={styles.Operativos}>
-      <div className="control_buttons">
-        <Button
-          color="error"
-          variant="contained"
-          onClick={() => navigate.push("/")}
-        >
-          Atras
-        </Button>
-        <Button variant="contained" onClick={handleOpen}>
-          Nuevo
-        </Button>
-      </div>
-      <Modal open={open} onClose={handleClose}>
-        <OperativosForm afterCreate={handleFetch} handleClose={handleClose} />
-      </Modal>
-      {loading ? (
-        <Skeleton
-          variant="rectangular"
-          width={window.innerWidth}
-          height={window.innerHeight}
-        />
-      ) : (
-        <DataGrid rows={operativos} columns={columns} />
-      )}
-    </div>
+    <Layout
+      open={open}
+      handleOpen={handleOpen}
+      handleClose={handleClose}
+      columns={columns}
+      operativos={operativos}
+      loading={loading}
+    >
+      <OperativosForm afterCreate={handleFetch} handleClose={handleClose} />
+    </Layout>
   );
 }
 

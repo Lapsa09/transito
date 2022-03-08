@@ -13,11 +13,7 @@ import CustomTimePicker from "../ui/TimePicker";
 import CustomSnackbar from "../ui/CustomSnackbar";
 import style from "../../styles/controlDiarioForm.module.css";
 import { selectUser } from "../../utils/redux/userSlice";
-import { adminStyle, inspectorStyle } from "../utils";
 import { useSelector } from "react-redux";
-import LogoVL from "../../public/LOGO_V_LOPEZ.png";
-import LogoOVT from "../../public/OVT_LETRAS_NEGRAS.png";
-import Image from "next/image";
 import { useForm } from "react-hook-form";
 import CustomTextField from "../ui/CustomTextField";
 import CustomSelect from "../ui/CustomSelect";
@@ -25,6 +21,7 @@ import CustomAutocomplete from "../ui/CustomAutocomplete";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
+import Layout from "../../layouts/FormLayout";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const { handleSubmit, control, reset, getValues, setValue } = useForm();
@@ -98,26 +95,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   return (
-    <Box
-      sx={handleRol() ? adminStyle : inspectorStyle}
-      className={`form ${style.form}`}
-    >
-      <div className={style.header}>
-        <Image
-          className={style.logo}
-          src={LogoVL}
-          width={250}
-          height={70}
-          layout="fixed"
-        />
-        <Image
-          className={style.logo}
-          src={LogoOVT}
-          width={150}
-          height={70}
-          layout="fixed"
-        />
-      </div>
+    <Layout classes={style.form}>
       <Box component="form" className="form__box">
         <CustomDatePicker
           control={control}
@@ -242,7 +220,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         </div>
       </Box>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </Box>
+    </Layout>
   );
 }
 

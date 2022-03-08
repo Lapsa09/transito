@@ -16,13 +16,12 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
-import { adminStyle } from "../utils";
-import style from "../../styles/controlDiarioForm.module.css";
 import { useForm } from "react-hook-form";
 import CustomTextField from "../ui/CustomTextField";
 import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSnackbar from "../ui/CustomSnackbar";
+import Layout from "../../layouts/FormLayout";
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
@@ -46,6 +45,7 @@ function MotosForm({ handleClose, afterCreate }) {
     setSeguridad(await getSeguridad());
     setResolucion(await getResolucion());
     setMotivos(await getMotivosMoto());
+    setValue("lpcarga", user.legajo);
   };
 
   const showSnackbar = (severity, message) => {
@@ -75,7 +75,6 @@ function MotosForm({ handleClose, afterCreate }) {
 
   const submitEvent = async (data) => {
     try {
-      setValue("lpcarga", user.legajo);
       await nuevoOperativoMoto(data);
       await afterCreate();
       reset();
@@ -98,23 +97,7 @@ function MotosForm({ handleClose, afterCreate }) {
   }, []);
 
   return (
-    <Box sx={adminStyle} className="form">
-      <div className={style.header}>
-        <Image
-          className={style.logo}
-          src={LogoVL}
-          width={250}
-          height={70}
-          layout="fixed"
-        />
-        <Image
-          className={style.logo}
-          src={LogoOVT}
-          width={150}
-          height={70}
-          layout="fixed"
-        />
-      </div>
+    <Layout>
       <div className="controller">
         <h4>Motivos: {cantMotivos}</h4>
         <AddBoxSharpIcon onClick={sumarMotivos} />
@@ -294,7 +277,7 @@ function MotosForm({ handleClose, afterCreate }) {
         </div>
       </Box>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </Box>
+    </Layout>
   );
 }
 

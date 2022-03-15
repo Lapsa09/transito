@@ -20,14 +20,15 @@ function CustomTimePicker({
     control,
     rules: {
       required: "Ingrese una hora",
+      validate: {
+        validDate: (v) => v.isValid || "Ingrese una hora valida",
+      },
     },
     defaultValue,
   });
 
   const parseTime = (newTime) => {
-    if (newTime.isValid) {
-      field.onChange(newTime);
-    }
+    field.onChange(newTime);
   };
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
@@ -41,6 +42,7 @@ function CustomTimePicker({
           <TextField
             {...props}
             required
+            placeholder="HH:mm"
             helperText={errors[name]?.message}
             error={invalid}
           />

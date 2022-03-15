@@ -57,22 +57,24 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   useEffect(() => {
-    Promise.all([
-      getLocalidades(),
-      checkPath() ? getMotivos() : getMotivosPaseo(),
-      getTurnos(),
-      getResolucion(),
-    ])
-      .then(([barrios, motivos, turnos, resoluciones]) => {
+    const fillSelects = async () => {
+      try {
+        const [barrios, motivos, turnos, resoluciones] = await Promise.all([
+          getLocalidades(),
+          checkPath() ? getMotivos() : getMotivosPaseo(),
+          getTurnos(),
+          getResolucion(),
+        ]);
         setLocalidades(barrios);
         setMotivos(motivos);
         setTurnos(turnos);
         setResolucion(resoluciones);
-        setValue("lpcarga", user.legajo);
-      })
-      .catch((error) => {
-        showSnackbar("error", error.message);
-      });
+      } catch (error) {
+        showSnackbar("error", error.response?.data);
+      }
+    };
+    fillSelects();
+    setValue("lpcarga", user.legajo);
   }, []);
 
   const getMotivo = () => {
@@ -95,117 +97,123 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   return (
-    <Layout classes={style.form}>
+    <Layout>
       <Box component="form" className="form__box">
-        <CustomDatePicker
-          control={control}
-          label="Fecha"
-          name="fecha"
-          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
-          disabled={!handleRol()}
-        />
-        <CustomSelect
-          control={control}
-          name="turno"
-          rules={{ required: "Elija una opcion" }}
-          label="Turno"
-          defaultValue={!handleRol() ? "MAÑANA" : ""}
-          disabled={!handleRol()}
-          options={turnos}
-        />
-        <CustomTimePicker
-          control={control}
-          name="hora"
-          label="Hora"
-          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
-          disabled={!handleRol()}
-        />
-        <CustomTextField
-          control={control}
-          name="direccion"
-          disabled={!checkPath()}
-          rules={{ required: "Ingrese una direccion valida" }}
-          label="Direccion"
-          defaultValue={!checkPath() ? "PASEO DE LA COSTA" : ""}
-        />
-        <CustomTextField
-          control={control}
-          name="dominio"
-          label="Dominio"
-          rules={{
-            required: "Ingrese una patente valida",
-            pattern: {
-              value: DOMINIO_PATTERN,
-              message: "Ingrese una patente valida",
-            },
-          }}
-        />
-        {handleRol() && (
-          <CustomTextField
-            type="number"
+        <div className="form__box__inputs">
+          <CustomDatePicker
             control={control}
-            name="lp"
+            label="Fecha"
+            name="fecha"
+            defaultValue={
+              !handleRol() ? DateTime.now().setLocale("es-AR") : null
+            }
+            disabled={!handleRol()}
+          />
+          <CustomSelect
+            control={control}
+            name="turno"
+            rules={{ required: "Elija una opcion" }}
+            label="Turno"
+            defaultValue={!handleRol() ? user.turno : ""}
+            disabled={!handleRol()}
+            options={turnos}
+          />
+          <CustomTimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            defaultValue={
+              !handleRol() ? DateTime.now().setLocale("es-AR") : null
+            }
+            disabled={!handleRol()}
+          />
+          <CustomTextField
+            control={control}
+            name="direccion"
+            disabled={!checkPath()}
+            rules={{ required: "Ingrese una direccion valida" }}
+            label="Direccion"
+            defaultValue={!checkPath() ? "PASEO DE LA COSTA" : ""}
+          />
+          <CustomTextField
+            control={control}
+            name="dominio"
+            label="Dominio"
             rules={{
-              required: {
-                value: handleRol(),
-                message: "Inserte un legajo valido",
-              },
+              required: "Ingrese una patente valida",
               pattern: {
-                value: LEGAJO_PATTERN,
-                message: "Inserte un legajo valido",
+                value: DOMINIO_PATTERN,
+                message: "Ingrese una patente valida",
               },
             }}
-            label="Legajo planilla"
           />
-        )}
-        <CustomSelect
-          control={control}
-          name="resolucion"
-          rules={{ required: "Elija una opcion valida" }}
-          label="Resolucion"
-          options={resolucion}
-        />
-        {getValues("resolucion") == "ACTA" && (
-          <CustomTextField
-            type="number"
+          {handleRol() && (
+            <CustomTextField
+              type="number"
+              control={control}
+              name="lp"
+              rules={{
+                required: {
+                  value: handleRol(),
+                  message: "Inserte un legajo valido",
+                },
+                pattern: {
+                  value: LEGAJO_PATTERN,
+                  message: "Inserte un legajo valido",
+                },
+              }}
+              label="Legajo planilla"
+            />
+          )}
+          <CustomSelect
             control={control}
-            name="acta"
-            rules={{
-              required: {
-                value: getValues("resolucion") == "ACTA",
-                message: "Ingrese un Nro de Acta valido",
-              },
-            }}
-            label="Acta"
+            name="resolucion"
+            rules={{ required: "Elija una opcion valida" }}
+            label="Resolucion"
+            options={resolucion}
           />
-        )}
-        <CustomSelect
-          control={control}
-          name="motivo"
-          rules={{ required: "Elija una opcion" }}
-          label="Motivo"
-          options={motivos}
-        />
-        {motivos.length > 0 && getMotivo() == "OTRO" && (
-          <CustomTextField
+          {getValues("resolucion") == "ACTA" && (
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              rules={{
+                required: {
+                  value: getValues("resolucion") == "ACTA",
+                  message: "Ingrese un Nro de Acta valido",
+                },
+              }}
+              label="Acta"
+            />
+          )}
+          <CustomSelect
             control={control}
-            name="otroMotivo"
-            rules={{
-              required: {
-                value: getMotivo() == "OTRO",
-                message: "Inserte un motivo valido",
-              },
-            }}
-            label="Otro motivo"
+            name="motivo"
+            rules={{ required: "Elija una opcion" }}
+            label="Motivo"
+            options={motivos}
           />
-        )}
-        <CustomAutocomplete
-          control={control}
-          name="localidadInfractor"
-          rules={{ required: "Elija una opcion" }}
-          label="Localidad del infractor"
-          options={localidades}
-        />
+          {motivos.length > 0 && getMotivo() == "OTRO" && (
+            <CustomTextField
+              control={control}
+              name="otroMotivo"
+              rules={{
+                required: {
+                  value: getMotivo() == "OTRO",
+                  message: "Inserte un motivo valido",
+                },
+              }}
+              label="Otro motivo"
+            />
+          )}
+          <CustomAutocomplete
+            control={control}
+            name="localidadInfractor"
+            rules={{ required: "Elija una opcion" }}
+            label="Localidad del infractor"
+            options={localidades}
+          />
+        </div>
         <div className="buttons">
           <Button onClick={handleClose} color="error" variant="contained">
             Cancelar

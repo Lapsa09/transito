@@ -1,15 +1,16 @@
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.header {
+  /* max-width: 850px; */
+  width: 100%;
+  /* margin-top: 20px; */
+  margin-bottom: 40px;
+  /* margin: 40px; */
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* .form {
+.form {
   max-width: 1150px;
   width: 95%;
   display: flex;
@@ -29,21 +30,9 @@ input[type="number"] {
 
 .form > .form__box .form__box__inputs.hidden {
   display: none;
-} */
-
-.controller {
-  display: flex;
-  width: 40%;
-  justify-content: center;
-  align-items: center;
-  font-family: sans-serif;
 }
 
-.control_buttons {
-  margin: 10px auto;
-}
-
-/* .form > .form__box {
+.form > .form__box {
   display: flex;
   flex-direction: column;
 }
@@ -58,14 +47,9 @@ input[type="number"] {
 
 .form .MuiFormControl-root {
   width: 100%;
-} */
-
-.buttons > .MuiButton-root ~ .MuiButton-root,
-.control_buttons > .MuiButton-root ~ .MuiButton-root {
-  margin-left: 20px;
 }
 
-/* @media (max-width: 835px) {
+@media (max-width: 835px) {
   .form {
     flex-wrap: nowrap !important;
     max-height: 100vh !important;
@@ -117,17 +101,4 @@ input[type="number"] {
   .buttons > .MuiButton-root {
     width: 100%;
   }
-} */
-
-#__next {
-  height: 100vh;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-}
-
-* {
-  box-sizing: border-box;
 }

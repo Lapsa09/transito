@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
 import DateTimePicker from "../ui/DatePicker";
 import TimePicker from "../ui/TimePicker";
 import {
@@ -19,10 +18,22 @@ import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSnackbar from "../ui/CustomSnackbar";
 import Layout from "../../layouts/FormLayout";
+import { DateTime } from "luxon";
+import style from "../../styles/FormLayout.module.css";
 
 function OperativosForm({ handleClose, afterCreate }) {
+  const {
+    handleSubmit,
+    control,
+    reset,
+    getValues,
+    setValue,
+    watch,
+    formState: { isValid },
+  } = useForm({
+    mode: "all",
+  });
   const user = useSelector(selectUser);
-  const { handleSubmit, control, reset, getValues, setValue } = useForm();
   const [licencias, setLicencias] = useState([]);
   const [zonasVL, setZonasVL] = useState([]);
   const [allZonas, setAllZonas] = useState([]);
@@ -31,10 +42,66 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [resolucion, setResolucion] = useState([]);
   const [response, setResponse] = useState("");
   const [open, setOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const handleRol = () => user.rol === "ADMIN";
 
   const showSnackbar = (severity, message) => {
     setResponse({ severity, message });
     setOpen(true);
+  };
+
+  const steps = () => {
+    const [
+      legajo_a_cargo,
+      legajo_planilla,
+      seguridad,
+      hora,
+      dominio,
+      direccion,
+      zona,
+      zona_infractor,
+      resolucion,
+      motivo,
+      fecha,
+      turno,
+    ] = watch([
+      "legajo_a_cargo",
+      "legajo_planilla",
+      "seguridad",
+      "hora",
+      "dominio",
+      "direccion",
+      "zona",
+      "zona_infractor",
+      "resolucion",
+      "motivo",
+      "fecha",
+      "turno",
+    ]);
+    return [
+      {
+        label: "Operativo",
+        values: {
+          legajo_a_cargo,
+          legajo_planilla,
+          seguridad,
+          fecha,
+          turno,
+          direccion,
+          zona,
+        },
+      },
+      {
+        label: "Vehiculo",
+        values: {
+          hora,
+          dominio,
+          zona_infractor,
+          resolucion,
+          motivo,
+        },
+      },
+    ];
   };
 
   const closeSnackbar = (event, reason) => {
@@ -53,13 +120,42 @@ function OperativosForm({ handleClose, afterCreate }) {
         ...data,
         dominio: "",
         direccion: "",
+        zona: null,
         zona_infractor: null,
         resolucion: "",
         motivo: "",
+        licencia: "",
+        tipo_licencia: null,
+        graduacion_alcoholica: "",
+        acta: "",
       });
       showSnackbar("success", "Cargado con exito");
     } catch (error) {
       showSnackbar("error", error.response?.data);
+    }
+  };
+
+  const cargarOperativo = () => {
+    try {
+      const operativos = JSON.parse(localStorage.operativo);
+      if (DateTime.now().toMillis() < operativos.expiresAt) {
+        Object.entries(operativos).forEach(([key, value]) => {
+          if (key === "fecha") setValue(key, DateTime.fromISO(value));
+          else setValue(key, value);
+        });
+        isCompleted(operativos) && setActiveStep(1);
+      } else nuevoOperativo();
+    } catch (error) {
+      return;
+    }
+  };
+
+  const isCompleted = (values) => {
+    try {
+      const step = Object.values(values);
+      return step.every((value) => Boolean(value));
+    } catch (error) {
+      return false;
     }
   };
 
@@ -84,45 +180,53 @@ function OperativosForm({ handleClose, afterCreate }) {
         setResolucion(resolucion);
         setValue("lpcarga", user.legajo);
       } catch (error) {
-        showSnackbar("error", error.response.data);
+        showSnackbar("error", error.response?.data || error.message);
       }
     };
     fetchItems();
+    cargarOperativo();
   }, []);
 
+  const nuevoOperativo = () => {
+    localStorage.removeItem("operativo");
+    reset(
+      {
+        lpcarga: user.legajo,
+      },
+      { keepDefaultValues: true }
+    );
+    setActiveStep(0);
+  };
+
   return (
-    <Layout>
-      <Box component="form" className="form__box op" autoComplete="off">
+    <Layout
+      steps={steps()}
+      activeStep={activeStep}
+      setActiveStep={setActiveStep}
+      nuevoOperativo={nuevoOperativo}
+      handleClose={handleClose}
+      isValid={isValid}
+      handleSubmit={handleSubmit(submitEvent)}
+      isCompleted={isCompleted}
+    >
+      <div
+        className={`${style.form__box__inputs} ${
+          activeStep !== 0 ? style.hidden : ""
+        }`}
+      >
         <DateTimePicker
           control={control}
           name="fecha"
+          disabled={!handleRol()}
           label="Fecha"
-          defaultValue={null}
-        />
-        <TimePicker
-          control={control}
-          name="hora"
-          label="Hora"
-          defaultValue={null}
-        />
-        <CustomTextField
-          control={control}
-          name="direccion"
-          label="Direccion"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
-        <CustomSelect
-          control={control}
-          name="zona"
-          label="Zona"
-          rules={{ required: "Elija una localidad" }}
-          options={zonasVL}
+          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
         />
         <CustomTextField
           control={control}
           name="legajo_a_cargo"
           type="number"
           label="Legajo a cargo"
+          defaultValue=""
           rules={{
             required: "Inserte un legajo",
             pattern: {
@@ -135,6 +239,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           control={control}
           type="number"
           name="legajo_planilla"
+          defaultValue=""
           label="Legajo planilla"
           rules={{
             required: "Inserte un legajo",
@@ -149,14 +254,45 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="turno"
           label="Turno"
           rules={{ required: "Elija una opcion" }}
+          disabled={!handleRol()}
           options={turnos}
+          defaultValue={!handleRol() ? user.turno : null}
         />
         <CustomSelect
           control={control}
           name="seguridad"
           label="Seguridad"
           options={seguridad}
+          defaultValue={null}
+          rules={{ required: "Elija una opcion" }}
         />
+        <CustomTextField
+          control={control}
+          name="direccion"
+          label="Direccion"
+          rules={{ required: "Inserte una direccion valida" }}
+        />
+        <CustomSelect
+          control={control}
+          name="zona"
+          label="Zona"
+          rules={{ required: "Elija una localidad" }}
+          options={zonasVL}
+        />
+      </div>
+      <div
+        className={`${style.form__box__inputs} ${
+          activeStep !== 1 ? style.hidden : ""
+        }`}
+      >
+        <TimePicker
+          control={control}
+          name="hora"
+          disabled={!handleRol()}
+          label="Hora"
+          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+        />
+
         <CustomTextField
           control={control}
           name="dominio"
@@ -221,19 +357,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion valida" }}
           options={resolucion}
         />
-        <div className="buttons">
-          <Button onClick={handleClose} color="error" variant="contained">
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit(submitEvent)}
-            variant="contained"
-          >
-            Guardar
-          </Button>
-        </div>
-      </Box>
+      </div>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Layout>
   );

@@ -22,7 +22,12 @@ function CustomDatePicker({
     rules: {
       required: "Ingrese una fecha",
       validate: {
-        validDate: (v) => v.isValid,
+        validDate: (v) => v.isValid || "Ingrese una fecha valida",
+        minDate: (v) =>
+          v.toMillis() > DateTime.now().minus({ months: 6 }).toMillis() ||
+          "Elija una fecha mas reciente",
+        maxDate: (v) =>
+          v.toMillis() < DateTime.now().toMillis() || "Elija una fecha pasada",
       },
     },
     defaultValue,
@@ -38,6 +43,7 @@ function CustomDatePicker({
         {...field}
         onChange={parseDate}
         disabled={disabled}
+        label={label}
         inputFormat="dd/MM/yyyy"
         renderInput={(props) => (
           <TextField
@@ -48,7 +54,6 @@ function CustomDatePicker({
             error={invalid}
           />
         )}
-        label={label}
         minDate={DateTime.now().minus({ month: 6 })}
         maxDate={DateTime.now()}
       />

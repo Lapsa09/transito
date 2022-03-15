@@ -30,7 +30,7 @@ function Login() {
   };
   return (
     <div className={style.login}>
-      <Box component="form" className={`form ${style.form}`}>
+      <Box component="form" className={style.form}>
         <CustomTextField
           type="number"
           control={control}
@@ -46,7 +46,7 @@ function Login() {
           className={style["MuiTextField-root"]}
         />
         {error && <FormHelperText error>{error}</FormHelperText>}
-        <div className={`buttons ${style.buttons}`}>
+        <div className={style.buttons}>
           <Button
             className={style["MuiButton-root"]}
             onClick={handleSubmit(submitEvent)}

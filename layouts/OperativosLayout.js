@@ -52,7 +52,13 @@ function OperativosLayout({
       )}
     </div>
   ) : (
-    <div className={styles.Operativos}>{children}</div>
+    <div className={styles.Operativos}>
+      <div className={styles.header}>
+        <Image src={LogoVL} width={300} height={70} layout="fixed" />
+        <Image src={LogoOVT} width={150} height={70} layout="fixed" />
+      </div>
+      {children}
+    </div>
   );
 }
 

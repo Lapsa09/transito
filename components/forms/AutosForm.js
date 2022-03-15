@@ -40,7 +40,7 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [turnos, setTurnos] = useState([]);
   const [seguridad, setSeguridad] = useState([]);
   const [resolucion, setResolucion] = useState([]);
-  const [response, setResponse] = useState("");
+  const [response, setResponse] = useState({ severity: "", message: "" });
   const [open, setOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const handleRol = () => user.rol === "ADMIN";
@@ -116,19 +116,20 @@ function OperativosForm({ handleClose, afterCreate }) {
     try {
       await nuevoOperativoAuto(data);
       await afterCreate();
-      reset({
-        ...data,
-        dominio: "",
-        direccion: "",
-        zona: null,
-        zona_infractor: null,
-        resolucion: "",
-        motivo: "",
-        licencia: "",
-        tipo_licencia: null,
-        graduacion_alcoholica: "",
-        acta: "",
-      });
+      reset(
+        {
+          dominio: "",
+          zona_infractor: null,
+          resolucion: "",
+          motivo: "",
+          licencia: "",
+          tipo_licencia: null,
+          graduacion_alcoholica: "",
+          acta: "",
+          lpcarga: user.legajo,
+        },
+        { keepDefaultValues: true }
+      );
       showSnackbar("success", "Cargado con exito");
     } catch (error) {
       showSnackbar("error", error.response?.data);

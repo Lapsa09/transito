@@ -11,7 +11,7 @@ import { getResolucion, getTurnos } from "../../services/index";
 import CustomDatePicker from "../ui/DatePicker";
 import CustomTimePicker from "../ui/TimePicker";
 import CustomSnackbar from "../ui/CustomSnackbar";
-import style from "../../styles/controlDiarioForm.module.css";
+import style from "../../styles/FormLayout.module.css";
 import { selectUser } from "../../utils/redux/userSlice";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -24,16 +24,70 @@ import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 import Layout from "../../layouts/FormLayout";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const { handleSubmit, control, reset, getValues, setValue } = useForm();
+  const {
+    handleSubmit,
+    control,
+    reset,
+    getValues,
+    setValue,
+    watch,
+    formState: { isValid },
+  } = useForm({ mode: "all" });
   const [resolucion, setResolucion] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
   const [motivos, setMotivos] = useState([]);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({ severity: "", message: "" });
+  const [activeStep, setActiveStep] = useState(0);
   const user = useSelector(selectUser);
   const router = useRouter();
   const handleRol = () => user.rol === "ADMIN";
+
+  const steps = () => {
+    const [
+      fecha,
+      hora,
+      direccion,
+      turno,
+      dominio,
+      lp,
+      resolucion,
+      motivo,
+      localidadInfractor,
+    ] = watch([
+      "fecha",
+      "hora",
+      "direccion",
+      "turno",
+      "dominio",
+      "lp",
+      "resolucion",
+      "motivo",
+      "localidadInfractor",
+    ]);
+    return [
+      {
+        label: "Operativo",
+        values: {
+          fecha,
+          direccion,
+          turno,
+          lp,
+        },
+      },
+      {
+        label: "Vehiculo",
+        values: {
+          hora,
+          dominio,
+          resolucion,
+          motivo,
+          localidadInfractor,
+        },
+      },
+    ];
+  };
 
   const submitting = async (data) => {
     try {
@@ -75,6 +129,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     };
     fillSelects();
     setValue("lpcarga", user.legajo);
+    if (!handleRol()) setValue("lp", user.legajo);
+    cargarOperativo();
   }, []);
 
   const getMotivo = () => {
@@ -96,137 +152,175 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     setOpen(false);
   };
 
+  const cargarOperativo = () => {
+    try {
+      const operativos = JSON.parse(localStorage.diario);
+      if (DateTime.now().toMillis() < operativos.expiresAt) {
+        Object.entries(operativos).forEach(([key, value]) => {
+          if (key === "fecha") setValue(key, DateTime.fromISO(value));
+          else setValue(key, value);
+        });
+        isCompleted(operativos) && setActiveStep(1);
+      } else nuevoOperativo();
+    } catch (error) {
+      return;
+    }
+  };
+
+  const nuevoOperativo = () => {
+    localStorage.removeItem("diario");
+    reset(
+      {
+        lpcarga: user.legajo,
+      },
+      { keepDefaultValues: true }
+    );
+    setActiveStep(0);
+  };
+
+  const isCompleted = (values) => {
+    try {
+      const step = Object.values(values);
+      return step.every((value) => Boolean(value));
+    } catch (error) {
+      return false;
+    }
+  };
+
   return (
-    <Layout>
-      <Box component="form" className="form__box">
-        <div className="form__box__inputs">
-          <CustomDatePicker
-            control={control}
-            label="Fecha"
-            name="fecha"
-            defaultValue={
-              !handleRol() ? DateTime.now().setLocale("es-AR") : null
-            }
-            disabled={!handleRol()}
-          />
-          <CustomSelect
-            control={control}
-            name="turno"
-            rules={{ required: "Elija una opcion" }}
-            label="Turno"
-            defaultValue={!handleRol() ? user.turno : ""}
-            disabled={!handleRol()}
-            options={turnos}
-          />
-          <CustomTimePicker
-            control={control}
-            name="hora"
-            label="Hora"
-            defaultValue={
-              !handleRol() ? DateTime.now().setLocale("es-AR") : null
-            }
-            disabled={!handleRol()}
-          />
+    <Layout
+      steps={steps()}
+      activeStep={activeStep}
+      setActiveStep={setActiveStep}
+      nuevoOperativo={nuevoOperativo}
+      handleClose={handleClose}
+      isValid={isValid}
+      handleSubmit={handleSubmit(submitting)}
+      isCompleted={isCompleted}
+    >
+      <div
+        className={`${style.form__box__inputs} ${
+          activeStep !== 0 ? style.hidden : ""
+        }`}
+      >
+        <CustomDatePicker
+          control={control}
+          label="Fecha"
+          name="fecha"
+          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+          disabled={!handleRol()}
+        />
+        <CustomTextField
+          control={control}
+          name="direccion"
+          disabled={!checkPath()}
+          rules={{ required: "Ingrese una direccion valida" }}
+          label="Direccion"
+          defaultValue={!checkPath() ? "PASEO DE LA COSTA" : ""}
+        />
+        <CustomSelect
+          control={control}
+          name="turno"
+          rules={{ required: "Elija una opcion" }}
+          label="Turno"
+          defaultValue={!handleRol() ? user.turno : ""}
+          disabled={!handleRol()}
+          options={turnos}
+        />
+        {handleRol() && (
           <CustomTextField
+            type="number"
             control={control}
-            name="direccion"
-            disabled={!checkPath()}
-            rules={{ required: "Ingrese una direccion valida" }}
-            label="Direccion"
-            defaultValue={!checkPath() ? "PASEO DE LA COSTA" : ""}
-          />
-          <CustomTextField
-            control={control}
-            name="dominio"
-            label="Dominio"
+            name="lp"
             rules={{
-              required: "Ingrese una patente valida",
+              required: {
+                value: handleRol(),
+                message: "Inserte un legajo valido",
+              },
               pattern: {
-                value: DOMINIO_PATTERN,
-                message: "Ingrese una patente valida",
+                value: LEGAJO_PATTERN,
+                message: "Inserte un legajo valido",
               },
             }}
+            label="Legajo planilla"
           />
-          {handleRol() && (
-            <CustomTextField
-              type="number"
-              control={control}
-              name="lp"
-              rules={{
-                required: {
-                  value: handleRol(),
-                  message: "Inserte un legajo valido",
-                },
-                pattern: {
-                  value: LEGAJO_PATTERN,
-                  message: "Inserte un legajo valido",
-                },
-              }}
-              label="Legajo planilla"
-            />
-          )}
-          <CustomSelect
+        )}
+      </div>
+      <div
+        className={`${style.form__box__inputs} ${
+          activeStep !== 1 ? style.hidden : ""
+        }`}
+      >
+        <CustomTimePicker
+          control={control}
+          name="hora"
+          label="Hora"
+          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+          disabled={!handleRol()}
+        />
+
+        <CustomTextField
+          control={control}
+          name="dominio"
+          label="Dominio"
+          rules={{
+            required: "Ingrese una patente valida",
+            pattern: {
+              value: DOMINIO_PATTERN,
+              message: "Ingrese una patente valida",
+            },
+          }}
+        />
+
+        <CustomSelect
+          control={control}
+          name="resolucion"
+          rules={{ required: "Elija una opcion valida" }}
+          label="Resolucion"
+          options={resolucion}
+        />
+        {getValues("resolucion") == "ACTA" && (
+          <CustomTextField
+            type="number"
             control={control}
-            name="resolucion"
-            rules={{ required: "Elija una opcion valida" }}
-            label="Resolucion"
-            options={resolucion}
+            name="acta"
+            rules={{
+              required: {
+                value: getValues("resolucion") == "ACTA",
+                message: "Ingrese un Nro de Acta valido",
+              },
+            }}
+            label="Acta"
           />
-          {getValues("resolucion") == "ACTA" && (
-            <CustomTextField
-              type="number"
-              control={control}
-              name="acta"
-              rules={{
-                required: {
-                  value: getValues("resolucion") == "ACTA",
-                  message: "Ingrese un Nro de Acta valido",
-                },
-              }}
-              label="Acta"
-            />
-          )}
-          <CustomSelect
+        )}
+        <CustomSelect
+          control={control}
+          name="motivo"
+          rules={{ required: "Elija una opcion" }}
+          label="Motivo"
+          options={motivos}
+        />
+        {motivos.length > 0 && getMotivo() == "OTRO" && (
+          <CustomTextField
             control={control}
-            name="motivo"
-            rules={{ required: "Elija una opcion" }}
-            label="Motivo"
-            options={motivos}
+            name="otroMotivo"
+            rules={{
+              required: {
+                value: getMotivo() == "OTRO",
+                message: "Inserte un motivo valido",
+              },
+            }}
+            label="Otro motivo"
           />
-          {motivos.length > 0 && getMotivo() == "OTRO" && (
-            <CustomTextField
-              control={control}
-              name="otroMotivo"
-              rules={{
-                required: {
-                  value: getMotivo() == "OTRO",
-                  message: "Inserte un motivo valido",
-                },
-              }}
-              label="Otro motivo"
-            />
-          )}
-          <CustomAutocomplete
-            control={control}
-            name="localidadInfractor"
-            rules={{ required: "Elija una opcion" }}
-            label="Localidad del infractor"
-            options={localidades}
-          />
-        </div>
-        <div className="buttons">
-          <Button onClick={handleClose} color="error" variant="contained">
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit(submitting)}
-            variant="contained"
-          >
-            Guardar
-          </Button>
-        </div>
-      </Box>
+        )}
+        <CustomAutocomplete
+          control={control}
+          name="localidadInfractor"
+          rules={{ required: "Elija una opcion" }}
+          label="Localidad del infractor"
+          options={localidades}
+        />
+      </div>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Layout>
   );

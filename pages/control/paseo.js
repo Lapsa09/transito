@@ -15,6 +15,7 @@ function ControlPaseoPage() {
   const handleClose = () => setOpen(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
+  const handleRol = () => user?.rol === "ADMIN";
 
   const firstCall = async () => {
     setLoading(true);
@@ -85,7 +86,7 @@ function ControlPaseoPage() {
     >
       <ControlDiarioForm
         afterCreate={handleFetch}
-        handleClose={user.rol === "ADMIN" ? handleClose : navigate.back()}
+        handleClose={handleRol() ? handleClose : navigate.back()}
       />
     </Layout>
   );

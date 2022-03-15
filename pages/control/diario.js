@@ -15,6 +15,7 @@ function ControlDiarioPage() {
   const [loading, setLoading] = useState(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
+  const handleRol = () => user?.rol === "ADMIN";
 
   useEffect(() => {
     firstCall();
@@ -85,7 +86,7 @@ function ControlDiarioPage() {
     >
       <ControlDiarioForm
         afterCreate={handleFetch}
-        handleClose={user.rol === "ADMIN" ? handleClose : navigate.back()}
+        handleClose={handleRol() ? handleClose : navigate.back()}
       />
     </Layout>
   );

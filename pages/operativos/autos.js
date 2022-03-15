@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import OperativosForm from "../../components/forms/AutosForm";
 import { getOperativosAutos } from "../../services/operativosService";
 import Layout from "../../layouts/OperativosLayout";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../utils/redux/userSlice";
 
 function AutosPage() {
   const [operativos, setOperativos] = useState([]);
@@ -10,15 +13,22 @@ function AutosPage() {
   const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const router = useRouter();
+  const user = useSelector(selectUser);
+  const handleRol = () => user?.rol === "ADMIN";
 
   useEffect(() => {
-    handleFetch();
+    firstCall();
   }, []);
 
-  const handleFetch = async () => {
+  const firstCall = async () => {
     setLoading(true);
-    setOperativos(await getOperativosAutos());
+    await handleFetch();
     setLoading(false);
+  };
+
+  const handleFetch = async () => {
+    setOperativos(await getOperativosAutos());
   };
 
   const columns = [
@@ -82,7 +92,10 @@ function AutosPage() {
       operativos={operativos}
       loading={loading}
     >
-      <OperativosForm afterCreate={handleFetch} handleClose={handleClose} />
+      <OperativosForm
+        afterCreate={handleFetch}
+        handleClose={handleRol() ? handleClose : router.back()}
+      />
     </Layout>
   );
 }

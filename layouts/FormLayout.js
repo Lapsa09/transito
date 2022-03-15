@@ -8,6 +8,7 @@ import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
 import { DateTime } from "luxon";
 import CustomStepper from "../components/ui/CustomStepper";
+import { useRouter } from "next/router";
 import styles from "../styles/FormLayout.module.css";
 
 function FormLayout({
@@ -24,6 +25,23 @@ function FormLayout({
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handlePath = () => {
+    const [path] = router.asPath.split("?");
+    switch (path) {
+      case "/control/diario":
+        return "diario";
+      case "/control/paseo":
+        return "paseo";
+      case "/operativos/autos":
+        return "auto";
+      case "/operativos/motos":
+        return "motos";
+      case "/operativos/camiones":
+        return "camiones";
+    }
+  };
 
   const totalSteps = () => {
     return steps.length;
@@ -47,7 +65,7 @@ function FormLayout({
       localStorage.operativo || null
     )?.expiresAt;
     localStorage.setItem(
-      "operativo",
+      handlePath(),
       JSON.stringify({
         ...steps[0].values,
         expiresAt:

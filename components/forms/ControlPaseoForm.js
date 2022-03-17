@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
   getLocalidades,
-  getMotivos,
-  nuevoControl,
+  getMotivosPaseo,
+  nuevoControlPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
 import CustomDatePicker from "../ui/DatePicker";
@@ -18,7 +18,7 @@ import { DateTime } from "luxon";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 import Layout from "../../layouts/FormLayout";
 
-function ControlDiarioForm({ handleClose, afterCreate }) {
+function ControlPaseoForm({ handleClose, afterCreate }) {
   const {
     handleSubmit,
     control,
@@ -67,6 +67,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           fecha,
           turno,
           lp,
+          motivo,
         },
       },
       {
@@ -76,7 +77,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           dominio,
           direccion,
           resolucion,
-          motivo,
           localidadInfractor,
         },
       },
@@ -85,9 +85,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const submitting = async (data) => {
     try {
-      await nuevoControl(data);
+      await nuevoControlPaseo(data);
       reset(
-        { ...data, dominio: "", localidadInfractor: null, motivo: "" },
+        { ...data, dominio: "", localidadInfractor: null },
         { keepDefaultValues: true }
       );
       if (handleRol()) {
@@ -107,7 +107,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       try {
         const [barrios, motivos, turnos, resoluciones] = await Promise.all([
           getLocalidades(),
-          getMotivos(),
+          getMotivosPaseo(),
           getTurnos(),
           getResolucion(),
         ]);
@@ -125,12 +125,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     cargarOperativo();
   }, []);
 
-  const getMotivo = () => {
-    return (
-      motivos.find((motivo) => motivo.id == getValues("motivo"))?.motivo || ""
-    );
-  };
-
   const showSnackbar = (severity, message) => {
     setResponse({ severity, message });
     setOpen(true);
@@ -146,7 +140,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const cargarOperativo = () => {
     try {
-      const operativos = JSON.parse(localStorage.diario);
+      const operativos = JSON.parse(localStorage.paseo);
       if (DateTime.now().toMillis() < operativos.expiresAt) {
         Object.entries(operativos).forEach(([key, value]) => {
           if (key === "fecha") setValue(key, DateTime.fromISO(value));
@@ -160,7 +154,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   const nuevoOperativo = () => {
-    localStorage.removeItem("diario");
+    localStorage.removeItem("paseo");
     reset(
       {
         lpcarga: user.legajo,
@@ -189,7 +183,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       isValid={isValid}
       handleSubmit={handleSubmit(submitting)}
       isCompleted={isCompleted}
-      path="diario"
+      path="paseo"
     >
       <>
         <CustomDatePicker
@@ -199,7 +193,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
           disabled={!handleRol()}
         />
-
         <CustomSelect
           control={control}
           name="turno"
@@ -227,6 +220,13 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             label="Legajo planilla"
           />
         )}
+        <CustomSelect
+          control={control}
+          name="motivo"
+          rules={{ required: "Elija una opcion" }}
+          label="Motivo"
+          options={motivos}
+        />
       </>
       <>
         <CustomTimePicker
@@ -239,8 +239,10 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         <CustomTextField
           control={control}
           name="direccion"
+          disabled={true}
           rules={{ required: "Ingrese una direccion valida" }}
           label="Direccion"
+          defaultValue={"PASEO DE LA COSTA"}
         />
         <CustomTextField
           control={control}
@@ -254,6 +256,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             },
           }}
         />
+
         <CustomSelect
           control={control}
           name="resolucion"
@@ -275,26 +278,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             label="Acta"
           />
         )}
-        <CustomSelect
-          control={control}
-          name="motivo"
-          rules={{ required: "Elija una opcion" }}
-          label="Motivo"
-          options={motivos}
-        />
-        {motivos.length > 0 && getMotivo() == "OTRO" && (
-          <CustomTextField
-            control={control}
-            name="otroMotivo"
-            rules={{
-              required: {
-                value: getMotivo() == "OTRO",
-                message: "Inserte un motivo valido",
-              },
-            }}
-            label="Otro motivo"
-          />
-        )}
         <CustomAutocomplete
           control={control}
           name="localidadInfractor"
@@ -308,4 +291,4 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   );
 }
 
-export default ControlDiarioForm;
+export default ControlPaseoForm;

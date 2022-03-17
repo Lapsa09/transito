@@ -1,5 +1,5 @@
 import { Box, Button, Modal } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { selectUser } from "../utils/redux/userSlice";
 import { adminStyle, inspectorStyle } from "../components/utils";
@@ -10,6 +10,7 @@ import { DateTime } from "luxon";
 import CustomStepper from "../components/ui/CustomStepper";
 import { useRouter } from "next/router";
 import styles from "../styles/FormLayout.module.css";
+import CustomStepForm from "../components/ui/CustomStepForm";
 
 function FormLayout({
   children,
@@ -21,27 +22,12 @@ function FormLayout({
   isValid,
   handleSubmit,
   isCompleted,
+  path,
 }) {
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
-  const handlePath = () => {
-    const [path] = router.asPath.split("?");
-    switch (path) {
-      case "/control/diario":
-        return "diario";
-      case "/control/paseo":
-        return "paseo";
-      case "/operativos/autos":
-        return "auto";
-      case "/operativos/motos":
-        return "motos";
-      case "/operativos/camiones":
-        return "camiones";
-    }
-  };
 
   const totalSteps = () => {
     return steps.length;
@@ -62,10 +48,10 @@ function FormLayout({
 
   const saveOp = () => {
     const expirationTime = JSON.parse(
-      localStorage.operativo || null
+      localStorage.getItem(path) || null
     )?.expiresAt;
     localStorage.setItem(
-      handlePath(),
+      path,
       JSON.stringify({
         ...steps[0].values,
         expiresAt:
@@ -73,6 +59,10 @@ function FormLayout({
       })
     );
   };
+
+  useEffect(() => {
+    console.log(children);
+  }, []);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -93,14 +83,20 @@ function FormLayout({
         </Button>
         <Image src={LogoOVT} width={150} height={70} layout="fixed" />
       </div>
-      <Box component="form" className={styles.form__box} autoComplete="off">
+      <div>
         <CustomStepper
           steps={steps}
           isCompleted={isCompleted}
           handleStep={handleStep}
           activeStep={activeStep}
         />
-        {children}
+        <Box component="form" className={styles.form__box} autoComplete="off">
+          {children?.map((child, index) => (
+            <CustomStepForm activeStep={activeStep} step={index}>
+              {child}
+            </CustomStepForm>
+          ))}
+        </Box>
         <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
           <Button disabled={isFirstStep()} onClick={handleBack} sx={{ mr: 1 }}>
             Anterior
@@ -120,7 +116,7 @@ function FormLayout({
             </Button>
           )}
         </Box>
-      </Box>
+      </div>
       <Modal open={open} onClose={() => setOpen(false)}>
         <WarningModal reset={nuevoOperativo} setOpen={setOpen} />
       </Modal>

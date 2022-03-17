@@ -20,6 +20,8 @@ import CustomSnackbar from "../ui/CustomSnackbar";
 import Layout from "../../layouts/FormLayout";
 import { DateTime } from "luxon";
 import style from "../../styles/FormLayout.module.css";
+import { motion } from "framer-motion";
+import CustomStepForm from "../ui/CustomStepForm";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const {
@@ -209,12 +211,9 @@ function OperativosForm({ handleClose, afterCreate }) {
       isValid={isValid}
       handleSubmit={handleSubmit(submitEvent)}
       isCompleted={isCompleted}
+      path="autos"
     >
-      <div
-        className={`${style.form__box__inputs} ${
-          activeStep !== 0 ? style.hidden : ""
-        }`}
-      >
+      <>
         <DateTimePicker
           control={control}
           name="fecha"
@@ -227,7 +226,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="legajo_a_cargo"
           type="number"
           label="Legajo a cargo"
-          defaultValue=""
           rules={{
             required: "Inserte un legajo",
             pattern: {
@@ -240,7 +238,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           control={control}
           type="number"
           name="legajo_planilla"
-          defaultValue=""
           label="Legajo planilla"
           rules={{
             required: "Inserte un legajo",
@@ -264,7 +261,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="seguridad"
           label="Seguridad"
           options={seguridad}
-          defaultValue={null}
           rules={{ required: "Elija una opcion" }}
         />
         <CustomTextField
@@ -280,12 +276,8 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una localidad" }}
           options={zonasVL}
         />
-      </div>
-      <div
-        className={`${style.form__box__inputs} ${
-          activeStep !== 1 ? style.hidden : ""
-        }`}
-      >
+      </>
+      <>
         <TimePicker
           control={control}
           name="hora"
@@ -293,7 +285,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           label="Hora"
           defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
         />
-
         <CustomTextField
           control={control}
           name="dominio"
@@ -358,7 +349,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion valida" }}
           options={resolucion}
         />
-      </div>
+      </>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Layout>
   );

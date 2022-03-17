@@ -1,7 +1,7 @@
 import { Button, Modal, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import styles from "../styles/operativos.page.module.css";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
@@ -29,7 +29,7 @@ function OperativosLayout({
           <Button
             color="error"
             variant="contained"
-            onClick={() => navigate.push("/")}
+            onClick={() => navigate.replace("/")}
           >
             Atras
           </Button>

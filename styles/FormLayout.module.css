@@ -20,7 +20,7 @@
   overflow-y: overlay;
 }
 
-.form > .form__box .form__box__inputs {
+.form .form__box .form__box__inputs {
   margin: 20px 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(300px, 400px));
@@ -32,12 +32,12 @@
   display: none;
 }
 
-.form > .form__box {
+.form .form__box {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
 }
 
-.form > .form__box > .buttons {
+.form .form__box > .buttons {
   margin-left: auto;
 }
 

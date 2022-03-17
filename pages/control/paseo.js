@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ControlDiarioForm from "../../components/forms/ControlDiarioForm";
+import ControlPaseoForm from "../../components/forms/ControlPaseoForm";
 import { getControlesPaseo } from "../../services/controlDiarioService";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
@@ -40,7 +40,7 @@ function ControlPaseoPage() {
           zone: "America/Argentina/Buenos_Aires",
         })
           .plus({ day: 1 })
-          .toLocaleString(),
+          .toFormat("dd/MM/yyyy"),
       width: 100,
     },
     {
@@ -50,17 +50,16 @@ function ControlPaseoPage() {
       valueFormatter: ({ value }) =>
         DateTime.fromISO(value, {
           zone: "America/Argentina/Buenos_Aires",
-        }).toLocaleString(DateTime.TIME_24_SIMPLE),
+        }).toFormat("HH:mm"),
     },
-    { field: "direccion", headerName: "Direccion", width: 250 },
-    { field: "barrio", headerName: "Localidad", width: 150 },
-    { field: "dominio", headerName: "Dominio", width: 150 },
     { field: "lp", headerName: "Legajo planilla", width: 150 },
-    { field: "acta", headerName: "Acta", width: 150 },
-    { field: "resolucion", headerName: "Resolucion", width: 150 },
-    { field: "motivo", headerName: "Motivo", width: 250 },
-    { field: "otro_motivo", headerName: "Otro motivo", width: 250 },
     { field: "turno", headerName: "Turno", width: 150 },
+    { field: "direccion", headerName: "Direccion", width: 250 },
+    { field: "dominio", headerName: "Dominio", width: 150 },
+    { field: "barrio", headerName: "Localidad", width: 150 },
+    { field: "motivo", headerName: "Motivo", width: 250 },
+    { field: "resolucion", headerName: "Resolucion", width: 150 },
+    { field: "acta", headerName: "Acta", width: 150 },
     {
       field: "fechacarga",
       headerName: "Fecha carga",
@@ -69,7 +68,7 @@ function ControlPaseoPage() {
         value
           ? DateTime.fromSQL(value, {
               zone: "America/Argentina/Buenos_Aires",
-            }).toLocaleString(DateTime.DATETIME_SHORT)
+            }).toFormat("dd/MM/yyyy HH:mm")
           : "",
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
@@ -84,7 +83,7 @@ function ControlPaseoPage() {
       columns={columns}
       operativos={controles}
     >
-      <ControlDiarioForm
+      <ControlPaseoForm
         afterCreate={handleFetch}
         handleClose={handleRol() ? handleClose : navigate.back()}
       />

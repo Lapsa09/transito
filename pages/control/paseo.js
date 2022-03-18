@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
 import Layout from "../../layouts/OperativosLayout";
-import { dateFormat, dateTimeFormat, timeFormat } from "../../utils/dates";
+import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../utils/dates";
 
 function ControlPaseoPage() {
   const [controles, setControles] = useState([]);
@@ -56,7 +56,7 @@ function ControlPaseoPage() {
       field: "fechacarga",
       headerName: "Fecha carga",
       width: 150,
-      valueFormatter: ({ value }) => (value ? dateTimeFormat(value) : ""),
+      valueFormatter: ({ value }) => (value ? dateTimeSQLFormat(value) : ""),
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
     { field: "mes", headerName: "Mes", width: 150 },

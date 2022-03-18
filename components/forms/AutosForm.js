@@ -18,7 +18,7 @@ import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSnackbar from "../ui/CustomSnackbar";
 import Layout from "../../layouts/FormLayout";
-import { currentDate, dateTimeFormat } from "../../utils/dates";
+import { currentDate } from "../../utils/dates";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const {
@@ -42,7 +42,7 @@ function OperativosForm({ handleClose, afterCreate }) {
   const [response, setResponse] = useState({ severity: "", message: "" });
   const [open, setOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const handleRol = () => user.rol === "ADMIN";
+  const handleRol = () => user?.rol === "ADMIN";
 
   const showSnackbar = (severity, message) => {
     setResponse({ severity, message });
@@ -135,67 +135,29 @@ function OperativosForm({ handleClose, afterCreate }) {
     }
   };
 
-  const cargarOperativo = () => {
+  const fetchItems = async () => {
     try {
-      const operativos = JSON.parse(localStorage.operativo);
-      if (currentDate().toMillis() < operativos.expiresAt) {
-        Object.entries(operativos).forEach(([key, value]) => {
-          if (key === "fecha") setValue(key, dateTimeFormat(value));
-          else setValue(key, value);
-        });
-        isCompleted(operativos) && setActiveStep(1);
-      } else nuevoOperativo();
+      const [licencias, zonasVL, zonas, turnos, seguridad, resolucion] =
+        await Promise.all([
+          getLicencias(),
+          getZonasVL(),
+          getAllZonas(),
+          getTurnos(),
+          getSeguridad(),
+          getResolucion(),
+        ]);
+
+      setLicencias(licencias);
+      setZonasVL(zonasVL);
+      setAllZonas(zonas);
+      setTurnos(turnos);
+      setSeguridad(seguridad);
+      setResolucion(resolucion);
     } catch (error) {
-      return;
+      showSnackbar("error", error.response?.data || error.message);
+    } finally {
+      setValue("lpcarga", user.legajo);
     }
-  };
-
-  const isCompleted = (values) => {
-    try {
-      const step = Object.values(values);
-      return step.every((value) => Boolean(value));
-    } catch (error) {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const [licencias, zonasVL, zonas, turnos, seguridad, resolucion] =
-          await Promise.all([
-            getLicencias(),
-            getZonasVL(),
-            getAllZonas(),
-            getTurnos(),
-            getSeguridad(),
-            getResolucion(),
-          ]);
-
-        setLicencias(licencias);
-        setZonasVL(zonasVL);
-        setAllZonas(zonas);
-        setTurnos(turnos);
-        setSeguridad(seguridad);
-        setResolucion(resolucion);
-        setValue("lpcarga", user.legajo);
-      } catch (error) {
-        showSnackbar("error", error.response?.data || error.message);
-      }
-    };
-    fetchItems();
-    cargarOperativo();
-  }, []);
-
-  const nuevoOperativo = () => {
-    localStorage.removeItem("operativo");
-    reset(
-      {
-        lpcarga: user.legajo,
-      },
-      { keepDefaultValues: true }
-    );
-    setActiveStep(0);
   };
 
   return (
@@ -203,11 +165,10 @@ function OperativosForm({ handleClose, afterCreate }) {
       steps={steps()}
       activeStep={activeStep}
       setActiveStep={setActiveStep}
-      nuevoOperativo={nuevoOperativo}
       handleClose={handleClose}
       isValid={isValid}
       handleSubmit={handleSubmit(submitEvent)}
-      isCompleted={isCompleted}
+      fillSelects={fetchItems}
       path="autos"
     >
       <>
@@ -313,20 +274,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           label="Localidad del infractor"
           options={allZonas}
         />
-        {getValues("resolucion") === "ACTA" && (
-          <CustomTextField
-            type="number"
-            control={control}
-            name="acta"
-            label="Acta"
-            rules={{
-              required: {
-                value: getValues("resolucion") === "ACTA",
-                message: "Ingrese un nro de acta",
-              },
-            }}
-          />
-        )}
         <CustomTextField
           control={control}
           name="motivo"
@@ -346,6 +293,20 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion valida" }}
           options={resolucion}
         />
+        {getValues("resolucion") === "ACTA" && (
+          <CustomTextField
+            type="number"
+            control={control}
+            name="acta"
+            label="Acta"
+            rules={{
+              required: {
+                value: getValues("resolucion") === "ACTA",
+                message: "Ingrese un nro de acta",
+              },
+            }}
+          />
+        )}
       </>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Layout>

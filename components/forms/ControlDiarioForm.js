@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   getLocalidades,
   getMotivos,
@@ -16,7 +16,7 @@ import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 import Layout from "../../layouts/FormLayout";
-import { currentDate, dateTimeFormat } from "../../utils/dates";
+import { currentDate } from "../../utils/dates";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const {
@@ -102,28 +102,25 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     }
   };
 
-  useEffect(() => {
-    const fillSelects = async () => {
-      try {
-        const [barrios, motivos, turnos, resoluciones] = await Promise.all([
-          getLocalidades(),
-          getMotivos(),
-          getTurnos(),
-          getResolucion(),
-        ]);
-        setLocalidades(barrios);
-        setMotivos(motivos);
-        setTurnos(turnos);
-        setResolucion(resoluciones);
-      } catch (error) {
-        showSnackbar("error", error.response?.data);
-      }
-    };
-    fillSelects();
-    setValue("lpcarga", user.legajo);
-    if (!handleRol()) setValue("lp", user.legajo);
-    cargarOperativo();
-  }, []);
+  const fillSelects = async () => {
+    try {
+      const [barrios, motivos, turnos, resoluciones] = await Promise.all([
+        getLocalidades(),
+        getMotivos(),
+        getTurnos(),
+        getResolucion(),
+      ]);
+      setLocalidades(barrios);
+      setMotivos(motivos);
+      setTurnos(turnos);
+      setResolucion(resoluciones);
+    } catch (error) {
+      showSnackbar("error", error.response?.data);
+    } finally {
+      setValue("lpcarga", user.legajo);
+      if (!handleRol()) setValue("lp", user.legajo);
+    }
+  };
 
   const getMotivo = () => {
     return (
@@ -144,51 +141,15 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     setOpen(false);
   };
 
-  const cargarOperativo = () => {
-    try {
-      const operativos = JSON.parse(localStorage.diario);
-      if (currentDate().toMillis() < operativos.expiresAt) {
-        Object.entries(operativos).forEach(([key, value]) => {
-          if (key === "fecha") setValue(key, dateTimeFormat(value));
-          else setValue(key, value);
-        });
-        isCompleted(operativos) && setActiveStep(1);
-      } else nuevoOperativo();
-    } catch (error) {
-      return;
-    }
-  };
-
-  const nuevoOperativo = () => {
-    localStorage.removeItem("diario");
-    reset(
-      {
-        lpcarga: user.legajo,
-      },
-      { keepDefaultValues: true }
-    );
-    setActiveStep(0);
-  };
-
-  const isCompleted = (values) => {
-    try {
-      const step = Object.values(values);
-      return step.every((value) => Boolean(value));
-    } catch (error) {
-      return false;
-    }
-  };
-
   return (
     <Layout
       steps={steps()}
       activeStep={activeStep}
       setActiveStep={setActiveStep}
-      nuevoOperativo={nuevoOperativo}
       handleClose={handleClose}
       isValid={isValid}
       handleSubmit={handleSubmit(submitting)}
-      isCompleted={isCompleted}
+      fillSelects={fillSelects}
       path="diario"
     >
       <>

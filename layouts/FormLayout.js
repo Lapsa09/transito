@@ -9,19 +9,18 @@ import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
 import CustomStepper from "../components/ui/CustomStepper";
 import styles from "../styles/FormLayout.module.css";
 import CustomStepForm from "../components/ui/CustomStepForm";
-import { currentDate } from "../utils/dates";
+import { currentDate, dateTimeFormat } from "../utils/dates";
 
 function FormLayout({
   children,
   steps,
   activeStep,
   setActiveStep,
-  nuevoOperativo,
   handleClose,
   isValid,
   handleSubmit,
-  isCompleted,
   path,
+  fillSelects,
 }) {
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
@@ -59,8 +58,44 @@ function FormLayout({
   };
 
   useEffect(() => {
-    console.log(children);
+    fillSelects();
+    cargarOperativo();
   }, []);
+
+  const cargarOperativo = () => {
+    try {
+      const operativos = JSON.parse(localStorage.getItem(path));
+      if (currentDate().toMillis() < operativos.expiresAt) {
+        Object.entries(operativos).forEach(([key, value]) => {
+          if (key === "fecha") setValue(key, dateTimeFormat(value));
+          else setValue(key, value);
+        });
+        isCompleted(operativos) && setActiveStep(1);
+      } else nuevoOperativo();
+    } catch (error) {
+      return;
+    }
+  };
+
+  const nuevoOperativo = () => {
+    localStorage.removeItem(path);
+    reset(
+      {
+        lpcarga: user.legajo,
+      },
+      { keepDefaultValues: true }
+    );
+    setActiveStep(0);
+  };
+
+  const isCompleted = (values) => {
+    try {
+      const step = Object.values(values);
+      return step.every((value) => Boolean(value));
+    } catch (error) {
+      return false;
+    }
+  };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);

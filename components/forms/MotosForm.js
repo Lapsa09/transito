@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
+import React, { useState } from "react";
 import DateTimePicker from "../ui/DatePicker";
 import TimePicker from "../ui/TimePicker";
 import {
@@ -22,10 +21,19 @@ import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSnackbar from "../ui/CustomSnackbar";
 import Layout from "../../layouts/FormLayout";
+import { currentDate } from "../../utils/dates";
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
-  const { handleSubmit, control, reset, getValues, setValue } = useForm();
+  const {
+    handleSubmit,
+    control,
+    reset,
+    getValues,
+    setValue,
+    watch,
+    formState: { isValid },
+  } = useForm({ mode: "all" });
   const [licencias, setLicencias] = useState([]);
   const [zonasVL, setZonasVL] = useState([]);
   const [allZonas, setAllZonas] = useState([]);
@@ -36,16 +44,117 @@ function MotosForm({ handleClose, afterCreate }) {
   const [cantMotivos, setCantMotivos] = useState(1);
   const [response, setResponse] = useState("");
   const [open, setOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const handleRol = () => user?.rol === "ADMIN";
+
+  const steps = () => {
+    const [
+      fecha,
+      hora,
+      direccion,
+      zona,
+      legajo_a_cargo,
+      legajo_planilla,
+      turno,
+      seguridad,
+      dominio,
+      licencia,
+      tipo_licencia,
+      zona_infractor,
+      resolucion,
+      acta,
+      motivo1,
+      motivo2,
+      motivo3,
+      motivo4,
+      motivo5,
+    ] = watch([
+      "fecha",
+      "hora",
+      "direccion",
+      "zona",
+      "legajo_a_cargo",
+      "legajo_planilla",
+      "turno",
+      "seguridad",
+      "dominio",
+      "licencia",
+      "tipo_licencia",
+      "zona_infractor",
+      "resolucion",
+      "acta",
+      "motivo1",
+      "motivo2",
+      "motivo3",
+      "motivo4",
+      "motivo5",
+    ]);
+
+    return [
+      {
+        label: "Operativo",
+        values: {
+          fecha,
+          hora,
+          direccion,
+          zona,
+          legajo_a_cargo,
+          legajo_planilla,
+          turno,
+          seguridad,
+        },
+      },
+      {
+        label: "Vehiculo",
+        values: {
+          dominio,
+          licencia,
+          tipo_licencia,
+          zona_infractor,
+          resolucion,
+          acta,
+          motivo1,
+          motivo2,
+          motivo3,
+          motivo4,
+          motivo5,
+        },
+      },
+    ];
+  };
 
   const fillSelects = async () => {
-    setLicencias(await getLicencias());
-    setZonasVL(await getZonasVL());
-    setAllZonas(await getAllZonas());
-    setTurnos(await getTurnos());
-    setSeguridad(await getSeguridad());
-    setResolucion(await getResolucion());
-    setMotivos(await getMotivosMoto());
-    setValue("lpcarga", user.legajo);
+    try {
+      const [
+        licencias,
+        zonasVL,
+        allZonas,
+        turnos,
+        seguridad,
+        resolucion,
+        motivos,
+      ] = await Promise.all([
+        getLicencias(),
+        getZonasVL(),
+        getAllZonas(),
+        getTurnos(),
+        getSeguridad(),
+        getResolucion(),
+        getMotivosMoto(),
+      ]);
+
+      setLicencias(licencias);
+      setZonasVL(zonasVL);
+      setAllZonas(allZonas);
+      setTurnos(turnos);
+      setSeguridad(seguridad);
+      setResolucion(resolucion);
+      setMotivos(motivos);
+    } catch (error) {
+      showSnackbar("error", error.response?.data);
+    } finally {
+      setValue("lpcarga", user.legajo);
+    }
   };
 
   const showSnackbar = (severity, message) => {
@@ -77,35 +186,41 @@ function MotosForm({ handleClose, afterCreate }) {
     try {
       await nuevoOperativoMoto(data);
       await afterCreate();
-      reset();
       showSnackbar("success", "Cargado con exito");
+      reset({
+        ...data,
+      });
     } catch (error) {
-      showSnackbar("error", error.response.data);
+      showSnackbar("error", error.response?.data);
     }
   };
 
-  const setBarrios = () => {
-    return [
-      ...new Map(
-        allZonas.map((localidad) => [localidad.barrio, localidad])
-      ).values(),
-    ];
-  };
-
-  useEffect(() => {
-    fillSelects();
-  }, []);
-
   return (
-    <Layout>
-      <div className="controller">
-        <h4>Motivos: {cantMotivos}</h4>
-        <AddBoxSharpIcon onClick={sumarMotivos} />
-        <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
-      </div>
-      <Box component="form" className="form__box op" autoComplete="off">
-        <DateTimePicker control={control} name="fecha" label="Fecha" />
-        <TimePicker control={control} name="hora" label="Hora" />
+    <Layout
+      fillSelects={fillSelects}
+      activeStep={activeStep}
+      setActiveStep={setActiveStep}
+      handleSubmit={handleSubmit(submitEvent)}
+      isValid={isValid}
+      path="motos"
+      steps={steps()}
+      handleClose={handleClose}
+    >
+      <>
+        <DateTimePicker
+          control={control}
+          name="fecha"
+          label="Fecha"
+          disabled={!handleRol()}
+          defaultValue={!handleRol() ? currentDate() : null}
+        />
+        <TimePicker
+          control={control}
+          name="hora"
+          label="Hora"
+          disabled={!handleRol()}
+          defaultValue={!handleRol() ? currentDate() : null}
+        />
         <CustomTextField
           control={control}
           name="direccion"
@@ -150,6 +265,8 @@ function MotosForm({ handleClose, afterCreate }) {
           name="turno"
           label="Turno"
           rules={{ required: "Elija una opcion" }}
+          disabled={!handleRol()}
+          defaultValue={!handleRol() ? user.turno : null}
           options={turnos}
         />
         <CustomSelect
@@ -157,7 +274,15 @@ function MotosForm({ handleClose, afterCreate }) {
           name="seguridad"
           label="Seguridad"
           options={seguridad}
+          rules={{ required: "Elija una opcion" }}
         />
+      </>
+      <>
+        <div className="controller">
+          <h4>Motivos: {cantMotivos}</h4>
+          <AddBoxSharpIcon onClick={sumarMotivos} />
+          <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
+        </div>
         <CustomTextField
           control={control}
           name="dominio"
@@ -187,18 +312,8 @@ function MotosForm({ handleClose, afterCreate }) {
           name="zona_infractor"
           label="Localidad del infractor"
           rules={{ required: "Elija una opcion" }}
-          options={setBarrios()}
+          options={allZonas}
         />
-        <CustomSelect
-          control={control}
-          name="resolucion"
-          label="Resolucion"
-          rules={{ required: "Elija una opcion valida" }}
-          options={resolucion}
-        />
-        {getValues("resolucion") === "ACTA" && (
-          <CustomTextField control={control} name="acta" label="Acta" />
-        )}
         <CustomSelect
           control={control}
           name="motivo1"
@@ -262,20 +377,28 @@ function MotosForm({ handleClose, afterCreate }) {
             options={motivos}
           />
         )}
-
-        <div className="buttons">
-          <Button onClick={handleClose} color="error" variant="contained">
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit(submitEvent)}
-            variant="contained"
-          >
-            Guardar
-          </Button>
-        </div>
-      </Box>
+        <CustomSelect
+          control={control}
+          name="resolucion"
+          label="Resolucion"
+          rules={{ required: "Elija una opcion valida" }}
+          options={resolucion}
+        />
+        {getValues("resolucion") === "ACTA" && (
+          <CustomTextField
+            type="number"
+            control={control}
+            name="acta"
+            label="Acta"
+            rules={{
+              required: {
+                value: getValues("resolucion") === "ACTA",
+                message: "Ingrese un nro de acta",
+              },
+            }}
+          />
+        )}
+      </>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Layout>
   );

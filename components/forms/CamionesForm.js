@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
+import React, { useState } from "react";
 import DateTimePicker from "../ui/DatePicker";
 import TimePicker from "../ui/TimePicker";
 import {
@@ -18,16 +17,29 @@ import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSwitch from "../ui/CustomSwitch";
 import CustomSnackbar from "../ui/CustomSnackbar";
 import Layout from "../../layouts/FormLayout";
+import { currentDate } from "../../utils/dates";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
-  const { handleSubmit, control, reset, getValues, setValue } = useForm();
+  const {
+    handleSubmit,
+    control,
+    reset,
+    getValues,
+    setValue,
+    watch,
+    formState: { isValid },
+  } = useForm({
+    mode: "all",
+  });
   const [zonasVL, setZonasVL] = useState([]);
   const [allZonas, setAllZonas] = useState([]);
   const [turnos, setTurnos] = useState([]);
   const [resolucion, setResolucion] = useState([]);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState("");
+  const [activeStep, setActiveStep] = useState(0);
+  const handleRol = () => user?.rol === "ADMIN";
 
   const showSnackbar = (severity, message) => {
     setResponse({ severity, message });
@@ -42,51 +54,126 @@ function OperativosForm({ handleClose, afterCreate }) {
     setOpen(false);
   };
 
-  const submitEvent = async (data) => {
-    try {
-      setValue("lpcarga", user.legajo);
-      await nuevoOperativoCamiones(data);
-      reset({
-        ...data,
-        direccion: "",
-        origen: "",
-        destino: "",
-        localidad_origen: null,
-        localidad_destino: null,
-      });
-      showSnackbar("success", "Cargado con exito");
-      await afterCreate();
-    } catch (error) {
-      showSnackbar("error", error.response.data);
-    }
-  };
+  const steps = () => {
+    const [
+      fecha,
+      legajo,
+      direccion,
+      zona,
+      turno,
+      hora,
+      dominio,
+      licencia,
+      origen,
+      localidad_origen,
+      destino,
+      localidad_destino,
+      remito,
+      carga,
+      acta,
+      motivo,
+      resolucion,
+    ] = watch([
+      "fecha",
+      "legajo",
+      "direccion",
+      "zona",
+      "turno",
+      "hora",
+      "dominio",
+      "licencia",
+      "origen",
+      "localidad_origen",
+      "destino",
+      "localidad_destino",
+      "remito",
+      "carga",
+      "acta",
+      "motivo",
+      "resolucion",
+    ]);
 
-  const setBarrios = () => {
     return [
-      ...new Map(
-        allZonas.map((localidad) => [localidad.barrio, localidad])
-      ).values(),
+      {
+        label: "Operativo",
+        values: {
+          fecha,
+          legajo,
+          turno,
+          direccion,
+          zona,
+        },
+      },
+      {
+        label: "Vehiculo",
+        values: {
+          hora,
+          dominio,
+          licencia,
+          origen,
+          localidad_origen,
+          destino,
+          localidad_destino,
+          remito,
+          carga,
+          acta,
+          motivo,
+          resolucion,
+        },
+      },
     ];
   };
 
-  useEffect(() => {
-    Promise.all([getZonasVL(), getAllZonas(), getTurnos(), getResolucion()])
-      .then(([zonasVL, zonas, turnos, resoluciones]) => {
-        setZonasVL(zonasVL);
-        setAllZonas(zonas);
-        setTurnos(turnos);
-        setResolucion(resoluciones);
-      })
-      .catch((error) => {
-        showSnackbar("error", error.response.data);
-      });
-  }, []);
+  const submitEvent = async (data) => {
+    try {
+      await nuevoOperativoCamiones(data);
+      reset({}, { keepDefaultValues: true });
+      showSnackbar("success", "Cargado con exito");
+      await afterCreate();
+    } catch (error) {
+      showSnackbar("error", error.response?.data);
+    }
+  };
+
+  const fillSelects = async () => {
+    try {
+      const [zonasVL, zonas, turnos, resoluciones] = await Promise.all([
+        getZonasVL(),
+        getAllZonas(),
+        getTurnos(),
+        getResolucion(),
+      ]);
+      setZonasVL(zonasVL);
+      setAllZonas(zonas);
+      setTurnos(turnos);
+      setResolucion(resoluciones);
+    } catch (error) {
+      showSnackbar("error", error.response?.data);
+    } finally {
+      setValue("lpcarga", user.legajo);
+    }
+  };
 
   return (
-    <Layout>
-      <Box component="form" className="form__box op" autoComplete="off">
-        <DateTimePicker control={control} name="fecha" label="Fecha" />
-        <TimePicker control={control} name="hora" label="Hora" />
+    <Layout
+      fillSelects={fillSelects}
+      steps={steps()}
+      activeStep={activeStep}
+      setActiveStep={setActiveStep}
+      handleClose={handleClose}
+      isValid={isValid}
+      handleSubmit={handleSubmit(submitEvent)}
+      path="camiones"
+    >
+      <>
+        <DateTimePicker
+          control={control}
+          name="fecha"
+          label="Fecha"
+          disabled={!handleRol()}
+          defaultValue={!handleRol() ? currentDate() : null}
+        />
+
         <CustomTextField
           control={control}
           name="direccion"
@@ -117,8 +204,17 @@ function OperativosForm({ handleClose, afterCreate }) {
           control={control}
           name="turno"
           label="Turno"
-          rules={{ required: "Elia una opcion" }}
+          rules={{ required: "Elija una opcion" }}
           options={turnos}
+        />
+      </>
+      <>
+        <TimePicker
+          control={control}
+          name="hora"
+          label="Hora"
+          disabled={!handleRol()}
+          defaultValue={!handleRol() ? currentDate() : null}
         />
         <CustomTextField
           control={control}
@@ -133,24 +229,36 @@ function OperativosForm({ handleClose, afterCreate }) {
           }}
         />
         <CustomTextField control={control} name="licencia" label="Licencia" />
-        <CustomTextField control={control} name="origen" label="Origen" />
+        <CustomTextField
+          control={control}
+          name="origen"
+          label="Origen"
+          rules={{ required: "Inserte una direccion valida" }}
+        />
         <CustomAutocomplete
           control={control}
           name="localidad_origen"
           label="Localidad de origen"
           rules={{ required: "Elija una opcion" }}
-          options={setBarrios()}
+          options={allZonas}
         />
-        <CustomTextField control={control} name="destino" label="Destino" />
+        <CustomTextField
+          control={control}
+          name="destino"
+          label="Destino"
+          rules={{ required: "Inserte una direccion valida" }}
+        />
         <CustomAutocomplete
           control={control}
           name="localidad_destino"
           label="Localidad de destino"
           rules={{ required: "Elija una opcion" }}
-          options={setBarrios()}
+          options={allZonas}
         />
-        <CustomSwitch control={control} name="remito" label="Remito" />
-        <CustomSwitch control={control} name="carga" label="Carga" />
+        <div className="switches">
+          <CustomSwitch control={control} name="remito" label="Remito" />
+          <CustomSwitch control={control} name="carga" label="Carga" />
+        </div>
         {getValues("resolucion") === "ACTA" && (
           <CustomTextField
             type="number"
@@ -178,19 +286,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion valida" }}
           options={resolucion}
         />
-        <div className="buttons">
-          <Button onClick={handleClose} color="error" variant="contained">
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit(submitEvent)}
-            variant="contained"
-          >
-            Guardar
-          </Button>
-        </div>
-      </Box>
+      </>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
     </Layout>
   );

@@ -18,10 +18,7 @@ import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
 import CustomSnackbar from "../ui/CustomSnackbar";
 import Layout from "../../layouts/FormLayout";
-import { DateTime } from "luxon";
-import style from "../../styles/FormLayout.module.css";
-import { motion } from "framer-motion";
-import CustomStepForm from "../ui/CustomStepForm";
+import { currentDate, dateTimeFormat } from "../../utils/dates";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const {
@@ -141,9 +138,9 @@ function OperativosForm({ handleClose, afterCreate }) {
   const cargarOperativo = () => {
     try {
       const operativos = JSON.parse(localStorage.operativo);
-      if (DateTime.now().toMillis() < operativos.expiresAt) {
+      if (currentDate().toMillis() < operativos.expiresAt) {
         Object.entries(operativos).forEach(([key, value]) => {
-          if (key === "fecha") setValue(key, DateTime.fromISO(value));
+          if (key === "fecha") setValue(key, dateTimeFormat(value));
           else setValue(key, value);
         });
         isCompleted(operativos) && setActiveStep(1);
@@ -219,7 +216,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="fecha"
           disabled={!handleRol()}
           label="Fecha"
-          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+          defaultValue={!handleRol() ? currentDate() : null}
         />
         <CustomTextField
           control={control}
@@ -283,7 +280,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="hora"
           disabled={!handleRol()}
           label="Hora"
-          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+          defaultValue={!handleRol() ? currentDate() : null}
         />
         <CustomTextField
           control={control}

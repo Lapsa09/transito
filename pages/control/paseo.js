@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import ControlPaseoForm from "../../components/forms/ControlPaseoForm";
 import { getControlesPaseo } from "../../services/controlDiarioService";
 import { useRouter } from "next/router";
-import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
 import Layout from "../../layouts/OperativosLayout";
+import { dateFormat, dateTimeFormat, timeFormat } from "../../utils/dates";
 
 function ControlPaseoPage() {
   const [controles, setControles] = useState([]);
@@ -35,22 +35,14 @@ function ControlPaseoPage() {
     {
       field: "fecha",
       headerName: "Fecha",
-      valueFormatter: ({ value }) =>
-        DateTime.fromISO(value, {
-          zone: "America/Argentina/Buenos_Aires",
-        })
-          .plus({ day: 1 })
-          .toFormat("dd/MM/yyyy"),
+      valueFormatter: ({ value }) => dateFormat(value),
       width: 100,
     },
     {
       field: "hora",
       headerName: "Hora",
       width: 100,
-      valueFormatter: ({ value }) =>
-        DateTime.fromISO(value, {
-          zone: "America/Argentina/Buenos_Aires",
-        }).toFormat("HH:mm"),
+      valueFormatter: ({ value }) => timeFormat(value),
     },
     { field: "lp", headerName: "Legajo planilla", width: 150 },
     { field: "turno", headerName: "Turno", width: 150 },
@@ -64,12 +56,7 @@ function ControlPaseoPage() {
       field: "fechacarga",
       headerName: "Fecha carga",
       width: 150,
-      valueFormatter: ({ value }) =>
-        value
-          ? DateTime.fromSQL(value, {
-              zone: "America/Argentina/Buenos_Aires",
-            }).toFormat("dd/MM/yyyy HH:mm")
-          : "",
+      valueFormatter: ({ value }) => (value ? dateTimeFormat(value) : ""),
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 150 },
     { field: "mes", headerName: "Mes", width: 150 },

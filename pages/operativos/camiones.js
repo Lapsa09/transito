@@ -1,8 +1,8 @@
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import OperativosForm from "../../components/forms/CamionesForm";
 import { getOperativosCamiones } from "../../services/operativosService";
 import Layout from "../../layouts/OperativosLayout";
+import { dateFormat, timeFormat } from "../../utils/dates";
 
 function CamionesPage() {
   const [operativos, setOperativos] = useState([]);
@@ -26,7 +26,7 @@ function CamionesPage() {
       field: "fecha",
       headerName: "Fecha",
       width: 300,
-      valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
+      valueFormatter: ({ value }) => dateFormat(value),
     },
     { field: "hora", headerName: "Hora", width: 300 },
     { field: "turno", headerName: "Turno", width: 300 },
@@ -59,8 +59,7 @@ function CamionesPage() {
       field: "hora_carga",
       headerName: "Hora de carga",
       width: 300,
-      valueFormatter: ({ value }) =>
-        DateTime.fromISO(value).toLocaleString(DateTime.TIME_24_SIMPLE),
+      valueFormatter: ({ value }) => timeFormat(value),
     },
     { field: "legajo_carga", headerName: "Legajo carga", width: 300 },
   ];

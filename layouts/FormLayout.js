@@ -6,11 +6,10 @@ import { adminStyle, inspectorStyle } from "../components/utils";
 import { useSelector } from "react-redux";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
-import { DateTime } from "luxon";
 import CustomStepper from "../components/ui/CustomStepper";
-import { useRouter } from "next/router";
 import styles from "../styles/FormLayout.module.css";
 import CustomStepForm from "../components/ui/CustomStepForm";
+import { currentDate } from "../utils/dates";
 
 function FormLayout({
   children,
@@ -27,7 +26,6 @@ function FormLayout({
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
   const [open, setOpen] = useState(false);
-  const router = useRouter();
 
   const totalSteps = () => {
     return steps.length;
@@ -55,7 +53,7 @@ function FormLayout({
       JSON.stringify({
         ...steps[0].values,
         expiresAt:
-          expirationTime || DateTime.now().plus({ hours: 8 }).toMillis(),
+          expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
       })
     );
   };

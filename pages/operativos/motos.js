@@ -1,8 +1,8 @@
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { getOperativosMotos } from "../../services/operativosService";
 import MotosForm from "../../components/forms/MotosForm";
 import Layout from "../../layouts/OperativosLayout";
+import { dateFormat, dateTimeFormat, timeFormat } from "../../utils/dates";
 
 function MotosPage() {
   const [operativos, setOperativos] = useState([]);
@@ -26,9 +26,14 @@ function MotosPage() {
       field: "fecha",
       headerName: "Fecha",
       width: 300,
-      valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
+      valueFormatter: ({ value }) => dateFormat(value),
     },
-    { field: "hora", headerName: "Hora", width: 300 },
+    {
+      field: "hora",
+      headerName: "Hora",
+      width: 300,
+      valueFormatter: ({ value }) => timeFormat(value),
+    },
     { field: "direccion", headerName: "Direccion", width: 300 },
     { field: "zona", headerName: "Localidad", width: 300 },
     { field: "cp", headerName: "Codigo postal", width: 300 },
@@ -55,7 +60,7 @@ function MotosPage() {
       field: "fechacarga",
       headerName: "Fecha de carga",
       width: 300,
-      valueFormatter: ({ value }) => DateTime.fromISO(value).toLocaleString(),
+      valueFormatter: ({ value }) => dateTimeFormat(value),
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 300 },
   ];

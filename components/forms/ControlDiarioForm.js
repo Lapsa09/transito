@@ -14,9 +14,9 @@ import { useForm } from "react-hook-form";
 import CustomTextField from "../ui/CustomTextField";
 import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
-import { DateTime } from "luxon";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
 import Layout from "../../layouts/FormLayout";
+import { currentDate, dateTimeFormat } from "../../utils/dates";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const {
@@ -147,9 +147,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const cargarOperativo = () => {
     try {
       const operativos = JSON.parse(localStorage.diario);
-      if (DateTime.now().toMillis() < operativos.expiresAt) {
+      if (currentDate().toMillis() < operativos.expiresAt) {
         Object.entries(operativos).forEach(([key, value]) => {
-          if (key === "fecha") setValue(key, DateTime.fromISO(value));
+          if (key === "fecha") setValue(key, dateTimeFormat(value));
           else setValue(key, value);
         });
         isCompleted(operativos) && setActiveStep(1);
@@ -196,7 +196,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           control={control}
           label="Fecha"
           name="fecha"
-          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+          defaultValue={!handleRol() ? currentDate() : null}
           disabled={!handleRol()}
         />
 
@@ -233,7 +233,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           control={control}
           name="hora"
           label="Hora"
-          defaultValue={!handleRol() ? DateTime.now().setLocale("es-AR") : null}
+          defaultValue={!handleRol() ? currentDate() : null}
           disabled={!handleRol()}
         />
         <CustomTextField

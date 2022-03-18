@@ -2,8 +2,8 @@ import { DatePicker, LocalizationProvider } from "@mui/lab";
 import React from "react";
 import DateAdapter from "@mui/lab/AdapterLuxon";
 import { TextField } from "@mui/material";
-import { DateTime } from "luxon";
 import { useController } from "react-hook-form";
+import { currentDate } from "../../utils/dates";
 
 function CustomDatePicker({
   label,
@@ -24,10 +24,10 @@ function CustomDatePicker({
       validate: {
         validDate: (v) => v.isValid || "Ingrese una fecha valida",
         minDate: (v) =>
-          v.toMillis() > DateTime.now().minus({ months: 6 }).toMillis() ||
+          v.toMillis() > currentDate().minus({ months: 6 }).toMillis() ||
           "Elija una fecha mas reciente",
         maxDate: (v) =>
-          v.toMillis() < DateTime.now().toMillis() || "Elija una fecha pasada",
+          v.toMillis() < currentDate().toMillis() || "Elija una fecha pasada",
       },
     },
     defaultValue,
@@ -54,8 +54,8 @@ function CustomDatePicker({
             error={invalid}
           />
         )}
-        minDate={DateTime.now().minus({ month: 6 })}
-        maxDate={DateTime.now()}
+        minDate={currentDate().minus({ month: 6 })}
+        maxDate={currentDate()}
       />
     </LocalizationProvider>
   );

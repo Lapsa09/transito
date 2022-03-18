@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import OperativosForm from "../../components/forms/AutosForm";
 import { getOperativosAutos } from "../../services/operativosService";
@@ -6,6 +5,7 @@ import Layout from "../../layouts/OperativosLayout";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
+import { dateFormat, dateTimeFormat, timeFormat } from "../../utils/dates";
 
 function AutosPage() {
   const [operativos, setOperativos] = useState([]);
@@ -36,14 +36,13 @@ function AutosPage() {
       field: "fecha",
       headerName: "Fecha",
       width: 300,
-      valueFormatter: ({ value }) =>
-        DateTime.fromISO(value).toFormat("dd/MM/yyyy"),
+      valueFormatter: ({ value }) => dateFormat(value),
     },
     {
       field: "hora",
       headerName: "Hora",
       width: 300,
-      valueFormatter: ({ value }) => DateTime.fromISO(value).toFormat("HH:mm"),
+      valueFormatter: ({ value }) => timeFormat(value),
     },
     { field: "qth", headerName: "Direccion", width: 300 },
     { field: "barrio", headerName: "Localidad", width: 300 },
@@ -73,8 +72,7 @@ function AutosPage() {
       field: "fechacarga",
       headerName: "Fecha de carga",
       width: 300,
-      valueFormatter: ({ value }) =>
-        DateTime.fromISO(value).toFormat("dd/MM/yyyy HH:mm"),
+      valueFormatter: ({ value }) => dateTimeFormat(value),
     },
     { field: "lpcarga", headerName: "Legajo carga", width: 300 },
     { field: "mes", headerName: "Mes", width: 300 },

@@ -5,25 +5,22 @@ import style from "../../styles/FormLayout.module.css";
 function CustomStepForm({ children, activeStep, step }) {
   const variant = {
     open: {
-      x: 0,
-      transition: {
-        display: "none",
-      },
-      transitionEnd: { display: "grid" },
+      x: `-${activeStep * 100}%`,
     },
-    closed: {
+    left: {
       x: "-120vw",
-      transition: {
-        display: "grid",
-      },
-      transitionEnd: { display: "none" },
+    },
+    right: {
+      x: "120vw",
     },
   };
   return (
     <motion.div
-      className={`${style.form__box__inputs}`}
+      className={style.form__box__inputs}
       variants={variant}
-      animate={activeStep === step ? "open" : "closed"}
+      animate={
+        activeStep === step ? "open" : activeStep > step ? "left" : "right"
+      }
     >
       {children}
     </motion.div>

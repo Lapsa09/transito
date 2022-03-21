@@ -155,140 +155,142 @@ function OperativosForm({ handleClose, afterCreate }) {
   };
 
   return (
-    <Layout
-      fillSelects={fillSelects}
-      steps={steps()}
-      activeStep={activeStep}
-      setActiveStep={setActiveStep}
-      handleClose={handleClose}
-      isValid={isValid}
-      handleSubmit={handleSubmit(submitEvent)}
-      path="camiones"
-    >
-      <>
-        <DateTimePicker
-          control={control}
-          name="fecha"
-          label="Fecha"
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
+    <>
+      <Layout
+        fillSelects={fillSelects}
+        steps={steps()}
+        activeStep={activeStep}
+        setActiveStep={setActiveStep}
+        handleClose={handleClose}
+        isValid={isValid}
+        handleSubmit={handleSubmit(submitEvent)}
+        path="camiones"
+      >
+        <>
+          <DateTimePicker
+            control={control}
+            name="fecha"
+            label="Fecha"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? currentDate() : null}
+          />
 
-        <CustomTextField
-          control={control}
-          name="direccion"
-          label="Direccion"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
-        <CustomSelect
-          control={control}
-          name="zona"
-          label="Zona"
-          rules={{ required: "Inserte una localidad" }}
-          options={zonasVL}
-        />
-        <CustomTextField
-          type="number"
-          control={control}
-          name="legajo"
-          label="Legajo"
-          rules={{
-            required: "Inserte un legajo valido",
-            pattern: {
-              value: LEGAJO_PATTERN,
-              message: "Inserte un legajo valido",
-            },
-          }}
-        />
-        <CustomSelect
-          control={control}
-          name="turno"
-          label="Turno"
-          rules={{ required: "Elija una opcion" }}
-          options={turnos}
-        />
-      </>
-      <>
-        <TimePicker
-          control={control}
-          name="hora"
-          label="Hora"
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
-        <CustomTextField
-          control={control}
-          name="dominio"
-          label="Dominio"
-          rules={{
-            required: "Inserte una patente",
-            pattern: {
-              value: DOMINIO_PATTERN,
-              message: "Inserte una patente valida",
-            },
-          }}
-        />
-        <CustomTextField control={control} name="licencia" label="Licencia" />
-        <CustomTextField
-          control={control}
-          name="origen"
-          label="Origen"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
-        <CustomAutocomplete
-          control={control}
-          name="localidad_origen"
-          label="Localidad de origen"
-          rules={{ required: "Elija una opcion" }}
-          options={allZonas}
-        />
-        <CustomTextField
-          control={control}
-          name="destino"
-          label="Destino"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
-        <CustomAutocomplete
-          control={control}
-          name="localidad_destino"
-          label="Localidad de destino"
-          rules={{ required: "Elija una opcion" }}
-          options={allZonas}
-        />
-        <div className="switches">
-          <CustomSwitch control={control} name="remito" label="Remito" />
-          <CustomSwitch control={control} name="carga" label="Carga" />
-        </div>
-        {getValues("resolucion") === "ACTA" && (
+          <CustomTextField
+            control={control}
+            name="direccion"
+            label="Direccion"
+            rules={{ required: "Inserte una direccion valida" }}
+          />
+          <CustomSelect
+            control={control}
+            name="zona"
+            label="Zona"
+            rules={{ required: "Inserte una localidad" }}
+            options={zonasVL}
+          />
           <CustomTextField
             type="number"
             control={control}
-            name="acta"
-            label="Acta"
+            name="legajo"
+            label="Legajo"
             rules={{
-              required: {
-                value: getValues("resolucion") === "ACTA",
-                message: "Ingrese un nro de acta",
+              required: "Inserte un legajo valido",
+              pattern: {
+                value: LEGAJO_PATTERN,
+                message: "Inserte un legajo valido",
               },
             }}
           />
-        )}
-        <CustomTextField
-          control={control}
-          name="motivo"
-          label="Motivo"
-          rules={{ required: "Inserte un motivo valido" }}
-        />
-        <CustomSelect
-          control={control}
-          name="resolucion"
-          label="Resolucion"
-          rules={{ required: "Elija una opcion valida" }}
-          options={resolucion}
-        />
-      </>
+          <CustomSelect
+            control={control}
+            name="turno"
+            label="Turno"
+            rules={{ required: "Elija una opcion" }}
+            options={turnos}
+          />
+        </>
+        <>
+          <TimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? currentDate() : null}
+          />
+          <CustomTextField
+            control={control}
+            name="dominio"
+            label="Dominio"
+            rules={{
+              required: "Inserte una patente",
+              pattern: {
+                value: DOMINIO_PATTERN,
+                message: "Inserte una patente valida",
+              },
+            }}
+          />
+          <CustomTextField control={control} name="licencia" label="Licencia" />
+          <CustomTextField
+            control={control}
+            name="origen"
+            label="Origen"
+            rules={{ required: "Inserte una direccion valida" }}
+          />
+          <CustomAutocomplete
+            control={control}
+            name="localidad_origen"
+            label="Localidad de origen"
+            rules={{ required: "Elija una opcion" }}
+            options={allZonas}
+          />
+          <CustomTextField
+            control={control}
+            name="destino"
+            label="Destino"
+            rules={{ required: "Inserte una direccion valida" }}
+          />
+          <CustomAutocomplete
+            control={control}
+            name="localidad_destino"
+            label="Localidad de destino"
+            rules={{ required: "Elija una opcion" }}
+            options={allZonas}
+          />
+          <div className="switches">
+            <CustomSwitch control={control} name="remito" label="Remito" />
+            <CustomSwitch control={control} name="carga" label="Carga" />
+          </div>
+          {getValues("resolucion") === "ACTA" && (
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              label="Acta"
+              rules={{
+                required: {
+                  value: getValues("resolucion") === "ACTA",
+                  message: "Ingrese un nro de acta",
+                },
+              }}
+            />
+          )}
+          <CustomTextField
+            control={control}
+            name="motivo"
+            label="Motivo"
+            rules={{ required: "Inserte un motivo valido" }}
+          />
+          <CustomSelect
+            control={control}
+            name="resolucion"
+            label="Resolucion"
+            rules={{ required: "Elija una opcion valida" }}
+            options={resolucion}
+          />
+        </>
+      </Layout>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </Layout>
+    </>
   );
 }
 

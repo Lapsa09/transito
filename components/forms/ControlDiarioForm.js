@@ -142,130 +142,132 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   };
 
   return (
-    <Layout
-      steps={steps()}
-      activeStep={activeStep}
-      setActiveStep={setActiveStep}
-      handleClose={handleClose}
-      isValid={isValid}
-      handleSubmit={handleSubmit(submitting)}
-      fillSelects={fillSelects}
-      path="diario"
-    >
-      <>
-        <CustomDatePicker
-          control={control}
-          label="Fecha"
-          name="fecha"
-          defaultValue={!handleRol() ? currentDate() : null}
-          disabled={!handleRol()}
-        />
+    <>
+      <Layout
+        steps={steps()}
+        activeStep={activeStep}
+        setActiveStep={setActiveStep}
+        handleClose={handleClose}
+        isValid={isValid}
+        handleSubmit={handleSubmit(submitting)}
+        fillSelects={fillSelects}
+        path="diario"
+      >
+        <>
+          <CustomDatePicker
+            control={control}
+            label="Fecha"
+            name="fecha"
+            defaultValue={!handleRol() ? currentDate() : null}
+            disabled={!handleRol()}
+          />
 
-        <CustomSelect
-          control={control}
-          name="turno"
-          rules={{ required: "Elija una opcion" }}
-          label="Turno"
-          defaultValue={!handleRol() ? user.turno : ""}
-          disabled={!handleRol()}
-          options={turnos}
-        />
-        {handleRol() && (
-          <CustomTextField
-            type="number"
+          <CustomSelect
             control={control}
-            name="lp"
+            name="turno"
+            rules={{ required: "Elija una opcion" }}
+            label="Turno"
+            defaultValue={!handleRol() ? user.turno : ""}
+            disabled={!handleRol()}
+            options={turnos}
+          />
+          {handleRol() && (
+            <CustomTextField
+              type="number"
+              control={control}
+              name="lp"
+              rules={{
+                required: {
+                  value: handleRol(),
+                  message: "Inserte un legajo valido",
+                },
+                pattern: {
+                  value: LEGAJO_PATTERN,
+                  message: "Inserte un legajo valido",
+                },
+              }}
+              label="Legajo planilla"
+            />
+          )}
+        </>
+        <>
+          <CustomTimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            defaultValue={!handleRol() ? currentDate() : null}
+            disabled={!handleRol()}
+          />
+          <CustomTextField
+            control={control}
+            name="direccion"
+            rules={{ required: "Ingrese una direccion valida" }}
+            label="Direccion"
+          />
+          <CustomTextField
+            control={control}
+            name="dominio"
+            label="Dominio"
             rules={{
-              required: {
-                value: handleRol(),
-                message: "Inserte un legajo valido",
-              },
+              required: "Ingrese una patente valida",
               pattern: {
-                value: LEGAJO_PATTERN,
-                message: "Inserte un legajo valido",
+                value: DOMINIO_PATTERN,
+                message: "Ingrese una patente valida",
               },
             }}
-            label="Legajo planilla"
           />
-        )}
-      </>
-      <>
-        <CustomTimePicker
-          control={control}
-          name="hora"
-          label="Hora"
-          defaultValue={!handleRol() ? currentDate() : null}
-          disabled={!handleRol()}
-        />
-        <CustomTextField
-          control={control}
-          name="direccion"
-          rules={{ required: "Ingrese una direccion valida" }}
-          label="Direccion"
-        />
-        <CustomTextField
-          control={control}
-          name="dominio"
-          label="Dominio"
-          rules={{
-            required: "Ingrese una patente valida",
-            pattern: {
-              value: DOMINIO_PATTERN,
-              message: "Ingrese una patente valida",
-            },
-          }}
-        />
-        <CustomSelect
-          control={control}
-          name="resolucion"
-          rules={{ required: "Elija una opcion valida" }}
-          label="Resolucion"
-          options={resolucion}
-        />
-        {getValues("resolucion") == "ACTA" && (
-          <CustomTextField
-            type="number"
+          <CustomSelect
             control={control}
-            name="acta"
-            rules={{
-              required: {
-                value: getValues("resolucion") == "ACTA",
-                message: "Ingrese un Nro de Acta valido",
-              },
-            }}
-            label="Acta"
+            name="resolucion"
+            rules={{ required: "Elija una opcion valida" }}
+            label="Resolucion"
+            options={resolucion}
           />
-        )}
-        <CustomSelect
-          control={control}
-          name="motivo"
-          rules={{ required: "Elija una opcion" }}
-          label="Motivo"
-          options={motivos}
-        />
-        {motivos.length > 0 && getMotivo() == "OTRO" && (
-          <CustomTextField
+          {getValues("resolucion") == "ACTA" && (
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              rules={{
+                required: {
+                  value: getValues("resolucion") == "ACTA",
+                  message: "Ingrese un Nro de Acta valido",
+                },
+              }}
+              label="Acta"
+            />
+          )}
+          <CustomSelect
             control={control}
-            name="otroMotivo"
-            rules={{
-              required: {
-                value: getMotivo() == "OTRO",
-                message: "Inserte un motivo valido",
-              },
-            }}
-            label="Otro motivo"
+            name="motivo"
+            rules={{ required: "Elija una opcion" }}
+            label="Motivo"
+            options={motivos}
           />
-        )}
-        <CustomAutocomplete
-          control={control}
-          name="localidadInfractor"
-          rules={{ required: "Elija una opcion" }}
-          label="Localidad del infractor"
-          options={localidades}
-        />
-      </>
+          {motivos.length > 0 && getMotivo() == "OTRO" && (
+            <CustomTextField
+              control={control}
+              name="otroMotivo"
+              rules={{
+                required: {
+                  value: getMotivo() == "OTRO",
+                  message: "Inserte un motivo valido",
+                },
+              }}
+              label="Otro motivo"
+            />
+          )}
+          <CustomAutocomplete
+            control={control}
+            name="localidadInfractor"
+            rules={{ required: "Elija una opcion" }}
+            label="Localidad del infractor"
+            options={localidades}
+          />
+        </>
+      </Layout>
       <CustomSnackbar res={response} open={open} handleClose={closeSnackbar} />
-    </Layout>
+    </>
   );
 }
 

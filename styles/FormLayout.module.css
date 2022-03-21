@@ -23,18 +23,24 @@
 .form .form__box .form__box__inputs {
   margin: 20px 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(300px, 400px));
+  grid-template-columns: repeat(2, minmax(500px, 600px));
   grid-column-gap: 20px;
   grid-row-gap: 20px;
+  width: 100%;
 }
 
 .form > .form__box .form__box__inputs.hidden {
   display: none;
 }
 
+.form .form__form {
+  width: 100%;
+}
+
 .form .form__box {
   display: flex;
   /* flex-direction: column; */
+  overflow-x: hidden;
 }
 
 .form .form__box > .buttons {

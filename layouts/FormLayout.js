@@ -116,7 +116,7 @@ function FormLayout({
         </Button>
         <Image src={LogoOVT} width={150} height={70} layout="fixed" />
       </div>
-      <div>
+      <div className={styles.form__form}>
         <CustomStepper
           steps={steps}
           isCompleted={isCompleted}

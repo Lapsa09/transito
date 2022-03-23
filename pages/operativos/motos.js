@@ -44,11 +44,12 @@ function MotosPage() {
     { field: "dominio", headerName: "Dominio", width: 300 },
     { field: "licencia", headerName: "Nro licencia", width: 300 },
     { field: "tipo_licencia", headerName: "Tipo licencia", width: 300 },
-    { field: "motivo1", headerName: "Motivo 1", width: 300 },
-    { field: "motivo2", headerName: "Motivo 2", width: 300 },
-    { field: "motivo3", headerName: "Motivo 3", width: 300 },
-    { field: "motivo4", headerName: "Motivo 4", width: 300 },
-    { field: "motivo5", headerName: "Motivo 5", width: 300 },
+    {
+      field: "motivos",
+      headerName: "Motivos",
+      width: 1000,
+      valueFormatter: ({ value }) => value.toString(),
+    },
     {
       field: "zona_infractor",
       headerName: "Localidad del infractor",

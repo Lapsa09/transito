@@ -10,6 +10,7 @@ import CustomStepper from "../components/ui/CustomStepper";
 import styles from "../styles/FormLayout.module.css";
 import CustomStepForm from "../components/ui/CustomStepForm";
 import { currentDate, dateTimeFormat } from "../utils/dates";
+import CustomSnackbar from "../components/ui/CustomSnackbar";
 
 function FormLayout({
   children,
@@ -20,11 +21,14 @@ function FormLayout({
   isValid,
   handleSubmit,
   path,
-  fillSelects,
+  fillSelectsEvent,
+  submitEvent,
 }) {
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
   const [open, setOpen] = useState(false);
+  const [openSB, setOpenSB] = useState(false);
+  const [response, setResponse] = useState({ severity: "", message: "" });
 
   const totalSteps = () => {
     return steps.length;
@@ -41,6 +45,14 @@ function FormLayout({
   const handleNext = () => {
     if (isCompleted(steps[activeStep]?.values)) saveOp();
     setActiveStep(activeStep + 1);
+  };
+
+  const fillSelects = async () => {
+    try {
+      await fillSelectsEvent();
+    } catch (error) {
+      showSnackbar("error", error.response?.data);
+    }
   };
 
   const saveOp = () => {
@@ -74,6 +86,28 @@ function FormLayout({
       } else nuevoOperativo();
     } catch (error) {
       return;
+    }
+  };
+
+  const showSnackbar = (severity, message) => {
+    setResponse({ severity, message });
+    setOpenSB(true);
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSB(false);
+  };
+
+  const submiting = async (data) => {
+    try {
+      await submitEvent(data);
+      showSnackbar("success", "Cargado con exito");
+    } catch (error) {
+      showSnackbar("error", error.response?.data);
     }
   };
 
@@ -143,7 +177,7 @@ function FormLayout({
             <Button
               type="submit"
               disabled={!isValid || activeStep === 0}
-              onClick={handleSubmit}
+              onClick={handleSubmit(submiting)}
             >
               Guardar
             </Button>
@@ -153,6 +187,11 @@ function FormLayout({
       <Modal open={open} onClose={() => setOpen(false)}>
         <WarningModal reset={nuevoOperativo} setOpen={setOpen} />
       </Modal>
+      <CustomSnackbar
+        res={response}
+        open={openSB}
+        handleClose={closeSnackbar}
+      />
     </Box>
   );
 }

@@ -44,7 +44,7 @@ function ControlDiarioPage() {
       width: 100,
       valueFormatter: ({ value }) => timeFormat(value),
     },
-    { field: "lp", headerName: "Legajo planilla", width: 150 },
+    { field: "legajo_planilla", headerName: "Legajo planilla", width: 150 },
     { field: "turno", headerName: "Turno", width: 150 },
     { field: "direccion", headerName: "Direccion", width: 250 },
     { field: "dominio", headerName: "Dominio", width: 150 },

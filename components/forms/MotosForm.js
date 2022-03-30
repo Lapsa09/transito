@@ -29,11 +29,14 @@ function MotosForm({ handleClose, afterCreate }) {
     control,
     reset,
     getValues,
-    setValue,
     watch,
     formState: { isValid },
   } = useForm({
     mode: "all",
+    defaultValues: {
+      motivos: [{ motivo: null }],
+      lpcarga: user.legajo,
+    },
   });
   const { append, remove, fields } = useFieldArray({
     control,
@@ -151,13 +154,11 @@ function MotosForm({ handleClose, afterCreate }) {
     setSeguridad(seguridad);
     setResolucion(resolucion);
     setMotivos(motivos);
-    setValue("lpcarga", user.legajo);
-    append();
   };
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
-      append(null);
+      append({ motivo: null });
     }
   };
 
@@ -170,9 +171,18 @@ function MotosForm({ handleClose, afterCreate }) {
   const submitEvent = async (data) => {
     await nuevoOperativoMoto(data);
     await afterCreate();
-    reset({
-      ...data,
-    });
+    reset(
+      {
+        dominio: "",
+        licencia: "",
+        tipo_licencia: null,
+        zona_infractor: null,
+        motivos: [{ motivo: null }],
+        resolucion: null,
+        acta: "",
+      },
+      { keepDefaultValues: true }
+    );
   };
 
   return (
@@ -299,7 +309,7 @@ function MotosForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             key={item.id}
-            name={`motivos.${index}`}
+            name={`motivos.${index}.motivo`}
             label={`Motivo ${index + 1}`}
             rules={{ required: "Elija un motivo valido" }}
             options={motivos}

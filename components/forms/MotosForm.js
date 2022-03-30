@@ -34,9 +34,6 @@ function MotosForm({ handleClose, afterCreate }) {
     formState: { isValid },
   } = useForm({
     mode: "all",
-    defaultValues: {
-      motivos: [{ ...null }],
-    },
   });
   const { append, remove, fields } = useFieldArray({
     control,
@@ -155,6 +152,7 @@ function MotosForm({ handleClose, afterCreate }) {
     setResolucion(resolucion);
     setMotivos(motivos);
     setValue("lpcarga", user.legajo);
+    append();
   };
 
   const sumarMotivos = () => {

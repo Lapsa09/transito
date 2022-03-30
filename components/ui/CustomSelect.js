@@ -36,8 +36,8 @@ function CustomSelect({
         option.enumlabel ? (
           <MenuItem value={option.enumlabel}>{option.enumlabel}</MenuItem>
         ) : (
-          <MenuItem value={Object.entries(option)[0][1]}>
-            {Object.entries(option)[1][1]}
+          <MenuItem value={Object.values(option)[0]}>
+            {Object.values(option)[1]}
           </MenuItem>
         )
       )}

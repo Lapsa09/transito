@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../utils/redux/userSlice";
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import CustomTextField from "../ui/CustomTextField";
 import CustomSelect from "../ui/CustomSelect";
 import CustomAutocomplete from "../ui/CustomAutocomplete";
@@ -35,12 +35,12 @@ function MotosForm({ handleClose, afterCreate }) {
   } = useForm({
     mode: "all",
     defaultValues: {
-      motivo1: null,
-      motivo2: null,
-      motivo3: null,
-      motivo4: null,
-      motivo5: null,
+      motivos: [{ ...null }],
     },
+  });
+  const { append, remove, fields } = useFieldArray({
+    control,
+    name: "motivos",
   });
   const [licencias, setLicencias] = useState([]);
   const [zonasVL, setZonasVL] = useState([]);
@@ -49,7 +49,6 @@ function MotosForm({ handleClose, afterCreate }) {
   const [seguridad, setSeguridad] = useState([]);
   const [resolucion, setResolucion] = useState([]);
   const [motivos, setMotivos] = useState([]);
-  const [cantMotivos, setCantMotivos] = useState(1);
   const [activeStep, setActiveStep] = useState(0);
   const handleRol = () => user?.rol === "ADMIN";
 
@@ -159,14 +158,14 @@ function MotosForm({ handleClose, afterCreate }) {
   };
 
   const sumarMotivos = () => {
-    if (cantMotivos < 5) {
-      setCantMotivos(cantMotivos + 1);
+    if (fields.length < 5) {
+      append(null);
     }
   };
 
   const restarMotivos = () => {
-    if (cantMotivos > 1) {
-      setCantMotivos(cantMotivos - 1);
+    if (fields.length > 1) {
+      remove(fields.length - 1);
     }
   };
 
@@ -263,7 +262,7 @@ function MotosForm({ handleClose, afterCreate }) {
       </>
       <>
         <div className="controller">
-          <h4>Motivos: {cantMotivos}</h4>
+          <h4>Motivos: {fields.length}</h4>
           <AddBoxSharpIcon onClick={sumarMotivos} />
           <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
         </div>
@@ -298,69 +297,16 @@ function MotosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion" }}
           options={allZonas}
         />
-        <CustomSelect
-          control={control}
-          name="motivo1"
-          label="Motivo 1"
-          rules={{ required: "Elija un motivo valido" }}
-          options={motivos}
-        />
-        {cantMotivos >= 2 && (
+        {fields.map((item, index) => (
           <CustomSelect
             control={control}
-            name="motivo2"
-            label="Motivo 2"
-            rules={{
-              required: {
-                value: cantMotivos >= 2,
-                message: "Elija un motivo valido",
-              },
-            }}
+            key={item.id}
+            name={`motivos.${index}`}
+            label={`Motivo ${index + 1}`}
+            rules={{ required: "Elija un motivo valido" }}
             options={motivos}
           />
-        )}
-        {cantMotivos >= 3 && (
-          <CustomSelect
-            control={control}
-            name="motivo3"
-            label="Motivo 3"
-            rules={{
-              required: {
-                value: cantMotivos >= 3,
-                message: "Elija un motivo valido",
-              },
-            }}
-            options={motivos}
-          />
-        )}
-        {cantMotivos >= 4 && (
-          <CustomSelect
-            control={control}
-            name="motivo4"
-            label="Motivo 4"
-            rules={{
-              required: {
-                value: cantMotivos >= 4,
-                message: "Elija un motivo valido",
-              },
-            }}
-            options={motivos}
-          />
-        )}
-        {cantMotivos === 5 && (
-          <CustomSelect
-            control={control}
-            name="motivo5"
-            label="Motivo 5"
-            rules={{
-              required: {
-                value: cantMotivos >= 5,
-                message: "Elija un motivo valido",
-              },
-            }}
-            options={motivos}
-          />
-        )}
+        ))}
         <CustomSelect
           control={control}
           name="resolucion"

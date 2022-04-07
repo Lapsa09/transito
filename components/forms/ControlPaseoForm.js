@@ -3,6 +3,7 @@ import {
   getLocalidades,
   getMotivosPaseo,
   nuevoControlPaseo,
+  getZonasPaseo,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
 import CustomDatePicker from "../ui/DatePicker";
@@ -31,6 +32,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
   const [turnos, setTurnos] = useState([]);
   const [localidades, setLocalidades] = useState([]);
   const [motivos, setMotivos] = useState([]);
+  const [zonas, setZonas] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
@@ -94,16 +96,18 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
   };
 
   const fillSelects = async () => {
-    const [barrios, motivos, turnos, resoluciones] = await Promise.all([
+    const [barrios, motivos, turnos, resoluciones, zonas] = await Promise.all([
       getLocalidades(),
       getMotivosPaseo(),
       getTurnos(),
       getResolucion(),
+      getZonasPaseo(),
     ]);
     setLocalidades(barrios);
     setMotivos(motivos);
     setTurnos(turnos);
     setResolucion(resoluciones);
+    setZonas(zonas);
     setValue("lpcarga", user.legajo);
     if (!handleRol()) setValue("lp", user.legajo);
   };
@@ -171,13 +175,12 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           defaultValue={!handleRol() ? currentDate() : null}
           disabled={!handleRol()}
         />
-        <CustomTextField
+        <CustomSelect
           control={control}
           name="direccion"
-          disabled={true}
-          rules={{ required: "Ingrese una direccion valida" }}
+          rules={{ required: "Elija una opcion" }}
           label="Direccion"
-          defaultValue={"PASEO DE LA COSTA"}
+          options={zonas}
         />
         <CustomTextField
           control={control}

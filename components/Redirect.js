@@ -17,6 +17,7 @@ function Redirect({ children }) {
         "/operativos/autos",
         "/operativos/motos",
         "/operativos/camiones",
+        "/control/paseo/data",
       ];
       const path = url.split("?")[0];
       await checkAuthenticated();
@@ -24,7 +25,7 @@ function Redirect({ children }) {
         if (publicPaths.includes(path)) {
           setAuthorized(false);
           router.replace("/");
-        } else if (user && user.rol !== "ADMIN" && adminPaths.includes(path)) {
+        } else if (user?.rol !== "ADMIN" && adminPaths.includes(path)) {
           setAuthorized(false);
           router.replace("/");
         } else {

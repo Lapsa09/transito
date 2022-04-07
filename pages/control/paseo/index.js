@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-import ControlPaseoForm from "../../components/forms/ControlPaseoForm";
-import { getControlesPaseo } from "../../services/controlDiarioService";
+import ControlPaseoForm from "../../../components/forms/ControlPaseoForm";
+import { getControlesPaseo } from "../../../services/controlDiarioService";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../utils/redux/userSlice";
-import Layout from "../../layouts/OperativosLayout";
-import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../utils/dates";
+import { selectUser } from "../../../utils/redux/userSlice";
+import Layout from "../../../layouts/OperativosLayout";
+import {
+  dateFormat,
+  dateTimeSQLFormat,
+  timeFormat,
+} from "../../../utils/dates";
 
 function ControlPaseoPage() {
   const [controles, setControles] = useState([]);
@@ -46,7 +50,7 @@ function ControlPaseoPage() {
     },
     { field: "lp", headerName: "Legajo planilla", width: 150 },
     { field: "turno", headerName: "Turno", width: 150 },
-    { field: "direccion", headerName: "Direccion", width: 250 },
+    { field: "zona", headerName: "Direccion", width: 250 },
     { field: "dominio", headerName: "Dominio", width: 150 },
     { field: "barrio", headerName: "Localidad", width: 150 },
     { field: "motivo", headerName: "Motivo", width: 250 },

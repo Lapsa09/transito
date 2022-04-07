@@ -8,7 +8,7 @@ function CustomSelect({
   rules,
   label,
   options,
-  defaultValue,
+  defaultValue = null,
   disabled = false,
 }) {
   const {
@@ -31,7 +31,6 @@ function CustomSelect({
       required={rules !== undefined}
       helperText={errors[name]?.message}
     >
-      <MenuItem>SELECCIONE UNA OPCION</MenuItem>
       {options.map((option) =>
         option.enumlabel ? (
           <MenuItem value={option.enumlabel}>{option.enumlabel}</MenuItem>

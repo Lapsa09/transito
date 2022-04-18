@@ -122,6 +122,8 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
       handleSubmit={handleSubmit}
       submitEvent={submitting}
       fillSelectsEvent={fillSelects}
+      reset={reset}
+      setValue={setValue}
       path="paseo"
     >
       <>

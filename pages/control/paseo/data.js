@@ -1,54 +1,83 @@
 import React, { useEffect, useState } from "react";
-import CustomBarchart from "../../../components/ui/CustomBarchart";
 import { getDatosPaseo } from "../../../services/controlDiarioService";
-import { CustomSelect } from "../../../components/ui";
+import {
+  CustomRadioGroup,
+  CustomSelect,
+  CustomBarchart,
+} from "../../../components/ui";
 import { dateNameFormat } from "../../../utils/dates";
 import style from "../../../styles/Data.module.css";
 import { useForm } from "react-hook-form";
 
-function Datacharts({ data }) {
+function Datacharts() {
   const { control, getValues, watch } = useForm();
   const [datas, setDatas] = useState([]);
-  const initSelect = () => {
-    const f = [...new Set(data.map((d) => d.fecha))];
-    return f.map((fe) => {
-      return { id: fe, label: dateNameFormat(fe) };
-    });
-  };
+  const [fechas, setFechas] = useState([]);
 
   useEffect(() => {
-    setDatas(filterByDay());
-  }, [watch("dia")]);
+    filterByDay();
+  }, [watch("fecha"), watch("dia"), watch("filter")]);
 
-  const filterByDay = () => {
-    const select = getValues("dia");
+  useEffect(() => {
+    getFechas();
+  }, []);
 
-    return data.filter((d) => d.fecha === select);
+  const getFechas = async () => {
+    const { fechas } = await getDatosPaseo();
+    setFechas(
+      fechas.map(({ fecha }) => ({
+        id: fecha,
+        label: dateNameFormat(fecha),
+      }))
+    );
   };
 
-  const getDefaultValue = () => initSelect().reverse()[0].id;
+  const filterByDay = async () => {
+    if (getValues("filter") === "date") {
+      const select = getValues("fecha");
+      const { data } = await getDatosPaseo({ filterDate: select });
+      setDatas(data);
+    } else {
+      const select = getValues("dia");
+      const { data } = await getDatosPaseo({ filterWD: `${select}` });
+      setDatas(data);
+    }
+  };
 
   return (
     <div className={style.page}>
-      <CustomSelect
-        control={control}
-        name="dia"
-        label="Dia"
-        options={initSelect()}
-        defaultValue={getDefaultValue()}
-      />
+      <div style={{ width: "300px" }}>
+        <CustomRadioGroup
+          control={control}
+          name="filter"
+          title="Filtrar por"
+          values={[
+            { value: "date", label: "Fecha" },
+            { value: "weekday", label: "Dia de la semana" },
+          ]}
+        />
+        {watch("filter") === "date" ? (
+          <CustomSelect
+            control={control}
+            name="fecha"
+            label="Fecha"
+            options={fechas}
+          />
+        ) : (
+          <CustomSelect
+            control={control}
+            name="dia"
+            label="Dia"
+            options={[
+              { id: 6, label: "sabado" },
+              { id: 0, label: "domingo" },
+            ]}
+          />
+        )}
+      </div>
       <CustomBarchart data={datas} />
     </div>
   );
 }
-
-export const getStaticProps = async () => {
-  const data = await getDatosPaseo();
-  return {
-    props: {
-      data,
-    },
-  };
-};
 
 export default Datacharts;

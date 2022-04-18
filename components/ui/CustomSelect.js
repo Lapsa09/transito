@@ -8,7 +8,7 @@ function CustomSelect({
   rules,
   label,
   options,
-  defaultValue = null,
+  defaultValue = "",
   disabled = false,
 }) {
   const {
@@ -25,13 +25,15 @@ function CustomSelect({
     <TextField
       {...field}
       select
+      sx={{ width: "100%" }}
       error={error}
       label={label}
       disabled={disabled}
       required={rules !== undefined}
       helperText={errors[name]?.message}
     >
-      {options.map((option) =>
+      <MenuItem value="">ELIJA UNA OPCION</MenuItem>
+      {options?.map((option) =>
         option.enumlabel ? (
           <MenuItem value={option.enumlabel}>{option.enumlabel}</MenuItem>
         ) : (

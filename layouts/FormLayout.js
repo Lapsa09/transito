@@ -23,6 +23,8 @@ function FormLayout({
   path,
   fillSelectsEvent,
   submitEvent,
+  reset,
+  setValue,
 }) {
   const user = useSelector(selectUser);
   const handleRol = () => user.rol === "ADMIN";
@@ -79,8 +81,9 @@ function FormLayout({
       const operativos = JSON.parse(localStorage.getItem(path));
       if (currentDate().toMillis() < operativos.expiresAt) {
         Object.entries(operativos).forEach(([key, value]) => {
-          if (key === "fecha") setValue(key, dateTimeFormat(value));
-          else setValue(key, value);
+          key === "fecha"
+            ? setValue(key, dateTimeFormat(value))
+            : setValue(key, value);
         });
         isCompleted(operativos) && setActiveStep(1);
       } else nuevoOperativo();

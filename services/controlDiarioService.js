@@ -18,4 +18,5 @@ export const getControlesPaseo = async () => await getter("/control/paseo");
 
 export const getZonasPaseo = async () => await getter("/control/paseo/zonas");
 
-export const getDatosPaseo = async () => await getter("/control/paseo/data");
+export const getDatosPaseo = async (filter) =>
+  await setter("/control/paseo/data", filter);

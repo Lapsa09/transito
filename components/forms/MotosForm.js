@@ -22,7 +22,6 @@ import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
 import { useForm, useFieldArray } from "react-hook-form";
 import Layout from "../../layouts/FormLayout";
-import { currentDate } from "../../utils";
 import { useSelects } from "../../hooks";
 
 function MotosForm({ handleClose, afterCreate }) {

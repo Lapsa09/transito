@@ -4,7 +4,7 @@ import { register } from "../services/userService";
 import { useRouter } from "next/router";
 import style from "../styles/Register.module.css";
 import { useDispatch } from "react-redux";
-import { login } from "../utils/redux/userSlice";
+import { login } from "../redux/userSlice";
 import CustomTextField from "../components/ui/CustomTextField";
 import { useForm } from "react-hook-form";
 

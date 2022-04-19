@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import store from "../utils/store";
+import store from "../redux/store";
 import { Provider } from "react-redux";
 import Redirect from "../components/Redirect";
 import Head from "next/head";

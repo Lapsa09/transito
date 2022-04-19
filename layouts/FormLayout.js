@@ -1,16 +1,18 @@
 import { Box, Button, Modal } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { selectUser } from "../utils/redux/userSlice";
+import { selectUser } from "../redux/userSlice";
 import { adminStyle, inspectorStyle } from "../components/utils";
 import { useSelector } from "react-redux";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
-import CustomStepper from "../components/ui/CustomStepper";
 import styles from "../styles/FormLayout.module.css";
-import CustomStepForm from "../components/ui/CustomStepForm";
-import { currentDate, dateTimeFormat } from "../utils/dates";
-import CustomSnackbar from "../components/ui/CustomSnackbar";
+import { currentDate, dateTimeFormat } from "../utils";
+import {
+  CustomSnackbar,
+  CustomStepForm,
+  CustomStepper,
+} from "../components/ui";
 
 function FormLayout({
   children,
@@ -21,7 +23,7 @@ function FormLayout({
   isValid,
   handleSubmit,
   path,
-  fillSelectsEvent,
+  error,
   submitEvent,
   reset,
   setValue,
@@ -49,14 +51,6 @@ function FormLayout({
     setActiveStep(activeStep + 1);
   };
 
-  const fillSelects = async () => {
-    try {
-      await fillSelectsEvent();
-    } catch (error) {
-      showSnackbar("error", error.response?.data);
-    }
-  };
-
   const saveOp = () => {
     const expirationTime = JSON.parse(
       localStorage.getItem(path) || null
@@ -72,7 +66,9 @@ function FormLayout({
   };
 
   useEffect(() => {
-    fillSelects();
+    if (error) {
+      showSnackbar("error", error);
+    }
     cargarOperativo();
   }, []);
 

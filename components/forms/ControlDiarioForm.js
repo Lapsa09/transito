@@ -5,35 +5,47 @@ import {
   nuevoControl,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
-import CustomDatePicker from "../ui/DatePicker";
-import CustomTimePicker from "../ui/TimePicker";
-import { selectUser } from "../../utils/redux/userSlice";
+import { selectUser } from "../../redux/userSlice";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import CustomTextField from "../ui/CustomTextField";
-import CustomSelect from "../ui/CustomSelect";
-import CustomAutocomplete from "../ui/CustomAutocomplete";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
+import {
+  CustomDatePicker,
+  CustomTimePicker,
+  CustomTextField,
+  CustomSelect,
+  CustomAutocomplete,
+} from "../ui";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
 import Layout from "../../layouts/FormLayout";
-import { currentDate } from "../../utils/dates";
+import { useSelects } from "../../hooks";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
+  const user = useSelector(selectUser);
+  const handleRol = () => user.rol === "ADMIN";
   const {
     handleSubmit,
     control,
     reset,
     getValues,
-    setValue,
     watch,
     formState: { isValid },
-  } = useForm({ mode: "all" });
-  const [resolucion, setResolucion] = useState([]);
-  const [turnos, setTurnos] = useState([]);
-  const [localidades, setLocalidades] = useState([]);
-  const [motivos, setMotivos] = useState([]);
+  } = useForm({
+    mode: "all",
+    defaultValues: {
+      lpcarga: user.legajo,
+      lp: !handleRol() ? user.legajo : "",
+    },
+  });
+  const {
+    data: [localidades, motivos, turnos, resolucion],
+    error,
+  } = useSelects([
+    getLocalidades(),
+    getMotivos(),
+    getTurnos(),
+    getResolucion(),
+  ]);
   const [activeStep, setActiveStep] = useState(0);
-  const user = useSelector(selectUser);
-  const handleRol = () => user.rol === "ADMIN";
 
   const steps = () => {
     const [
@@ -93,21 +105,6 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     }
   };
 
-  const fillSelects = async () => {
-    const [barrios, motivos, turnos, resoluciones] = await Promise.all([
-      getLocalidades(),
-      getMotivos(),
-      getTurnos(),
-      getResolucion(),
-    ]);
-    setLocalidades(barrios);
-    setMotivos(motivos);
-    setTurnos(turnos);
-    setResolucion(resoluciones);
-    setValue("lpcarga", user.legajo);
-    if (!handleRol()) setValue("lp", user.legajo);
-  };
-
   const getMotivo = () => {
     return (
       motivos.find((motivo) => motivo.id == getValues("motivo"))?.motivo || ""
@@ -123,7 +120,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       isValid={isValid}
       handleSubmit={handleSubmit}
       submitEvent={submitting}
-      fillSelectsEvent={fillSelects}
+      error={error}
       path="diario"
     >
       <>
@@ -217,7 +214,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           label="Motivo"
           options={motivos}
         />
-        {motivos.length > 0 && getMotivo() == "OTRO" && (
+        {motivos?.length > 0 && getMotivo() == "OTRO" && (
           <CustomTextField
             control={control}
             name="otroMotivo"

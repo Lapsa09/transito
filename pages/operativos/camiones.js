@@ -1,25 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import OperativosForm from "../../components/forms/CamionesForm";
 import { getOperativosCamiones } from "../../services/operativosService";
 import Layout from "../../layouts/OperativosLayout";
-import { dateFormat, timeFormat } from "../../utils/dates";
+import { dateFormat, timeFormat } from "../../utils";
+import { useData } from "../../hooks";
 
 function CamionesPage() {
-  const [operativos, setOperativos] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
-
-  useEffect(() => {
-    handleFetch();
-  }, []);
-
-  const handleFetch = async () => {
-    setLoading(true);
-    setOperativos(await getOperativosCamiones());
-    setLoading(false);
-  };
+  const { data, loading, refresh } = useData(getOperativosCamiones);
 
   const columns = [
     {
@@ -70,10 +60,10 @@ function CamionesPage() {
       handleOpen={handleOpen}
       handleClose={handleClose}
       columns={columns}
-      operativos={operativos}
+      operativos={data}
       loading={loading}
     >
-      <OperativosForm afterCreate={handleFetch} handleClose={handleClose} />
+      <OperativosForm afterCreate={refresh} handleClose={handleClose} />
     </Layout>
   );
 }

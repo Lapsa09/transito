@@ -5,20 +5,24 @@ import {
   nuevoControlPaseo,
   getZonasPaseo,
 } from "../../services/controlDiarioService";
+import {
+  CustomDatePicker,
+  CustomTimePicker,
+  CustomTextField,
+  CustomSelect,
+  CustomAutocomplete,
+} from "../ui";
 import { getResolucion, getTurnos } from "../../services/index";
-import CustomDatePicker from "../ui/DatePicker";
-import CustomTimePicker from "../ui/TimePicker";
-import { selectUser } from "../../utils/redux/userSlice";
+import { selectUser } from "../../redux/userSlice";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import CustomTextField from "../ui/CustomTextField";
-import CustomSelect from "../ui/CustomSelect";
-import CustomAutocomplete from "../ui/CustomAutocomplete";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
 import Layout from "../../layouts/FormLayout";
-import { currentDate } from "../../utils/dates";
+import { useSelects } from "../../hooks";
 
 function ControlPaseoForm({ handleClose, afterCreate }) {
+  const user = useSelector(selectUser);
+  const handleRol = () => user.rol === "ADMIN";
   const {
     handleSubmit,
     control,
@@ -27,15 +31,24 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     setValue,
     watch,
     formState: { isValid },
-  } = useForm({ mode: "all" });
-  const [resolucion, setResolucion] = useState([]);
-  const [turnos, setTurnos] = useState([]);
-  const [localidades, setLocalidades] = useState([]);
-  const [motivos, setMotivos] = useState([]);
-  const [zonas, setZonas] = useState([]);
+  } = useForm({
+    mode: "all",
+    defaultValues: {
+      lpcarga: user.legajo,
+      lp: !handleRol() ? user.legajo : "",
+    },
+  });
+  const {
+    data: [localidades, motivos, turnos, resolucion, zonas],
+    error,
+  } = useSelects([
+    getLocalidades(),
+    getMotivosPaseo(),
+    getTurnos(),
+    getResolucion(),
+    getZonasPaseo(),
+  ]);
   const [activeStep, setActiveStep] = useState(0);
-  const user = useSelector(selectUser);
-  const handleRol = () => user.rol === "ADMIN";
 
   const steps = () => {
     const [
@@ -95,23 +108,6 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     }
   };
 
-  const fillSelects = async () => {
-    const [barrios, motivos, turnos, resoluciones, zonas] = await Promise.all([
-      getLocalidades(),
-      getMotivosPaseo(),
-      getTurnos(),
-      getResolucion(),
-      getZonasPaseo(),
-    ]);
-    setLocalidades(barrios);
-    setMotivos(motivos);
-    setTurnos(turnos);
-    setResolucion(resoluciones);
-    setZonas(zonas);
-    setValue("lpcarga", user.legajo);
-    if (!handleRol()) setValue("lp", user.legajo);
-  };
-
   return (
     <Layout
       steps={steps()}
@@ -121,7 +117,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
       isValid={isValid}
       handleSubmit={handleSubmit}
       submitEvent={submitting}
-      fillSelectsEvent={fillSelects}
+      error={error}
       reset={reset}
       setValue={setValue}
       path="paseo"

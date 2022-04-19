@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { verifyAuth } from "../services/index";
-import { login, logout, selectUser } from "../utils/redux/userSlice";
+import { login, logout, selectUser } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function Redirect({ children }) {

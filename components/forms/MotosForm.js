@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import DateTimePicker from "../ui/DatePicker";
-import TimePicker from "../ui/TimePicker";
 import {
   getAllZonas,
   getLicencias,
@@ -9,21 +7,27 @@ import {
   getZonasVL,
   nuevoOperativoMoto,
 } from "../../services/operativosService";
+import {
+  CustomDatePicker,
+  CustomTimePicker,
+  CustomTextField,
+  CustomSelect,
+  CustomAutocomplete,
+} from "../ui";
 import { getResolucion, getTurnos } from "../../services/index";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../utils/redux/userSlice";
+import { selectUser } from "../../redux/userSlice";
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
 import { useForm, useFieldArray } from "react-hook-form";
-import CustomTextField from "../ui/CustomTextField";
-import CustomSelect from "../ui/CustomSelect";
-import CustomAutocomplete from "../ui/CustomAutocomplete";
 import Layout from "../../layouts/FormLayout";
-import { currentDate } from "../../utils/dates";
+import { currentDate } from "../../utils";
+import { useSelects } from "../../hooks";
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
+  const handleRol = () => user?.rol === "ADMIN";
   const {
     handleSubmit,
     control,
@@ -42,15 +46,27 @@ function MotosForm({ handleClose, afterCreate }) {
     control,
     name: "motivos",
   });
-  const [licencias, setLicencias] = useState([]);
-  const [zonasVL, setZonasVL] = useState([]);
-  const [allZonas, setAllZonas] = useState([]);
-  const [turnos, setTurnos] = useState([]);
-  const [seguridad, setSeguridad] = useState([]);
-  const [resolucion, setResolucion] = useState([]);
-  const [motivos, setMotivos] = useState([]);
+  const {
+    data: [
+      licencias,
+      zonasVL,
+      allZonas,
+      turnos,
+      seguridad,
+      resolucion,
+      motivos,
+    ],
+    error,
+  } = useSelects([
+    getLicencias(),
+    getZonasVL(),
+    getAllZonas(),
+    getTurnos(),
+    getSeguridad(),
+    getResolucion(),
+    getMotivosMoto(),
+  ]);
   const [activeStep, setActiveStep] = useState(0);
-  const handleRol = () => user?.rol === "ADMIN";
 
   const steps = () => {
     const [
@@ -128,34 +144,6 @@ function MotosForm({ handleClose, afterCreate }) {
     ];
   };
 
-  const fillSelects = async () => {
-    const [
-      licencias,
-      zonasVL,
-      allZonas,
-      turnos,
-      seguridad,
-      resolucion,
-      motivos,
-    ] = await Promise.all([
-      getLicencias(),
-      getZonasVL(),
-      getAllZonas(),
-      getTurnos(),
-      getSeguridad(),
-      getResolucion(),
-      getMotivosMoto(),
-    ]);
-
-    setLicencias(licencias);
-    setZonasVL(zonasVL);
-    setAllZonas(allZonas);
-    setTurnos(turnos);
-    setSeguridad(seguridad);
-    setResolucion(resolucion);
-    setMotivos(motivos);
-  };
-
   const sumarMotivos = () => {
     if (fields.length < 5) {
       append({ motivo: null });
@@ -164,7 +152,7 @@ function MotosForm({ handleClose, afterCreate }) {
 
   const restarMotivos = () => {
     if (fields.length > 1) {
-      remove(fields.length - 1);
+      remove(fields.at(-1));
     }
   };
 
@@ -187,7 +175,7 @@ function MotosForm({ handleClose, afterCreate }) {
 
   return (
     <Layout
-      fillSelectsEvent={fillSelects}
+      error={error}
       activeStep={activeStep}
       setActiveStep={setActiveStep}
       handleSubmit={handleSubmit}
@@ -198,14 +186,14 @@ function MotosForm({ handleClose, afterCreate }) {
       handleClose={handleClose}
     >
       <>
-        <DateTimePicker
+        <CustomDatePicker
           control={control}
           name="fecha"
           label="Fecha"
           disabled={!handleRol()}
           defaultValue={!handleRol() ? currentDate() : null}
         />
-        <TimePicker
+        <CustomTimePicker
           control={control}
           name="hora"
           label="Hora"

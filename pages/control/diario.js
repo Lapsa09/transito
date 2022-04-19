@@ -1,35 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ControlDiarioForm from "../../components/forms/ControlDiarioForm";
 import { getControles } from "../../services/controlDiarioService";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../utils/redux/userSlice";
+import { selectUser } from "../../redux/userSlice";
 import Layout from "../../layouts/OperativosLayout";
-import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../utils/dates";
+import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../utils";
+import { useData } from "../../hooks";
 
 function ControlDiarioPage() {
-  const [controles, setControles] = useState([]);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [loading, setLoading] = useState(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
   const handleRol = () => user?.rol === "ADMIN";
-
-  useEffect(() => {
-    firstCall();
-  }, []);
-
-  const firstCall = async () => {
-    setLoading(true);
-    await handleFetch();
-    setLoading(false);
-  };
-
-  const handleFetch = async () => {
-    setControles(await getControles());
-  };
+  const { data, loading, refresh } = useData(getControles);
 
   const columns = [
     {
@@ -69,10 +55,10 @@ function ControlDiarioPage() {
       handleClose={handleClose}
       loading={loading}
       columns={columns}
-      operativos={controles}
+      operativos={data}
     >
       <ControlDiarioForm
-        afterCreate={handleFetch}
+        afterCreate={refresh}
         handleClose={handleRol() ? handleClose : navigate.back()}
       />
     </Layout>

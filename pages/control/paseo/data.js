@@ -5,7 +5,7 @@ import {
   CustomSelect,
   CustomBarchart,
 } from "../../../components/ui";
-import { dateNameFormat } from "../../../utils/dates";
+import { dateNameFormat } from "../../../utils";
 import style from "../../../styles/Data.module.css";
 import { useForm } from "react-hook-form";
 

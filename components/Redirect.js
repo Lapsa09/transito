@@ -3,10 +3,11 @@ import { useRouter } from "next/router";
 import { verifyAuth } from "../services/index";
 import { login, logout, selectUser } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocalStorage } from "../hooks";
 
 function Redirect({ children }) {
   const router = useRouter();
-  let token;
+  const [token] = useLocalStorage("token");
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const [authorized, setAuthorized] = useState(false);
@@ -47,13 +48,12 @@ function Redirect({ children }) {
         if (!parseRes) {
           dispatch(logout());
         } else if (!user) {
-          dispatch(login(localStorage.getItem("token")));
+          dispatch(login(token));
         }
       } catch (err) {
         dispatch(logout());
       }
     };
-    token = localStorage.getItem("token");
     const hideContent = () => setAuthorized(false);
     authCheck(router.asPath);
     router.events.on("routeChangeStart", hideContent);
@@ -62,7 +62,7 @@ function Redirect({ children }) {
       router.events.off("routeChangeStart", hideContent);
       router.events.off("routeChangeComplete", authCheck);
     };
-  }, [user]);
+  }, [token]);
 
   return authorized && children;
 }

@@ -1,35 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import OperativosForm from "../../components/forms/AutosForm";
 import { getOperativosAutos } from "../../services/operativosService";
 import Layout from "../../layouts/OperativosLayout";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../utils/redux/userSlice";
-import { dateFormat, dateTimeFormat, timeFormat } from "../../utils/dates";
+import { selectUser } from "../../redux/userSlice";
+import { dateFormat, dateTimeFormat, timeFormat } from "../../utils";
+import { useData } from "../../hooks";
 
 function AutosPage() {
-  const [operativos, setOperativos] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const router = useRouter();
   const user = useSelector(selectUser);
   const handleRol = () => user?.rol === "ADMIN";
-
-  useEffect(() => {
-    firstCall();
-  }, []);
-
-  const firstCall = async () => {
-    setLoading(true);
-    await handleFetch();
-    setLoading(false);
-  };
-
-  const handleFetch = async () => {
-    setOperativos(await getOperativosAutos());
-  };
+  const { data, loading, refresh } = useData(getOperativosAutos);
 
   const columns = [
     {
@@ -87,11 +73,11 @@ function AutosPage() {
       handleOpen={handleOpen}
       handleClose={handleClose}
       columns={columns}
-      operativos={operativos}
+      operativos={data}
       loading={loading}
     >
       <OperativosForm
-        afterCreate={handleFetch}
+        afterCreate={refresh}
         handleClose={handleRol() ? handleClose : router.back()}
       />
     </Layout>

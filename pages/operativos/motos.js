@@ -1,25 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { getOperativosMotos } from "../../services/operativosService";
 import MotosForm from "../../components/forms/MotosForm";
 import Layout from "../../layouts/OperativosLayout";
-import { dateFormat, dateTimeFormat, timeFormat } from "../../utils/dates";
+import { dateFormat, dateTimeFormat, timeFormat } from "../../utils";
+import { useData } from "../../hooks";
 
 function MotosPage() {
-  const [operativos, setOperativos] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
-
-  useEffect(() => {
-    handleFetch();
-  }, []);
-
-  const handleFetch = async () => {
-    setLoading(true);
-    setOperativos(await getOperativosMotos());
-    setLoading(false);
-  };
+  const { data, loading, refresh } = useData(getOperativosMotos);
 
   const columns = [
     {
@@ -72,10 +62,10 @@ function MotosPage() {
       handleOpen={handleOpen}
       handleClose={handleClose}
       columns={columns}
-      operativos={operativos}
+      operativos={data}
       loading={loading}
     >
-      <MotosForm afterCreate={handleFetch} handleClose={handleClose} />
+      <MotosForm afterCreate={refresh} handleClose={handleClose} />
     </Layout>
   );
 }

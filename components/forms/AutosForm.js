@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import DateTimePicker from "../ui/DatePicker";
-import TimePicker from "../ui/TimePicker";
 import {
   getAllZonas,
   getLicencias,
@@ -9,37 +7,46 @@ import {
   nuevoOperativoAuto,
 } from "../../services/operativosService";
 import { getResolucion, getTurnos } from "../../services/index";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN } from "../../utils/validations";
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../utils/redux/userSlice";
+import {
+  CustomDatePicker,
+  CustomTimePicker,
+  CustomTextField,
+  CustomSelect,
+  CustomAutocomplete,
+} from "../ui";
+import { selectUser } from "../../redux/userSlice";
 import { useForm } from "react-hook-form";
-import CustomTextField from "../ui/CustomTextField";
-import CustomSelect from "../ui/CustomSelect";
-import CustomAutocomplete from "../ui/CustomAutocomplete";
 import Layout from "../../layouts/FormLayout";
-import { currentDate } from "../../utils/dates";
+import { useSelects } from "../../hooks";
 
 function OperativosForm({ handleClose, afterCreate }) {
+  const user = useSelector(selectUser);
+  const handleRol = () => user?.rol === "ADMIN";
   const {
     handleSubmit,
     control,
     reset,
     getValues,
-    setValue,
     watch,
     formState: { isValid },
   } = useForm({
     mode: "all",
+    defaultValues: { lpcarga: user.legajo },
   });
-  const user = useSelector(selectUser);
-  const [licencias, setLicencias] = useState([]);
-  const [zonasVL, setZonasVL] = useState([]);
-  const [allZonas, setAllZonas] = useState([]);
-  const [turnos, setTurnos] = useState([]);
-  const [seguridad, setSeguridad] = useState([]);
-  const [resolucion, setResolucion] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
-  const handleRol = () => user?.rol === "ADMIN";
+  const {
+    data: [licencias, zonasVL, allZonas, turnos, seguridad, resolucion],
+    error,
+  } = useSelects([
+    getLicencias(),
+    getZonasVL(),
+    getAllZonas(),
+    getTurnos(),
+    getSeguridad(),
+    getResolucion(),
+  ]);
 
   const steps = () => {
     const [
@@ -114,26 +121,6 @@ function OperativosForm({ handleClose, afterCreate }) {
     );
   };
 
-  const fetchItems = async () => {
-    const [licencias, zonasVL, zonas, turnos, seguridad, resolucion] =
-      await Promise.all([
-        getLicencias(),
-        getZonasVL(),
-        getAllZonas(),
-        getTurnos(),
-        getSeguridad(),
-        getResolucion(),
-      ]);
-
-    setLicencias(licencias);
-    setZonasVL(zonasVL);
-    setAllZonas(zonas);
-    setTurnos(turnos);
-    setSeguridad(seguridad);
-    setResolucion(resolucion);
-    setValue("lpcarga", user.legajo);
-  };
-
   return (
     <Layout
       steps={steps()}
@@ -143,11 +130,11 @@ function OperativosForm({ handleClose, afterCreate }) {
       isValid={isValid}
       handleSubmit={handleSubmit}
       submitEvent={submitEvent}
-      fillSelectsEvent={fetchItems}
+      error={error}
       path="autos"
     >
       <>
-        <DateTimePicker
+        <CustomDatePicker
           control={control}
           name="fecha"
           disabled={!handleRol()}
@@ -211,7 +198,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         />
       </>
       <>
-        <TimePicker
+        <CustomTimePicker
           control={control}
           name="hora"
           disabled={!handleRol()}

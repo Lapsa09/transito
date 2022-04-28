@@ -1,7 +1,7 @@
 import { Logout } from "@mui/icons-material";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, selectUser } from "../utils/redux/userSlice";
+import { logout, selectUser } from "../redux/userSlice";
 import styles from "../styles/Home.module.css";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";

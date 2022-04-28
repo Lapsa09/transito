@@ -1,39 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ControlPaseoForm from "../../../components/forms/ControlPaseoForm";
 import { getControlesPaseo } from "../../../services/controlDiarioService";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../../utils/redux/userSlice";
+import { selectUser } from "../../../redux/userSlice";
 import Layout from "../../../layouts/OperativosLayout";
-import {
-  dateFormat,
-  dateTimeSQLFormat,
-  timeFormat,
-} from "../../../utils/dates";
+import { useData } from "../../../hooks";
+import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../../utils";
 
 function ControlPaseoPage() {
-  const [controles, setControles] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const user = useSelector(selectUser);
   const navigate = useRouter();
   const handleRol = () => user?.rol === "ADMIN";
-
-  const firstCall = async () => {
-    setLoading(true);
-    await handleFetch();
-    setLoading(false);
-  };
-
-  const handleFetch = async () => {
-    setControles(await getControlesPaseo());
-  };
-
-  useEffect(() => {
-    firstCall();
-  }, []);
+  const { data, loading, refresh } = useData(getControlesPaseo);
 
   const columns = [
     {
@@ -72,10 +54,10 @@ function ControlPaseoPage() {
       handleClose={handleClose}
       loading={loading}
       columns={columns}
-      operativos={controles}
+      operativos={data}
     >
       <ControlPaseoForm
-        afterCreate={handleFetch}
+        afterCreate={refresh}
         handleClose={handleRol() ? handleClose : navigate.back()}
       />
     </Layout>

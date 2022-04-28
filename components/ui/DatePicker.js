@@ -3,7 +3,7 @@ import React from "react";
 import DateAdapter from "@mui/lab/AdapterLuxon";
 import { TextField } from "@mui/material";
 import { useController } from "react-hook-form";
-import { currentDate } from "../../utils/dates";
+import { currentDate } from "../../utils";
 
 function CustomDatePicker({
   label,

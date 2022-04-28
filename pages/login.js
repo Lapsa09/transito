@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, FormHelperText } from "@mui/material";
 import { loginCall } from "../services/userService";
 import style from "../styles/Login.module.css";
-import { login } from "../utils/redux/userSlice";
+import { login } from "../redux/userSlice";
 import { useRouter } from "next/router";
 import CustomTextField from "../components/ui/CustomTextField";
 import { useDispatch } from "react-redux";

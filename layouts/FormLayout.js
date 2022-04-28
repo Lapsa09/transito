@@ -1,16 +1,20 @@
 import { Box, Button, Modal } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { selectUser } from "../utils/redux/userSlice";
+import { selectUser } from "../redux/userSlice";
 import { adminStyle, inspectorStyle } from "../components/utils";
 import { useSelector } from "react-redux";
 import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
-import CustomStepper from "../components/ui/CustomStepper";
 import styles from "../styles/FormLayout.module.css";
-import CustomStepForm from "../components/ui/CustomStepForm";
-import { currentDate, dateTimeFormat } from "../utils/dates";
-import CustomSnackbar from "../components/ui/CustomSnackbar";
+import { currentDate } from "../utils";
+import {
+  CustomSnackbar,
+  CustomStepForm,
+  CustomStepper,
+} from "../components/ui";
+import { DateTime } from "luxon";
+import { useLocalStorage, useSnackBar } from "../hooks";
 
 function FormLayout({
   children,
@@ -21,16 +25,17 @@ function FormLayout({
   isValid,
   handleSubmit,
   path,
-  fillSelectsEvent,
+  error,
   submitEvent,
   reset,
   setValue,
 }) {
   const user = useSelector(selectUser);
-  const handleRol = () => user.rol === "ADMIN";
+  const handleRol = () => user?.rol === "ADMIN";
   const [open, setOpen] = useState(false);
-  const [openSB, setOpenSB] = useState(false);
-  const [response, setResponse] = useState({ severity: "", message: "" });
+  const [operative, setOperative] = useLocalStorage(path);
+  const { openSB, closeSnackbar, response, setError, setSuccess } =
+    useSnackBar();
 
   const totalSteps = () => {
     return steps.length;
@@ -49,79 +54,48 @@ function FormLayout({
     setActiveStep(activeStep + 1);
   };
 
-  const fillSelects = async () => {
-    try {
-      await fillSelectsEvent();
-    } catch (error) {
-      showSnackbar("error", error.response?.data);
-    }
-  };
-
   const saveOp = () => {
-    const expirationTime = JSON.parse(
-      localStorage.getItem(path) || null
-    )?.expiresAt;
-    localStorage.setItem(
-      path,
-      JSON.stringify({
-        ...steps[0].values,
-        expiresAt:
-          expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
-      })
-    );
+    const expirationTime = operative?.expiresAt;
+    setOperative({
+      ...steps[0].values,
+      expiresAt: expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
+    });
   };
 
   useEffect(() => {
-    fillSelects();
+    if (error) {
+      setError(error);
+    }
     cargarOperativo();
   }, []);
 
   const cargarOperativo = () => {
     try {
-      const operativos = JSON.parse(localStorage.getItem(path));
-      if (currentDate().toMillis() < operativos.expiresAt) {
-        Object.entries(operativos).forEach(([key, value]) => {
+      if (currentDate().toMillis() < operative.expiresAt) {
+        Object.entries(operative).forEach(([key, value]) => {
           key === "fecha"
-            ? setValue(key, dateTimeFormat(value))
+            ? setValue(key, DateTime.fromISO(value))
             : setValue(key, value);
         });
-        isCompleted(operativos) && setActiveStep(1);
+        isCompleted(operative) && setActiveStep(1);
       } else nuevoOperativo();
     } catch (error) {
       return;
     }
   };
 
-  const showSnackbar = (severity, message) => {
-    setResponse({ severity, message });
-    setOpenSB(true);
-  };
-
-  const closeSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSB(false);
-  };
-
   const submiting = async (data) => {
     try {
       await submitEvent(data);
-      showSnackbar("success", "Cargado con exito");
+      setSuccess("Cargado con exito");
     } catch (error) {
-      showSnackbar("error", error.response?.data);
+      setError(error.response?.data);
     }
   };
 
   const nuevoOperativo = () => {
-    localStorage.removeItem(path);
-    reset(
-      {
-        lpcarga: user.legajo,
-      },
-      { keepDefaultValues: true }
-    );
+    setOperative(null);
+    reset({ lpcarga: user?.legajo }, { keepDefaultValues: true });
     setActiveStep(0);
   };
 

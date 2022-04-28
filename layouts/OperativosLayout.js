@@ -7,7 +7,7 @@ import LogoVL from "../public/LOGO_V_LOPEZ.png";
 import LogoOVT from "../public/OVT_LETRAS_NEGRAS.png";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { selectUser } from "../utils/redux/userSlice";
+import { selectUser } from "../redux/userSlice";
 
 function OperativosLayout({
   columns,

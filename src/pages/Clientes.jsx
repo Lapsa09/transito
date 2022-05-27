@@ -2,7 +2,6 @@ import React from "react";
 import {
   AutocompleteInput,
   Datagrid,
-  FilterButton,
   FilterForm,
   ListContextProvider,
   NumberField,
@@ -26,6 +25,7 @@ function Clientes() {
     <AutocompleteInput
       label="Buscar por cliente"
       source="q"
+      alwaysOn
       choices={[...new Set(data.map((d) => d.cliente))]
         .map((c) => ({ id: c, name: c }))
         .sort((a, b) => (a > b ? -1 : 1))}
@@ -33,6 +33,7 @@ function Clientes() {
     <SelectInput
       label="Buscar por mes"
       source="m"
+      alwaysOn
       choices={[...new Set(data.map((d) => d.mes))]
         .filter(
           (value, index, self) =>
@@ -46,9 +47,10 @@ function Clientes() {
     <SelectInput
       label="Buscar por año"
       source="y"
+      alwaysOn
       choices={[...new Set(data.map((d) => d.año))]
-        .map((año) => ({ id: año, name: año }))
-        .sort((a, b) => a - b)}
+        .sort((a, b) => a - b)
+        .map((año) => ({ id: año, name: año }))}
     />,
   ];
   return (
@@ -70,7 +72,6 @@ function Clientes() {
           }}
         >
           <FilterForm filters={filters} />
-          <FilterButton filters={filters} />
         </div>
         <Datagrid expand={<ClientesServicios />}>
           <TextField textAlign="right" source="cliente" />

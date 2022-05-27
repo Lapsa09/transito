@@ -23,6 +23,11 @@ export const OperariosServicios = () => {
           source="fecha_recibo"
           label="Fecha del recibo"
         />
+        <DateField
+          textAlign="right"
+          source="fecha_servicio"
+          label="Fecha del servicio"
+        />
         <NumberField
           source="a_cobrar"
           label="Importe"

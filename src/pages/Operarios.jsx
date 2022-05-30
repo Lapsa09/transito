@@ -9,7 +9,7 @@ import {
   Title,
   FilterForm,
   SelectInput,
-  SearchInput,
+  TextInput,
 } from "react-admin";
 import { OperariosServicios } from "../components";
 
@@ -22,7 +22,11 @@ export const Operarios = () => {
   }
 
   const filters = [
-    <SearchInput source="q" alwaysOn />,
+    <TextInput
+      label="Buscar operario por legajo o nombre"
+      source="q"
+      alwaysOn
+    />,
     <SelectInput
       label="Buscar por mes"
       source="m"
@@ -67,7 +71,11 @@ export const Operarios = () => {
         >
           <FilterForm filters={filters} />
         </div>
-        <Datagrid expand={<OperariosServicios />}>
+        <Datagrid
+          expandSingle
+          isRowSelectable={() => false}
+          expand={<OperariosServicios />}
+        >
           <TextField textAlign="right" source="legajo" />
           <TextField textAlign="right" source="inspector" />
           <TextField textAlign="right" source="mes.name" label="Mes" />

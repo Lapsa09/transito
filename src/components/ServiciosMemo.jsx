@@ -14,7 +14,7 @@ export const ServiciosMemo = () => {
   const listContext = useList({ data: record.operarios });
   return (
     <ListContextProvider value={listContext}>
-      <Datagrid>
+      <Datagrid isRowSelectable={() => false}>
         <TextField textAlign="right" source="legajo" label="Nº Legajo" />
         <TextField textAlign="right" source="nombre" label="Nombre" />
         <NumberField

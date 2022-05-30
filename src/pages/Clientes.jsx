@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  AutocompleteInput,
   Datagrid,
   FilterForm,
   ListContextProvider,
@@ -8,6 +7,7 @@ import {
   Pagination,
   SelectInput,
   TextField,
+  TextInput,
   Title,
   useListController,
 } from "react-admin";
@@ -22,14 +22,7 @@ function Clientes() {
   }
 
   const filters = [
-    <AutocompleteInput
-      label="Buscar por cliente"
-      source="q"
-      alwaysOn
-      choices={[...new Set(data.map((d) => d.cliente))]
-        .map((c) => ({ id: c, name: c }))
-        .sort((a, b) => (a > b ? -1 : 1))}
-    />,
+    <TextInput label="Buscar por cliente" source="q" alwaysOn />,
     <SelectInput
       label="Buscar por mes"
       source="m"
@@ -73,7 +66,11 @@ function Clientes() {
         >
           <FilterForm filters={filters} />
         </div>
-        <Datagrid expand={<ClientesServicios />}>
+        <Datagrid
+          expandSingle
+          isRowSelectable={() => false}
+          expand={<ClientesServicios />}
+        >
           <TextField textAlign="right" source="cliente" />
           <TextField textAlign="right" source="mes.name" label="Mes" />
           <NumberField source="año" />

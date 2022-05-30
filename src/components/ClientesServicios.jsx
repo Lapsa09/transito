@@ -8,13 +8,18 @@ import {
   useList,
   useRecordContext,
 } from "react-admin";
+import { ServiciosMemo } from "./";
 
 function ClientesServicios() {
   const record = useRecordContext();
   const listContext = useList({ data: record.servicios });
   return (
     <ListContextProvider value={listContext}>
-      <Datagrid>
+      <Datagrid
+        isRowExpandable={(row) => row.operarios.length > 0}
+        isRowSelectable={() => false}
+        expand={<ServiciosMemo />}
+      >
         <TextField textAlign="right" source="memo" label="Nº Memo" />
         <NumberField source="recibo" label="Nº Recibo" />
         <DateField

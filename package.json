@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@blackbox-vision/ra-language-spanish": "^3.19.10",
+    "@date-io/luxon": "^2.14.0",
     "@reduxjs/toolkit": "^1.8.1",
     "axios": "^0.27.2",
-    "ra-data-fakerest": "^4.0.3",
+    "luxon": "^2.4.0",
     "ra-data-json-server": "^4.1.0",
-    "ra-data-simple-rest": "^4.1.0",
+    "ra-i18n-polyglot": "^4.1.1",
     "react": "^16.13.1",
-    "react-admin": "^4.0.3",
+    "react-admin": "^4.1.1",
     "react-dom": "^16.13.1",
-    "react-redux": "^8.0.2",
+    "react-final-form": "^6.5.9",
+    "react-hook-form": "^7.31.3",
     "react-scripts": "^5.0.1"
   },
   "scripts": {

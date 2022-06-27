@@ -1,0 +1,123 @@
+.header {
+  /* max-width: 850px; */
+  width: 100%;
+  /* margin-top: 20px; */
+  margin-bottom: 40px;
+  /* margin: 40px; */
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form {
+  max-width: 1150px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow-y: overlay;
+}
+
+.form .form__box .form__box__inputs {
+  margin: 20px 0;
+  display: grid;
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+  grid-template-columns: repeat(2, 100%);
+  max-width: 500px;
+  width: 100%;
+}
+
+.form > .form__box .form__box__inputs.hidden {
+  display: none;
+}
+
+.form .form__form {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.form .form__box {
+  display: flex;
+  /* flex-direction: column; */
+  width: 200%;
+}
+
+.form .form__box > .buttons {
+  margin-left: auto;
+}
+
+.form .MuiFormControl-root .MuiTextField-root {
+  width: 100%;
+}
+
+.form .MuiFormControl-root {
+  width: 100%;
+}
+
+@media (max-width: 1080px) {
+  .form {
+    flex-wrap: nowrap !important;
+    max-height: 100vh !important;
+    width: 100%;
+    padding: 20px;
+  }
+  /* .form > .form__box {
+    grid-template-columns: repeat(1, minmax(200px, 1100px));
+    overflow-y: overlay;
+  } */
+  .form .form__box .form__box__inputs {
+    max-width: 1000px;
+    width: 100%;
+    grid-template-columns: repeat(2, 50%);
+    padding-inline: 20px;
+  }
+  .form > .form__box > .buttons {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    grid-column: 1;
+    margin: 20px auto;
+    grid-row: initial;
+  }
+
+  .form > .form__box.op > .buttons {
+    grid-row: initial;
+  }
+}
+
+@media (max-width: 766px) {
+  .form {
+    flex-direction: column;
+    overflow-y: overlay;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .form > .form__box {
+    width: 100%;
+  }
+
+  .form > .form__box > .buttons {
+    flex-direction: column-reverse;
+  }
+
+  .form .form__box .form__box__inputs {
+    max-width: 700px;
+    grid-template-columns: 100%;
+  }
+
+  .form > .MuiTextField-root,
+  .form > .form__box > .MuiTextField-root {
+    width: 100%;
+  }
+
+  .buttons > .MuiButton-root ~ .MuiButton-root {
+    margin: 10px 0;
+  }
+  .buttons > .MuiButton-root {
+    width: 100%;
+  }
+}

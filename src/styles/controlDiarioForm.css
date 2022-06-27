@@ -1,0 +1,45 @@
+/* .header > span {
+  position: absolute !important;
+} */
+
+.form > .form__box .form__box__inputs {
+  margin: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(300px, 400px));
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+}
+
+.form > .form__box .form__box__inputs.hidden {
+  display: none;
+}
+
+.header > span:nth-child(1) {
+  left: 0;
+}
+
+.header > span:nth-child(2) {
+  right: 0;
+}
+
+@media (max-width: 805px) {
+  .header {
+    margin-top: 80px;
+  }
+
+  .header > span {
+    top: -80px;
+  }
+}
+
+@media (max-width: 460px) {
+  .header {
+    flex-direction: column;
+    margin-top: 0;
+  }
+  .header > span {
+    position: relative !important;
+    top: 0;
+    margin-bottom: 20px !important;
+  }
+}

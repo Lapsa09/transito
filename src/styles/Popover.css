@@ -1,0 +1,30 @@
+.popover {
+  transition: all 0.3s;
+  position: absolute;
+  top: 60px;
+  width: 150px;
+  padding: 0;
+  list-style: none;
+  margin-right: 30px;
+  background-color: white;
+  box-shadow: 0px 7px 14px -5px rgba(0, 0, 0, 0.41);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.popover a {
+  color: #93af37;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-family: sans-serif;
+}
+
+.popover a:hover {
+  color: #b7e912;
+}
+
+.popover a {
+  padding: 10px 20px 10px 10px;
+}

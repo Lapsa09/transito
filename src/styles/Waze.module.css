@@ -1,0 +1,104 @@
+tr {
+  text-align: left;
+}
+h3 {
+  text-align: center;
+}
+
+.button {
+  width: 100px;
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  background-color: #219ebc;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button:hover {
+  background-color: #023047;
+  color: white;
+}
+
+.home {
+  display: grid;
+  grid-template-columns: 1fr;
+  /* column-gap: 20px; */
+}
+
+.home > .header {
+  /* grid-column: 1/3; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 10px;
+  gap: 10px;
+  margin-top: 75px;
+}
+
+.home > .header > img {
+  height: 70px;
+}
+
+.dia > .header {
+  /* grid-column: 1/3; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 10px;
+  gap: 10px;
+}
+
+.promedio,
+.actual {
+  border: 1px solid black;
+  padding: 20px;
+  /* width: 100%; */
+  overflow-x: auto;
+}
+
+.reporte {
+  width: 900px;
+}
+
+.reporte > table {
+  width: 100%;
+}
+
+@media (min-width: 910px) {
+  .home > .header {
+    grid-column: 1/3;
+  }
+
+  .home {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .historial {
+    display: flex;
+    width: 100%;
+    margin-top: 75px;
+  }
+
+  .sidebar {
+    flex: 0.4;
+    z-index: 1;
+  }
+
+  .sidebar > div {
+    margin-top: 75px;
+  }
+
+  .sidebar ul {
+    list-style: none;
+  }
+
+  .sidebar > ul > li {
+    cursor: pointer;
+  }
+
+  .dia {
+    margin-left: 200px;
+    width: 900px;
+  }
+}

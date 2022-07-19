@@ -4,6 +4,7 @@
 
 .home {
   font-family: sans-serif;
+  margin-top: 100px;
 }
 
 .header {
@@ -11,6 +12,11 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: 0px 0px 21px -7px rgba(0, 0, 0, 0.41);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
 }
 
 .nav-link {
@@ -46,7 +52,7 @@
   color: #b7e912;
 }
 
-.home .logout {
+.logout {
   cursor: pointer;
 }
 
@@ -58,6 +64,17 @@
 
 .links > a ~ a {
   margin-top: 10px;
+}
+
+.header > img:nth-child(1) {
+  width: 300px;
+  height: 70px;
+  cursor: pointer;
+}
+
+.header > img:nth-last-child(1) {
+  width: 150px;
+  height: 70px;
 }
 
 /* .main {

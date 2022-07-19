@@ -13,7 +13,7 @@ import {
 } from "../components/ui";
 import { DateTime } from "luxon";
 import { useLocalStorage, useSnackBar } from "../hooks";
-import "../styles/FormLayout.css";
+import styles from "../styles/FormLayout.module.css";
 
 function FormLayout({
   children,
@@ -118,26 +118,26 @@ function FormLayout({
 
   return (
     <Box sx={handleRol() ? adminStyle : inspectorStyle} className="form">
-      <div className="header">
-        <img
-          src={LogoVL}
-          style={{ width: "250px", height: "70px" }}
-          layout="fixed"
-        />
+      <div className={styles.header}>
+        <img src={LogoVL} alt="Logo Vicente Lopez" />
         <Button onClick={handleClose}>Cerrar</Button>
         <Button color="error" onClick={() => setOpen(true)} sx={{ mr: 1 }}>
           Nuevo Operativo
         </Button>
-        <img src={LogoOVT} style={{ width: "150px", height: "70px" }} />
+        <img src={LogoOVT} alt="Logo Observatorio Vial" />
       </div>
-      <div className="form__form">
+      <div className={styles["form__form"]}>
         <CustomStepper
           steps={steps}
           isCompleted={isCompleted}
           handleStep={handleStep}
           activeStep={activeStep}
         />
-        <Box component="form" className="form__box" autoComplete="off">
+        <Box
+          component="form"
+          className={styles["form__box"]}
+          autoComplete="off"
+        >
           {children?.map((child, index) => (
             <CustomStepForm activeStep={activeStep} step={index}>
               {child}

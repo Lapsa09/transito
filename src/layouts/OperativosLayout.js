@@ -6,7 +6,7 @@ import LogoOVT from "../assets/imgs/OVT_LETRAS_NEGRAS.png";
 import { useSelector } from "react-redux";
 import { selectUser } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
-import "../styles/operativos.page.css";
+import styles from "../styles/Operativos.page.module.css";
 
 function OperativosLayout({
   columns,
@@ -20,10 +20,10 @@ function OperativosLayout({
   const navigate = useNavigate();
   const user = useSelector(selectUser);
   return user?.rol === "ADMIN" ? (
-    <div className="Operativos">
-      <div className="header">
-        <img src={LogoVL} style={{ width: "300px", height: "70px" }} />
-        <img src={LogoOVT} style={{ width: "150px", height: "70px" }} />
+    <div className={styles.Operativos}>
+      <div className={styles.header}>
+        <img src={LogoVL} alt="Logo Vicente Lopez" />
+        <img src={LogoOVT} alt="Logo Observatorio Vial" />
         <div className="control_buttons">
           <Button
             color="error"
@@ -51,10 +51,10 @@ function OperativosLayout({
       )}
     </div>
   ) : (
-    <div className="Operativos">
-      <div className="header">
-        <img src={LogoVL} style={{ width: "300px", height: "70px" }} />
-        <img src={LogoOVT} style={{ width: "150px", height: "70px" }} />
+    <div className={styles.Operativos}>
+      <div className={styles.header}>
+        <img src={LogoVL} alt="Logo Vicente Lopez" />
+        <img src={LogoOVT} alt="Logo Observatorio Vial" />
       </div>
       {children}
     </div>

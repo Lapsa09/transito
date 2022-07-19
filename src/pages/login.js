@@ -21,7 +21,8 @@ function Login() {
       dispatch(login(res));
       router("/", { replace: true });
     } catch (error) {
-      setError(error.response?.data);
+      console.log(error);
+      setError(error.response?.data || error.message);
     }
   };
 

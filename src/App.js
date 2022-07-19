@@ -9,15 +9,21 @@ import {
   AutosPage,
   MotosPage,
   CamionesPage,
+  Sueldos,
+  Waze,
+  History,
 } from "./pages";
 import { useSelector } from "react-redux";
 import { selectUser } from "./redux/userSlice";
+import "./styles/globals.css";
 import PrivateRoute from "./layouts/PrivateRoute";
+import { Header } from "./components";
 
 function App() {
   const user = useSelector(selectUser);
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route
           index
@@ -73,6 +79,30 @@ function App() {
           element={
             <PrivateRoute>
               <CamionesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/sueldos/*"
+          element={
+            <PrivateRoute>
+              <Sueldos />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/waze"
+          element={
+            <PrivateRoute>
+              <Waze />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="waze/historial"
+          element={
+            <PrivateRoute>
+              <History />
             </PrivateRoute>
           }
         />

@@ -68,11 +68,6 @@ input[type="number"] {
   width: 100%;
 } */
 
-.buttons > .MuiButton-root ~ .MuiButton-root,
-.control_buttons > .MuiButton-root ~ .MuiButton-root {
-  margin-left: 20px;
-}
-
 /* @media (max-width: 835px) {
   .form {
     flex-wrap: nowrap !important;
@@ -138,4 +133,17 @@ body {
 
 * {
   box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+.RaLayout-appFrame {
+  margin-top: 75px !important;
+}
+
+/* .RaLayout-content {
+  z-index: -1 !important;
+} */
+
+.MuiDrawer-root {
+  height: 700px !important;
 }

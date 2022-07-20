@@ -1,4 +1,4 @@
-import { DatePicker, LocalizationProvider } from "@mui/lab";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import React from "react";
 import DateAdapter from "@mui/lab/AdapterLuxon";
 import { TextField } from "@mui/material";
@@ -14,7 +14,7 @@ function CustomDatePicker({
 }) {
   const {
     field,
-    fieldState: { invalid },
+    fieldState: { error },
     formState: { errors },
   } = useController({
     name,
@@ -51,7 +51,7 @@ function CustomDatePicker({
             required
             placeholder="dd/MM/yyyy"
             helperText={errors[name]?.message}
-            error={invalid}
+            error={error}
           />
         )}
         minDate={currentDate().minus({ month: 6 })}

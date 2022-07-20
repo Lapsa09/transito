@@ -5,7 +5,7 @@ import { useController } from "react-hook-form";
 function CustomAutocomplete({ control, name, rules, label, options }) {
   const {
     field,
-    fieldState: { invalid },
+    fieldState: { error },
     formState: { errors },
   } = useController({
     name,
@@ -31,7 +31,7 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
           {...params}
           label={label}
           required
-          error={invalid}
+          error={error}
           helperText={errors[name]?.message}
         />
       )}

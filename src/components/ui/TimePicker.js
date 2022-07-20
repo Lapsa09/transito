@@ -1,4 +1,4 @@
-import { LocalizationProvider, TimePicker } from "@mui/lab";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import React from "react";
 import DateAdapter from "@mui/lab/AdapterLuxon";
 import { TextField } from "@mui/material";
@@ -13,7 +13,7 @@ function CustomTimePicker({
 }) {
   const {
     field,
-    fieldState: { invalid },
+    fieldState: { error },
     formState: { errors },
   } = useController({
     name,
@@ -44,7 +44,7 @@ function CustomTimePicker({
             required
             placeholder="HH:mm"
             helperText={errors[name]?.message}
-            error={invalid}
+            error={error}
           />
         )}
       />

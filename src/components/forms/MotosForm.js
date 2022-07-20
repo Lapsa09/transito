@@ -32,6 +32,7 @@ function MotosForm({ handleClose, afterCreate }) {
     control,
     reset,
     getValues,
+    setValue,
     watch,
     formState: { isValid },
   } = useForm({
@@ -160,13 +161,13 @@ function MotosForm({ handleClose, afterCreate }) {
     await afterCreate();
     reset(
       {
+        ...data,
         dominio: "",
         licencia: "",
         tipo_licencia: null,
         zona_infractor: null,
-        motivos: [{ motivo: null }],
-        resolucion: null,
-        acta: "",
+        motivos: [{ motivo: "" }],
+        acta: null,
       },
       { keepDefaultValues: true }
     );
@@ -181,6 +182,7 @@ function MotosForm({ handleClose, afterCreate }) {
       submitEvent={submitEvent}
       isValid={isValid}
       path="motos"
+      setValue={setValue}
       steps={steps()}
       handleClose={handleClose}
     >
@@ -298,7 +300,6 @@ function MotosForm({ handleClose, afterCreate }) {
             key={item.id}
             name={`motivos.${index}.motivo`}
             label={`Motivo ${index + 1}`}
-            rules={{ required: "Elija un motivo valido" }}
             options={motivos}
           />
         ))}
@@ -309,7 +310,8 @@ function MotosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion valida" }}
           options={resolucion}
         />
-        {getValues("resolucion") === "ACTA" && (
+        {(getValues("resolucion") === "ACTA" ||
+          getValues("resolucion") === "REMITIDO") && (
           <CustomTextField
             type="number"
             control={control}
@@ -317,7 +319,9 @@ function MotosForm({ handleClose, afterCreate }) {
             label="Acta"
             rules={{
               required: {
-                value: getValues("resolucion") === "ACTA",
+                value:
+                  getValues("resolucion") === "ACTA" ||
+                  getValues("resolucion") === "REMITIDO",
                 message: "Ingrese un nro de acta",
               },
             }}

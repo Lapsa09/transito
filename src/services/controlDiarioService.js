@@ -4,6 +4,8 @@ export const getMotivos = async () => await getter("/motivos");
 
 export const getLocalidades = async () => await getter("/zonas");
 
+export const getZonasVL = async () => await getter("/zonas/vl");
+
 export const nuevoControl = async (body) =>
   await setter("/control/diario", body);
 

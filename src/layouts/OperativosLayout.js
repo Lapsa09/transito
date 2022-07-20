@@ -1,8 +1,6 @@
 import React from "react";
 import { Button, Modal, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import LogoVL from "../assets/imgs/LOGO_V_LOPEZ.png";
-import LogoOVT from "../assets/imgs/OVT_LETRAS_NEGRAS.png";
 import { useSelector } from "react-redux";
 import { selectUser } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -21,21 +19,17 @@ function OperativosLayout({
   const user = useSelector(selectUser);
   return user?.rol === "ADMIN" ? (
     <div className={styles.Operativos}>
-      <div className={styles.header}>
-        <img src={LogoVL} alt="Logo Vicente Lopez" />
-        <img src={LogoOVT} alt="Logo Observatorio Vial" />
-        <div className="control_buttons">
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => navigate("/", { replace: true })}
-          >
-            Atras
-          </Button>
-          <Button variant="contained" onClick={handleOpen}>
-            Nuevo
-          </Button>
-        </div>
+      <div className="control_buttons">
+        <Button
+          color="error"
+          variant="contained"
+          onClick={() => navigate("/", { replace: true })}
+        >
+          Atras
+        </Button>
+        <Button variant="contained" onClick={handleOpen}>
+          Nuevo
+        </Button>
       </div>
       <Modal open={open} onClose={handleClose}>
         {children}
@@ -51,13 +45,7 @@ function OperativosLayout({
       )}
     </div>
   ) : (
-    <div className={styles.Operativos}>
-      <div className={styles.header}>
-        <img src={LogoVL} alt="Logo Vicente Lopez" />
-        <img src={LogoOVT} alt="Logo Observatorio Vial" />
-      </div>
-      {children}
-    </div>
+    <div className={styles.Operativos}>{children}</div>
   );
 }
 

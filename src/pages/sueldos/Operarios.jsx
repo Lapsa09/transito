@@ -44,6 +44,7 @@ export const Operarios = () => {
       label="Buscar por año"
       source="y"
       alwaysOn
+      translateChoice={false}
       choices={[...new Set(data.map((d) => d.año))]
         .sort((a, b) => a.id - b.id)
         .map((c) => ({ id: c, name: c }))}

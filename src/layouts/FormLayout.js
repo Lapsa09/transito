@@ -72,7 +72,7 @@ function FormLayout({
     try {
       if (currentDate().toMillis() < operative.expiresAt) {
         Object.entries(operative).forEach(([key, value]) => {
-          key === "fecha"
+          key === "fecha" || key === "hora"
             ? setValue(key, DateTime.fromISO(value))
             : setValue(key, value);
         });
@@ -117,7 +117,10 @@ function FormLayout({
   };
 
   return (
-    <Box sx={handleRol() ? adminStyle : inspectorStyle} className="form">
+    <Box
+      sx={handleRol() ? adminStyle : inspectorStyle}
+      className={styles["form"]}
+    >
       <div className={styles.header}>
         <img src={LogoVL} alt="Logo Vicente Lopez" />
         <Button onClick={handleClose}>Cerrar</Button>

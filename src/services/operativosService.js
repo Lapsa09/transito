@@ -8,6 +8,8 @@ export const getAllZonas = async () => await getter("/zonas");
 
 export const getSeguridad = async () => await getEnums("seguridad");
 
+export const getMotivos = async () => await getter("/motivos");
+
 export const getMotivosCamion = async () => await getEnums("motivos_camion");
 
 export const getMotivosMoto = async () =>

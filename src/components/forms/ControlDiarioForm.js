@@ -29,6 +29,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     getValues,
     watch,
     formState: { isValid },
+    setValue,
   } = useForm({
     mode: "all",
     defaultValues: {
@@ -57,7 +58,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       lp,
       resolucion,
       motivo,
-      localidadInfractor,
+      localidad,
+      acta,
+      otroMotivo,
     ] = watch([
       "fecha",
       "hora",
@@ -67,7 +70,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       "lp",
       "resolucion",
       "motivo",
-      "localidadInfractor",
+      "localidad",
+      "acta",
+      "otroMotivo",
     ]);
     return [
       {
@@ -86,7 +91,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           direccion,
           resolucion,
           motivo,
-          localidadInfractor,
+          localidad,
+          acta,
+          otroMotivo,
         },
       },
     ];
@@ -95,7 +102,17 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
   const submitting = async (data) => {
     await nuevoControl(data);
     reset(
-      { ...data, dominio: "", localidadInfractor: null, motivo: "" },
+      {
+        ...data,
+        hora: null,
+        direccion: "",
+        resolucion: null,
+        dominio: "",
+        localidad: null,
+        motivo: null,
+        otroMotivo: null,
+        acta: null,
+      },
       { keepDefaultValues: true }
     );
     if (handleRol()) {
@@ -107,7 +124,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const getMotivo = () => {
     return (
-      motivos.find((motivo) => motivo.id == getValues("motivo"))?.motivo || ""
+      motivos.find((motivo) => motivo.id === getValues("motivo"))?.motivo || ""
     );
   };
 
@@ -122,6 +139,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       submitEvent={submitting}
       error={error}
       path="diario"
+      setValue={setValue}
+      reset={reset}
     >
       <>
         <CustomDatePicker
@@ -174,6 +193,13 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           rules={{ required: "Ingrese una direccion valida" }}
           label="Direccion"
         />
+        <CustomAutocomplete
+          control={control}
+          name="localidad"
+          rules={{ required: "Elija una opcion" }}
+          label="Localidad"
+          options={localidades}
+        />
         <CustomTextField
           control={control}
           name="dominio"
@@ -193,14 +219,14 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           label="Resolucion"
           options={resolucion}
         />
-        {getValues("resolucion") == "ACTA" && (
+        {getValues("resolucion") === "ACTA" && (
           <CustomTextField
             type="number"
             control={control}
             name="acta"
             rules={{
               required: {
-                value: getValues("resolucion") == "ACTA",
+                value: getValues("resolucion") === "ACTA",
                 message: "Ingrese un Nro de Acta valido",
               },
             }}
@@ -214,26 +240,19 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           label="Motivo"
           options={motivos}
         />
-        {motivos?.length > 0 && getMotivo() == "OTRO" && (
+        {motivos?.length > 0 && getMotivo() === "OTRO" && (
           <CustomTextField
             control={control}
             name="otroMotivo"
             rules={{
               required: {
-                value: getMotivo() == "OTRO",
+                value: getMotivo() === "OTRO",
                 message: "Inserte un motivo valido",
               },
             }}
             label="Otro motivo"
           />
         )}
-        <CustomAutocomplete
-          control={control}
-          name="localidadInfractor"
-          rules={{ required: "Elija una opcion" }}
-          label="Localidad del infractor"
-          options={localidades}
-        />
       </>
     </Layout>
   );

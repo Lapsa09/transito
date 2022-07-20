@@ -3,6 +3,7 @@ import {
   getAllZonas,
   getZonasVL,
   nuevoOperativoCamiones,
+  getMotivos,
 } from "../../services/operativosService";
 import { getResolucion, getTurnos } from "../../services/index";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
@@ -29,15 +30,22 @@ function OperativosForm({ handleClose, afterCreate }) {
     reset,
     getValues,
     watch,
+    setValue,
     formState: { isValid },
   } = useForm({
     mode: "all",
-    defaultValues: { lpcarga: user.legajo },
+    defaultValues: { lpcarga: user?.legajo },
   });
   const {
-    data: [zonasVL, allZonas, turnos, resolucion],
+    data: [zonasVL, allZonas, turnos, resolucion, motivos],
     error,
-  } = useSelects([getZonasVL(), getAllZonas(), getTurnos(), getResolucion()]);
+  } = useSelects([
+    getZonasVL(),
+    getAllZonas(),
+    getTurnos(),
+    getResolucion(),
+    getMotivos(),
+  ]);
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = () => {
@@ -113,7 +121,23 @@ function OperativosForm({ handleClose, afterCreate }) {
   const submitEvent = async (data) => {
     await nuevoOperativoCamiones(data);
     await afterCreate();
-    reset({}, { keepDefaultValues: true });
+    reset(
+      {
+        ...data,
+        hora: null,
+        dominio: null,
+        licencia: "",
+        origen: null,
+        localidad_origen: null,
+        destino: null,
+        localidad_destino: "",
+        remito: false,
+        carga: false,
+        motivo: null,
+        resolucion: null,
+      },
+      { keepDefaultValues: true }
+    );
   };
 
   return (
@@ -127,6 +151,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       handleSubmit={handleSubmit}
       submitEvent={submitEvent}
       path="camiones"
+      setValue={setValue}
     >
       <>
         <CustomDatePicker
@@ -136,7 +161,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           disabled={!handleRol()}
           defaultValue={!handleRol() ? currentDate() : null}
         />
-
         <CustomTextField
           control={control}
           name="direccion"
@@ -192,12 +216,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           }}
         />
         <CustomTextField control={control} name="licencia" label="Licencia" />
-        <CustomTextField
-          control={control}
-          name="origen"
-          label="Origen"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
+        <CustomTextField control={control} name="origen" label="Origen" />
         <CustomAutocomplete
           control={control}
           name="localidad_origen"
@@ -205,12 +224,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion" }}
           options={allZonas}
         />
-        <CustomTextField
-          control={control}
-          name="destino"
-          label="Destino"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
+        <CustomTextField control={control} name="destino" label="Destino" />
         <CustomAutocomplete
           control={control}
           name="localidad_destino"
@@ -236,12 +250,6 @@ function OperativosForm({ handleClose, afterCreate }) {
             }}
           />
         )}
-        <CustomTextField
-          control={control}
-          name="motivo"
-          label="Motivo"
-          rules={{ required: "Inserte un motivo valido" }}
-        />
         <CustomSelect
           control={control}
           name="resolucion"
@@ -249,6 +257,16 @@ function OperativosForm({ handleClose, afterCreate }) {
           rules={{ required: "Elija una opcion valida" }}
           options={resolucion}
         />
+        {(getValues("resolucion") === "ACTA" ||
+          getValues("resolucion") === "REMITIDO") && (
+          <CustomSelect
+            control={control}
+            name="motivo"
+            label="Motivo"
+            options={motivos}
+            rules={{ required: "Inserte un motivo valido" }}
+          />
+        )}
       </>
     </Layout>
   );

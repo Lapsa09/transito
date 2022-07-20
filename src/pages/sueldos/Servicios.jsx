@@ -10,8 +10,14 @@ import {
   SelectInput,
   TextField,
   useListController,
+  BulkExportButton,
 } from "react-admin";
 import { ServiciosMemo } from "../../components";
+
+const customExportFunction = (data, selectedIds, exporter) => {
+  const res = data.filter((row) => selectedIds.includes(row.id));
+  exporter(res, "servicios");
+};
 
 function Servicios() {
   const { data, page, perPage, isLoading, ...listContext } =
@@ -64,8 +70,18 @@ function Servicios() {
         </div>
         <Datagrid
           expandSingle
-          isRowSelectable={() => false}
           expand={<ServiciosMemo />}
+          bulkActionButtons={
+            <BulkExportButton
+              exporter={(items) =>
+                customExportFunction(
+                  items,
+                  listContext.selectedIds,
+                  listContext.exporter
+                )
+              }
+            />
+          }
         >
           <DateField
             textAlign="right"

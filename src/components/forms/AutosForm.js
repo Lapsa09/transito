@@ -5,6 +5,7 @@ import {
   getSeguridad,
   getZonasVL,
   nuevoOperativoAuto,
+  getMotivos,
 } from "../../services/operativosService";
 import { getResolucion, getTurnos } from "../../services/index";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
@@ -30,6 +31,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     reset,
     getValues,
     watch,
+    setValue,
     formState: { isValid },
   } = useForm({
     mode: "all",
@@ -37,7 +39,15 @@ function OperativosForm({ handleClose, afterCreate }) {
   });
   const [activeStep, setActiveStep] = useState(0);
   const {
-    data: [licencias, zonasVL, allZonas, turnos, seguridad, resolucion],
+    data: [
+      licencias,
+      zonasVL,
+      allZonas,
+      turnos,
+      seguridad,
+      resolucion,
+      motivos,
+    ],
     error,
   } = useSelects([
     getLicencias(),
@@ -46,6 +56,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     getTurnos(),
     getSeguridad(),
     getResolucion(),
+    getMotivos(),
   ]);
 
   const steps = () => {
@@ -87,12 +98,12 @@ function OperativosForm({ handleClose, afterCreate }) {
           turno,
           direccion,
           zona,
+          hora,
         },
       },
       {
         label: "Vehiculo",
         values: {
-          hora,
           dominio,
           zona_infractor,
           resolucion,
@@ -107,14 +118,15 @@ function OperativosForm({ handleClose, afterCreate }) {
     await afterCreate();
     reset(
       {
-        dominio: "",
+        ...data,
+        dominio: null,
         zona_infractor: null,
-        resolucion: "",
-        motivo: "",
-        licencia: "",
+        resolucion: null,
+        motivo: null,
+        licencia: null,
         tipo_licencia: null,
-        graduacion_alcoholica: "",
-        acta: "",
+        graduacion_alcoholica: null,
+        acta: null,
         lpcarga: user?.legajo,
       },
       { keepDefaultValues: true }
@@ -132,6 +144,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       submitEvent={submitEvent}
       error={error}
       path="autos"
+      setValue={setValue}
     >
       <>
         <CustomDatePicker
@@ -139,6 +152,13 @@ function OperativosForm({ handleClose, afterCreate }) {
           name="fecha"
           disabled={!handleRol()}
           label="Fecha"
+          defaultValue={!handleRol() ? currentDate() : null}
+        />
+        <CustomTimePicker
+          control={control}
+          name="hora"
+          disabled={!handleRol()}
+          label="Hora"
           defaultValue={!handleRol() ? currentDate() : null}
         />
         <CustomTextField
@@ -198,13 +218,6 @@ function OperativosForm({ handleClose, afterCreate }) {
         />
       </>
       <>
-        <CustomTimePicker
-          control={control}
-          name="hora"
-          disabled={!handleRol()}
-          label="Hora"
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
         <CustomTextField
           control={control}
           name="dominio"
@@ -236,11 +249,12 @@ function OperativosForm({ handleClose, afterCreate }) {
           label="Localidad del infractor"
           options={allZonas}
         />
-        <CustomTextField
+        <CustomSelect
           control={control}
           name="motivo"
           label="Motivo"
           rules={{ required: "Inserte un motivo" }}
+          options={motivos}
         />
         <CustomTextField
           type="number"

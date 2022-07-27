@@ -87,14 +87,11 @@ h3 {
 
   .sidebar > div {
     margin-top: 75px;
+    height: calc(100% - 75px);
   }
 
   .sidebar ul {
     list-style: none;
-  }
-
-  .sidebar > ul > li {
-    cursor: pointer;
   }
 
   .dia {

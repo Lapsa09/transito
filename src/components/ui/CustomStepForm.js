@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import styles from "../../styles/FormLayout.module.css";
 
 function CustomStepForm({ children, activeStep, step }) {
   const variant = {
@@ -16,7 +15,7 @@ function CustomStepForm({ children, activeStep, step }) {
   };
   return (
     <motion.div
-      className={styles["form__box__inputs"]}
+      style={{ width: "100%" }}
       variants={variant}
       animate={
         activeStep === step ? "open" : activeStep > step ? "left" : "right"

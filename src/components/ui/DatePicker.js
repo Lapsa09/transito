@@ -51,6 +51,7 @@ function CustomDatePicker({
             required
             placeholder="dd/MM/yyyy"
             helperText={errors[name]?.message}
+            fullWidth
             error={error}
           />
         )}

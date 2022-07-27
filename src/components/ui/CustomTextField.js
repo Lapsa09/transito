@@ -42,6 +42,7 @@ function CustomTextField({
       className={className}
       error={error}
       label={label}
+      fullWidth
     />
   );
 }

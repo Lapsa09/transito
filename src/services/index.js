@@ -19,8 +19,8 @@ export const getTurnos = async () => await getEnums("turnos");
 export const getResolucion = async () => await getEnums("resolucion");
 
 export const verifyAuth = async () => {
-  const res = await axios.post(BASE_URL + "/auth/verify", null, {
+  const { data } = await axios.post(BASE_URL + "/auth/verify", null, {
     headers: { jwt_token: localStorage.getItem("token") },
   });
-  return res;
+  return data;
 };

@@ -23,6 +23,7 @@ import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateChe
 import { useForm, useFieldArray } from "react-hook-form";
 import Layout from "../../layouts/FormLayout";
 import { useSelects } from "../../hooks";
+import { Grid } from "@mui/material";
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
@@ -186,148 +187,178 @@ function MotosForm({ handleClose, afterCreate }) {
       steps={steps()}
       handleClose={handleClose}
     >
-      <>
-        <CustomDatePicker
-          control={control}
-          name="fecha"
-          label="Fecha"
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
-        <CustomTimePicker
-          control={control}
-          name="hora"
-          label="Hora"
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
-        <CustomTextField
-          control={control}
-          name="direccion"
-          label="Direccion"
-          rules={{ required: "Ingrese una direccion valida" }}
-        />
-        <CustomSelect
-          control={control}
-          name="zona"
-          label="Zona"
-          rules={{ required: "Elija una localidad" }}
-          options={zonasVL}
-        />
-        <CustomTextField
-          control={control}
-          type="number"
-          name="legajo_a_cargo"
-          label="Legajo a cargo"
-          rules={{
-            required: "Ingrese un legajo valido",
-            pattern: {
-              value: LEGAJO_PATTERN,
-              message: "Ingrese un legajo valido",
-            },
-          }}
-        />
-        <CustomTextField
-          control={control}
-          type="number"
-          name="legajo_planilla"
-          label="Legajo planilla"
-          rules={{
-            required: "Ingrese un legajo valido",
-            pattern: {
-              value: LEGAJO_PATTERN,
-              message: "Ingrese un legajo valido",
-            },
-          }}
-        />
-        <CustomSelect
-          control={control}
-          name="turno"
-          label="Turno"
-          rules={{ required: "Elija una opcion" }}
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? user.turno : null}
-          options={turnos}
-        />
-        <CustomSelect
-          control={control}
-          name="seguridad"
-          label="Seguridad"
-          options={seguridad}
-          rules={{ required: "Elija una opcion" }}
-        />
-      </>
-      <>
-        <div className="controller">
-          <h4>Motivos: {fields.length}</h4>
-          <AddBoxSharpIcon onClick={sumarMotivos} />
-          <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
-        </div>
-        <CustomTextField
-          control={control}
-          name="dominio"
-          label="Dominio"
-          rules={{
-            required: "Ingrese una patente valida",
-            pattern: {
-              value: DOMINIO_PATTERN,
-              message: "Ingrese una patente valida",
-            },
-          }}
-        />
-        <CustomTextField
-          control={control}
-          type="number"
-          name="licencia"
-          label="Licencia"
-        />
-        <CustomSelect
-          control={control}
-          name="tipo_licencia"
-          label="Tipo de licencia"
-          options={licencias}
-        />
-        <CustomAutocomplete
-          control={control}
-          name="zona_infractor"
-          label="Localidad del infractor"
-          rules={{ required: "Elija una opcion" }}
-          options={allZonas}
-        />
-        {fields.map((item, index) => (
+      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <CustomDatePicker
+            control={control}
+            name="fecha"
+            label="Fecha"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? currentDate() : null}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? currentDate() : null}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            name="direccion"
+            label="Direccion"
+            rules={{ required: "Ingrese una direccion valida" }}
+          />
+        </Grid>
+        <Grid item xs={8}>
           <CustomSelect
             control={control}
-            key={item.id}
-            name={`motivos.${index}.motivo`}
-            label={`Motivo ${index + 1}`}
-            options={motivos}
+            name="zona"
+            label="Zona"
+            rules={{ required: "Elija una localidad" }}
+            options={zonasVL}
           />
-        ))}
-        <CustomSelect
-          control={control}
-          name="resolucion"
-          label="Resolucion"
-          rules={{ required: "Elija una opcion valida" }}
-          options={resolucion}
-        />
-        {(getValues("resolucion") === "ACTA" ||
-          getValues("resolucion") === "REMITIDO") && (
+        </Grid>
+        <Grid item xs={8}>
           <CustomTextField
-            type="number"
             control={control}
-            name="acta"
-            label="Acta"
+            type="number"
+            name="legajo_a_cargo"
+            label="Legajo a cargo"
             rules={{
-              required: {
-                value:
-                  getValues("resolucion") === "ACTA" ||
-                  getValues("resolucion") === "REMITIDO",
-                message: "Ingrese un nro de acta",
+              required: "Ingrese un legajo valido",
+              pattern: {
+                value: LEGAJO_PATTERN,
+                message: "Ingrese un legajo valido",
               },
             }}
           />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            type="number"
+            name="legajo_planilla"
+            label="Legajo planilla"
+            rules={{
+              required: "Ingrese un legajo valido",
+              pattern: {
+                value: LEGAJO_PATTERN,
+                message: "Ingrese un legajo valido",
+              },
+            }}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="turno"
+            label="Turno"
+            rules={{ required: "Elija una opcion" }}
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? user.turno : null}
+            options={turnos}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="seguridad"
+            label="Seguridad"
+            options={seguridad}
+            rules={{ required: "Elija una opcion" }}
+          />
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+        <Grid container justifyContent="center" alignItems="center">
+          <h4>Motivos: {fields.length}</h4>
+          <AddBoxSharpIcon onClick={sumarMotivos} />
+          <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            name="dominio"
+            label="Dominio"
+            rules={{
+              required: "Ingrese una patente valida",
+              pattern: {
+                value: DOMINIO_PATTERN,
+                message: "Ingrese una patente valida",
+              },
+            }}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            type="number"
+            name="licencia"
+            label="Licencia"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="tipo_licencia"
+            label="Tipo de licencia"
+            options={licencias}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomAutocomplete
+            control={control}
+            name="zona_infractor"
+            label="Localidad del infractor"
+            rules={{ required: "Elija una opcion" }}
+            options={allZonas}
+          />
+        </Grid>
+        {fields.map((item, index) => (
+          <Grid item xs={8}>
+            <CustomSelect
+              control={control}
+              key={item.id}
+              name={`motivos.${index}.motivo`}
+              label={`Motivo ${index + 1}`}
+              options={motivos}
+            />
+          </Grid>
+        ))}
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="resolucion"
+            label="Resolucion"
+            rules={{ required: "Elija una opcion valida" }}
+            options={resolucion}
+          />
+        </Grid>
+        {(getValues("resolucion") === "ACTA" ||
+          getValues("resolucion") === "REMITIDO") && (
+          <Grid item xs={8}>
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              label="Acta"
+              rules={{
+                required: {
+                  value:
+                    getValues("resolucion") === "ACTA" ||
+                    getValues("resolucion") === "REMITIDO",
+                  message: "Ingrese un nro de acta",
+                },
+              }}
+            />
+          </Grid>
         )}
-      </>
+      </Grid>
     </Layout>
   );
 }

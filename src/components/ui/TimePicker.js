@@ -45,6 +45,7 @@ function CustomTimePicker({
             placeholder="HH:mm"
             helperText={errors[name]?.message}
             error={error}
+            fullWidth
           />
         )}
       />

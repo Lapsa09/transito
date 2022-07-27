@@ -21,6 +21,7 @@ import { Header } from "./components";
 
 function App() {
   const user = useSelector(selectUser);
+
   return (
     <BrowserRouter>
       <Header />
@@ -29,7 +30,7 @@ function App() {
           index
           path="/"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="public">
               <Home />
             </PrivateRoute>
           }
@@ -45,7 +46,7 @@ function App() {
         <Route
           path="/control/diario"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="INSPECTOR">
               <ControlDiarioPage />
             </PrivateRoute>
           }
@@ -53,7 +54,7 @@ function App() {
         <Route
           path="/control/paseo"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="INSPECTOR">
               <ControlPaseoPage />
             </PrivateRoute>
           }
@@ -61,7 +62,7 @@ function App() {
         <Route
           path="/operativos/autos"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="INSPECTOR">
               <AutosPage />
             </PrivateRoute>
           }
@@ -69,7 +70,7 @@ function App() {
         <Route
           path="/operativos/motos"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="INSPECTOR">
               <MotosPage />
             </PrivateRoute>
           }
@@ -77,7 +78,7 @@ function App() {
         <Route
           path="/operativos/camiones"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="INSPECTOR">
               <CamionesPage />
             </PrivateRoute>
           }
@@ -85,7 +86,7 @@ function App() {
         <Route
           path="/sueldos/*"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="ADMINISTRATIVO">
               <Sueldos />
             </PrivateRoute>
           }
@@ -93,7 +94,7 @@ function App() {
         <Route
           path="/waze"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="TRAFICO">
               <Waze />
             </PrivateRoute>
           }
@@ -101,7 +102,7 @@ function App() {
         <Route
           path="waze/historial"
           element={
-            <PrivateRoute>
+            <PrivateRoute permission="TRAFICO">
               <History />
             </PrivateRoute>
           }

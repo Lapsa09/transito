@@ -8,8 +8,6 @@ export const adminStyle = {
   boxShadow: 24,
   p: 4,
   maxHeight: "75%",
-  flexDirection: "column",
-  alignItems: "center",
 };
 
 export const inspectorStyle = {
@@ -20,6 +18,4 @@ export const inspectorStyle = {
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
-  flexDirection: "column",
-  alignItems: "center",
 };

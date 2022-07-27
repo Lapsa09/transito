@@ -20,6 +20,7 @@ import {
 } from "../ui";
 import Layout from "../../layouts/FormLayout";
 import { useSelects } from "../../hooks";
+import { Grid } from "@mui/material";
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector(selectUser);
@@ -153,121 +154,162 @@ function OperativosForm({ handleClose, afterCreate }) {
       path="camiones"
       setValue={setValue}
     >
-      <>
-        <CustomDatePicker
-          control={control}
-          name="fecha"
-          label="Fecha"
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
-        <CustomTextField
-          control={control}
-          name="direccion"
-          label="Direccion"
-          rules={{ required: "Inserte una direccion valida" }}
-        />
-        <CustomSelect
-          control={control}
-          name="zona"
-          label="Zona"
-          rules={{ required: "Inserte una localidad" }}
-          options={zonasVL}
-        />
-        <CustomTextField
-          type="number"
-          control={control}
-          name="legajo"
-          label="Legajo"
-          rules={{
-            required: "Inserte un legajo valido",
-            pattern: {
-              value: LEGAJO_PATTERN,
-              message: "Inserte un legajo valido",
-            },
-          }}
-        />
-        <CustomSelect
-          control={control}
-          name="turno"
-          label="Turno"
-          rules={{ required: "Elija una opcion" }}
-          options={turnos}
-        />
-      </>
-      <>
-        <CustomTimePicker
-          control={control}
-          name="hora"
-          label="Hora"
-          disabled={!handleRol()}
-          defaultValue={!handleRol() ? currentDate() : null}
-        />
-        <CustomTextField
-          control={control}
-          name="dominio"
-          label="Dominio"
-          rules={{
-            required: "Inserte una patente",
-            pattern: {
-              value: DOMINIO_PATTERN,
-              message: "Inserte una patente valida",
-            },
-          }}
-        />
-        <CustomTextField control={control} name="licencia" label="Licencia" />
-        <CustomTextField control={control} name="origen" label="Origen" />
-        <CustomAutocomplete
-          control={control}
-          name="localidad_origen"
-          label="Localidad de origen"
-          rules={{ required: "Elija una opcion" }}
-          options={allZonas}
-        />
-        <CustomTextField control={control} name="destino" label="Destino" />
-        <CustomAutocomplete
-          control={control}
-          name="localidad_destino"
-          label="Localidad de destino"
-          rules={{ required: "Elija una opcion" }}
-          options={allZonas}
-        />
-        <div className="switches">
-          <CustomSwitch control={control} name="remito" label="Remito" />
-          <CustomSwitch control={control} name="carga" label="Carga" />
-        </div>
-        {getValues("resolucion") === "ACTA" && (
+      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <CustomDatePicker
+            control={control}
+            name="fecha"
+            label="Fecha"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? currentDate() : null}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            name="direccion"
+            label="Direccion"
+            rules={{ required: "Inserte una direccion valida" }}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="zona"
+            label="Zona"
+            rules={{ required: "Inserte una localidad" }}
+            options={zonasVL}
+          />
+        </Grid>
+        <Grid item xs={8}>
           <CustomTextField
             type="number"
             control={control}
-            name="acta"
-            label="Acta"
+            name="legajo"
+            label="Legajo"
             rules={{
-              required: {
-                value: getValues("resolucion") === "ACTA",
-                message: "Ingrese un nro de acta",
+              required: "Inserte un legajo valido",
+              pattern: {
+                value: LEGAJO_PATTERN,
+                message: "Inserte un legajo valido",
               },
             }}
           />
-        )}
-        <CustomSelect
-          control={control}
-          name="resolucion"
-          label="Resolucion"
-          rules={{ required: "Elija una opcion valida" }}
-          options={resolucion}
-        />
-        {(getValues("resolucion") === "ACTA" ||
-          getValues("resolucion") === "REMITIDO") && (
+        </Grid>
+        <Grid item xs={8}>
           <CustomSelect
             control={control}
-            name="motivo"
-            label="Motivo"
-            options={motivos}
-            rules={{ required: "Inserte un motivo valido" }}
+            name="turno"
+            label="Turno"
+            rules={{ required: "Elija una opcion" }}
+            options={turnos}
           />
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <CustomTimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? currentDate() : null}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            name="dominio"
+            label="Dominio"
+            rules={{
+              required: "Inserte una patente",
+              pattern: {
+                value: DOMINIO_PATTERN,
+                message: "Inserte una patente valida",
+              },
+            }}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="licencia" label="Licencia" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="origen" label="Origen" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomAutocomplete
+            control={control}
+            name="localidad_origen"
+            label="Localidad de origen"
+            rules={{ required: "Elija una opcion" }}
+            options={allZonas}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="destino" label="Destino" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomAutocomplete
+            control={control}
+            name="localidad_destino"
+            label="Localidad de destino"
+            rules={{ required: "Elija una opcion" }}
+            options={allZonas}
+          />
+        </Grid>
+        <Grid
+          item
+          container
+          md={6}
+          sm={12}
+          justifyContent="center"
+          columnGap={2}
+        >
+          <Grid item xs={4}>
+            <CustomSwitch control={control} name="remito" label="Remito" />
+          </Grid>
+          <Grid item xs={4}>
+            <CustomSwitch control={control} name="carga" label="Carga" />
+          </Grid>
+        </Grid>
+        {getValues("resolucion") === "ACTA" && (
+          <Grid item xs={8}>
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              label="Acta"
+              rules={{
+                required: {
+                  value: getValues("resolucion") === "ACTA",
+                  message: "Ingrese un nro de acta",
+                },
+              }}
+            />
+          </Grid>
         )}
-      </>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="resolucion"
+            label="Resolucion"
+            rules={{ required: "Elija una opcion valida" }}
+            options={resolucion}
+          />
+        </Grid>
+        {(getValues("resolucion") === "ACTA" ||
+          getValues("resolucion") === "REMITIDO") && (
+          <Grid item xs={8}>
+            <CustomSelect
+              control={control}
+              name="motivo"
+              label="Motivo"
+              options={motivos}
+              rules={{ required: "Inserte un motivo valido" }}
+            />
+          </Grid>
+        )}
+      </Grid>
     </Layout>
   );
 }

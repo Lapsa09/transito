@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ControlDiarioForm from "../../components/forms/ControlDiarioForm";
 import { getControles } from "../../services/controlDiarioService";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
+
 import Layout from "../../layouts/OperativosLayout";
 import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../utils";
 import { useData } from "../../hooks";
@@ -12,7 +12,7 @@ function ControlDiarioPage() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const navigate = useNavigate();
   const handleRol = () => user?.rol === "ADMIN";
   const { data, loading, refresh } = useData(getControles);

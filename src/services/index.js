@@ -7,8 +7,8 @@ export const getter = async (route) => {
   return data;
 };
 
-export const setter = async (route, body) => {
-  const { data } = await axios.post(BASE_URL + route, body);
+export const setter = async (route, body, headers = null) => {
+  const { data } = await axios.post(BASE_URL + route, body, headers);
   return data;
 };
 
@@ -19,7 +19,7 @@ export const getTurnos = async () => await getEnums("turnos");
 export const getResolucion = async () => await getEnums("resolucion");
 
 export const verifyAuth = async () => {
-  const { data } = await axios.post(BASE_URL + "/auth/verify", null, {
+  const { data } = await setter("/auth/verify", null, {
     headers: { jwt_token: localStorage.getItem("token") },
   });
   return data;

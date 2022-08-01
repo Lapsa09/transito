@@ -3,7 +3,7 @@ import OperativosForm from "../../components/forms/AutosForm";
 import { getOperativosAutos } from "../../services/operativosService";
 import Layout from "../../layouts/OperativosLayout";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
+
 import { dateFormat, dateTimeFormat, timeFormat } from "../../utils";
 import { useData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ function AutosPage() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const router = useNavigate();
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const { data, loading, refresh } = useData(getOperativosAutos);
 

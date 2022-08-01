@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
 import { Header } from "../components/ui/";
-import { selectUser } from "../redux/userSlice";
+
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
 
   return (
     <div className={styles.home}>

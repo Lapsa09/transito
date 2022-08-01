@@ -17,14 +17,14 @@ import {
   CustomSelect,
   CustomAutocomplete,
 } from "../ui";
-import { selectUser } from "../../redux/userSlice";
+
 import { useForm } from "react-hook-form";
 import Layout from "../../layouts/FormLayout";
 import { useSelects } from "../../hooks";
 import { Grid } from "@mui/material";
 
 function OperativosForm({ handleClose, afterCreate }) {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const {
     handleSubmit,

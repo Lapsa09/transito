@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Modal } from "@mui/material";
-import { selectUser } from "../redux/userSlice";
+
 import { adminStyle, inspectorStyle } from "../components/utils";
 import { useSelector } from "react-redux";
 import LogoVL from "../assets/imgs/LOGO_V_LOPEZ.png";
@@ -29,7 +29,7 @@ function FormLayout({
   reset,
   setValue,
 }) {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const [open, setOpen] = useState(false);
   const [operative, setOperative] = useLocalStorage(path);

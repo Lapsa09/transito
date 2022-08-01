@@ -1,5 +1,11 @@
 import React from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import {
   Home,
   Login,
@@ -14,17 +20,20 @@ import {
   History,
 } from "./pages";
 import { useSelector } from "react-redux";
-import { selectUser } from "./redux/userSlice";
 import "./styles/globals.css";
 import PrivateRoute from "./layouts/PrivateRoute";
 import { Header } from "./components";
+import { history } from "./utils";
 
 function App() {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
+
+  history.navigate = useNavigate();
+  history.location = useLocation();
 
   return (
-    <BrowserRouter>
-      <Header />
+    <div>
+      {user && <Header />}
       <Routes>
         <Route
           index
@@ -108,7 +117,7 @@ function App() {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </div>
   );
 }
 

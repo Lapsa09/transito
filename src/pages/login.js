@@ -1,33 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Box, Button, FormHelperText } from "@mui/material";
-import { loginCall } from "../services/userService";
-import { login } from "../redux/userSlice";
-import CustomTextField from "../components/ui/CustomTextField";
-import { useDispatch } from "react-redux";
+import { authActions } from "../redux/userSlice";
+import { CustomTextField } from "../components";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { history } from "../utils";
 import "../styles/login.css";
 
 function Login() {
   const { control, handleSubmit } = useForm();
-  const [error, setError] = useState("");
-  const router = useNavigate();
   const dispatch = useDispatch();
+  const authUser = useSelector((x) => x.user.user);
+  const authError = useSelector((x) => x.user.error);
+
+  useEffect(() => {
+    // redirect to home if already logged in
+    if (authUser) history.navigate("/");
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submitEvent = async (data) => {
-    try {
-      setError("");
-      const res = await loginCall(data);
-      dispatch(login(res));
-      router("/", { replace: true });
-    } catch (error) {
-      console.log(error);
-      setError(error.response?.data || error.message);
-    }
+    dispatch(authActions.login(data));
   };
 
   const register = () => {
-    router("/register");
+    history.navigate("/register");
   };
   return (
     <div className="login">
@@ -46,7 +44,9 @@ function Login() {
           label="Contraseña"
           className="MuiTextField-root"
         />
-        {error && <FormHelperText error>{error}</FormHelperText>}
+        {authError && (
+          <FormHelperText error>{authError.message}</FormHelperText>
+        )}
         <div className="buttons">
           <Button
             className="MuiButton-root"

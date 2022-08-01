@@ -17,7 +17,7 @@ import {
 import { getResolucion, getTurnos } from "../../services/index";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
+
 import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
 import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -26,7 +26,7 @@ import { useSelects } from "../../hooks";
 import { Grid } from "@mui/material";
 
 function MotosForm({ handleClose, afterCreate }) {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const {
     handleSubmit,

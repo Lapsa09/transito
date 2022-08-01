@@ -1,31 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, FormHelperText } from "@mui/material";
-import { register } from "../services/userService";
-import { useDispatch } from "react-redux";
-import { login } from "../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { authActions } from "../redux/userSlice";
 import CustomTextField from "../components/ui/CustomTextField";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { history } from "../utils";
 import "../styles/register.css";
 
 function Register() {
   const { control, handleSubmit, getValues } = useForm();
   const [error, setError] = useState("");
-  const router = useNavigate();
   const dispatch = useDispatch();
+  const authUser = useSelector((x) => x.user.user);
+  const authError = useSelector((x) => x.user.error);
 
   const loginNav = () => {
-    router.push("/login");
+    history.navigate("/login");
   };
 
+  useEffect(() => {
+    // redirect to home if already logged in
+    if (authUser) history.navigate("/");
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const submitEvent = async (data) => {
-    try {
-      setError("");
-      const res = await register(data);
-      dispatch(login(res));
-      router("/", { replace: true });
-    } catch (error) {
-      setError(error.response.data);
+    setError("");
+    // const res = await register(data);
+    dispatch(authActions.register(data));
+    history.navigate("/", { replace: true });
+    if (authError) {
+      setError(authError.message);
     }
   };
 

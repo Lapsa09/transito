@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Modal, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSelector } from "react-redux";
-import { selectUser } from "../redux/userSlice";
+
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/Operativos.page.module.css";
 
@@ -16,7 +16,7 @@ function OperativosLayout({
   handleClose,
 }) {
   const navigate = useNavigate();
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   return user?.rol === "ADMIN" ? (
     <div className={styles.Operativos}>
       <div className="control_buttons">

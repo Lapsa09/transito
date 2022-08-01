@@ -6,13 +6,12 @@ import { dateFormat, dateTimeFormat, timeFormat } from "../../utils";
 import { useData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
 
 function MotosPage() {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const router = useNavigate();
   const handleRol = () => user?.rol === "ADMIN";
   const { data, loading, refresh } = useData(getOperativosMotos);

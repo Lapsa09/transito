@@ -5,7 +5,7 @@ import {
   nuevoControl,
 } from "../../services/controlDiarioService";
 import { getResolucion, getTurnos } from "../../services/index";
-import { selectUser } from "../../redux/userSlice";
+
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import {
@@ -21,7 +21,7 @@ import { useSelects } from "../../hooks";
 import { Grid } from "@mui/material";
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user.rol === "ADMIN";
   const {
     handleSubmit,

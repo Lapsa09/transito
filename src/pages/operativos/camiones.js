@@ -6,14 +6,13 @@ import { dateFormat, timeFormat } from "../../utils";
 import { useData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
 
 function CamionesPage() {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
   const router = useNavigate();
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const { data, loading, refresh } = useData(getOperativosCamiones);
 

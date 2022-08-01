@@ -5,7 +5,7 @@ import { useController } from "react-hook-form";
 function CustomTextField({
   control,
   name,
-  defaultValue = null,
+  defaultValue = "",
   rules,
   label,
   type = "text",

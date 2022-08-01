@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ControlPaseoForm from "../../components/forms/ControlPaseoForm";
 import { getControlesPaseo } from "../../services/controlDiarioService";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
+
 import Layout from "../../layouts/OperativosLayout";
 import { useData } from "../../hooks";
 import { dateFormat, dateTimeSQLFormat, timeFormat } from "../../utils";
@@ -12,7 +12,7 @@ function ControlPaseoPage() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const navigate = useNavigate();
   const handleRol = () => user?.rol === "ADMIN";
   const { data, loading, refresh } = useData(getControlesPaseo);

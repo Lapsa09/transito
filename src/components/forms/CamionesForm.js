@@ -8,7 +8,7 @@ import {
 import { getResolucion, getTurnos } from "../../services/index";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/userSlice";
+
 import { useForm } from "react-hook-form";
 import {
   CustomDatePicker,
@@ -23,7 +23,7 @@ import { useSelects } from "../../hooks";
 import { Grid } from "@mui/material";
 
 function OperativosForm({ handleClose, afterCreate }) {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const {
     handleSubmit,

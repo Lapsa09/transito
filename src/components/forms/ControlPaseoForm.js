@@ -13,7 +13,7 @@ import {
   CustomAutocomplete,
 } from "../ui";
 import { getResolucion, getTurnos } from "../../services/index";
-import { selectUser } from "../../redux/userSlice";
+
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
@@ -22,7 +22,7 @@ import { useSelects } from "../../hooks";
 import { Grid } from "@mui/material";
 
 function ControlPaseoForm({ handleClose, afterCreate }) {
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const handleRol = () => user?.rol === "ADMIN";
   const {
     handleSubmit,

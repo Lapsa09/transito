@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LogoVL from "../../assets/imgs/LOGO_V_LOPEZ.png";
 import LogoOVT from "../../assets/imgs/OVT_LETRAS_NEGRAS.png";
-import { logout, selectUser } from "../../redux/userSlice";
+import { authActions } from "../../redux/userSlice";
 import CustomPopover from "./Popover";
 import styles from "../../styles/Home.module.css";
 import { Logout } from "@mui/icons-material";
@@ -11,10 +11,10 @@ import { Link, useNavigate } from "react-router-dom";
 function Header() {
   const [dropdown, setDropdown] = useState(null);
   const dispatch = useDispatch();
-  const user = useSelector(selectUser);
+  const user = useSelector((x) => x.user.user);
   const navigate = useNavigate();
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(authActions.logout());
   };
 
   const controles = [

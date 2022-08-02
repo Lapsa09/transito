@@ -1,5 +1,5 @@
-import { DateTime } from "luxon";
-import React from "react";
+import { DateTime } from 'luxon';
+import React from 'react';
 import {
   Datagrid,
   DateField,
@@ -11,12 +11,12 @@ import {
   TextField,
   useListController,
   BulkExportButton,
-} from "react-admin";
-import { ServiciosMemo } from "../../components";
+} from 'react-admin';
+import { ServiciosMemo } from '../../components';
 
 const customExportFunction = (data, selectedIds, exporter) => {
   const res = data.filter((row) => selectedIds.includes(row.id));
-  exporter(res, "servicios");
+  exporter(res, 'servicios');
 };
 
 function Servicios() {
@@ -55,14 +55,14 @@ function Servicios() {
         ...listContext,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            alignSelf: "flex-end",
-            width: "95%",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            alignSelf: 'flex-end',
+            width: '95%',
           }}
         >
           <h1>Proximos Servicios</h1>
@@ -77,7 +77,7 @@ function Servicios() {
                 customExportFunction(
                   items,
                   listContext.selectedIds,
-                  listContext.exporter
+                  listContext.exporter,
                 )
               }
             />
@@ -100,19 +100,19 @@ function Servicios() {
             source="importe_recibo"
             label="Importe del recibo"
             locales="es-AR"
-            options={{ style: "currency", currency: "ARS" }}
+            options={{ style: 'currency', currency: 'ARS' }}
           />
           <NumberField
             source="importe_servicio"
             label="Importe del servicio"
             locales="es-AR"
-            options={{ style: "currency", currency: "ARS" }}
+            options={{ style: 'currency', currency: 'ARS' }}
           />
           <NumberField
             source="acopio"
             label="Acopio"
             locales="es-AR"
-            options={{ style: "currency", currency: "ARS" }}
+            options={{ style: 'currency', currency: 'ARS' }}
           />
         </Datagrid>
         <Pagination />

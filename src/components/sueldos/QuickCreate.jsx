@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -6,10 +6,10 @@ import {
   DialogActions,
   TextField,
   Button,
-} from "@mui/material";
-import { Add } from "@mui/icons-material";
-import styles from "../../styles/Sueldos.module.css";
-import { useCreate } from "react-admin";
+} from '@mui/material';
+import { Add } from '@mui/icons-material';
+import styles from '../../styles/Sueldos.module.css';
+import { useCreate } from 'react-admin';
 
 function QuickCreate({ children, handleSubmit, title, reset }) {
   const [open, setOpen] = useState(false);
@@ -53,13 +53,13 @@ function QuickCreate({ children, handleSubmit, title, reset }) {
 }
 
 export function CreateCliente() {
-  const [value, setValue] = useState("");
-  const reset = () => setValue("");
+  const [value, setValue] = useState('');
+  const reset = () => setValue('');
   const [create] = useCreate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    create("clientes/list", { data: { cliente: value } });
+    create('clientes/list', { data: { cliente: value } });
   };
   return (
     <QuickCreate
@@ -78,13 +78,13 @@ export function CreateCliente() {
 }
 
 export function CreateOperario() {
-  const [value, setValue] = useState({ id: "", name: "" });
-  const reset = () => setValue("");
+  const [value, setValue] = useState({ id: '', name: '' });
+  const reset = () => setValue('');
   const [create] = useCreate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    create("operarios/list", { data: { ...value } });
+    create('operarios/list', { data: { ...value } });
   };
   return (
     <QuickCreate
@@ -111,8 +111,8 @@ export function CreateOperario() {
 }
 
 export function CreateRecibo({ setData }) {
-  const [value, setValue] = useState("");
-  const reset = () => setValue("");
+  const [value, setValue] = useState('');
+  const reset = () => setValue('');
   const handleSubmit = (e) => {
     e.preventDefault();
     setData((data) => [
@@ -121,7 +121,7 @@ export function CreateRecibo({ setData }) {
         id: 0,
         recibo: value,
         fecha_recibo: new Date(),
-        importe_recibo: "",
+        importe_recibo: '',
       },
     ]);
   };

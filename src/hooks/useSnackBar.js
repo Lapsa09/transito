@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 export default function useSnackBar() {
   const [openSB, setOpenSB] = useState(false);
-  const [response, setResponse] = useState({ severity: "", message: "" });
+  const [response, setResponse] = useState({ severity: '', message: '' });
 
   const setError = (message) => {
-    setResponse({ severity: "error", message });
+    setResponse({ severity: 'error', message });
     setOpenSB(true);
   };
 
   const closeSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
 
@@ -18,7 +18,7 @@ export default function useSnackBar() {
   };
 
   const setSuccess = (message) => {
-    setResponse({ severity: "success", message });
+    setResponse({ severity: 'success', message });
     setOpenSB(true);
   };
 

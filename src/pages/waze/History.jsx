@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { DateTime } from "luxon";
-import { Table } from "../../components";
-import { getDates, getOneDate } from "../../services/wazeService";
+import React, { useEffect, useState } from 'react';
+import { DateTime } from 'luxon';
+import { Table } from '../../components';
+import { getDates, getOneDate } from '../../services/wazeService';
 import {
   Collapse,
   Drawer,
@@ -9,11 +9,11 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-} from "@mui/material";
-import { ChevronRight, ExpandMore } from "@mui/icons-material";
-import style from "../../styles/Waze.module.css";
-import { useNavigate } from "react-router-dom";
-import { dateFormat, mesName } from "../../utils/dates";
+} from '@mui/material';
+import { ChevronRight, ExpandMore } from '@mui/icons-material';
+import style from '../../styles/Waze.module.css';
+import { useNavigate } from 'react-router-dom';
+import { dateFormat, mesName } from '../../utils/dates';
 
 function History() {
   const [meses, setMeses] = useState([]);
@@ -50,12 +50,12 @@ function History() {
       <Drawer variant="permanent" anchor="left" className={style.sidebar}>
         <List>
           {meses.map((mes) => (
-            <ListItem key={mes.mes} sx={{ display: "block" }}>
+            <ListItem key={mes.mes} sx={{ display: 'block' }}>
               <ListItemButton onClick={() => setCollapseOpen(mes.mes)}>
                 <ListItemText primary={mesName[mes.mes]} />
                 {open === mes.mes ? <ExpandMore /> : <ChevronRight />}
               </ListItemButton>
-              <Collapse in={open === mes.mes} sx={{ marginLeft: "20px" }}>
+              <Collapse in={open === mes.mes} sx={{ marginLeft: '20px' }}>
                 {mes.fechas.map((dia) => (
                   <ListItemButton key={dia.id} onClick={() => fetchDia(dia.id)}>
                     <ListItemText primary={dateFormat(dia.fecha)} />
@@ -70,7 +70,7 @@ function History() {
         <div className={style.header}>
           <button
             className={style.button}
-            onClick={() => navigate("/waze", { replace: true })}
+            onClick={() => navigate('/waze', { replace: true })}
           >
             Atras
           </button>
@@ -78,8 +78,8 @@ function History() {
         {horarios(data).map(([h, values]) => (
           <div className={style.reporte} key={h}>
             <h4>
-              {DateTime.fromFormat(h, "hh:mm:ss").toLocaleString(
-                DateTime.TIME_24_SIMPLE
+              {DateTime.fromFormat(h, 'hh:mm:ss').toLocaleString(
+                DateTime.TIME_24_SIMPLE,
               )}
               :
             </h4>

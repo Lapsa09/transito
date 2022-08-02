@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -12,15 +12,15 @@ export const setter = async (route, body, headers = null) => {
   return data;
 };
 
-export const getEnums = async (type) => await getter("/api/" + type);
+export const getEnums = async (type) => await getter('/api/' + type);
 
-export const getTurnos = async () => await getEnums("turnos");
+export const getTurnos = async () => await getEnums('turnos');
 
-export const getResolucion = async () => await getEnums("resolucion");
+export const getResolucion = async () => await getEnums('resolucion');
 
 export const verifyAuth = async () => {
-  const { data } = await setter("/auth/verify", null, {
-    headers: { jwt_token: localStorage.getItem("token") },
+  const { data } = await setter('/auth/verify', null, {
+    headers: { jwt_token: localStorage.getItem('token') },
   });
   return data;
 };

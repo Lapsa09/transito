@@ -1,5 +1,5 @@
-import { Alert, Snackbar } from "@mui/material";
-import React from "react";
+import { Alert, Snackbar } from '@mui/material';
+import React from 'react';
 
 function CustomSnackbar({ res, open, handleClose }) {
   return (
@@ -7,7 +7,7 @@ function CustomSnackbar({ res, open, handleClose }) {
       <Alert
         onClose={handleClose}
         severity={res.severity}
-        sx={{ width: "100%" }}
+        sx={{ width: '100%' }}
       >
         {res.message}
       </Alert>

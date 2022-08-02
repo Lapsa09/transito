@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Datagrid,
   FilterForm,
@@ -9,8 +9,8 @@ import {
   TextField,
   TextInput,
   useListController,
-} from "react-admin";
-import { ClientesServicios } from "../../components";
+} from 'react-admin';
+import { ClientesServicios } from '../../components';
 
 function Clientes() {
   const { data, page, perPage, isLoading, ...listContext } =
@@ -31,8 +31,8 @@ function Clientes() {
           (value, index, self) =>
             index ===
             self.findIndex(
-              (t) => t.place === value.place && t.name === value.name
-            )
+              (t) => t.place === value.place && t.name === value.name,
+            ),
         )
         .sort((a, b) => a.id - b.id)}
     />,
@@ -55,14 +55,14 @@ function Clientes() {
         ...listContext,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            alignSelf: "flex-end",
-            width: "95%",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            alignSelf: 'flex-end',
+            width: '95%',
           }}
         >
           <h1>Clientes</h1>
@@ -80,12 +80,12 @@ function Clientes() {
             source="a_deudor"
             label="A liquidar"
             locales="es-AR"
-            options={{ style: "currency", currency: "ARS" }}
+            options={{ style: 'currency', currency: 'ARS' }}
           />
           <NumberField
             source="a_favor"
             locales="es-AR"
-            options={{ style: "currency", currency: "ARS" }}
+            options={{ style: 'currency', currency: 'ARS' }}
           />
         </Datagrid>
         <Pagination />

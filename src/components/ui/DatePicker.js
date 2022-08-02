@@ -1,9 +1,9 @@
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import React from "react";
-import DateAdapter from "@mui/lab/AdapterLuxon";
-import { TextField } from "@mui/material";
-import { useController } from "react-hook-form";
-import { currentDate } from "../../utils";
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import React from 'react';
+import DateAdapter from '@mui/lab/AdapterLuxon';
+import { TextField } from '@mui/material';
+import { useController } from 'react-hook-form';
+import { currentDate } from '../../utils';
 
 function CustomDatePicker({
   label,
@@ -20,14 +20,14 @@ function CustomDatePicker({
     name,
     control,
     rules: {
-      required: "Ingrese una fecha",
+      required: 'Ingrese una fecha',
       validate: {
-        validDate: (v) => v.isValid || "Ingrese una fecha valida",
+        validDate: (v) => v.isValid || 'Ingrese una fecha valida',
         minDate: (v) =>
           v.toMillis() > currentDate().minus({ months: 6 }).toMillis() ||
-          "Elija una fecha mas reciente",
+          'Elija una fecha mas reciente',
         maxDate: (v) =>
-          v.toMillis() < currentDate().toMillis() || "Elija una fecha pasada",
+          v.toMillis() < currentDate().toMillis() || 'Elija una fecha pasada',
       },
     },
     defaultValue,

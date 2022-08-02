@@ -1,11 +1,12 @@
-import React from "react";
+import React from 'react';
 import {
   Navigate,
   Route,
   Routes,
   useLocation,
   useNavigate,
-} from "react-router-dom";
+} from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Home,
   Login,
@@ -18,12 +19,11 @@ import {
   Sueldos,
   Waze,
   History,
-} from "./pages";
-import { useSelector } from "react-redux";
-import "./styles/globals.css";
-import PrivateRoute from "./layouts/PrivateRoute";
-import { Header } from "./components";
-import { history } from "./utils";
+} from './pages';
+import './styles/globals.css';
+import PrivateRoute from './layouts/PrivateRoute';
+import { Header } from './components';
+import { history } from './utils';
 
 function App() {
   const user = useSelector((x) => x.user.user);

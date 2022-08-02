@@ -1,29 +1,29 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   getLocalidades,
   getMotivosPaseo,
   nuevoControlPaseo,
   getZonasPaseo,
-} from "../../services/controlDiarioService";
+} from '../../services/controlDiarioService';
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from "../ui";
-import { getResolucion, getTurnos } from "../../services/index";
+} from '../ui';
+import { getResolucion, getTurnos } from '../../services/index';
 
-import { useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
-import Layout from "../../layouts/FormLayout";
-import { useSelects } from "../../hooks";
-import { Grid } from "@mui/material";
+import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
+import Layout from '../../layouts/FormLayout';
+import { useSelects } from '../../hooks';
+import { Grid } from '@mui/material';
 
 function ControlPaseoForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === "ADMIN";
+  const handleRol = () => user?.rol === 'ADMIN';
   const {
     handleSubmit,
     control,
@@ -33,10 +33,10 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     watch,
     formState: { isValid },
   } = useForm({
-    mode: "all",
+    mode: 'all',
     defaultValues: {
       lpcarga: user?.legajo,
-      lp: !handleRol() ? user?.legajo : "",
+      lp: !handleRol() ? user?.legajo : '',
     },
   });
   const {
@@ -63,19 +63,19 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
       motivo,
       localidadInfractor,
     ] = watch([
-      "fecha",
-      "hora",
-      "direccion",
-      "turno",
-      "dominio",
-      "lp",
-      "resolucion",
-      "motivo",
-      "localidadInfractor",
+      'fecha',
+      'hora',
+      'direccion',
+      'turno',
+      'dominio',
+      'lp',
+      'resolucion',
+      'motivo',
+      'localidadInfractor',
     ]);
     return [
       {
-        label: "Operativo",
+        label: 'Operativo',
         values: {
           fecha,
           turno,
@@ -84,7 +84,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
         },
       },
       {
-        label: "Vehiculo",
+        label: 'Vehiculo',
         values: {
           hora,
           dominio,
@@ -99,8 +99,8 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
   const submitting = async (data) => {
     await nuevoControlPaseo(data);
     reset(
-      { ...data, dominio: "", localidadInfractor: null },
-      { keepDefaultValues: true }
+      { ...data, dominio: '', localidadInfractor: null },
+      { keepDefaultValues: true },
     );
     if (handleRol()) {
       await afterCreate();
@@ -137,9 +137,9 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="turno"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Turno"
-            defaultValue={!handleRol() ? user.turno : ""}
+            defaultValue={!handleRol() ? user.turno : ''}
             disabled={!handleRol()}
             options={turnos}
           />
@@ -153,11 +153,11 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
               rules={{
                 required: {
                   value: handleRol(),
-                  message: "Inserte un legajo valido",
+                  message: 'Inserte un legajo valido',
                 },
                 pattern: {
                   value: LEGAJO_PATTERN,
-                  message: "Inserte un legajo valido",
+                  message: 'Inserte un legajo valido',
                 },
               }}
               label="Legajo planilla"
@@ -168,7 +168,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="motivo"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Motivo"
             options={motivos}
           />
@@ -188,7 +188,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="direccion"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Direccion"
             options={zonas}
           />
@@ -199,10 +199,10 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: "Ingrese una patente valida",
+              required: 'Ingrese una patente valida',
               pattern: {
                 value: DOMINIO_PATTERN,
-                message: "Ingrese una patente valida",
+                message: 'Ingrese una patente valida',
               },
             }}
           />
@@ -211,12 +211,12 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="resolucion"
-            rules={{ required: "Elija una opcion valida" }}
+            rules={{ required: 'Elija una opcion valida' }}
             label="Resolucion"
             options={resolucion}
           />
         </Grid>
-        {getValues("resolucion") === "ACTA" && (
+        {getValues('resolucion') === 'ACTA' && (
           <Grid item xs={8}>
             <CustomTextField
               type="number"
@@ -224,8 +224,8 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
               name="acta"
               rules={{
                 required: {
-                  value: getValues("resolucion") === "ACTA",
-                  message: "Ingrese un Nro de Acta valido",
+                  value: getValues('resolucion') === 'ACTA',
+                  message: 'Ingrese un Nro de Acta valido',
                 },
               }}
               label="Acta"
@@ -236,7 +236,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           <CustomAutocomplete
             control={control}
             name="localidadInfractor"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Localidad del infractor"
             options={localidades}
           />

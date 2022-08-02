@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux";
-import { Header } from "../components/ui/";
+import { useSelector } from 'react-redux';
+import { Header } from '../components/ui/';
 
-import styles from "../styles/Home.module.css";
+import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const user = useSelector((x) => x.user.user);

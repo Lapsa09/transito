@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   getAllZonas,
   getLicencias,
@@ -6,26 +6,26 @@ import {
   getZonasVL,
   nuevoOperativoAuto,
   getMotivos,
-} from "../../services/operativosService";
-import { getResolucion, getTurnos } from "../../services/index";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
-import { useSelector } from "react-redux";
+} from '../../services/operativosService';
+import { getResolucion, getTurnos } from '../../services/index';
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
+import { useSelector } from 'react-redux';
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from "../ui";
+} from '../ui';
 
-import { useForm } from "react-hook-form";
-import Layout from "../../layouts/FormLayout";
-import { useSelects } from "../../hooks";
-import { Grid } from "@mui/material";
+import { useForm } from 'react-hook-form';
+import Layout from '../../layouts/FormLayout';
+import { useSelects } from '../../hooks';
+import { Grid } from '@mui/material';
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === "ADMIN";
+  const handleRol = () => user?.rol === 'ADMIN';
   const {
     handleSubmit,
     control,
@@ -35,7 +35,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     setValue,
     formState: { isValid },
   } = useForm({
-    mode: "all",
+    mode: 'all',
     defaultValues: { lpcarga: user.legajo },
   });
   const [activeStep, setActiveStep] = useState(0);
@@ -75,22 +75,22 @@ function OperativosForm({ handleClose, afterCreate }) {
       fecha,
       turno,
     ] = watch([
-      "legajo_a_cargo",
-      "legajo_planilla",
-      "seguridad",
-      "hora",
-      "dominio",
-      "direccion",
-      "zona",
-      "zona_infractor",
-      "resolucion",
-      "motivo",
-      "fecha",
-      "turno",
+      'legajo_a_cargo',
+      'legajo_planilla',
+      'seguridad',
+      'hora',
+      'dominio',
+      'direccion',
+      'zona',
+      'zona_infractor',
+      'resolucion',
+      'motivo',
+      'fecha',
+      'turno',
     ]);
     return [
       {
-        label: "Operativo",
+        label: 'Operativo',
         values: {
           legajo_a_cargo,
           legajo_planilla,
@@ -103,7 +103,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         },
       },
       {
-        label: "Vehiculo",
+        label: 'Vehiculo',
         values: {
           dominio,
           zona_infractor,
@@ -130,7 +130,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         acta: null,
         lpcarga: user?.legajo,
       },
-      { keepDefaultValues: true }
+      { keepDefaultValues: true },
     );
   };
 
@@ -173,10 +173,10 @@ function OperativosForm({ handleClose, afterCreate }) {
             type="number"
             label="Legajo a cargo"
             rules={{
-              required: "Inserte un legajo",
+              required: 'Inserte un legajo',
               pattern: {
                 value: LEGAJO_PATTERN,
-                message: "Inserte un legajo valido",
+                message: 'Inserte un legajo valido',
               },
             }}
           />
@@ -188,10 +188,10 @@ function OperativosForm({ handleClose, afterCreate }) {
             name="legajo_planilla"
             label="Legajo planilla"
             rules={{
-              required: "Inserte un legajo",
+              required: 'Inserte un legajo',
               pattern: {
                 value: LEGAJO_PATTERN,
-                message: "Inserte un legajo valido",
+                message: 'Inserte un legajo valido',
               },
             }}
           />
@@ -201,7 +201,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="turno"
             label="Turno"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             disabled={!handleRol()}
             options={turnos}
             defaultValue={!handleRol() ? user.turno : null}
@@ -213,7 +213,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             name="seguridad"
             label="Seguridad"
             options={seguridad}
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
           />
         </Grid>
         <Grid item xs={8}>
@@ -221,7 +221,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="direccion"
             label="Direccion"
-            rules={{ required: "Inserte una direccion valida" }}
+            rules={{ required: 'Inserte una direccion valida' }}
           />
         </Grid>
         <Grid item xs={8}>
@@ -229,7 +229,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="zona"
             label="Zona"
-            rules={{ required: "Elija una localidad" }}
+            rules={{ required: 'Elija una localidad' }}
             options={zonasVL}
           />
         </Grid>
@@ -241,10 +241,10 @@ function OperativosForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: "Inserte una patente",
+              required: 'Inserte una patente',
               pattern: {
                 value: DOMINIO_PATTERN,
-                message: "Inserte una patente valida",
+                message: 'Inserte una patente valida',
               },
             }}
           />
@@ -269,7 +269,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           <CustomAutocomplete
             control={control}
             name="zona_infractor"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Localidad del infractor"
             options={allZonas}
           />
@@ -279,7 +279,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="motivo"
             label="Motivo"
-            rules={{ required: "Inserte un motivo" }}
+            rules={{ required: 'Inserte un motivo' }}
             options={motivos}
           />
         </Grid>
@@ -296,11 +296,11 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="resolucion"
             label="Resolucion"
-            rules={{ required: "Elija una opcion valida" }}
+            rules={{ required: 'Elija una opcion valida' }}
             options={resolucion}
           />
         </Grid>
-        {getValues("resolucion") === "ACTA" && (
+        {getValues('resolucion') === 'ACTA' && (
           <Grid item xs={8}>
             <CustomTextField
               type="number"
@@ -309,8 +309,8 @@ function OperativosForm({ handleClose, afterCreate }) {
               label="Acta"
               rules={{
                 required: {
-                  value: getValues("resolucion") === "ACTA",
-                  message: "Ingrese un nro de acta",
+                  value: getValues('resolucion') === 'ACTA',
+                  message: 'Ingrese un nro de acta',
                 },
               }}
             />

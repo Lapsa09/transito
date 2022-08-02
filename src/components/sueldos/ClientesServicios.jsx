@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Datagrid,
   DateField,
@@ -8,8 +8,8 @@ import {
   TextField,
   useList,
   useRecordContext,
-} from "react-admin";
-import { ServiciosMemo } from ".";
+} from 'react-admin';
+import { ServiciosMemo } from '.';
 
 function ClientesServicios() {
   const record = useRecordContext();
@@ -32,7 +32,7 @@ function ClientesServicios() {
           source="importe_recibo"
           label="Importe del recibo"
           locales="es-AR"
-          options={{ style: "currency", currency: "ARS" }}
+          options={{ style: 'currency', currency: 'ARS' }}
         />
         <DateField
           textAlign="right"
@@ -43,13 +43,13 @@ function ClientesServicios() {
           source="importe_servicio"
           label="Importe del servicio"
           locales="es-AR"
-          options={{ style: "currency", currency: "ARS" }}
+          options={{ style: 'currency', currency: 'ARS' }}
         />
         <NumberField
           source="acopio"
           label="Acopio"
           locales="es-AR"
-          options={{ style: "currency", currency: "ARS" }}
+          options={{ style: 'currency', currency: 'ARS' }}
         />
         <EditButton />
       </Datagrid>

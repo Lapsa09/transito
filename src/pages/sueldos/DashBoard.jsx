@@ -1,5 +1,5 @@
-import * as React from "react";
-import { CreateButton } from "react-admin";
+import * as React from 'react';
+import { CreateButton } from 'react-admin';
 
 export const Dashboard = () => {
   return (

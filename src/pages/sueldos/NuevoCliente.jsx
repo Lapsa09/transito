@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   ArrayInput,
   AutocompleteInput,
@@ -9,7 +9,7 @@ import {
   SimpleForm,
   SimpleFormIterator,
   TextInput,
-} from "react-admin";
+} from 'react-admin';
 import {
   CreateCliente,
   CreateOperario,
@@ -18,8 +18,8 @@ import {
   Recibo,
   TotalInput,
   DatePickerComponent,
-} from "../../components";
-import styles from "../../styles/Sueldos.module.css";
+} from '../../components';
+import styles from '../../styles/Sueldos.module.css';
 
 function NuevoCliente() {
   return (
@@ -50,7 +50,7 @@ function NuevoCliente() {
           </FormDataConsumer>
           <div
             className={styles.inputs}
-            style={{ display: "flex", gap: "20px" }}
+            style={{ display: 'flex', gap: '20px' }}
           >
             <DatePickerComponent
               source="fecha_servicio"
@@ -65,7 +65,7 @@ function NuevoCliente() {
                 {({ getSource }) => (
                   <div className={styles.dbInput}>
                     <ReferenceInput
-                      source={getSource("legajo")}
+                      source={getSource('legajo')}
                       reference="operarios/list"
                     >
                       <AutocompleteInput
@@ -91,7 +91,7 @@ function NuevoCliente() {
               <FormDataConsumer>
                 {({ formData, getSource, scopedFormData }) => (
                   <OpInput
-                    source={getSource("a_cobrar")}
+                    source={getSource('a_cobrar')}
                     formData={formData}
                     scopedFormData={scopedFormData}
                   />

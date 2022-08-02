@@ -4,9 +4,9 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-} from "@mui/material";
-import React from "react";
-import { useController } from "react-hook-form";
+} from '@mui/material';
+import React from 'react';
+import { useController } from 'react-hook-form';
 
 function CustomRadioGroup({ title, values, name, control }) {
   const { field } = useController({

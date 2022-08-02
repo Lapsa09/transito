@@ -1,9 +1,9 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import jwt_decode from "jwt-decode";
-import { loginCall, register } from "../services/userService";
-import { history } from "../utils";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import jwt_decode from 'jwt-decode';
+import { loginCall, register } from '../services/userService';
+import { history } from '../utils';
 
-const name = "user";
+const name = 'user';
 const initialState = createInitialState();
 const reducers = createReducers();
 const extraActions = createExtraActions();
@@ -12,9 +12,9 @@ const slice = createSlice({ name, initialState, reducers, extraReducers });
 
 function createInitialState() {
   return {
-    user: localStorage.getItem("token")
-      ? jwt_decode(localStorage.getItem("token"))
-      : "",
+    user: localStorage.getItem('token')
+      ? jwt_decode(localStorage.getItem('token'))
+      : '',
     error: null,
   };
 }
@@ -29,8 +29,8 @@ function createReducers() {
 
   function logout(state) {
     state.user = null;
-    localStorage.removeItem("token");
-    history.navigate("/login");
+    localStorage.removeItem('token');
+    history.navigate('/login');
   }
 }
 
@@ -41,7 +41,7 @@ function createExtraActions() {
   };
 
   function login() {
-    return createAsyncThunk("user/login", async (body) => {
+    return createAsyncThunk('user/login', async (body) => {
       try {
         return await loginCall(body);
       } catch (error) {
@@ -50,7 +50,7 @@ function createExtraActions() {
     });
   }
   function signUp() {
-    return createAsyncThunk("user/register", async (body) => {
+    return createAsyncThunk('user/register', async (body) => {
       try {
         return await register(body);
       } catch (error) {
@@ -75,10 +75,10 @@ function createExtraReducers() {
       [fulfilled]: (state, action) => {
         const user = action.payload;
 
-        localStorage.setItem("token", user);
+        localStorage.setItem('token', user);
         state.user = jwt_decode(user);
 
-        const { from } = history.location.state || { from: { pathname: "/" } };
+        const { from } = history.location.state || { from: { pathname: '/' } };
         history.navigate(from);
       },
       [rejected]: (state, action) => {

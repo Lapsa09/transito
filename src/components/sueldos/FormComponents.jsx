@@ -1,17 +1,17 @@
-import { InputAdornment, TextField } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
-import { SelectInput, useGetList, useInput } from "react-admin";
-import { CreateRecibo } from "./QuickCreate";
-import { DatePickerComponent } from "./TimePicker";
-import styles from "../../styles/Sueldos.module.css";
-import { Observable } from "../../utils";
+import { InputAdornment, TextField } from '@mui/material';
+import { Fragment, useEffect, useState } from 'react';
+import { SelectInput, useGetList, useInput } from 'react-admin';
+import { CreateRecibo } from './QuickCreate';
+import { DatePickerComponent } from './TimePicker';
+import styles from '../../styles/Sueldos.module.css';
+import { Observable } from '../../utils';
 
 const getImporteOperario = (dia, inicio, fin, isFeriado, importe) => {
   if ([dia, inicio, fin, isFeriado].some((e) => e == null)) {
     return importe;
   }
 
-  const diff = fin.diff(inicio, "hours").hours;
+  const diff = fin.diff(inicio, 'hours').hours;
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio.hour >= 8 && fin.hour <= 20) {
       return 644 * parseInt(diff);
@@ -34,7 +34,7 @@ export const OpInput = ({ source, formData, scopedFormData }) => {
     hora_inicio,
     hora_fin,
     feriado,
-    field.value
+    field.value,
   );
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export const OpInput = ({ source, formData, scopedFormData }) => {
 
 export const TotalInput = ({ ops }) => {
   const { field } = useInput({
-    source: "importe_servicio",
+    source: 'importe_servicio',
     defaultValue: 0,
   });
   const cuenta = !!ops ? ops.reduce((a, b) => a + b?.a_cobrar, 0) : 0;
@@ -85,11 +85,11 @@ export const TotalInput = ({ ops }) => {
 export const Recibo = ({ formData }) => {
   const [options, setOptions] = useState([]);
   const { data, isLoading } = useGetList(
-    "recibos/" + (formData.id_cliente || "none")
+    'recibos/' + (formData.id_cliente || 'none'),
   );
   const { field: importe } = useInput({
-    source: "importe_recibo",
-    defaultValue: "",
+    source: 'importe_recibo',
+    defaultValue: '',
   });
 
   const elegido = options?.find((d) => d.recibo === formData.recibo);

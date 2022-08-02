@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export default function useLocalStorage(key, initialValue = null) {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return initialValue;
     }
     // Get from local storage by key
@@ -32,11 +32,11 @@ export default function useLocalStorage(key, initialValue = null) {
       // Save state
       setStoredValue(valueToStore);
       // Save to local storage
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         if (value) {
           window.localStorage.setItem(
             key,
-            JSON.stringify(valueToStore, null, 2)
+            JSON.stringify(valueToStore, null, 2),
           );
         } else {
           window.localStorage.removeItem(key);

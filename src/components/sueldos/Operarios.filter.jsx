@@ -1,5 +1,5 @@
-import React from "react";
-import { Filter, TextInput } from "react-admin";
+import React from 'react';
+import { Filter, TextInput } from 'react-admin';
 
 export const OperariosFilter = (props) => (
   <Filter {...props}>

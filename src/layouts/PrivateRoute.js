@@ -1,7 +1,7 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { history } from "../utils";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
+import { history } from '../utils';
 
 function PrivateRoute({ children, permission }) {
   const { user: authUser } = useSelector((x) => x.user);
@@ -12,8 +12,8 @@ function PrivateRoute({ children, permission }) {
   }
   if (
     authUser.rol !== permission &&
-    permission !== "public" &&
-    authUser.rol !== "ADMIN"
+    permission !== 'public' &&
+    authUser.rol !== 'ADMIN'
   )
     return <Navigate to="/" state={{ from: history.location }} replace />;
 

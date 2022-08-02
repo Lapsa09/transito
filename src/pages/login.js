@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { Box, Button, FormHelperText } from "@mui/material";
-import { authActions } from "../redux/userSlice";
-import { CustomTextField } from "../components";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { history } from "../utils";
-import "../styles/login.css";
+import React, { useEffect } from 'react';
+import { Box, Button, FormHelperText } from '@mui/material';
+import { authActions } from '../redux/userSlice';
+import { CustomTextField } from '../components';
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { history } from '../utils';
+import '../styles/login.css';
 
 function Login() {
   const { control, handleSubmit } = useForm();
@@ -15,7 +15,7 @@ function Login() {
 
   useEffect(() => {
     // redirect to home if already logged in
-    if (authUser) history.navigate("/");
+    if (authUser) history.navigate('/');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -25,7 +25,7 @@ function Login() {
   };
 
   const register = () => {
-    history.navigate("/register");
+    history.navigate('/register');
   };
   return (
     <div className="login">

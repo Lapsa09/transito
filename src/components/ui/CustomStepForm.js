@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React from 'react';
+import { motion } from 'framer-motion';
 
 function CustomStepForm({ children, activeStep, step }) {
   const variant = {
@@ -7,18 +7,18 @@ function CustomStepForm({ children, activeStep, step }) {
       x: `-${activeStep * 100}%`,
     },
     left: {
-      x: "-120vw",
+      x: '-120vw',
     },
     right: {
-      x: "120vw",
+      x: '120vw',
     },
   };
   return (
     <motion.div
-      style={{ width: "100%" }}
+      style={{ width: '100%' }}
       variants={variant}
       animate={
-        activeStep === step ? "open" : activeStep > step ? "left" : "right"
+        activeStep === step ? 'open' : activeStep > step ? 'left' : 'right'
       }
     >
       {children}

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { getDatosPaseo } from "../../services/controlDiarioService";
+import React, { useEffect, useState } from 'react';
+import { getDatosPaseo } from '../../services/controlDiarioService';
 import {
   CustomRadioGroup,
   CustomSelect,
   CustomBarchart,
-} from "../../components/ui";
-import { dateNameFormat } from "../../utils";
-import { useForm } from "react-hook-form";
-import "../../styles/data.css";
+} from '../../components/ui';
+import { dateNameFormat } from '../../utils';
+import { useForm } from 'react-hook-form';
+import '../../styles/data.css';
 
 function Datacharts() {
   const { control, getValues, watch } = useForm();
@@ -16,7 +16,7 @@ function Datacharts() {
 
   useEffect(() => {
     filterByDay();
-  }, [watch("fecha"), watch("dia"), watch("filter")]);
+  }, [watch('fecha'), watch('dia'), watch('filter')]);
 
   useEffect(() => {
     getFechas();
@@ -28,17 +28,17 @@ function Datacharts() {
       fechas.map(({ fecha }) => ({
         id: fecha,
         label: dateNameFormat(fecha),
-      }))
+      })),
     );
   };
 
   const filterByDay = async () => {
-    if (getValues("filter") === "date") {
-      const select = getValues("fecha");
+    if (getValues('filter') === 'date') {
+      const select = getValues('fecha');
       const { data } = await getDatosPaseo({ filterDate: select });
       setDatas(data);
     } else {
-      const select = getValues("dia");
+      const select = getValues('dia');
       const { data } = await getDatosPaseo({ filterWD: select });
       setDatas(data);
     }
@@ -46,17 +46,17 @@ function Datacharts() {
 
   return (
     <div className="page">
-      <div style={{ width: "300px" }}>
+      <div style={{ width: '300px' }}>
         <CustomRadioGroup
           control={control}
           name="filter"
           title="Filtrar por"
           values={[
-            { value: "date", label: "Fecha" },
-            { value: "weekday", label: "Dia de la semana" },
+            { value: 'date', label: 'Fecha' },
+            { value: 'weekday', label: 'Dia de la semana' },
           ]}
         />
-        {watch("filter") === "date" ? (
+        {watch('filter') === 'date' ? (
           <CustomSelect
             control={control}
             name="fecha"
@@ -69,9 +69,9 @@ function Datacharts() {
             name="dia"
             label="Dia"
             options={[
-              { id: 6, label: "sabado" },
-              { id: 0, label: "domingo" },
-              { id: "feriados", label: "feriados" },
+              { id: 6, label: 'sabado' },
+              { id: 0, label: 'domingo' },
+              { id: 'feriados', label: 'feriados' },
             ]}
           />
         )}

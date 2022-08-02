@@ -1,6 +1,6 @@
-import { FormControlLabel, Switch } from "@mui/material";
-import React from "react";
-import { useController } from "react-hook-form";
+import { FormControlLabel, Switch } from '@mui/material';
+import React from 'react';
+import { useController } from 'react-hook-form';
 
 function CustomSwitch({ control, name, label, rules }) {
   const {

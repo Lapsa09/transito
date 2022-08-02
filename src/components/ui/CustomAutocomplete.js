@@ -1,6 +1,6 @@
-import { Autocomplete, TextField } from "@mui/material";
-import React from "react";
-import { useController } from "react-hook-form";
+import { Autocomplete, TextField } from '@mui/material';
+import React from 'react';
+import { useController } from 'react-hook-form';
 
 function CustomAutocomplete({ control, name, rules, label, options }) {
   const {
@@ -24,7 +24,7 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
       options={options}
       getOptionLabel={optionLabel}
       onChange={(e, value, reason) =>
-        field.onChange(reason === "clear" ? null : value)
+        field.onChange(reason === 'clear' ? null : value)
       }
       renderInput={(params) => (
         <TextField

@@ -1,5 +1,5 @@
 //FilterPost.jsx
-import React from "react";
+import React from 'react';
 import {
   Datagrid,
   TextField,
@@ -7,7 +7,7 @@ import {
   ListContextProvider,
   useList,
   NumberField,
-} from "react-admin";
+} from 'react-admin';
 
 export const ServiciosMemo = () => {
   const record = useRecordContext();
@@ -21,7 +21,7 @@ export const ServiciosMemo = () => {
           source="a_cobrar"
           label="A Cobrar"
           locales="es-AR"
-          options={{ style: "currency", currency: "ARS" }}
+          options={{ style: 'currency', currency: 'ARS' }}
         />
       </Datagrid>
     </ListContextProvider>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   getAllZonas,
   getLicencias,
@@ -6,28 +6,28 @@ import {
   getSeguridad,
   getZonasVL,
   nuevoOperativoMoto,
-} from "../../services/operativosService";
+} from '../../services/operativosService';
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from "../ui";
-import { getResolucion, getTurnos } from "../../services/index";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
-import { useSelector } from "react-redux";
+} from '../ui';
+import { getResolucion, getTurnos } from '../../services/index';
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
+import { useSelector } from 'react-redux';
 
-import AddBoxSharpIcon from "@mui/icons-material/AddBoxSharp";
-import IndeterminateCheckBoxSharpIcon from "@mui/icons-material/IndeterminateCheckBoxSharp";
-import { useForm, useFieldArray } from "react-hook-form";
-import Layout from "../../layouts/FormLayout";
-import { useSelects } from "../../hooks";
-import { Grid } from "@mui/material";
+import AddBoxSharpIcon from '@mui/icons-material/AddBoxSharp';
+import IndeterminateCheckBoxSharpIcon from '@mui/icons-material/IndeterminateCheckBoxSharp';
+import { useForm, useFieldArray } from 'react-hook-form';
+import Layout from '../../layouts/FormLayout';
+import { useSelects } from '../../hooks';
+import { Grid } from '@mui/material';
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === "ADMIN";
+  const handleRol = () => user?.rol === 'ADMIN';
   const {
     handleSubmit,
     control,
@@ -37,7 +37,7 @@ function MotosForm({ handleClose, afterCreate }) {
     watch,
     formState: { isValid },
   } = useForm({
-    mode: "all",
+    mode: 'all',
     defaultValues: {
       motivos: [{ motivo: null }],
       lpcarga: user.legajo,
@@ -45,7 +45,7 @@ function MotosForm({ handleClose, afterCreate }) {
   });
   const { append, remove, fields } = useFieldArray({
     control,
-    name: "motivos",
+    name: 'motivos',
   });
   const {
     data: [
@@ -91,30 +91,30 @@ function MotosForm({ handleClose, afterCreate }) {
       motivo4,
       motivo5,
     ] = watch([
-      "fecha",
-      "hora",
-      "direccion",
-      "zona",
-      "legajo_a_cargo",
-      "legajo_planilla",
-      "turno",
-      "seguridad",
-      "dominio",
-      "licencia",
-      "tipo_licencia",
-      "zona_infractor",
-      "resolucion",
-      "acta",
-      "motivo1",
-      "motivo2",
-      "motivo3",
-      "motivo4",
-      "motivo5",
+      'fecha',
+      'hora',
+      'direccion',
+      'zona',
+      'legajo_a_cargo',
+      'legajo_planilla',
+      'turno',
+      'seguridad',
+      'dominio',
+      'licencia',
+      'tipo_licencia',
+      'zona_infractor',
+      'resolucion',
+      'acta',
+      'motivo1',
+      'motivo2',
+      'motivo3',
+      'motivo4',
+      'motivo5',
     ]);
 
     return [
       {
-        label: "Operativo",
+        label: 'Operativo',
         values: {
           fecha,
           hora,
@@ -127,7 +127,7 @@ function MotosForm({ handleClose, afterCreate }) {
         },
       },
       {
-        label: "Vehiculo",
+        label: 'Vehiculo',
         values: {
           dominio,
           licencia,
@@ -163,14 +163,14 @@ function MotosForm({ handleClose, afterCreate }) {
     reset(
       {
         ...data,
-        dominio: "",
-        licencia: "",
+        dominio: '',
+        licencia: '',
         tipo_licencia: null,
         zona_infractor: null,
-        motivos: [{ motivo: "" }],
+        motivos: [{ motivo: '' }],
         acta: null,
       },
-      { keepDefaultValues: true }
+      { keepDefaultValues: true },
     );
   };
 
@@ -211,7 +211,7 @@ function MotosForm({ handleClose, afterCreate }) {
             control={control}
             name="direccion"
             label="Direccion"
-            rules={{ required: "Ingrese una direccion valida" }}
+            rules={{ required: 'Ingrese una direccion valida' }}
           />
         </Grid>
         <Grid item xs={8}>
@@ -219,7 +219,7 @@ function MotosForm({ handleClose, afterCreate }) {
             control={control}
             name="zona"
             label="Zona"
-            rules={{ required: "Elija una localidad" }}
+            rules={{ required: 'Elija una localidad' }}
             options={zonasVL}
           />
         </Grid>
@@ -230,10 +230,10 @@ function MotosForm({ handleClose, afterCreate }) {
             name="legajo_a_cargo"
             label="Legajo a cargo"
             rules={{
-              required: "Ingrese un legajo valido",
+              required: 'Ingrese un legajo valido',
               pattern: {
                 value: LEGAJO_PATTERN,
-                message: "Ingrese un legajo valido",
+                message: 'Ingrese un legajo valido',
               },
             }}
           />
@@ -245,10 +245,10 @@ function MotosForm({ handleClose, afterCreate }) {
             name="legajo_planilla"
             label="Legajo planilla"
             rules={{
-              required: "Ingrese un legajo valido",
+              required: 'Ingrese un legajo valido',
               pattern: {
                 value: LEGAJO_PATTERN,
-                message: "Ingrese un legajo valido",
+                message: 'Ingrese un legajo valido',
               },
             }}
           />
@@ -258,7 +258,7 @@ function MotosForm({ handleClose, afterCreate }) {
             control={control}
             name="turno"
             label="Turno"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             disabled={!handleRol()}
             defaultValue={!handleRol() ? user.turno : null}
             options={turnos}
@@ -270,7 +270,7 @@ function MotosForm({ handleClose, afterCreate }) {
             name="seguridad"
             label="Seguridad"
             options={seguridad}
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
           />
         </Grid>
       </Grid>
@@ -286,10 +286,10 @@ function MotosForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: "Ingrese una patente valida",
+              required: 'Ingrese una patente valida',
               pattern: {
                 value: DOMINIO_PATTERN,
-                message: "Ingrese una patente valida",
+                message: 'Ingrese una patente valida',
               },
             }}
           />
@@ -315,7 +315,7 @@ function MotosForm({ handleClose, afterCreate }) {
             control={control}
             name="zona_infractor"
             label="Localidad del infractor"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             options={allZonas}
           />
         </Grid>
@@ -335,12 +335,12 @@ function MotosForm({ handleClose, afterCreate }) {
             control={control}
             name="resolucion"
             label="Resolucion"
-            rules={{ required: "Elija una opcion valida" }}
+            rules={{ required: 'Elija una opcion valida' }}
             options={resolucion}
           />
         </Grid>
-        {(getValues("resolucion") === "ACTA" ||
-          getValues("resolucion") === "REMITIDO") && (
+        {(getValues('resolucion') === 'ACTA' ||
+          getValues('resolucion') === 'REMITIDO') && (
           <Grid item xs={8}>
             <CustomTextField
               type="number"
@@ -350,9 +350,9 @@ function MotosForm({ handleClose, afterCreate }) {
               rules={{
                 required: {
                   value:
-                    getValues("resolucion") === "ACTA" ||
-                    getValues("resolucion") === "REMITIDO",
-                  message: "Ingrese un nro de acta",
+                    getValues('resolucion') === 'ACTA' ||
+                    getValues('resolucion') === 'REMITIDO',
+                  message: 'Ingrese un nro de acta',
                 },
               }}
             />

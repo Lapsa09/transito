@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, Modal } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Modal } from '@mui/material';
 
-import { adminStyle, inspectorStyle } from "../components/utils";
-import { useSelector } from "react-redux";
-import LogoVL from "../assets/imgs/LOGO_V_LOPEZ.png";
-import LogoOVT from "../assets/imgs/OVT_LETRAS_NEGRAS.png";
-import { currentDate } from "../utils";
+import { adminStyle, inspectorStyle } from '../components/utils';
+import { useSelector } from 'react-redux';
+import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png';
+import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png';
+import { currentDate } from '../utils';
 import {
   CustomSnackbar,
   CustomStepForm,
   CustomStepper,
-} from "../components/ui";
-import { DateTime } from "luxon";
-import { useLocalStorage, useSnackBar } from "../hooks";
-import styles from "../styles/FormLayout.module.css";
+} from '../components/ui';
+import { DateTime } from 'luxon';
+import { useLocalStorage, useSnackBar } from '../hooks';
+import styles from '../styles/FormLayout.module.css';
 
 function FormLayout({
   children,
@@ -30,7 +30,7 @@ function FormLayout({
   setValue,
 }) {
   const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === "ADMIN";
+  const handleRol = () => user?.rol === 'ADMIN';
   const [open, setOpen] = useState(false);
   const [operative, setOperative] = useLocalStorage(path);
   const { openSB, closeSnackbar, response, setError, setSuccess } =
@@ -66,14 +66,13 @@ function FormLayout({
       setError(error);
     }
     cargarOperativo();
-    //eslint-disable-next-line
   }, []);
 
   const cargarOperativo = () => {
     try {
       if (currentDate().toMillis() < operative.expiresAt) {
         Object.entries(operative).forEach(([key, value]) => {
-          key === "fecha" || key === "hora"
+          key === 'fecha' || key === 'hora'
             ? setValue(key, DateTime.fromISO(value))
             : setValue(key, value);
         });
@@ -87,7 +86,7 @@ function FormLayout({
   const submiting = async (data) => {
     try {
       await submitEvent(data);
-      setSuccess("Cargado con exito");
+      setSuccess('Cargado con exito');
     } catch (error) {
       setError(error.response?.data);
     }
@@ -120,7 +119,7 @@ function FormLayout({
   return (
     <Box
       sx={handleRol() ? adminStyle : inspectorStyle}
-      className={styles["form"]}
+      className={styles['form']}
     >
       <div className={styles.header}>
         <img src={LogoVL} alt="Logo Vicente Lopez" />
@@ -130,7 +129,7 @@ function FormLayout({
         </Button>
         <img src={LogoOVT} alt="Logo Observatorio Vial" />
       </div>
-      <div className={styles["form__form"]}>
+      <div className={styles['form__form']}>
         <CustomStepper
           steps={steps}
           isCompleted={isCompleted}
@@ -139,20 +138,20 @@ function FormLayout({
         />
         <Box
           component="form"
-          className={styles["form__box"]}
+          className={styles['form__box']}
           autoComplete="off"
         >
           {children?.map((child, index) => (
-            <CustomStepForm activeStep={activeStep} step={index}>
+            <CustomStepForm key={index} activeStep={activeStep} step={index}>
               {child}
             </CustomStepForm>
           ))}
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
           <Button disabled={isFirstStep()} onClick={handleBack} sx={{ mr: 1 }}>
             Anterior
           </Button>
-          <Box sx={{ flex: "1 1 auto" }} />
+          <Box sx={{ flex: '1 1 auto' }} />
           {activeStep === 0 ? (
             <Button onClick={handleNext} disabled={isLastStep()} sx={{ mr: 1 }}>
               Siguiente
@@ -187,9 +186,9 @@ const WarningModal = ({ setOpen, reset }) => {
         Seguro que desea reiniciar el operativo? Se borraran todos los datos
         ingresados
       </p>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <Button onClick={() => setOpen(false)}>No</Button>
-        <Box sx={{ flex: "1 1 auto" }} />
+        <Box sx={{ flex: '1 1 auto' }} />
         <Button
           onClick={() => {
             reset();

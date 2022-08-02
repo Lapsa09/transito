@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Datagrid,
   TextField,
@@ -9,8 +9,8 @@ import {
   FilterForm,
   SelectInput,
   TextInput,
-} from "react-admin";
-import { OperariosServicios } from "../../components";
+} from 'react-admin';
+import { OperariosServicios } from '../../components';
 
 export const Operarios = () => {
   const { data, page, perPage, isLoading, ...listContext } =
@@ -35,8 +35,8 @@ export const Operarios = () => {
           (value, index, self) =>
             index ===
             self.findIndex(
-              (t) => t.place === value.place && t.name === value.name
-            )
+              (t) => t.place === value.place && t.name === value.name,
+            ),
         )
         .sort((a, b) => a.id - b.id)}
     />,
@@ -60,14 +60,14 @@ export const Operarios = () => {
         ...listContext,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            alignSelf: "flex-end",
-            width: "95%",
-            justifyContent: "space-between",
+            display: 'flex',
+            alignItems: 'center',
+            alignSelf: 'flex-end',
+            width: '95%',
+            justifyContent: 'space-between',
           }}
         >
           <h1>Operarios</h1>
@@ -85,7 +85,7 @@ export const Operarios = () => {
           <NumberField
             source="total"
             locales="es-AR"
-            options={{ style: "currency", currency: "ARS" }}
+            options={{ style: 'currency', currency: 'ARS' }}
           />
         </Datagrid>
         <Pagination />

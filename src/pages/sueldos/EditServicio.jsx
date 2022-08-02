@@ -1,6 +1,6 @@
 //EditPost.jsx
-import { Dialog, DialogActions, DialogContent } from "@mui/material";
-import React from "react";
+import { Dialog, DialogActions, DialogContent } from '@mui/material';
+import React from 'react';
 import {
   ArrayInput,
   AutocompleteInput,
@@ -14,15 +14,15 @@ import {
   SimpleForm,
   SimpleFormIterator,
   TextInput,
-} from "react-admin";
-import { useNavigate } from "react-router-dom";
+} from 'react-admin';
+import { useNavigate } from 'react-router-dom';
 import {
   TimePickerComponent,
   CreateOperario,
   OpInput,
   TotalInput,
-} from "../../components";
-import styles from "../../styles/Sueldos.module.css";
+} from '../../components';
+import styles from '../../styles/Sueldos.module.css';
 
 export const EditServicio = (props) => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ export const EditServicio = (props) => {
               <NumberInput className={styles.inputs} source="recibo" disabled />
               <div
                 className={styles.inputs}
-                style={{ display: "flex", alignItems: "center", gap: "20px" }}
+                style={{ display: 'flex', alignItems: 'center', gap: '20px' }}
               >
                 <DateInput
                   source="fecha_servicio"
@@ -61,7 +61,7 @@ export const EditServicio = (props) => {
                   {({ getSource }) => (
                     <div className={styles.dbInput}>
                       <ReferenceInput
-                        source={getSource("legajo")}
+                        source={getSource('legajo')}
                         reference="operarios/list"
                       >
                         <AutocompleteInput
@@ -87,7 +87,7 @@ export const EditServicio = (props) => {
                 <FormDataConsumer>
                   {({ formData, getSource, scopedFormData }) => (
                     <OpInput
-                      source={getSource("a_cobrar")}
+                      source={getSource('a_cobrar')}
                       formData={formData}
                       scopedFormData={scopedFormData}
                     />
@@ -104,7 +104,7 @@ export const EditServicio = (props) => {
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => navigate("/sueldos/clientes", { replace: true })}
+            onClick={() => navigate('/sueldos/clientes', { replace: true })}
             label="ra.action.cancel"
           />
         </DialogActions>

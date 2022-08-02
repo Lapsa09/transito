@@ -1,32 +1,32 @@
-import { getEnums, getter, setter } from "./index";
+import { getEnums, getter, setter } from './index';
 
-export const getLicencias = async () => await getter("/licencias");
+export const getLicencias = async () => await getter('/licencias');
 
-export const getZonasVL = async () => await getter("/zonas/vl");
+export const getZonasVL = async () => await getter('/zonas/vl');
 
-export const getAllZonas = async () => await getter("/zonas");
+export const getAllZonas = async () => await getter('/zonas');
 
-export const getSeguridad = async () => await getEnums("seguridad");
+export const getSeguridad = async () => await getEnums('seguridad');
 
-export const getMotivos = async () => await getter("/motivos");
+export const getMotivos = async () => await getter('/motivos');
 
-export const getMotivosCamion = async () => await getEnums("motivos_camion");
+export const getMotivosCamion = async () => await getEnums('motivos_camion');
 
 export const getMotivosMoto = async () =>
-  await getter("/operativos/motos/motivos");
+  await getter('/operativos/motos/motivos');
 
 export const nuevoOperativoAuto = async (body) =>
-  await setter("/operativos/autos", body);
+  await setter('/operativos/autos', body);
 
-export const getOperativosAutos = async () => await getter("/operativos/autos");
+export const getOperativosAutos = async () => await getter('/operativos/autos');
 
-export const getOperativosMotos = async () => await getter("/operativos/motos");
+export const getOperativosMotos = async () => await getter('/operativos/motos');
 
 export const nuevoOperativoMoto = async (body) =>
-  await setter("/operativos/motos", body);
+  await setter('/operativos/motos', body);
 
 export const getOperativosCamiones = async () =>
-  await getter("/operativos/camiones");
+  await getter('/operativos/camiones');
 
 export const nuevoOperativoCamiones = async (body) =>
-  await setter("/operativos/camiones", body);
+  await setter('/operativos/camiones', body);

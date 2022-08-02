@@ -1,28 +1,28 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   getLocalidades,
   getMotivos,
   nuevoControl,
-} from "../../services/controlDiarioService";
-import { getResolucion, getTurnos } from "../../services/index";
+} from '../../services/controlDiarioService';
+import { getResolucion, getTurnos } from '../../services/index';
 
-import { useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
+import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from "../ui";
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from "../../utils";
-import Layout from "../../layouts/FormLayout";
-import { useSelects } from "../../hooks";
-import { Grid } from "@mui/material";
+} from '../ui';
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
+import Layout from '../../layouts/FormLayout';
+import { useSelects } from '../../hooks';
+import { Grid } from '@mui/material';
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user);
-  const handleRol = () => user.rol === "ADMIN";
+  const handleRol = () => user.rol === 'ADMIN';
   const {
     handleSubmit,
     control,
@@ -32,10 +32,10 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
     formState: { isValid },
     setValue,
   } = useForm({
-    mode: "all",
+    mode: 'all',
     defaultValues: {
       lpcarga: user?.legajo,
-      lp: !handleRol() ? user?.legajo : "",
+      lp: !handleRol() ? user?.legajo : '',
     },
   });
   const {
@@ -63,21 +63,21 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       acta,
       otroMotivo,
     ] = watch([
-      "fecha",
-      "hora",
-      "direccion",
-      "turno",
-      "dominio",
-      "lp",
-      "resolucion",
-      "motivo",
-      "localidad",
-      "acta",
-      "otroMotivo",
+      'fecha',
+      'hora',
+      'direccion',
+      'turno',
+      'dominio',
+      'lp',
+      'resolucion',
+      'motivo',
+      'localidad',
+      'acta',
+      'otroMotivo',
     ]);
     return [
       {
-        label: "Operativo",
+        label: 'Operativo',
         values: {
           fecha,
           turno,
@@ -85,7 +85,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         },
       },
       {
-        label: "Vehiculo",
+        label: 'Vehiculo',
         values: {
           hora,
           dominio,
@@ -106,15 +106,15 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       {
         ...data,
         hora: null,
-        direccion: "",
+        direccion: '',
         resolucion: null,
-        dominio: "",
+        dominio: '',
         localidad: null,
         motivo: null,
         otroMotivo: null,
         acta: null,
       },
-      { keepDefaultValues: true }
+      { keepDefaultValues: true },
     );
     if (handleRol()) {
       await afterCreate();
@@ -125,7 +125,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
 
   const getMotivo = () => {
     return (
-      motivos.find((motivo) => motivo.id === getValues("motivo"))?.motivo || ""
+      motivos.find((motivo) => motivo.id === getValues('motivo'))?.motivo || ''
     );
   };
 
@@ -157,9 +157,9 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="turno"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Turno"
-            defaultValue={!handleRol() ? user.turno : ""}
+            defaultValue={!handleRol() ? user.turno : ''}
             disabled={!handleRol()}
             options={turnos}
           />
@@ -173,11 +173,11 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
               rules={{
                 required: {
                   value: handleRol(),
-                  message: "Inserte un legajo valido",
+                  message: 'Inserte un legajo valido',
                 },
                 pattern: {
                   value: LEGAJO_PATTERN,
-                  message: "Inserte un legajo valido",
+                  message: 'Inserte un legajo valido',
                 },
               }}
               label="Legajo planilla"
@@ -199,7 +199,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           <CustomTextField
             control={control}
             name="direccion"
-            rules={{ required: "Ingrese una direccion valida" }}
+            rules={{ required: 'Ingrese una direccion valida' }}
             label="Direccion"
           />
         </Grid>
@@ -207,7 +207,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           <CustomAutocomplete
             control={control}
             name="localidad"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Localidad"
             options={localidades}
           />
@@ -218,10 +218,10 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: "Ingrese una patente valida",
+              required: 'Ingrese una patente valida',
               pattern: {
                 value: DOMINIO_PATTERN,
-                message: "Ingrese una patente valida",
+                message: 'Ingrese una patente valida',
               },
             }}
           />
@@ -230,12 +230,12 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="resolucion"
-            rules={{ required: "Elija una opcion valida" }}
+            rules={{ required: 'Elija una opcion valida' }}
             label="Resolucion"
             options={resolucion}
           />
         </Grid>
-        {getValues("resolucion") === "ACTA" && (
+        {getValues('resolucion') === 'ACTA' && (
           <Grid item xs={8}>
             <CustomTextField
               type="number"
@@ -243,8 +243,8 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
               name="acta"
               rules={{
                 required: {
-                  value: getValues("resolucion") === "ACTA",
-                  message: "Ingrese un Nro de Acta valido",
+                  value: getValues('resolucion') === 'ACTA',
+                  message: 'Ingrese un Nro de Acta valido',
                 },
               }}
               label="Acta"
@@ -255,20 +255,20 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           <CustomSelect
             control={control}
             name="motivo"
-            rules={{ required: "Elija una opcion" }}
+            rules={{ required: 'Elija una opcion' }}
             label="Motivo"
             options={motivos}
           />
         </Grid>
-        {motivos?.length > 0 && getMotivo() === "OTRO" && (
+        {motivos?.length > 0 && getMotivo() === 'OTRO' && (
           <Grid item xs={8}>
             <CustomTextField
               control={control}
               name="otroMotivo"
               rules={{
                 required: {
-                  value: getMotivo() === "OTRO",
-                  message: "Inserte un motivo valido",
+                  value: getMotivo() === 'OTRO',
+                  message: 'Inserte un motivo valido',
                 },
               }}
               label="Otro motivo"

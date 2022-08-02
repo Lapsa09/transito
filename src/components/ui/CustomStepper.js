@@ -1,10 +1,10 @@
-import { Step, StepButton, Stepper } from "@mui/material";
-import React from "react";
+import { Step, StepButton, Stepper } from '@mui/material';
+import React from 'react';
 
 function CustomStepper({ steps, isCompleted, handleStep, activeStep }) {
   return (
     <Stepper
-      sx={{ width: "100%", my: "10px" }}
+      sx={{ width: '100%', my: '10px' }}
       nonLinear
       activeStep={activeStep}
     >

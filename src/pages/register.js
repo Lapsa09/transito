@@ -1,39 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, FormHelperText } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { authActions } from '../redux/userSlice';
-import CustomTextField from '../components/ui/CustomTextField';
-import { useForm } from 'react-hook-form';
-import { history } from '../utils';
-import '../styles/register.css';
+import React, { useEffect, useState } from 'react'
+import { Box, Button, FormHelperText } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { useForm } from 'react-hook-form'
+import { authActions } from '../redux/userSlice'
+import CustomTextField from '../components/ui/CustomTextField'
+import { history } from '../utils'
+import '../styles/register.css'
 
 function Register() {
-  const { control, handleSubmit, getValues } = useForm();
-  const [error, setError] = useState('');
-  const dispatch = useDispatch();
-  const authUser = useSelector((x) => x.user.user);
-  const authError = useSelector((x) => x.user.error);
+  const { control, handleSubmit, getValues } = useForm()
+  const [error, setError] = useState('')
+  const dispatch = useDispatch()
+  const authUser = useSelector((x) => x.user.user)
+  const authError = useSelector((x) => x.user.error)
 
   const loginNav = () => {
-    history.navigate('/login');
-  };
+    history.navigate('/login')
+  }
 
   useEffect(() => {
     // redirect to home if already logged in
-    if (authUser) history.navigate('/');
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (authUser) history.navigate('/')
+  }, [])
 
   const submitEvent = async (data) => {
-    setError('');
+    setError('')
     // const res = await register(data);
-    dispatch(authActions.register(data));
-    history.navigate('/', { replace: true });
+    dispatch(authActions.register(data))
+    history.navigate('/', { replace: true })
     if (authError) {
-      setError(authError.message);
+      setError(authError.message)
     }
-  };
+  }
 
   return (
     <div className="register">
@@ -77,8 +75,8 @@ function Register() {
           name="confirmPassword"
           rules={{
             validate: {
-              confirmPassword: (value) => value === getValues('password'),
-            },
+              confirmPassword: (value) => value === getValues('password')
+            }
           }}
           label="Confirmar contraseña"
         />
@@ -93,9 +91,9 @@ function Register() {
         </div>
       </Box>
     </div>
-  );
+  )
 }
 
-Register.public = true;
+Register.public = true
 
-export default Register;
+export default Register

@@ -1,12 +1,12 @@
-import React from 'react';
+import React from 'react'
 import {
   Navigate,
   Route,
   Routes,
   useLocation,
-  useNavigate,
-} from 'react-router-dom';
-import { useSelector } from 'react-redux';
+  useNavigate
+} from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import {
   Home,
   Login,
@@ -18,18 +18,18 @@ import {
   CamionesPage,
   Sueldos,
   Waze,
-  History,
-} from './pages';
-import './styles/globals.css';
-import PrivateRoute from './layouts/PrivateRoute';
-import { Header } from './components';
-import { history } from './utils';
+  History
+} from './pages'
+import './styles/globals.css'
+import PrivateRoute from './layouts/PrivateRoute'
+import { Header } from './components'
+import { history } from './utils'
 
 function App() {
-  const user = useSelector((x) => x.user.user);
+  const user = useSelector((x) => x.user.user)
 
-  history.navigate = useNavigate();
-  history.location = useLocation();
+  history.navigate = useNavigate()
+  history.location = useLocation()
 
   return (
     <div>
@@ -118,7 +118,7 @@ function App() {
         />
       </Routes>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

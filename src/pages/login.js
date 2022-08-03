@@ -1,32 +1,30 @@
-import React, { useEffect } from 'react';
-import { Box, Button, FormHelperText } from '@mui/material';
-import { authActions } from '../redux/userSlice';
-import { CustomTextField } from '../components';
-import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { history } from '../utils';
-import '../styles/login.css';
+import React, { useEffect } from 'react'
+import { Box, Button, FormHelperText } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { useForm } from 'react-hook-form'
+import { authActions } from '../redux/userSlice'
+import { CustomTextField } from '../components'
+import { history } from '../utils'
+import '../styles/login.css'
 
 function Login() {
-  const { control, handleSubmit } = useForm();
-  const dispatch = useDispatch();
-  const authUser = useSelector((x) => x.user.user);
-  const authError = useSelector((x) => x.user.error);
+  const { control, handleSubmit } = useForm()
+  const dispatch = useDispatch()
+  const authUser = useSelector((x) => x.user.user)
+  const authError = useSelector((x) => x.user.error)
 
   useEffect(() => {
     // redirect to home if already logged in
-    if (authUser) history.navigate('/');
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (authUser) history.navigate('/')
+  }, [])
 
   const submitEvent = async (data) => {
-    dispatch(authActions.login(data));
-  };
+    dispatch(authActions.login(data))
+  }
 
   const register = () => {
-    history.navigate('/register');
-  };
+    history.navigate('/register')
+  }
   return (
     <div className="login">
       <Box component="form" className="form">
@@ -62,7 +60,7 @@ function Login() {
         </div>
       </Box>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

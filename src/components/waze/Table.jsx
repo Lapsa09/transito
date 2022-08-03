@@ -5,9 +5,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@mui/material';
-import { getColor } from '../../utils';
-import React from 'react';
+} from '@mui/material'
+import { getColor } from '../../utils'
+import React from 'react'
 
 function TableWaze({ data }) {
   return (
@@ -46,7 +46,7 @@ function TableWaze({ data }) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }
 
-export default TableWaze;
+export default TableWaze

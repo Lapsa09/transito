@@ -1,5 +1,5 @@
-import { Alert, Snackbar } from '@mui/material';
-import React from 'react';
+import { Alert, Snackbar } from '@mui/material'
+import React from 'react'
 
 function CustomSnackbar({ res, open, handleClose }) {
   return (
@@ -12,7 +12,7 @@ function CustomSnackbar({ res, open, handleClose }) {
         {res.message}
       </Alert>
     </Snackbar>
-  );
+  )
 }
 
-export default CustomSnackbar;
+export default CustomSnackbar

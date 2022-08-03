@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   ArrayInput,
   AutocompleteInput,
@@ -9,7 +9,7 @@ import {
   SimpleForm,
   SimpleFormIterator,
   TextInput,
-} from 'react-admin';
+} from 'react-admin'
 import {
   CreateCliente,
   CreateOperario,
@@ -18,8 +18,8 @@ import {
   Recibo,
   TotalInput,
   DatePickerComponent,
-} from '../../components';
-import styles from '../../styles/Sueldos.module.css';
+} from '../../components'
+import styles from '../../styles/Sueldos.module.css'
 
 function NuevoCliente() {
   return (
@@ -107,7 +107,7 @@ function NuevoCliente() {
         </FormDataConsumer>
       </SimpleForm>
     </Create>
-  );
+  )
 }
 
-export default NuevoCliente;
+export default NuevoCliente

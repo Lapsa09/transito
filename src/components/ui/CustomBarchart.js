@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   BarChart,
   CartesianGrid,
@@ -7,8 +7,8 @@ import {
   Tooltip,
   Legend,
   Bar,
-} from 'recharts';
-import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent';
+} from 'recharts'
+import { DefaultTooltipContent } from 'recharts/lib/component/DefaultTooltipContent'
 
 function CustomBarchart({ data }) {
   return (
@@ -21,7 +21,7 @@ function CustomBarchart({ data }) {
       <Bar dataKey="mañana" name="Mañana" stackId="a" fill="#8884d8" />
       <Bar dataKey="tarde" name="Tarde" stackId="a" fill="#82ca9d" />
     </BarChart>
-  );
+  )
 }
 
 const CustomTooltip = (props) => {
@@ -33,10 +33,10 @@ const CustomTooltip = (props) => {
         value: props.payload[0].payload.total,
         color: '#f25658',
       },
-    ];
-    return <DefaultTooltipContent {...props} payload={newPayload} />;
+    ]
+    return <DefaultTooltipContent {...props} payload={newPayload} />
   }
-  return <DefaultTooltipContent {...props} />;
-};
+  return <DefaultTooltipContent {...props} />
+}
 
-export default CustomBarchart;
+export default CustomBarchart

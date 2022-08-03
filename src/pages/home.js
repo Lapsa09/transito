@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux';
-import { Header } from '../components/ui/';
+import { useSelector } from 'react-redux'
+import { Header } from '../components/ui/'
 
-import styles from '../styles/Home.module.css';
+import styles from '../styles/Home.module.css'
 
 export default function Home() {
-  const user = useSelector((x) => x.user.user);
+  const user = useSelector((x) => x.user.user)
 
   return (
     <div className={styles.home}>
@@ -13,5 +13,5 @@ export default function Home() {
         BIENVENIDO {user?.nombre} {user?.apellido} LP {user?.legajo}
       </h1>
     </div>
-  );
+  )
 }

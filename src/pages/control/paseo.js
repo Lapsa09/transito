@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import ControlPaseoForm from '../../components/forms/ControlPaseoForm';
-import { getControlesPaseo } from '../../services/controlDiarioService';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react'
+import ControlPaseoForm from '../../components/forms/ControlPaseoForm'
+import { getControlesPaseo } from '../../services/controlDiarioService'
+import { useSelector } from 'react-redux'
 
-import Layout from '../../layouts/OperativosLayout';
-import { useData } from '../../hooks';
-import { dateFormat, dateTimeSQLFormat, timeFormat } from '../../utils';
-import { useNavigate } from 'react-router-dom';
+import Layout from '../../layouts/OperativosLayout'
+import { useData } from '../../hooks'
+import { dateFormat, dateTimeSQLFormat, timeFormat } from '../../utils'
+import { useNavigate } from 'react-router-dom'
 
 function ControlPaseoPage() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const user = useSelector((x) => x.user.user);
-  const navigate = useNavigate();
-  const handleRol = () => user?.rol === 'ADMIN';
-  const { data, loading, refresh } = useData(getControlesPaseo);
+  const [open, setOpen] = useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+  const user = useSelector((x) => x.user.user)
+  const navigate = useNavigate()
+  const handleRol = () => user?.rol === 'ADMIN'
+  const { data, loading, refresh } = useData(getControlesPaseo)
   const columns = [
     {
       field: 'fecha',
@@ -45,7 +45,7 @@ function ControlPaseoPage() {
     },
     { field: 'lpcarga', headerName: 'Legajo carga', width: 150 },
     { field: 'mes', headerName: 'Mes', width: 150 },
-  ];
+  ]
 
   return (
     <Layout
@@ -61,7 +61,7 @@ function ControlPaseoPage() {
         handleClose={handleRol() ? handleClose : navigate('-1')}
       />
     </Layout>
-  );
+  )
 }
 
-export default ControlPaseoPage;
+export default ControlPaseoPage

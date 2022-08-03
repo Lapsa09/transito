@@ -1,6 +1,5 @@
-//EditPost.jsx
-import { Dialog, DialogActions, DialogContent } from '@mui/material';
-import React from 'react';
+import { Dialog, DialogActions, DialogContent } from '@mui/material'
+import React from 'react'
 import {
   ArrayInput,
   AutocompleteInput,
@@ -14,18 +13,18 @@ import {
   SimpleForm,
   SimpleFormIterator,
   TextInput,
-} from 'react-admin';
-import { useNavigate } from 'react-router-dom';
+} from 'react-admin'
+import { useNavigate } from 'react-router-dom'
 import {
   TimePickerComponent,
   CreateOperario,
   OpInput,
   TotalInput,
-} from '../../components';
-import styles from '../../styles/Sueldos.module.css';
+} from '../../components'
+import styles from '../../styles/Sueldos.module.css'
 
 export const EditServicio = (props) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <Edit {...props}>
@@ -110,5 +109,5 @@ export const EditServicio = (props) => {
         </DialogActions>
       </Dialog>
     </Edit>
-  );
-};
+  )
+}

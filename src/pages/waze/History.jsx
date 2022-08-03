@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { DateTime } from 'luxon';
-import { Table } from '../../components';
-import { getDates, getOneDate } from '../../services/wazeService';
+import React, { useEffect, useState } from 'react'
+import { DateTime } from 'luxon'
+import { Table } from '../../components'
+import { getDates, getOneDate } from '../../services/wazeService'
 import {
   Collapse,
   Drawer,
@@ -9,41 +9,41 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-} from '@mui/material';
-import { ChevronRight, ExpandMore } from '@mui/icons-material';
-import style from '../../styles/Waze.module.css';
-import { useNavigate } from 'react-router-dom';
-import { dateFormat, mesName } from '../../utils/dates';
+} from '@mui/material'
+import { ChevronRight, ExpandMore } from '@mui/icons-material'
+import style from '../../styles/Waze.module.css'
+import { useNavigate } from 'react-router-dom'
+import { dateFormat, mesName } from '../../utils/dates'
 
 function History() {
-  const [meses, setMeses] = useState([]);
-  const [data, setData] = useState([]);
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+  const [meses, setMeses] = useState([])
+  const [data, setData] = useState([])
+  const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
 
   const fetch = async () => {
-    const data = await getDates();
-    setMeses(data);
-  };
+    const data = await getDates()
+    setMeses(data)
+  }
 
   const fetchDia = async (id) => {
-    const reportes = await getOneDate(id);
-    setData(reportes);
-  };
+    const reportes = await getOneDate(id)
+    setData(reportes)
+  }
 
   const horarios = (data) => {
-    const arr = Object.entries(data);
-    return arr.slice(2);
-  };
+    const arr = Object.entries(data)
+    return arr.slice(2)
+  }
 
   const setCollapseOpen = (id) => {
-    if (open === id) setOpen(false);
-    else setOpen(id);
-  };
+    if (open === id) setOpen(false)
+    else setOpen(id)
+  }
 
   useEffect(() => {
-    fetch();
-  }, []);
+    fetch()
+  }, [])
 
   return (
     <div className={style.historial}>
@@ -79,7 +79,7 @@ function History() {
           <div className={style.reporte} key={h}>
             <h4>
               {DateTime.fromFormat(h, 'hh:mm:ss').toLocaleString(
-                DateTime.TIME_24_SIMPLE,
+                DateTime.TIME_24_SIMPLE
               )}
               :
             </h4>
@@ -88,7 +88,7 @@ function History() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default History;
+export default History

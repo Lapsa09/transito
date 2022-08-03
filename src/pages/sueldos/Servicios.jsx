@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon';
-import React from 'react';
+import { DateTime } from 'luxon'
+import React from 'react'
 import {
   Datagrid,
   DateField,
@@ -11,23 +11,22 @@ import {
   TextField,
   useListController,
   BulkExportButton,
-} from 'react-admin';
-import { ServiciosMemo } from '../../components';
+} from 'react-admin'
+import { ServiciosMemo } from '../../components'
 
 const customExportFunction = (data, selectedIds, exporter) => {
-  const res = data.filter((row) => selectedIds.includes(row.id));
-  exporter(res, 'servicios');
-};
+  const res = data.filter((row) => selectedIds.includes(row.id))
+  exporter(res, 'servicios')
+}
 
 function Servicios() {
-  const { data, page, perPage, isLoading, ...listContext } =
-    useListController();
+  const { data, page, perPage, isLoading, ...listContext } = useListController()
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
   if (data == null) {
-    return <div>Vacio</div>;
+    return <div>Vacio</div>
   }
 
   const filters = [
@@ -44,7 +43,7 @@ function Servicios() {
         .slice(0, 20)}
       translateChoice={false}
     />,
-  ];
+  ]
 
   return (
     <ListContextProvider
@@ -77,7 +76,7 @@ function Servicios() {
                 customExportFunction(
                   items,
                   listContext.selectedIds,
-                  listContext.exporter,
+                  listContext.exporter
                 )
               }
             />
@@ -118,7 +117,7 @@ function Servicios() {
         <Pagination />
       </div>
     </ListContextProvider>
-  );
+  )
 }
 
-export default Servicios;
+export default Servicios

@@ -1,5 +1,4 @@
-//FilterPost.jsx
-import React from 'react';
+import React from 'react'
 import {
   Datagrid,
   TextField,
@@ -7,11 +6,11 @@ import {
   ListContextProvider,
   useList,
   NumberField,
-} from 'react-admin';
+} from 'react-admin'
 
 export const ServiciosMemo = () => {
-  const record = useRecordContext();
-  const listContext = useList({ data: record.operarios });
+  const record = useRecordContext()
+  const listContext = useList({ data: record.operarios })
   return (
     <ListContextProvider value={listContext}>
       <Datagrid isRowSelectable={() => false}>
@@ -25,5 +24,5 @@ export const ServiciosMemo = () => {
         />
       </Datagrid>
     </ListContextProvider>
-  );
-};
+  )
+}

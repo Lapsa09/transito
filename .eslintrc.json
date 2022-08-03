@@ -16,7 +16,11 @@
   "plugins": ["react"],
   "rules": {
     "space-before-function-paren": 0,
-    "camelcase": 0
+    "camelcase": 0,
+    "react/prop-types": 0,
+    "react/react-in-jsx-scope": 0,
+    "no-extra-boolean-cast": 0,
+    "react/jsx-key": 0
   },
   "settings": {
     "react": {

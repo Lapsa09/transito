@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -6,28 +6,28 @@ import {
   getSeguridad,
   getZonasVL,
   nuevoOperativoMoto,
-} from '../../services/operativosService';
+} from '../../services/operativosService'
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from '../ui';
-import { getResolucion, getTurnos } from '../../services/index';
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
-import { useSelector } from 'react-redux';
+} from '../ui'
+import { getResolucion, getTurnos } from '../../services/index'
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils'
+import { useSelector } from 'react-redux'
 
-import AddBoxSharpIcon from '@mui/icons-material/AddBoxSharp';
-import IndeterminateCheckBoxSharpIcon from '@mui/icons-material/IndeterminateCheckBoxSharp';
-import { useForm, useFieldArray } from 'react-hook-form';
-import Layout from '../../layouts/FormLayout';
-import { useSelects } from '../../hooks';
-import { Grid } from '@mui/material';
+import AddBoxSharpIcon from '@mui/icons-material/AddBoxSharp'
+import IndeterminateCheckBoxSharpIcon from '@mui/icons-material/IndeterminateCheckBoxSharp'
+import { useForm, useFieldArray } from 'react-hook-form'
+import Layout from '../../layouts/FormLayout'
+import { useSelects } from '../../hooks'
+import { Grid } from '@mui/material'
 
 function MotosForm({ handleClose, afterCreate }) {
-  const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === 'ADMIN';
+  const user = useSelector((x) => x.user.user)
+  const handleRol = () => user?.rol === 'ADMIN'
   const {
     handleSubmit,
     control,
@@ -42,11 +42,11 @@ function MotosForm({ handleClose, afterCreate }) {
       motivos: [{ motivo: null }],
       lpcarga: user.legajo,
     },
-  });
+  })
   const { append, remove, fields } = useFieldArray({
     control,
     name: 'motivos',
-  });
+  })
   const {
     data: [
       licencias,
@@ -66,8 +66,8 @@ function MotosForm({ handleClose, afterCreate }) {
     getSeguridad(),
     getResolucion(),
     getMotivosMoto(),
-  ]);
-  const [activeStep, setActiveStep] = useState(0);
+  ])
+  const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
     const [
@@ -110,7 +110,7 @@ function MotosForm({ handleClose, afterCreate }) {
       'motivo3',
       'motivo4',
       'motivo5',
-    ]);
+    ])
 
     return [
       {
@@ -142,24 +142,24 @@ function MotosForm({ handleClose, afterCreate }) {
           motivo5,
         },
       },
-    ];
-  };
+    ]
+  }
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
-      append({ motivo: null });
+      append({ motivo: null })
     }
-  };
+  }
 
   const restarMotivos = () => {
     if (fields.length > 1) {
-      remove(fields.at(-1));
+      remove(fields.at(-1))
     }
-  };
+  }
 
   const submitEvent = async (data) => {
-    await nuevoOperativoMoto(data);
-    await afterCreate();
+    await nuevoOperativoMoto(data)
+    await afterCreate()
     reset(
       {
         ...data,
@@ -170,9 +170,9 @@ function MotosForm({ handleClose, afterCreate }) {
         motivos: [{ motivo: '' }],
         acta: null,
       },
-      { keepDefaultValues: true },
-    );
-  };
+      { keepDefaultValues: true }
+    )
+  }
 
   return (
     <Layout
@@ -320,7 +320,7 @@ function MotosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         {fields.map((item, index) => (
-          <Grid item xs={8}>
+          <Grid key={index} item xs={8}>
             <CustomSelect
               control={control}
               key={item.id}
@@ -360,7 +360,7 @@ function MotosForm({ handleClose, afterCreate }) {
         )}
       </Grid>
     </Layout>
-  );
+  )
 }
 
-export default MotosForm;
+export default MotosForm

@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   getLocalidades,
   getMotivos,
   nuevoControl,
-} from '../../services/controlDiarioService';
-import { getResolucion, getTurnos } from '../../services/index';
+} from '../../services/controlDiarioService'
+import { getResolucion, getTurnos } from '../../services/index'
 
-import { useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux'
+import { useForm } from 'react-hook-form'
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from '../ui';
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
-import Layout from '../../layouts/FormLayout';
-import { useSelects } from '../../hooks';
-import { Grid } from '@mui/material';
+} from '../ui'
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils'
+import Layout from '../../layouts/FormLayout'
+import { useSelects } from '../../hooks'
+import { Grid } from '@mui/material'
 
 function ControlDiarioForm({ handleClose, afterCreate }) {
-  const user = useSelector((x) => x.user.user);
-  const handleRol = () => user.rol === 'ADMIN';
+  const user = useSelector((x) => x.user.user)
+  const handleRol = () => user.rol === 'ADMIN'
   const {
     handleSubmit,
     control,
@@ -37,17 +37,12 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       lpcarga: user?.legajo,
       lp: !handleRol() ? user?.legajo : '',
     },
-  });
+  })
   const {
     data: [localidades, motivos, turnos, resolucion],
     error,
-  } = useSelects([
-    getLocalidades(),
-    getMotivos(),
-    getTurnos(),
-    getResolucion(),
-  ]);
-  const [activeStep, setActiveStep] = useState(0);
+  } = useSelects([getLocalidades(), getMotivos(), getTurnos(), getResolucion()])
+  const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
     const [
@@ -74,7 +69,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
       'localidad',
       'acta',
       'otroMotivo',
-    ]);
+    ])
     return [
       {
         label: 'Operativo',
@@ -97,11 +92,11 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
           otroMotivo,
         },
       },
-    ];
-  };
+    ]
+  }
 
   const submitting = async (data) => {
-    await nuevoControl(data);
+    await nuevoControl(data)
     reset(
       {
         ...data,
@@ -114,20 +109,20 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         otroMotivo: null,
         acta: null,
       },
-      { keepDefaultValues: true },
-    );
+      { keepDefaultValues: true }
+    )
     if (handleRol()) {
-      await afterCreate();
+      await afterCreate()
     } else {
-      setTimeout(handleClose, 2000);
+      setTimeout(handleClose, 2000)
     }
-  };
+  }
 
   const getMotivo = () => {
     return (
       motivos.find((motivo) => motivo.id === getValues('motivo'))?.motivo || ''
-    );
-  };
+    )
+  }
 
   return (
     <Layout
@@ -277,7 +272,7 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
         )}
       </Grid>
     </Layout>
-  );
+  )
 }
 
-export default ControlDiarioForm;
+export default ControlDiarioForm

@@ -1,29 +1,29 @@
-import { DateTime } from 'luxon';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Table } from '../../components';
-import { mainWazeGetter } from '../../services/wazeService';
-import style from '../../styles/Waze.module.css';
+import { DateTime } from 'luxon'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Table } from '../../components'
+import { mainWazeGetter } from '../../services/wazeService'
+import style from '../../styles/Waze.module.css'
 
 function App() {
-  const navigate = useNavigate();
-  const [data, setData] = useState([]);
-  const [prom, setProm] = useState({});
+  const navigate = useNavigate()
+  const [data, setData] = useState([])
+  const [prom, setProm] = useState({})
 
   const horarios = (data) => {
-    const arr = Object.entries(data);
-    return arr.slice(2);
-  };
+    const arr = Object.entries(data)
+    return arr.slice(2)
+  }
 
   const fetch = async () => {
-    const { res, promedio } = await mainWazeGetter();
-    setData(res);
-    setProm(promedio);
-  };
+    const { res, promedio } = await mainWazeGetter()
+    setData(res)
+    setProm(promedio)
+  }
 
   useEffect(() => {
-    fetch();
-  }, []);
+    fetch()
+  }, [])
   return (
     <div className={style.home}>
       <div className={style.header}>
@@ -43,7 +43,7 @@ function App() {
           <div className={style.reporte} key={hora}>
             <h4>
               {DateTime.fromFormat(hora, 'hh:mm:ss').toLocaleString(
-                DateTime.TIME_24_SIMPLE,
+                DateTime.TIME_24_SIMPLE
               )}
               :
             </h4>
@@ -57,7 +57,7 @@ function App() {
           <div className={style.reporte} key={h}>
             <h4>
               {DateTime.fromFormat(h, 'hh:mm:ss').toLocaleString(
-                DateTime.TIME_24_SIMPLE,
+                DateTime.TIME_24_SIMPLE
               )}
               :
             </h4>
@@ -66,7 +66,7 @@ function App() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

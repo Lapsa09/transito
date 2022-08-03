@@ -1,46 +1,46 @@
-import { InputAdornment, TextField } from '@mui/material';
-import { Fragment, useEffect, useState } from 'react';
-import { SelectInput, useGetList, useInput } from 'react-admin';
-import { CreateRecibo } from './QuickCreate';
-import { DatePickerComponent } from './TimePicker';
-import styles from '../../styles/Sueldos.module.css';
-import { Observable } from '../../utils';
+import { InputAdornment, TextField } from '@mui/material'
+import { Fragment, useEffect, useState } from 'react'
+import { SelectInput, useGetList, useInput } from 'react-admin'
+import { CreateRecibo } from './QuickCreate'
+import { DatePickerComponent } from './TimePicker'
+import styles from '../../styles/Sueldos.module.css'
+import { Observable } from '../../utils'
 
 const getImporteOperario = (dia, inicio, fin, isFeriado, importe) => {
   if ([dia, inicio, fin, isFeriado].some((e) => e == null)) {
-    return importe;
+    return importe
   }
 
-  const diff = fin.diff(inicio, 'hours').hours;
+  const diff = fin.diff(inicio, 'hours').hours
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio.hour >= 8 && fin.hour <= 20) {
-      return 644 * parseInt(diff);
+      return 644 * parseInt(diff)
     }
   }
-  return 1036 * parseInt(diff);
-};
+  return 1036 * parseInt(diff)
+}
 
 export const OpInput = ({ source, formData, scopedFormData }) => {
-  const { fecha_servicio, feriado } = formData;
-  const { hora_inicio, hora_fin } = scopedFormData;
+  const { fecha_servicio, feriado } = formData
+  const { hora_inicio, hora_fin } = scopedFormData
 
   const { field } = useInput({
     source,
     defaultValue: 0,
-  });
+  })
 
   const cuenta = getImporteOperario(
     fecha_servicio,
     hora_inicio,
     hora_fin,
     feriado,
-    field.value,
-  );
+    field.value
+  )
 
   useEffect(() => {
-    field.onChange(cuenta);
+    field.onChange(cuenta)
     // eslint-disable-next-line
-  }, [cuenta]);
+  }, [cuenta])
 
   return (
     <TextField
@@ -53,20 +53,20 @@ export const OpInput = ({ source, formData, scopedFormData }) => {
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
       }}
     />
-  );
-};
+  )
+}
 
 export const TotalInput = ({ ops }) => {
   const { field } = useInput({
     source: 'importe_servicio',
     defaultValue: 0,
-  });
-  const cuenta = !!ops ? ops.reduce((a, b) => a + b?.a_cobrar, 0) : 0;
+  })
+  const cuenta = !!ops ? ops.reduce((a, b) => a + b?.a_cobrar, 0) : 0
 
   useEffect(() => {
-    field.onChange(cuenta);
+    field.onChange(cuenta)
     // eslint-disable-next-line
-  }, [cuenta]);
+  }, [cuenta])
 
   return (
     <TextField
@@ -79,33 +79,33 @@ export const TotalInput = ({ ops }) => {
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
       }}
     />
-  );
-};
+  )
+}
 
 export const Recibo = ({ formData }) => {
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState([])
   const { data, isLoading } = useGetList(
-    'recibos/' + (formData.id_cliente || 'none'),
-  );
+    'recibos/' + (formData.id_cliente || 'none')
+  )
   const { field: importe } = useInput({
     source: 'importe_recibo',
     defaultValue: '',
-  });
+  })
 
-  const elegido = options?.find((d) => d.recibo === formData.recibo);
+  const elegido = options?.find((d) => d.recibo === formData.recibo)
 
-  const observer = new Observable();
-
-  useEffect(() => {
-    setOptions(data);
-    // eslint-disable-next-line
-  }, [formData.id_cliente, isLoading]);
+  const observer = new Observable()
 
   useEffect(() => {
-    observer.notify(elegido?.fecha_recibo);
-    importe.onChange(elegido?.importe_recibo);
+    setOptions(data)
     // eslint-disable-next-line
-  }, [formData.recibo]);
+  }, [formData.id_cliente, isLoading])
+
+  useEffect(() => {
+    observer.notify(elegido?.fecha_recibo)
+    importe.onChange(elegido?.importe_recibo)
+    // eslint-disable-next-line
+  }, [formData.recibo])
 
   return (
     <Fragment>
@@ -139,5 +139,5 @@ export const Recibo = ({ formData }) => {
         }}
       />
     </Fragment>
-  );
-};
+  )
+}

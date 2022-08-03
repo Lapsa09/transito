@@ -1,8 +1,8 @@
-import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
-import React from 'react';
-import DateAdapter from '@mui/lab/AdapterLuxon';
-import { TextField } from '@mui/material';
-import { useController } from 'react-hook-form';
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
+import React from 'react'
+import DateAdapter from '@mui/lab/AdapterLuxon'
+import { TextField } from '@mui/material'
+import { useController } from 'react-hook-form'
 
 function CustomTimePicker({
   label,
@@ -25,11 +25,11 @@ function CustomTimePicker({
       },
     },
     defaultValue,
-  });
+  })
 
   const parseTime = (newTime) => {
-    field.onChange(newTime);
-  };
+    field.onChange(newTime)
+  }
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       <TimePicker
@@ -50,7 +50,7 @@ function CustomTimePicker({
         )}
       />
     </LocalizationProvider>
-  );
+  )
 }
 
-export default CustomTimePicker;
+export default CustomTimePicker

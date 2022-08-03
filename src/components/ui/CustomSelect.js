@@ -1,6 +1,6 @@
-import { MenuItem, TextField } from '@mui/material';
-import React from 'react';
-import { useController } from 'react-hook-form';
+import { MenuItem, TextField } from '@mui/material'
+import React from 'react'
+import { useController } from 'react-hook-form'
 
 function CustomSelect({
   control,
@@ -20,7 +20,7 @@ function CustomSelect({
     control,
     rules,
     defaultValue,
-  });
+  })
   return (
     <TextField
       {...field}
@@ -40,10 +40,10 @@ function CustomSelect({
           <MenuItem value={Object.values(option)[0]}>
             {Object.values(option)[1]}
           </MenuItem>
-        ),
+        )
       )}
     </TextField>
-  );
+  )
 }
 
-export default CustomSelect;
+export default CustomSelect

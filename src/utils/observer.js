@@ -1,19 +1,19 @@
 class Observable {
   constructor() {
-    this.observers = [];
+    this.observers = []
   }
 
   subscribe(field) {
-    this.observers.push(field);
+    this.observers.push(field)
   }
 
   unsubscribe(func) {
-    this.observers = this.observers.filter((observer) => observer !== func);
+    this.observers = this.observers.filter((observer) => observer !== func)
   }
 
   notify(data) {
-    this.observers.forEach((observer) => observer(data));
+    this.observers.forEach((observer) => observer(data))
   }
 }
 
-export { Observable };
+export { Observable }

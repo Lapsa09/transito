@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import OperativosForm from '../../components/forms/CamionesForm';
-import { getOperativosCamiones } from '../../services/operativosService';
-import Layout from '../../layouts/OperativosLayout';
-import { dateFormat, timeFormat } from '../../utils';
-import { useData } from '../../hooks';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react'
+import OperativosForm from '../../components/forms/CamionesForm'
+import { getOperativosCamiones } from '../../services/operativosService'
+import Layout from '../../layouts/OperativosLayout'
+import { dateFormat, timeFormat } from '../../utils'
+import { useData } from '../../hooks'
+import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 function CamionesPage() {
-  const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
-  const router = useNavigate();
-  const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === 'ADMIN';
-  const { data, loading, refresh } = useData(getOperativosCamiones);
+  const [open, setOpen] = useState(false)
+  const handleClose = () => setOpen(false)
+  const handleOpen = () => setOpen(true)
+  const router = useNavigate()
+  const user = useSelector((x) => x.user.user)
+  const handleRol = () => user?.rol === 'ADMIN'
+  const { data, loading, refresh } = useData(getOperativosCamiones)
 
   const columns = [
     {
@@ -57,7 +57,7 @@ function CamionesPage() {
       valueFormatter: ({ value }) => timeFormat(value),
     },
     { field: 'legajo_carga', headerName: 'Legajo carga', width: 300 },
-  ];
+  ]
 
   return (
     <Layout
@@ -73,7 +73,7 @@ function CamionesPage() {
         handleClose={handleRol() ? handleClose : router('-1')}
       />
     </Layout>
-  );
+  )
 }
 
-export default CamionesPage;
+export default CamionesPage

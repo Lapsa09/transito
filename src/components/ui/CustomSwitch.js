@@ -1,6 +1,6 @@
-import { FormControlLabel, Switch } from '@mui/material';
-import React from 'react';
-import { useController } from 'react-hook-form';
+import { FormControlLabel, Switch } from '@mui/material'
+import React from 'react'
+import { useController } from 'react-hook-form'
 
 function CustomSwitch({ control, name, label, rules }) {
   const {
@@ -12,7 +12,7 @@ function CustomSwitch({ control, name, label, rules }) {
     control,
     rules,
     defaultValue: false,
-  });
+  })
   return (
     <FormControlLabel
       control={
@@ -25,7 +25,7 @@ function CustomSwitch({ control, name, label, rules }) {
       }
       label={label}
     />
-  );
+  )
 }
 
-export default CustomSwitch;
+export default CustomSwitch

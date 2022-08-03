@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   Datagrid,
   FilterForm,
@@ -9,15 +9,14 @@ import {
   TextField,
   TextInput,
   useListController,
-} from 'react-admin';
-import { ClientesServicios } from '../../components';
+} from 'react-admin'
+import { ClientesServicios } from '../../components'
 
 function Clientes() {
-  const { data, page, perPage, isLoading, ...listContext } =
-    useListController();
+  const { data, page, perPage, isLoading, ...listContext } = useListController()
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   const filters = [
@@ -31,8 +30,8 @@ function Clientes() {
           (value, index, self) =>
             index ===
             self.findIndex(
-              (t) => t.place === value.place && t.name === value.name,
-            ),
+              (t) => t.place === value.place && t.name === value.name
+            )
         )
         .sort((a, b) => a.id - b.id)}
     />,
@@ -45,7 +44,7 @@ function Clientes() {
         .map((año) => ({ id: año, name: año }))}
       translateChoice={false}
     />,
-  ];
+  ]
   return (
     <ListContextProvider
       value={{
@@ -91,7 +90,7 @@ function Clientes() {
         <Pagination />
       </div>
     </ListContextProvider>
-  );
+  )
 }
 
-export default Clientes;
+export default Clientes

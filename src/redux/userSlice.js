@@ -15,7 +15,7 @@ function createInitialState() {
     user: localStorage.getItem('token')
       ? jwt_decode(localStorage.getItem('token'))
       : '',
-    error: null
+    error: null,
   }
 }
 
@@ -24,7 +24,7 @@ export const authReducer = slice.reducer
 
 function createReducers() {
   return {
-    logout
+    logout,
   }
 
   function logout(state) {
@@ -37,7 +37,7 @@ function createReducers() {
 function createExtraActions() {
   return {
     login: login(),
-    register: signUp()
+    register: signUp(),
   }
 
   function login() {
@@ -63,7 +63,7 @@ function createExtraActions() {
 function createExtraReducers() {
   return {
     ...login(),
-    ...register()
+    ...register(),
   }
 
   function baseUserReducer(actions) {
@@ -84,7 +84,7 @@ function createExtraReducers() {
       [rejected]: (state, action) => {
         console.log(action)
         state.error = action.error
-      }
+      },
     }
   }
 

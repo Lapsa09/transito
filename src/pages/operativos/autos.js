@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import OperativosForm from '../../components/forms/AutosForm';
-import { getOperativosAutos } from '../../services/operativosService';
-import Layout from '../../layouts/OperativosLayout';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react'
+import OperativosForm from '../../components/forms/AutosForm'
+import { getOperativosAutos } from '../../services/operativosService'
+import Layout from '../../layouts/OperativosLayout'
+import { useSelector } from 'react-redux'
 
-import { dateFormat, dateTimeFormat, timeFormat } from '../../utils';
-import { useData } from '../../hooks';
-import { useNavigate } from 'react-router-dom';
+import { dateFormat, dateTimeFormat, timeFormat } from '../../utils'
+import { useData } from '../../hooks'
+import { useNavigate } from 'react-router-dom'
 
 function AutosPage() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const router = useNavigate();
-  const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === 'ADMIN';
-  const { data, loading, refresh } = useData(getOperativosAutos);
+  const [open, setOpen] = useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+  const router = useNavigate()
+  const user = useSelector((x) => x.user.user)
+  const handleRol = () => user?.rol === 'ADMIN'
+  const { data, loading, refresh } = useData(getOperativosAutos)
 
   const columns = [
     {
@@ -65,7 +65,7 @@ function AutosPage() {
     { field: 'semana', headerName: 'Semana', width: 300 },
     { field: 'es_del', headerName: 'Es del', width: 300 },
     { field: 'resultado', headerName: 'Resultado', width: 300 },
-  ];
+  ]
 
   return (
     <Layout
@@ -81,7 +81,7 @@ function AutosPage() {
         handleClose={handleRol() ? handleClose : router('-1')}
       />
     </Layout>
-  );
+  )
 }
 
-export default AutosPage;
+export default AutosPage

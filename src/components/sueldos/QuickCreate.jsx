@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -6,18 +6,18 @@ import {
   DialogActions,
   TextField,
   Button,
-} from '@mui/material';
-import { Add } from '@mui/icons-material';
-import styles from '../../styles/Sueldos.module.css';
-import { useCreate } from 'react-admin';
+} from '@mui/material'
+import { Add } from '@mui/icons-material'
+import styles from '../../styles/Sueldos.module.css'
+import { useCreate } from 'react-admin'
 
 function QuickCreate({ children, handleSubmit, title, reset }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   const handleExit = () => {
-    reset();
-    setOpen(false);
-  };
+    reset()
+    setOpen(false)
+  }
   return (
     <Fragment>
       <Button
@@ -37,8 +37,8 @@ function QuickCreate({ children, handleSubmit, title, reset }) {
 
         <form
           onSubmit={(e) => {
-            handleSubmit(e);
-            handleExit();
+            handleSubmit(e)
+            handleExit()
           }}
         >
           <DialogContent>{children}</DialogContent>
@@ -49,18 +49,18 @@ function QuickCreate({ children, handleSubmit, title, reset }) {
         </form>
       </Dialog>
     </Fragment>
-  );
+  )
 }
 
 export function CreateCliente() {
-  const [value, setValue] = useState('');
-  const reset = () => setValue('');
-  const [create] = useCreate();
+  const [value, setValue] = useState('')
+  const reset = () => setValue('')
+  const [create] = useCreate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    create('clientes/list', { data: { cliente: value } });
-  };
+    e.preventDefault()
+    create('clientes/list', { data: { cliente: value } })
+  }
   return (
     <QuickCreate
       handleSubmit={handleSubmit}
@@ -74,18 +74,18 @@ export function CreateCliente() {
         autoFocus
       />
     </QuickCreate>
-  );
+  )
 }
 
 export function CreateOperario() {
-  const [value, setValue] = useState({ id: '', name: '' });
-  const reset = () => setValue('');
-  const [create] = useCreate();
+  const [value, setValue] = useState({ id: '', name: '' })
+  const reset = () => setValue('')
+  const [create] = useCreate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    create('operarios/list', { data: { ...value } });
-  };
+    e.preventDefault()
+    create('operarios/list', { data: { ...value } })
+  }
   return (
     <QuickCreate
       handleSubmit={handleSubmit}
@@ -107,14 +107,14 @@ export function CreateOperario() {
         label="Cliente"
       />
     </QuickCreate>
-  );
+  )
 }
 
 export function CreateRecibo({ setData }) {
-  const [value, setValue] = useState('');
-  const reset = () => setValue('');
+  const [value, setValue] = useState('')
+  const reset = () => setValue('')
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     setData((data) => [
       ...data,
       {
@@ -123,8 +123,8 @@ export function CreateRecibo({ setData }) {
         fecha_recibo: new Date(),
         importe_recibo: '',
       },
-    ]);
-  };
+    ])
+  }
   return (
     <QuickCreate handleSubmit={handleSubmit} reset={reset} title="Nuevo Recibo">
       <TextField
@@ -135,5 +135,5 @@ export function CreateRecibo({ setData }) {
         label="Nº de recibo"
       />
     </QuickCreate>
-  );
+  )
 }

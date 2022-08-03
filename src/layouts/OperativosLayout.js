@@ -1,10 +1,10 @@
-import React from 'react';
-import { Button, Modal, Skeleton } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { useSelector } from 'react-redux';
+import React from 'react'
+import { Button, Modal, Skeleton } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
+import { useSelector } from 'react-redux'
 
-import { useNavigate } from 'react-router-dom';
-import styles from '../styles/Operativos.page.module.css';
+import { useNavigate } from 'react-router-dom'
+import styles from '../styles/Operativos.page.module.css'
 
 function OperativosLayout({
   columns,
@@ -15,8 +15,8 @@ function OperativosLayout({
   handleOpen,
   handleClose,
 }) {
-  const navigate = useNavigate();
-  const user = useSelector((x) => x.user.user);
+  const navigate = useNavigate()
+  const user = useSelector((x) => x.user.user)
   return user?.rol === 'ADMIN' ? (
     <div className={styles.Operativos}>
       <div className="control_buttons">
@@ -46,7 +46,7 @@ function OperativosLayout({
     </div>
   ) : (
     <div className={styles.Operativos}>{children}</div>
-  );
+  )
 }
 
-export default OperativosLayout;
+export default OperativosLayout

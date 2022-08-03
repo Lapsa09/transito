@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -6,26 +6,26 @@ import {
   getZonasVL,
   nuevoOperativoAuto,
   getMotivos,
-} from '../../services/operativosService';
-import { getResolucion, getTurnos } from '../../services/index';
-import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils';
-import { useSelector } from 'react-redux';
+} from '../../services/operativosService'
+import { getResolucion, getTurnos } from '../../services/index'
+import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils'
+import { useSelector } from 'react-redux'
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-} from '../ui';
+} from '../ui'
 
-import { useForm } from 'react-hook-form';
-import Layout from '../../layouts/FormLayout';
-import { useSelects } from '../../hooks';
-import { Grid } from '@mui/material';
+import { useForm } from 'react-hook-form'
+import Layout from '../../layouts/FormLayout'
+import { useSelects } from '../../hooks'
+import { Grid } from '@mui/material'
 
 function OperativosForm({ handleClose, afterCreate }) {
-  const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === 'ADMIN';
+  const user = useSelector((x) => x.user.user)
+  const handleRol = () => user?.rol === 'ADMIN'
   const {
     handleSubmit,
     control,
@@ -37,8 +37,8 @@ function OperativosForm({ handleClose, afterCreate }) {
   } = useForm({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
-  });
-  const [activeStep, setActiveStep] = useState(0);
+  })
+  const [activeStep, setActiveStep] = useState(0)
   const {
     data: [
       licencias,
@@ -58,7 +58,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     getSeguridad(),
     getResolucion(),
     getMotivos(),
-  ]);
+  ])
 
   const steps = () => {
     const [
@@ -87,7 +87,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       'motivo',
       'fecha',
       'turno',
-    ]);
+    ])
     return [
       {
         label: 'Operativo',
@@ -111,12 +111,12 @@ function OperativosForm({ handleClose, afterCreate }) {
           motivo,
         },
       },
-    ];
-  };
+    ]
+  }
 
   const submitEvent = async (data) => {
-    await nuevoOperativoAuto(data);
-    await afterCreate();
+    await nuevoOperativoAuto(data)
+    await afterCreate()
     reset(
       {
         ...data,
@@ -130,9 +130,9 @@ function OperativosForm({ handleClose, afterCreate }) {
         acta: null,
         lpcarga: user?.legajo,
       },
-      { keepDefaultValues: true },
-    );
-  };
+      { keepDefaultValues: true }
+    )
+  }
 
   return (
     <Layout
@@ -318,7 +318,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         )}
       </Grid>
     </Layout>
-  );
+  )
 }
 
-export default OperativosForm;
+export default OperativosForm

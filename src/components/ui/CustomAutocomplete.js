@@ -1,6 +1,6 @@
-import { Autocomplete, TextField } from '@mui/material';
-import React from 'react';
-import { useController } from 'react-hook-form';
+import { Autocomplete, TextField } from '@mui/material'
+import React from 'react'
+import { useController } from 'react-hook-form'
 
 function CustomAutocomplete({ control, name, rules, label, options }) {
   const {
@@ -12,11 +12,11 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
     control,
     rules,
     defaultValue: null,
-  });
+  })
 
   const optionLabel = (option) => {
-    return Object.entries(option)[1][1];
-  };
+    return Object.entries(option)[1][1]
+  }
 
   return (
     <Autocomplete
@@ -36,7 +36,7 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
         />
       )}
     />
-  );
+  )
 }
 
-export default CustomAutocomplete;
+export default CustomAutocomplete

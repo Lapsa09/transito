@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { getOperativosMotos } from '../../services/operativosService';
-import MotosForm from '../../components/forms/MotosForm';
-import Layout from '../../layouts/OperativosLayout';
-import { dateFormat, dateTimeFormat, timeFormat } from '../../utils';
-import { useData } from '../../hooks';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react'
+import { getOperativosMotos } from '../../services/operativosService'
+import MotosForm from '../../components/forms/MotosForm'
+import Layout from '../../layouts/OperativosLayout'
+import { dateFormat, dateTimeFormat, timeFormat } from '../../utils'
+import { useData } from '../../hooks'
+import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 function MotosPage() {
-  const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
-  const user = useSelector((x) => x.user.user);
-  const router = useNavigate();
-  const handleRol = () => user?.rol === 'ADMIN';
-  const { data, loading, refresh } = useData(getOperativosMotos);
+  const [open, setOpen] = useState(false)
+  const handleClose = () => setOpen(false)
+  const handleOpen = () => setOpen(true)
+  const user = useSelector((x) => x.user.user)
+  const router = useNavigate()
+  const handleRol = () => user?.rol === 'ADMIN'
+  const { data, loading, refresh } = useData(getOperativosMotos)
 
   const columns = [
     {
@@ -59,7 +59,7 @@ function MotosPage() {
       valueFormatter: ({ value }) => dateTimeFormat(value),
     },
     { field: 'lpcarga', headerName: 'Legajo carga', width: 300 },
-  ];
+  ]
 
   return (
     <Layout
@@ -75,7 +75,7 @@ function MotosPage() {
         handleClose={handleRol() ? handleClose : router('-1')}
       />
     </Layout>
-  );
+  )
 }
 
-export default MotosPage;
+export default MotosPage

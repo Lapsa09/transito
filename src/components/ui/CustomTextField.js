@@ -1,6 +1,6 @@
-import { TextField } from '@mui/material';
-import React from 'react';
-import { useController } from 'react-hook-form';
+import { TextField } from '@mui/material'
+import React from 'react'
+import { useController } from 'react-hook-form'
 
 function CustomTextField({
   control,
@@ -21,15 +21,15 @@ function CustomTextField({
     control,
     rules,
     defaultValue,
-  });
+  })
 
   const handleChange = (e) => {
     field.onChange(
-      typeof e.target.value == 'string' && type !== 'password'
+      typeof e.target.value === 'string' && type !== 'password'
         ? e.target.value.toUpperCase()
-        : e.target.value,
-    );
-  };
+        : e.target.value
+    )
+  }
 
   return (
     <TextField
@@ -44,7 +44,7 @@ function CustomTextField({
       label={label}
       fullWidth
     />
-  );
+  )
 }
 
-export default CustomTextField;
+export default CustomTextField

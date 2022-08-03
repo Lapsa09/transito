@@ -67,8 +67,8 @@ function Register() {
           name="confirmPassword"
           rules={{
             validate: {
-              confirmPassword: (value) => value === getValues('password')
-            }
+              confirmPassword: (value) => value === getValues('password'),
+            },
           }}
           label="Confirmar contraseña"
         />

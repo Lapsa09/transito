@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, Modal } from '@mui/material';
+import React, { useEffect, useState } from 'react'
+import { Box, Button, Modal } from '@mui/material'
 
-import { adminStyle, inspectorStyle } from '../components/utils';
-import { useSelector } from 'react-redux';
-import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png';
-import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png';
-import { currentDate } from '../utils';
-import {
-  CustomSnackbar,
-  CustomStepForm,
-  CustomStepper,
-} from '../components/ui';
-import { DateTime } from 'luxon';
-import { useLocalStorage, useSnackBar } from '../hooks';
-import styles from '../styles/FormLayout.module.css';
+import { adminStyle, inspectorStyle } from '../components/utils'
+import { useSelector } from 'react-redux'
+import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png'
+import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
+import { currentDate } from '../utils'
+import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
+import { DateTime } from 'luxon'
+import { useLocalStorage, useSnackBar } from '../hooks'
+import styles from '../styles/FormLayout.module.css'
 
 function FormLayout({
   children,
@@ -29,44 +25,44 @@ function FormLayout({
   reset,
   setValue,
 }) {
-  const user = useSelector((x) => x.user.user);
-  const handleRol = () => user?.rol === 'ADMIN';
-  const [open, setOpen] = useState(false);
-  const [operative, setOperative] = useLocalStorage(path);
+  const user = useSelector((x) => x.user.user)
+  const handleRol = () => user?.rol === 'ADMIN'
+  const [open, setOpen] = useState(false)
+  const [operative, setOperative] = useLocalStorage(path)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
-    useSnackBar();
+    useSnackBar()
 
   const totalSteps = () => {
-    return steps.length;
-  };
+    return steps.length
+  }
 
   const isFirstStep = () => {
-    return activeStep === 0;
-  };
+    return activeStep === 0
+  }
 
   const isLastStep = () => {
-    return activeStep === totalSteps() - 1;
-  };
+    return activeStep === totalSteps() - 1
+  }
 
   const handleNext = () => {
-    if (isCompleted(steps[activeStep]?.values)) saveOp();
-    setActiveStep(activeStep + 1);
-  };
+    if (isCompleted(steps[activeStep]?.values)) saveOp()
+    setActiveStep(activeStep + 1)
+  }
 
   const saveOp = () => {
-    const expirationTime = operative?.expiresAt;
+    const expirationTime = operative?.expiresAt
     setOperative({
       ...steps[0].values,
       expiresAt: expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
-    });
-  };
+    })
+  }
 
   useEffect(() => {
     if (error) {
-      setError(error);
+      setError(error)
     }
-    cargarOperativo();
-  }, []);
+    cargarOperativo()
+  }, [])
 
   const cargarOperativo = () => {
     try {
@@ -74,53 +70,48 @@ function FormLayout({
         Object.entries(operative).forEach(([key, value]) => {
           key === 'fecha' || key === 'hora'
             ? setValue(key, DateTime.fromISO(value))
-            : setValue(key, value);
-        });
-        isCompleted(operative) && setActiveStep(1);
-      } else nuevoOperativo();
-    } catch (error) {
-      return;
-    }
-  };
+            : setValue(key, value)
+        })
+        isCompleted(operative) && setActiveStep(1)
+      } else nuevoOperativo()
+    } catch (error) {}
+  }
 
   const submiting = async (data) => {
     try {
-      await submitEvent(data);
-      setSuccess('Cargado con exito');
+      await submitEvent(data)
+      setSuccess('Cargado con exito')
     } catch (error) {
-      setError(error.response?.data);
+      setError(error.response?.data)
     }
-  };
+  }
 
   const nuevoOperativo = () => {
-    setOperative(null);
-    reset({ lpcarga: user?.legajo }, { keepDefaultValues: true });
-    setActiveStep(0);
-  };
+    setOperative(null)
+    reset({ lpcarga: user?.legajo }, { keepDefaultValues: true })
+    setActiveStep(0)
+  }
 
   const isCompleted = (values) => {
     try {
-      const step = Object.values(values);
-      return step.every((value) => Boolean(value));
+      const step = Object.values(values)
+      return step.every((value) => Boolean(value))
     } catch (error) {
-      return false;
+      return false
     }
-  };
+  }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
 
   const handleStep = (step) => () => {
-    if (isCompleted(steps[activeStep]?.values)) saveOp();
-    setActiveStep(step);
-  };
+    if (isCompleted(steps[activeStep]?.values)) saveOp()
+    setActiveStep(step)
+  }
 
   return (
-    <Box
-      sx={handleRol() ? adminStyle : inspectorStyle}
-      className={styles['form']}
-    >
+    <Box sx={handleRol() ? adminStyle : inspectorStyle} className={styles.form}>
       <div className={styles.header}>
         <img src={LogoVL} alt="Logo Vicente Lopez" />
         <Button onClick={handleClose}>Cerrar</Button>
@@ -129,18 +120,14 @@ function FormLayout({
         </Button>
         <img src={LogoOVT} alt="Logo Observatorio Vial" />
       </div>
-      <div className={styles['form__form']}>
+      <div className={styles.form__form}>
         <CustomStepper
           steps={steps}
           isCompleted={isCompleted}
           handleStep={handleStep}
           activeStep={activeStep}
         />
-        <Box
-          component="form"
-          className={styles['form__box']}
-          autoComplete="off"
-        >
+        <Box component="form" className={styles.form__box} autoComplete="off">
           {children?.map((child, index) => (
             <CustomStepForm key={index} activeStep={activeStep} step={index}>
               {child}
@@ -176,7 +163,7 @@ function FormLayout({
         handleClose={closeSnackbar}
       />
     </Box>
-  );
+  )
 }
 
 const WarningModal = ({ setOpen, reset }) => {
@@ -191,15 +178,15 @@ const WarningModal = ({ setOpen, reset }) => {
         <Box sx={{ flex: '1 1 auto' }} />
         <Button
           onClick={() => {
-            reset();
-            setOpen(false);
+            reset()
+            setOpen(false)
           }}
         >
           Si
         </Button>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default FormLayout;
+export default FormLayout

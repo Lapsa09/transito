@@ -4,7 +4,7 @@ import {
   Route,
   Routes,
   useLocation,
-  useNavigate
+  useNavigate,
 } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import {
@@ -18,7 +18,7 @@ import {
   CamionesPage,
   Sueldos,
   Waze,
-  History
+  History,
 } from './pages'
 import './styles/globals.css'
 import PrivateRoute from './layouts/PrivateRoute'

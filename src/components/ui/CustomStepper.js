@@ -1,5 +1,5 @@
-import { Step, StepButton, Stepper } from '@mui/material';
-import React from 'react';
+import { Step, StepButton, Stepper } from '@mui/material'
+import React from 'react'
 
 function CustomStepper({ steps, isCompleted, handleStep, activeStep }) {
   return (
@@ -16,7 +16,7 @@ function CustomStepper({ steps, isCompleted, handleStep, activeStep }) {
         </Step>
       ))}
     </Stepper>
-  );
+  )
 }
 
-export default CustomStepper;
+export default CustomStepper

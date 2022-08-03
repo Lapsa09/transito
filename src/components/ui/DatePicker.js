@@ -1,9 +1,9 @@
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import React from 'react';
-import DateAdapter from '@mui/lab/AdapterLuxon';
-import { TextField } from '@mui/material';
-import { useController } from 'react-hook-form';
-import { currentDate } from '../../utils';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import React from 'react'
+import DateAdapter from '@mui/lab/AdapterLuxon'
+import { TextField } from '@mui/material'
+import { useController } from 'react-hook-form'
+import { currentDate } from '../../utils'
 
 function CustomDatePicker({
   label,
@@ -31,11 +31,11 @@ function CustomDatePicker({
       },
     },
     defaultValue,
-  });
+  })
 
   const parseDate = (newDate) => {
-    field.onChange(newDate);
-  };
+    field.onChange(newDate)
+  }
 
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
@@ -59,7 +59,7 @@ function CustomDatePicker({
         maxDate={currentDate()}
       />
     </LocalizationProvider>
-  );
+  )
 }
 
-export default CustomDatePicker;
+export default CustomDatePicker

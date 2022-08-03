@@ -1,15 +1,15 @@
-import React from 'react';
-import { useInput } from 'react-admin';
+import React from 'react'
+import { useInput } from 'react-admin'
 import {
   DatePicker,
   TimePicker,
   LocalizationProvider,
-} from '@mui/x-date-pickers';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { TextField } from '@mui/material';
+} from '@mui/x-date-pickers'
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
+import { TextField } from '@mui/material'
 
 export const TimePickerComponent = ({ className, source, label }) => {
-  const { field } = useInput({ source, defaultValue: null });
+  const { field } = useInput({ source, defaultValue: null })
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TimePicker
@@ -21,8 +21,8 @@ export const TimePickerComponent = ({ className, source, label }) => {
         )}
       />
     </LocalizationProvider>
-  );
-};
+  )
+}
 
 export const DatePickerComponent = ({
   className,
@@ -30,13 +30,13 @@ export const DatePickerComponent = ({
   source,
   observer = null,
 }) => {
-  const { field } = useInput({ source, defaultValue: null });
+  const { field } = useInput({ source, defaultValue: null })
 
   const changeValue = (value) => {
-    field.onChange(value);
-  };
+    field.onChange(value)
+  }
 
-  observer?.subscribe(changeValue);
+  observer?.subscribe(changeValue)
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <DatePicker
@@ -53,5 +53,5 @@ export const DatePickerComponent = ({
         )}
       />
     </LocalizationProvider>
-  );
-};
+  )
+}

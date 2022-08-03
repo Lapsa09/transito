@@ -8,7 +8,7 @@ export const adminStyle = {
   boxShadow: 24,
   p: 4,
   maxHeight: '75%',
-};
+}
 
 export const inspectorStyle = {
   position: 'absolute',
@@ -18,4 +18,4 @@ export const inspectorStyle = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
-};
+}

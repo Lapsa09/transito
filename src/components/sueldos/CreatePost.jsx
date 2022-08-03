@@ -1,12 +1,11 @@
-//CreatePost.jsx
-import React from 'react';
+import React from 'react'
 import {
   Create,
   SimpleForm,
   ReferenceInput,
   TextInput,
   SelectInput,
-} from 'react-admin';
+} from 'react-admin'
 //
 
 export const PostCreate = (props) => (
@@ -19,4 +18,4 @@ export const PostCreate = (props) => (
       <TextInput multiline source="body" />
     </SimpleForm>
   </Create>
-);
+)

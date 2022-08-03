@@ -1,48 +1,48 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import LogoVL from '../../assets/imgs/LOGO_V_LOPEZ.png';
-import LogoOVT from '../../assets/imgs/OVT_LETRAS_NEGRAS.png';
-import { authActions } from '../../redux/userSlice';
-import CustomPopover from './Popover';
-import styles from '../../styles/Home.module.css';
-import { Logout } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import LogoVL from '../../assets/imgs/LOGO_V_LOPEZ.png'
+import LogoOVT from '../../assets/imgs/OVT_LETRAS_NEGRAS.png'
+import { authActions } from '../../redux/userSlice'
+import CustomPopover from './Popover'
+import styles from '../../styles/Home.module.css'
+import { Logout } from '@mui/icons-material'
+import { Link, useNavigate } from 'react-router-dom'
 
 function Header() {
-  const [dropdown, setDropdown] = useState(null);
-  const dispatch = useDispatch();
-  const user = useSelector((x) => x.user.user);
-  const navigate = useNavigate();
+  const [dropdown, setDropdown] = useState(null)
+  const dispatch = useDispatch()
+  const user = useSelector((x) => x.user.user)
+  const navigate = useNavigate()
   const handleLogout = () => {
-    dispatch(authActions.logout());
-  };
+    dispatch(authActions.logout())
+  }
 
   const controles = [
     { link: '/control/diario', title: 'Diario' },
     { link: '/control/paseo', title: 'Paseo' },
-  ];
+  ]
 
   const operativos = [
     { link: '/operativos/autos', title: 'Autos' },
     { link: '/operativos/motos', title: 'Motos' },
     { link: '/operativos/camiones', title: 'Camiones' },
-  ];
+  ]
 
   const onMouseEnter = (_menu) => {
     if (window.innerWidth < 960) {
-      setDropdown(null);
+      setDropdown(null)
     } else {
-      setDropdown(_menu);
+      setDropdown(_menu)
     }
-  };
+  }
 
   const onMouseLeave = () => {
     if (window.innerWidth < 960) {
-      setDropdown(false);
+      setDropdown(false)
     } else {
-      setDropdown(false);
+      setDropdown(false)
     }
-  };
+  }
   return (
     <nav className={styles.header}>
       <img
@@ -95,7 +95,7 @@ function Header() {
       <Logout className={styles.logout} onClick={handleLogout} />
       <img src={LogoOVT} alt="Logo Observatorio Vial" />
     </nav>
-  );
+  )
 }
 
-export default Header;
+export default Header

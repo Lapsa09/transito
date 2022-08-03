@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   Datagrid,
   DateField,
@@ -8,12 +8,12 @@ import {
   TextField,
   useList,
   useRecordContext,
-} from 'react-admin';
-import { ServiciosMemo } from '.';
+} from 'react-admin'
+import { ServiciosMemo } from '.'
 
 function ClientesServicios() {
-  const record = useRecordContext();
-  const listContext = useList({ data: record.servicios });
+  const record = useRecordContext()
+  const listContext = useList({ data: record.servicios })
   return (
     <ListContextProvider value={listContext}>
       <Datagrid
@@ -54,7 +54,7 @@ function ClientesServicios() {
         <EditButton />
       </Datagrid>
     </ListContextProvider>
-  );
+  )
 }
 
-export default ClientesServicios;
+export default ClientesServicios

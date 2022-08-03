@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
@@ -9,7 +9,6 @@ import '../styles/register.css'
 
 function Register() {
   const { control, handleSubmit, getValues } = useForm()
-  const [error, setError] = useState('')
   const dispatch = useDispatch()
   const authUser = useSelector((x) => x.user.user)
   const authError = useSelector((x) => x.user.error)
@@ -19,18 +18,11 @@ function Register() {
   }
 
   useEffect(() => {
-    // redirect to home if already logged in
     if (authUser) history.navigate('/')
   }, [])
 
   const submitEvent = async (data) => {
-    setError('')
-    // const res = await register(data);
     dispatch(authActions.register(data))
-    history.navigate('/', { replace: true })
-    if (authError) {
-      setError(authError.message)
-    }
   }
 
   return (
@@ -80,7 +72,9 @@ function Register() {
           }}
           label="Confirmar contraseña"
         />
-        {error && <FormHelperText error>{error}</FormHelperText>}
+        {authError && (
+          <FormHelperText error>{authError.message}</FormHelperText>
+        )}
         <div className="buttons">
           <Button onClick={loginNav}>
             Ya te registraste? ir a iniciar Sesion

@@ -4,7 +4,7 @@
 
 .home {
   font-family: sans-serif;
-  margin-top: 100px;
+  /* margin-top: 100px; */
 }
 
 .header {
@@ -19,6 +19,10 @@
   background-color: white;
 }
 
+header img {
+  max-height: inherit;
+}
+
 .nav-link {
   width: 150px;
 }
@@ -30,6 +34,7 @@
   text-decoration: none;
   font-family: sans-serif;
   cursor: pointer;
+  margin: 1em 0;
 }
 
 .item:hover {

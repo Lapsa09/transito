@@ -1,100 +1,178 @@
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import LogoVL from '../../assets/imgs/LOGO_V_LOPEZ.png'
 import LogoOVT from '../../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import { authActions } from '../../redux/userSlice'
 import CustomPopover from './Popover'
 import styles from '../../styles/Home.module.css'
-import { Logout } from '@mui/icons-material'
-import { Link, useNavigate } from 'react-router-dom'
+import { Logout, Menu as MenuIcon } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
+import {
+  Box,
+  IconButton,
+  AppBar,
+  Toolbar,
+  Drawer,
+  List,
+  ListItem,
+} from '@mui/material'
+import { history } from '../../utils'
+
+const controles = [
+  { link: '/control/diario', title: 'Diario' },
+  { link: '/control/paseo', title: 'Paseo' },
+]
+
+const operativos = [
+  { link: '/operativos/autos', title: 'Autos' },
+  { link: '/operativos/motos', title: 'Motos' },
+  { link: '/operativos/camiones', title: 'Camiones' },
+]
+
+const pages = [
+  { name: 'Control', links: controles, permission: 'INSPECTOR' },
+  { name: 'Operativos', links: operativos, permission: 'INSPECTOR' },
+  { name: 'Sueldos', permission: 'ADMINISTRATIVO', link: '/sueldos' },
+  { name: 'Waze', permission: 'TRAFICO', link: '/waze' },
+]
 
 function Header() {
-  const [dropdown, setDropdown] = useState(null)
+  const [anchorElNav, setAnchorElNav] = useState(null)
   const dispatch = useDispatch()
+  const [dropdown, setDropdown] = useState(null)
   const user = useSelector((x) => x.user.user)
-  const navigate = useNavigate()
+
+  const onMouseEnter = (_menu) => {
+    if (dropdown === _menu) {
+      onMouseLeave()
+    } else setDropdown(_menu)
+  }
+
+  const onMouseLeave = () => {
+    setDropdown(false)
+  }
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget)
+  }
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null)
+    onMouseLeave()
+  }
+
   const handleLogout = () => {
     dispatch(authActions.logout())
   }
 
-  const controles = [
-    { link: '/control/diario', title: 'Diario' },
-    { link: '/control/paseo', title: 'Paseo' },
-  ]
-
-  const operativos = [
-    { link: '/operativos/autos', title: 'Autos' },
-    { link: '/operativos/motos', title: 'Motos' },
-    { link: '/operativos/camiones', title: 'Camiones' },
-  ]
-
-  const onMouseEnter = (_menu) => {
-    if (window.innerWidth < 960) {
-      setDropdown(null)
-    } else {
-      setDropdown(_menu)
-    }
-  }
-
-  const onMouseLeave = () => {
-    if (window.innerWidth < 960) {
-      setDropdown(false)
-    } else {
-      setDropdown(false)
-    }
-  }
   return (
-    <nav className={styles.header}>
-      <img
-        src={LogoVL}
-        onClick={() => navigate('/')}
-        alt="Logo Vicente Lopez"
-      />
-      {(user.rol === 'INSPECTOR' || user.rol === 'ADMIN') && (
-        <div
-          onMouseEnter={() => onMouseEnter('control')}
-          onMouseLeave={onMouseLeave}
-          className={styles['nav-link']}
+    <AppBar position="static" color="transparent">
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' } }}>
+          <img
+            src={LogoVL}
+            onClick={() => history.navigate('/')}
+            alt="Logo Vicente Lopez"
+          />
+        </Box>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: { xs: 'flex', lg: 'none' },
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: '245px',
+          }}
         >
-          <h3 className={styles.item}>Control</h3>
-          {dropdown === 'control' && <CustomPopover links={controles} />}
-        </div>
-      )}
-      {(user.rol === 'INSPECTOR' || user.rol === 'ADMIN') && (
-        <div
-          onMouseEnter={() => onMouseEnter('operativos')}
-          onMouseLeave={onMouseLeave}
-          className={styles['nav-link']}
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleOpenNavMenu}
+            color="inherit"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Drawer
+            anchor="left"
+            open={Boolean(anchorElNav)}
+            sx={{
+              display: { xs: 'block', lg: 'none' },
+            }}
+            onClose={handleCloseNavMenu}
+          >
+            <List>
+              {pages
+                .filter(
+                  (page) => user.rol === 'ADMIN' || user.rol === page.permission
+                )
+                .map((page) =>
+                  page.links ? (
+                    <ListItem key={page.name}>
+                      <h3
+                        onTouchStart={() => onMouseEnter(page.name)}
+                        className={styles.item}
+                      >
+                        {page.name}
+                      </h3>
+                      {dropdown === page.name && (
+                        <CustomPopover links={page.links} />
+                      )}
+                    </ListItem>
+                  ) : (
+                    <ListItem key={page.name}>
+                      <Link to={page.link} className={styles.item}>
+                        {page.name}
+                      </Link>
+                    </ListItem>
+                  )
+                )}
+            </List>
+          </Drawer>
+          <Logout className={styles.logout} onClick={handleLogout} />
+        </Box>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: { xs: 'none', lg: 'flex' },
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginInline: '60px',
+          }}
         >
-          <h3 className={styles.item}>Operativos</h3>
-          {dropdown === 'operativos' && <CustomPopover links={operativos} />}
-        </div>
-      )}
-      {(user.rol === 'ADMINISTRATIVO' || user.rol === 'ADMIN') && (
-        <div
-          onMouseEnter={() => onMouseEnter('sueldos')}
-          onMouseLeave={onMouseLeave}
-          className={styles['nav-link']}
-        >
-          <Link className={styles.item} to="/sueldos">
-            Sueldos
-          </Link>
-        </div>
-      )}
-      {(user.rol === 'TRAFICO' || user.rol === 'ADMIN') && (
-        <div
-          onMouseEnter={() => onMouseEnter('waze')}
-          onMouseLeave={onMouseLeave}
-          className={styles['nav-link']}
-        >
-          <Link className={styles.item} to="/waze">
-            Waze
-          </Link>
-        </div>
-      )}
-      <Logout className={styles.logout} onClick={handleLogout} />
-      <img src={LogoOVT} alt="Logo Observatorio Vial" />
-    </nav>
+          {pages
+            .filter(
+              (page) => user.rol === 'ADMIN' || user.rol === page.permission
+            )
+            .map((page) => (
+              <div
+                onMouseEnter={() => onMouseEnter(page.name)}
+                onMouseLeave={onMouseLeave}
+                onTouchStart={() => onMouseEnter(page.name)}
+                className={styles['nav-link']}
+              >
+                {page.links ? (
+                  <Fragment>
+                    <h3 className={styles.item}>{page.name}</h3>
+                    {dropdown === page.name && (
+                      <CustomPopover links={page.links} />
+                    )}
+                  </Fragment>
+                ) : (
+                  <Link key={page.name} to={page.link} className={styles.item}>
+                    {page.name}
+                  </Link>
+                )}
+              </div>
+            ))}
+          <Logout className={styles.logout} onClick={handleLogout} />
+        </Box>
+        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' } }}>
+          <img src={LogoOVT} alt="Logo Observatorio Vial" />
+        </Box>
+      </Toolbar>
+    </AppBar>
   )
 }
 

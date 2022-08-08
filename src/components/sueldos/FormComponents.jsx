@@ -1,5 +1,5 @@
-import { InputAdornment, TextField } from '@mui/material'
-import { Fragment, useEffect, useState } from 'react'
+import { Grid, InputAdornment, TextField } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { SelectInput, useGetList, useInput } from 'react-admin'
 import { CreateRecibo } from './QuickCreate'
 import { DatePickerComponent } from './TimePicker'
@@ -108,8 +108,8 @@ export const Recibo = ({ formData }) => {
   }, [formData.recibo])
 
   return (
-    <Fragment>
-      <div className={styles.dbInput}>
+    <Grid container item spacing={2} columns={{ xs: 8, md: 16 }}>
+      <Grid item xs={8}>
         <SelectInput
           label="Nº Recibo"
           source="recibo"
@@ -118,26 +118,31 @@ export const Recibo = ({ formData }) => {
           emptyText="Elija una opcion"
           choices={options}
           translateChoice={false}
+          className={styles.inputs}
           isRequired
         />
         {formData.id_cliente && <CreateRecibo setData={setOptions} />}
-      </div>
-      <DatePickerComponent
-        source="fecha_recibo"
-        className={styles.inputs}
-        label="Fecha del recibo"
-        observer={observer}
-      />
-      <TextField
-        type="number"
-        {...importe}
-        label="Importe del recibo"
-        className={styles.inputs}
-        required
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        }}
-      />
-    </Fragment>
+      </Grid>
+      <Grid item xs={8}>
+        <DatePickerComponent
+          source="fecha_recibo"
+          className={styles.inputs}
+          label="Fecha del recibo"
+          observer={observer}
+        />
+      </Grid>
+      <Grid item xs={8}>
+        <TextField
+          type="number"
+          {...importe}
+          label="Importe del recibo"
+          className={styles.inputs}
+          required
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+          }}
+        />
+      </Grid>
+    </Grid>
   )
 }

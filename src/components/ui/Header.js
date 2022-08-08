@@ -65,7 +65,7 @@ function Header() {
   }
 
   return (
-    <AppBar position="static" color="transparent">
+    <AppBar position="sticky" color="default">
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
           <img

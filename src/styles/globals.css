@@ -42,6 +42,10 @@ body {
   margin-top: 0 !important;
 }
 
+.RaSimpleFormIterator-form > .MuiGrid-root {
+  width: 80%;
+}
+
 * {
   box-sizing: border-box;
   font-family: sans-serif;
@@ -49,7 +53,3 @@ body {
 /* .RaLayout-content {
   z-index: -1 !important;
 } */
-
-.MuiDrawer-root {
-  height: 700px !important;
-}

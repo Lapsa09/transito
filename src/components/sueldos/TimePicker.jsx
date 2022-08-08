@@ -13,11 +13,15 @@ export const TimePickerComponent = ({ className, source, label }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TimePicker
-        className={className}
         {...field}
         label={label}
         renderInput={(props) => (
-          <TextField {...props} required placeholder="HH:mm" />
+          <TextField
+            {...props}
+            className={className}
+            required
+            placeholder="HH:mm"
+          />
         )}
       />
     </LocalizationProvider>

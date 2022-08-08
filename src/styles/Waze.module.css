@@ -39,6 +39,10 @@ h3 {
   height: 70px;
 }
 
+.dia {
+  overflow-x: auto;
+}
+
 .dia > .header {
   /* grid-column: 1/3; */
   display: flex;
@@ -52,7 +56,6 @@ h3 {
 .actual {
   border: 1px solid black;
   padding: 20px;
-  /* width: 100%; */
   overflow-x: auto;
 }
 
@@ -62,6 +65,11 @@ h3 {
 
 .reporte > table {
   width: 100%;
+}
+
+.sidebar > div {
+  margin-top: 75px;
+  height: calc(100% - 75px);
 }
 
 @media (min-width: 910px) {
@@ -76,17 +84,11 @@ h3 {
   .historial {
     display: flex;
     width: 100%;
-    margin-top: 75px;
   }
 
   .sidebar {
     flex: 0.4;
     z-index: 1;
-  }
-
-  .sidebar > div {
-    margin-top: 75px;
-    height: calc(100% - 75px);
   }
 
   .sidebar ul {

@@ -187,7 +187,7 @@ function MotosForm({ handleClose, afterCreate }) {
       steps={steps()}
       handleClose={handleClose}
     >
-      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid item xs={8}>
           <CustomDatePicker
             control={control}
@@ -274,7 +274,7 @@ function MotosForm({ handleClose, afterCreate }) {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid container justifyContent="center" alignItems="center">
           <h4>Motivos: {fields.length}</h4>
           <AddBoxSharpIcon onClick={sumarMotivos} />

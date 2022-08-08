@@ -113,12 +113,16 @@ function FormLayout({
   return (
     <Box sx={handleRol() ? adminStyle : inspectorStyle} className={styles.form}>
       <div className={styles.header}>
-        <img src={LogoVL} alt="Logo Vicente Lopez" />
+        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
+          <img src={LogoVL} alt="Logo Vicente Lopez" />
+        </Box>
         <Button onClick={handleClose}>Cerrar</Button>
         <Button color="error" onClick={() => setOpen(true)} sx={{ mr: 1 }}>
           Nuevo Operativo
         </Button>
-        <img src={LogoOVT} alt="Logo Observatorio Vial" />
+        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
+          <img src={LogoOVT} alt="Logo Observatorio Vial" />
+        </Box>
       </div>
       <div className={styles.form__form}>
         <CustomStepper

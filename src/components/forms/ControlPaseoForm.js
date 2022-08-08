@@ -123,7 +123,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
       setValue={setValue}
       path="paseo"
     >
-      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid item xs={8}>
           <CustomDatePicker
             control={control}
@@ -174,7 +174,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid item xs={8}>
           <CustomTimePicker
             control={control}

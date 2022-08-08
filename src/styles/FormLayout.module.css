@@ -10,14 +10,8 @@
   align-items: center;
 }
 
-.header > img:nth-child(1) {
-  width: 250px;
-  height: 70px;
-}
-
-.header > img:nth-child(4) {
-  width: 150px;
-  height: 70px;
+.header img {
+  max-height: inherit;
 }
 
 .form {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import {
   Navigate,
   Route,
@@ -32,7 +32,7 @@ function App() {
   history.location = useLocation()
 
   return (
-    <div>
+    <Fragment>
       {user && <Header />}
       <Routes>
         <Route
@@ -117,7 +117,7 @@ function App() {
           }
         />
       </Routes>
-    </div>
+    </Fragment>
   )
 }
 

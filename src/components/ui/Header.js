@@ -15,6 +15,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ClickAwayListener,
 } from '@mui/material'
 import { history } from '../../utils'
 
@@ -43,9 +44,7 @@ function Header() {
   const user = useSelector((x) => x.user.user)
 
   const onMouseEnter = (_menu) => {
-    if (dropdown === _menu) {
-      onMouseLeave()
-    } else setDropdown(_menu)
+    setDropdown(_menu)
   }
 
   const onMouseLeave = () => {
@@ -68,7 +67,7 @@ function Header() {
   return (
     <AppBar position="static" color="transparent">
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' } }}>
+        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
           <img
             src={LogoVL}
             onClick={() => history.navigate('/')}
@@ -102,33 +101,43 @@ function Header() {
             }}
             onClose={handleCloseNavMenu}
           >
-            <List>
-              {pages
-                .filter(
-                  (page) => user.rol === 'ADMIN' || user.rol === page.permission
-                )
-                .map((page) =>
-                  page.links ? (
-                    <ListItem key={page.name}>
-                      <h3
-                        onTouchStart={() => onMouseEnter(page.name)}
-                        className={styles.item}
-                      >
-                        {page.name}
-                      </h3>
-                      {dropdown === page.name && (
-                        <CustomPopover links={page.links} />
-                      )}
-                    </ListItem>
-                  ) : (
-                    <ListItem key={page.name}>
-                      <Link to={page.link} className={styles.item}>
-                        {page.name}
-                      </Link>
-                    </ListItem>
+            <ClickAwayListener onClickAway={onMouseLeave}>
+              <List>
+                {pages
+                  .filter(
+                    (page) =>
+                      user.rol === 'ADMIN' || user.rol === page.permission
                   )
-                )}
-            </List>
+                  .map((page) =>
+                    page.links ? (
+                      <ListItem key={page.name}>
+                        <h3
+                          onTouchStart={() => onMouseEnter(page.name)}
+                          className={styles.item}
+                        >
+                          {page.name}
+                        </h3>
+                        {dropdown === page.name && (
+                          <CustomPopover
+                            setClose={handleCloseNavMenu}
+                            links={page.links}
+                          />
+                        )}
+                      </ListItem>
+                    ) : (
+                      <ListItem key={page.name}>
+                        <Link
+                          onClick={handleCloseNavMenu}
+                          to={page.link}
+                          className={styles.item}
+                        >
+                          {page.name}
+                        </Link>
+                      </ListItem>
+                    )
+                  )}
+              </List>
+            </ClickAwayListener>
           </Drawer>
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
@@ -151,6 +160,7 @@ function Header() {
                 onMouseLeave={onMouseLeave}
                 onTouchStart={() => onMouseEnter(page.name)}
                 className={styles['nav-link']}
+                key={page.name}
               >
                 {page.links ? (
                   <Fragment>

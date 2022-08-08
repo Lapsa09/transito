@@ -147,7 +147,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       path="autos"
       setValue={setValue}
     >
-      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid item xs={8}>
           <CustomDatePicker
             control={control}
@@ -234,7 +234,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} columns={{ sm: 8, md: 16 }}>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid item xs={8}>
           <CustomTextField
             control={control}

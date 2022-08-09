@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { authActions } from '../redux/userSlice'
 import { CustomTextField } from '../components'
 import { history } from '../utils'
+import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import '../styles/login.css'
 
 function Login() {
@@ -27,7 +28,24 @@ function Login() {
   }
   return (
     <div className="login">
-      <Box component="form" className="form">
+      <Box
+        sx={{
+          width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' },
+          textAlign: 'center',
+        }}
+      >
+        <img
+          style={{ width: 'inherit' }}
+          src={LogoOVT}
+          alt="Logo Observatorio Vial"
+        />
+      </Box>
+      <Box
+        component="form"
+        sx={{ width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' } }}
+        className="form"
+        onSubmit={handleSubmit(submitEvent)}
+      >
         <CustomTextField
           type="number"
           control={control}
@@ -45,19 +63,15 @@ function Login() {
         {authError && (
           <FormHelperText error>{authError.message}</FormHelperText>
         )}
-        <div className="buttons">
-          <Button
-            className="MuiButton-root"
-            onClick={handleSubmit(submitEvent)}
-            type="submit"
-            variant="contained"
-          >
+        <Box
+          className="buttons"
+          sx={{ width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' } }}
+        >
+          <Button type="submit" variant="contained">
             Iniciar sesion
           </Button>
-          <Button className="MuiButton-root" onClick={register}>
-            No te registraste? Registrarse
-          </Button>
-        </div>
+          <Button onClick={register}>No te registraste? Registrarse</Button>
+        </Box>
       </Box>
     </div>
   )

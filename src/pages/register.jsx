@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { authActions } from '../redux/userSlice'
 import CustomTextField from '../components/ui/CustomTextField'
 import { history } from '../utils'
+import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import '../styles/register.css'
 
 function Register() {
@@ -27,7 +28,24 @@ function Register() {
 
   return (
     <div className="register">
-      <Box component="form" className="form">
+      <Box
+        sx={{
+          width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' },
+          textAlign: 'center',
+        }}
+      >
+        <img
+          style={{ width: 'inherit' }}
+          src={LogoOVT}
+          alt="Logo Observatorio Vial"
+        />
+      </Box>
+      <Box
+        sx={{ width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' } }}
+        component="form"
+        className="form"
+        onSubmit={handleSubmit(submitEvent)}
+      >
         <CustomTextField
           type="number"
           control={control}
@@ -75,14 +93,15 @@ function Register() {
         {authError && (
           <FormHelperText error>{authError.message}</FormHelperText>
         )}
-        <div className="buttons">
+        <Box
+          sx={{ width: { lg: '50%', md: '60%', sm: '80%', xs: '100%' } }}
+          className="buttons"
+        >
           <Button onClick={loginNav}>
             Ya te registraste? ir a iniciar Sesion
           </Button>
-          <Button onClick={handleSubmit(submitEvent)} variant="contained">
-            Registrarse
-          </Button>
-        </div>
+          <Button variant="contained">Registrarse</Button>
+        </Box>
       </Box>
     </div>
   )

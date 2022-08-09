@@ -19,6 +19,7 @@ function History() {
   const [meses, setMeses] = useState([])
   const [data, setData] = useState([])
   const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState('')
   const navigate = useNavigate()
 
   const fetch = async () => {
@@ -26,8 +27,9 @@ function History() {
     setMeses(data)
   }
 
-  const fetchDia = async (id) => {
+  const fetchDia = async ({ id, fecha }) => {
     const reportes = await getOneDate(id)
+    setSelected(dateFormat(fecha))
     setData(reportes)
   }
 
@@ -57,7 +59,10 @@ function History() {
               </ListItemButton>
               <Collapse in={open === mes.mes} sx={{ marginLeft: '20px' }}>
                 {mes.fechas.map((dia) => (
-                  <ListItemButton key={dia.id} onClick={() => fetchDia(dia.id)}>
+                  <ListItemButton
+                    key={dia.id}
+                    onClick={() => fetchDia({ id: dia.id, fecha: dia.fecha })}
+                  >
                     <ListItemText primary={dateFormat(dia.fecha)} />
                   </ListItemButton>
                 ))}
@@ -68,6 +73,7 @@ function History() {
       </Drawer>
       <div className={style.dia}>
         <div className={style.header}>
+          <h3>{selected}</h3>
           <button
             className={style.button}
             onClick={() => navigate('/waze', { replace: true })}

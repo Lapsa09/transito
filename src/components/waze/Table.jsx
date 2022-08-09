@@ -6,8 +6,17 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
-import { getColor } from '../../utils'
+// import { getColor } from '../../utils'
 import React from 'react'
+import GaugeChart from 'react-gauge-chart'
+
+const NIVEL_TRAFICO = [
+  'NORMAL',
+  'TRAFICO LIGERO',
+  'TRAFICO MODERADO',
+  'TRAFICO PESADO',
+  'EMBOTELLAMIENTO',
+]
 
 function TableWaze({ data }) {
   return (
@@ -29,13 +38,24 @@ function TableWaze({ data }) {
               <TableCell>{value.calles}</TableCell>
               <TableCell
                 style={{
-                  WebkitTextFillColor: getColor(value.trafico),
-                  WebkitTextStroke: '0.8px rgb(0,0,0,0.15)',
-                  fontWeight: 700,
+                  padding: 0,
+                  paddingTop: '16px',
                 }}
-                color={getColor(value.trafico)}
               >
-                {value.trafico}
+                <GaugeChart
+                  id={`${value.calles}-${value.id}`}
+                  nrOfLevels={5}
+                  style={{ width: '70%', fontWeight: 700 }}
+                  arcPadding={0}
+                  cornerRadius={0}
+                  percent={(value.trafico - 1) / 5 + 0.05}
+                  textColor="000000"
+                  needleColor="#0a9396"
+                  needleBaseColor="#0a9396"
+                  formatTextValue={(value) =>
+                    NIVEL_TRAFICO[((value - 5) * 5) / 100]
+                  }
+                />
               </TableCell>
               <TableCell>{value.tiempo} min</TableCell>
               <TableCell>{value.tiempo_hist} min</TableCell>

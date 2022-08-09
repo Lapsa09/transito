@@ -5,7 +5,12 @@ import LogoOVT from '../../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import { authActions } from '../../redux/userSlice'
 import CustomPopover from './Popover'
 import styles from '../../styles/Home.module.css'
-import { Logout, Menu as MenuIcon } from '@mui/icons-material'
+import {
+  Logout,
+  Menu as MenuIcon,
+  ExpandMore,
+  ChevronRight,
+} from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 import {
   Box,
@@ -15,7 +20,8 @@ import {
   Drawer,
   List,
   ListItem,
-  ClickAwayListener,
+  ListItemButton,
+  Collapse,
 } from '@mui/material'
 import { history } from '../../utils'
 
@@ -45,6 +51,11 @@ function Header() {
 
   const onMouseEnter = (_menu) => {
     setDropdown(_menu)
+  }
+
+  const onTouchStart = (_menu) => {
+    if (dropdown === _menu) setDropdown(null)
+    else setDropdown(_menu)
   }
 
   const onMouseLeave = () => {
@@ -101,43 +112,58 @@ function Header() {
             }}
             onClose={handleCloseNavMenu}
           >
-            <ClickAwayListener onClickAway={onMouseLeave}>
-              <List>
-                {pages
-                  .filter(
-                    (page) =>
-                      user.rol === 'ADMIN' || user.rol === page.permission
-                  )
-                  .map((page) =>
-                    page.links ? (
-                      <ListItem key={page.name}>
-                        <h3
-                          onTouchStart={() => onMouseEnter(page.name)}
-                          className={styles.item}
-                        >
-                          {page.name}
-                        </h3>
-                        {dropdown === page.name && (
-                          <CustomPopover
-                            setClose={handleCloseNavMenu}
-                            links={page.links}
-                          />
+            <List>
+              {pages
+                .filter(
+                  (page) => user.rol === 'ADMIN' || user.rol === page.permission
+                )
+                .map((page) =>
+                  page.links ? (
+                    <ListItem
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        padding: '0',
+                      }}
+                      key={page.name}
+                    >
+                      <ListItemButton
+                        onTouchStart={() => onTouchStart(page.name)}
+                      >
+                        <h3 className={styles.item}>{page.name}</h3>
+                        {dropdown === page.name ? (
+                          <ExpandMore />
+                        ) : (
+                          <ChevronRight />
                         )}
-                      </ListItem>
-                    ) : (
-                      <ListItem key={page.name}>
-                        <Link
-                          onClick={handleCloseNavMenu}
-                          to={page.link}
-                          className={styles.item}
-                        >
-                          {page.name}
-                        </Link>
-                      </ListItem>
-                    )
-                  )}
-              </List>
-            </ClickAwayListener>
+                      </ListItemButton>
+                      <Collapse
+                        sx={{ marginLeft: '20px' }}
+                        in={dropdown === page.name}
+                      >
+                        {page.links.map((link) => (
+                          <ListItemButton key={link.title}>
+                            <Link className={styles.subitem} to={link.link}>
+                              {link.title}
+                            </Link>
+                          </ListItemButton>
+                        ))}
+                      </Collapse>
+                    </ListItem>
+                  ) : (
+                    <ListItem key={page.name}>
+                      <Link
+                        onClick={handleCloseNavMenu}
+                        to={page.link}
+                        className={styles.item}
+                      >
+                        {page.name}
+                      </Link>
+                    </ListItem>
+                  )
+                )}
+            </List>
           </Drawer>
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>

@@ -4,16 +4,14 @@ import { getControles } from '../../services/controlDiarioService'
 import { useSelector } from 'react-redux'
 
 import Layout from '../../layouts/OperativosLayout'
-import { dateFormat, dateTimeSQLFormat, timeFormat } from '../../utils'
+import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
 import { useData } from '../../hooks'
-import { useNavigate } from 'react-router-dom'
 
 function ControlDiarioPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector((x) => x.user.user)
-  const navigate = useNavigate()
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getControles)
 
@@ -59,7 +57,7 @@ function ControlDiarioPage() {
     >
       <ControlDiarioForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : navigate('-1')}
+        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

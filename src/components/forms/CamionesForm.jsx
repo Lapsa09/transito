@@ -161,7 +161,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             name="fecha"
             label="Fecha"
             disabled={!handleRol()}
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate() : ''}
           />
         </Grid>
         <Grid item xs={8}>
@@ -194,6 +194,8 @@ function OperativosForm({ handleClose, afterCreate }) {
                 message: 'Inserte un legajo valido',
               },
             }}
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? user.legajo : ''}
           />
         </Grid>
         <Grid item xs={8}>
@@ -203,6 +205,8 @@ function OperativosForm({ handleClose, afterCreate }) {
             label="Turno"
             rules={{ required: 'Elija una opcion' }}
             options={turnos}
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? user.turno : ''}
           />
         </Grid>
       </Grid>

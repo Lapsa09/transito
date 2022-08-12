@@ -2,18 +2,15 @@ import React, { useState } from 'react'
 import ControlPaseoForm from '../../components/forms/ControlPaseoForm'
 import { getControlesPaseo } from '../../services/controlDiarioService'
 import { useSelector } from 'react-redux'
-
 import Layout from '../../layouts/OperativosLayout'
 import { useData } from '../../hooks'
-import { dateFormat, dateTimeSQLFormat, timeFormat } from '../../utils'
-import { useNavigate } from 'react-router-dom'
+import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector((x) => x.user.user)
-  const navigate = useNavigate()
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getControlesPaseo)
   const columns = [
@@ -58,7 +55,7 @@ function ControlPaseoPage() {
     >
       <ControlPaseoForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : navigate('-1')}
+        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

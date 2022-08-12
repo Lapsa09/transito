@@ -3,16 +3,13 @@ import OperativosForm from '../../components/forms/AutosForm'
 import { getOperativosAutos } from '../../services/operativosService'
 import Layout from '../../layouts/OperativosLayout'
 import { useSelector } from 'react-redux'
-
-import { dateFormat, dateTimeFormat, timeFormat } from '../../utils'
+import { dateFormat, dateTimeFormat, timeFormat, history } from '../../utils'
 import { useData } from '../../hooks'
-import { useNavigate } from 'react-router-dom'
 
 function AutosPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const router = useNavigate()
   const user = useSelector((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getOperativosAutos)
@@ -78,7 +75,7 @@ function AutosPage() {
     >
       <OperativosForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : router('-1')}
+        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

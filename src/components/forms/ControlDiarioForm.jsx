@@ -159,26 +159,23 @@ function ControlDiarioForm({ handleClose, afterCreate }) {
             options={turnos}
           />
         </Grid>
-        {handleRol() && (
-          <Grid item xs={8}>
-            <CustomTextField
-              type="number"
-              control={control}
-              name="lp"
-              rules={{
-                required: {
-                  value: handleRol(),
-                  message: 'Inserte un legajo valido',
-                },
-                pattern: {
-                  value: LEGAJO_PATTERN,
-                  message: 'Inserte un legajo valido',
-                },
-              }}
-              label="Legajo planilla"
-            />
-          </Grid>
-        )}
+        <Grid item xs={8}>
+          <CustomTextField
+            type="number"
+            control={control}
+            name="lp"
+            rules={{
+              required: 'Inserte un legajo valido',
+              pattern: {
+                value: LEGAJO_PATTERN,
+                message: 'Inserte un legajo valido',
+              },
+            }}
+            label="Legajo planilla"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? user.legajo : ''}
+          />
+        </Grid>
       </Grid>
       <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
         <Grid item xs={8}>

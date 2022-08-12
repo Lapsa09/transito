@@ -198,13 +198,7 @@ function MotosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomTimePicker
-            control={control}
-            name="hora"
-            label="Hora"
-            disabled={!handleRol()}
-            defaultValue={!handleRol() ? currentDate() : null}
-          />
+          <CustomTimePicker control={control} name="hora" label="Hora" />
         </Grid>
         <Grid item xs={8}>
           <CustomTextField

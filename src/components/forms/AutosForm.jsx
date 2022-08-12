@@ -154,17 +154,11 @@ function OperativosForm({ handleClose, afterCreate }) {
             name="fecha"
             disabled={!handleRol()}
             label="Fecha"
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate() : ''}
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomTimePicker
-            control={control}
-            name="hora"
-            disabled={!handleRol()}
-            label="Hora"
-            defaultValue={!handleRol() ? currentDate() : null}
-          />
+          <CustomTimePicker control={control} name="hora" label="Hora" />
         </Grid>
         <Grid item xs={8}>
           <CustomTextField

@@ -129,7 +129,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
             control={control}
             label="Fecha"
             name="fecha"
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate() : ''}
             disabled={!handleRol()}
           />
         </Grid>
@@ -144,26 +144,26 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
             options={turnos}
           />
         </Grid>
-        {handleRol() && (
-          <Grid item xs={8}>
-            <CustomTextField
-              type="number"
-              control={control}
-              name="lp"
-              rules={{
-                required: {
-                  value: handleRol(),
-                  message: 'Inserte un legajo valido',
-                },
-                pattern: {
-                  value: LEGAJO_PATTERN,
-                  message: 'Inserte un legajo valido',
-                },
-              }}
-              label="Legajo planilla"
-            />
-          </Grid>
-        )}
+        <Grid item xs={8}>
+          <CustomTextField
+            type="number"
+            control={control}
+            name="lp"
+            rules={{
+              required: {
+                value: handleRol(),
+                message: 'Inserte un legajo valido',
+              },
+              pattern: {
+                value: LEGAJO_PATTERN,
+                message: 'Inserte un legajo valido',
+              },
+            }}
+            label="Legajo planilla"
+            disabled={!handleRol()}
+            defaultValue={!handleRol() ? user.legajo : ''}
+          />
+        </Grid>
         <Grid item xs={8}>
           <CustomSelect
             control={control}

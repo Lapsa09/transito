@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import { getOperativosMotos } from '../../services/operativosService'
 import MotosForm from '../../components/forms/MotosForm'
 import Layout from '../../layouts/OperativosLayout'
-import { dateFormat, dateTimeFormat, timeFormat } from '../../utils'
+import { dateFormat, dateTimeFormat, history, timeFormat } from '../../utils'
 import { useData } from '../../hooks'
-import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 function MotosPage() {
@@ -12,7 +11,6 @@ function MotosPage() {
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector((x) => x.user.user)
-  const router = useNavigate()
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getOperativosMotos)
 
@@ -72,7 +70,7 @@ function MotosPage() {
     >
       <MotosForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : router('-1')}
+        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

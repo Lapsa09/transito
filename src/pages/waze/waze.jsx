@@ -1,12 +1,11 @@
 import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { history } from '../../utils'
 import { Table } from '../../components'
 import { mainWazeGetter } from '../../services/wazeService'
 import style from '../../styles/Waze.module.css'
 
 function App() {
-  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [prom, setProm] = useState({})
 
@@ -32,7 +31,7 @@ function App() {
         </button>
         <button
           className={style.button}
-          onClick={() => navigate('/waze/historial')}
+          onClick={() => history.navigate('/waze/historial')}
         >
           Historial
         </button>

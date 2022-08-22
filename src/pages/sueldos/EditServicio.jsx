@@ -14,7 +14,7 @@ import {
   SimpleFormIterator,
   TextInput,
 } from 'react-admin'
-import { useNavigate } from 'react-router-dom'
+import { history } from '../../utils'
 import {
   TimePickerComponent,
   CreateOperario,
@@ -24,8 +24,6 @@ import {
 import styles from '../../styles/Sueldos.module.css'
 
 export const EditServicio = (props) => {
-  const navigate = useNavigate()
-
   return (
     <Edit {...props}>
       <Dialog open fullWidth maxWidth="xl">
@@ -103,7 +101,9 @@ export const EditServicio = (props) => {
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={() => navigate('/sueldos/clientes', { replace: true })}
+            onClick={() =>
+              history.navigate('/sueldos/clientes', { replace: true })
+            }
             label="ra.action.cancel"
           />
         </DialogActions>

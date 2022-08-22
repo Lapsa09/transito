@@ -2,8 +2,7 @@ import React from 'react'
 import { Button, Modal, Skeleton } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
-
-import { useNavigate } from 'react-router-dom'
+import { history } from '../utils/history'
 import styles from '../styles/Operativos.page.module.css'
 
 function OperativosLayout({
@@ -15,7 +14,6 @@ function OperativosLayout({
   handleOpen,
   handleClose,
 }) {
-  const navigate = useNavigate()
   const user = useSelector((x) => x.user.user)
   return user?.rol === 'ADMIN' ? (
     <div className={styles.Operativos}>
@@ -23,7 +21,7 @@ function OperativosLayout({
         <Button
           color="error"
           variant="contained"
-          onClick={() => navigate('/', { replace: true })}
+          onClick={() => history.navigate('/', { replace: true })}
         >
           Atras
         </Button>

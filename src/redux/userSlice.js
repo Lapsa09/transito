@@ -11,11 +11,15 @@ const extraReducers = createExtraReducers()
 const slice = createSlice({ name, initialState, reducers, extraReducers })
 
 function createInitialState() {
+  let user
+  try {
+    user = jwt_decode(localStorage.getItem('token'))
+  } catch (error) {
+    user = ''
+  }
   return {
-    user: localStorage.getItem('token')
-      ? jwt_decode(localStorage.getItem('token'))
-      : '',
-    error: null,
+    user,
+    error: '',
   }
 }
 

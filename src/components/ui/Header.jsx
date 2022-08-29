@@ -23,7 +23,7 @@ import {
   ListItemButton,
   Collapse,
 } from '@mui/material'
-import { history } from '../../utils'
+import { basicMaxHeight, history } from '../../utils'
 
 const controles = [
   { link: '/control/diario', title: 'Diario' },
@@ -78,7 +78,7 @@ function Header() {
   return (
     <AppBar position="sticky" color="default">
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
+        <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
           <img
             src={LogoVL}
             onClick={() => history.navigate('/')}
@@ -204,7 +204,7 @@ function Header() {
             ))}
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
-        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' } }}>
+        <Box sx={{ ...basicMaxHeight }}>
           <img src={LogoOVT} alt="Logo Observatorio Vial" />
         </Box>
       </Toolbar>

@@ -1,3 +1,7 @@
+export const basicWidth = {
+  width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' },
+}
+
 export const adminStyle = {
   position: 'absolute',
   top: '50%',
@@ -19,3 +23,5 @@ export const inspectorStyle = {
   boxShadow: 24,
   p: 4,
 }
+
+export const basicMaxHeight = { maxHeight: { xs: '30px', sm: '70px' } }

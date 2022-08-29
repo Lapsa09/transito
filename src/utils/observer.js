@@ -1,4 +1,4 @@
-class Observable {
+export class Observable {
   constructor() {
     this.observers = []
   }
@@ -16,4 +16,4 @@ class Observable {
   }
 }
 
-export { Observable }
+// export { Observable }

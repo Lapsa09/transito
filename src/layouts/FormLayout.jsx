@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Button, Modal } from '@mui/material'
-
-import { adminStyle, inspectorStyle } from '../components/utils'
 import { useSelector } from 'react-redux'
 import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
-import { currentDate } from '../utils'
+import {
+  currentDate,
+  adminStyle,
+  inspectorStyle,
+  basicMaxHeight,
+} from '../utils'
 import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
@@ -113,14 +116,14 @@ function FormLayout({
   return (
     <Box sx={handleRol() ? adminStyle : inspectorStyle} className={styles.form}>
       <div className={styles.header}>
-        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
+        <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
           <img src={LogoVL} alt="Logo Vicente Lopez" />
         </Box>
         <Button onClick={handleClose}>Cerrar</Button>
         <Button color="error" onClick={() => setOpen(true)} sx={{ mr: 1 }}>
           Nuevo Operativo
         </Button>
-        <Box sx={{ maxHeight: { xs: '30px', sm: '70px' }, cursor: 'pointer' }}>
+        <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
           <img src={LogoOVT} alt="Logo Observatorio Vial" />
         </Box>
       </div>

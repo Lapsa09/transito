@@ -48,9 +48,12 @@ function History() {
   return (
     <div className={style.historial}>
       <Drawer variant="permanent" anchor="left" className={style.sidebar}>
-        <List>
+        <List sx={{ overflowY: 'auto' }}>
           {meses.map((mes) => (
-            <ListItem key={mes.mes} sx={{ display: 'block' }}>
+            <ListItem
+              key={mes.mes}
+              sx={{ display: 'block', overflowY: 'auto' }}
+            >
               <ListItemButton onClick={() => setCollapseOpen(mes.mes)}>
                 <ListItemText primary={mesName[mes.mes]} />
                 {open === mes.mes ? <ExpandMore /> : <ChevronRight />}

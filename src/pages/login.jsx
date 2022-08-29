@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { authActions } from '../redux/userSlice'
 import { CustomTextField } from '../components'
-import { history } from '../utils'
+import { basicWidth, history } from '../utils'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import '../styles/login.css'
 
@@ -30,7 +30,7 @@ function Login() {
     <div className="login">
       <Box
         sx={{
-          width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' },
+          ...basicWidth,
           textAlign: 'center',
         }}
       >
@@ -42,7 +42,7 @@ function Login() {
       </Box>
       <Box
         component="form"
-        sx={{ width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' } }}
+        sx={{ ...basicWidth }}
         className="form"
         onSubmit={handleSubmit(submitEvent)}
       >
@@ -63,10 +63,7 @@ function Login() {
         {authError && (
           <FormHelperText error>{authError.message}</FormHelperText>
         )}
-        <Box
-          className="buttons"
-          sx={{ width: { lg: '40%', md: '60%', sm: '80%', xs: '100%' } }}
-        >
+        <Box className="buttons" sx={{ ...basicWidth }}>
           <Button type="submit" variant="contained">
             Iniciar sesion
           </Button>

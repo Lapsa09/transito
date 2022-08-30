@@ -6,7 +6,6 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
-// import { getColor } from '../../utils'
 import React from 'react'
 import GaugeChart from 'react-gauge-chart'
 

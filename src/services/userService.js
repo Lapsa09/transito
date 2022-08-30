@@ -8,3 +8,10 @@ export const register = async (body) => {
 export const loginCall = async (body) => {
   return await setter('/auth/login', body)
 }
+
+export const verifyAuth = async () => {
+  const { data } = await setter('/auth/verify', null, {
+    headers: { jwt_token: localStorage.getItem('token') },
+  })
+  return data
+}

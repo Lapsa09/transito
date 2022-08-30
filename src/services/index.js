@@ -7,7 +7,7 @@ export const getter = async (route) => {
   return data
 }
 
-export const setter = async (route, body, headers = null) => {
+export const setter = async (route, body = null, headers = null) => {
   const { data } = await axios.post(BASE_URL + route, body, headers)
   return data
 }
@@ -17,10 +17,3 @@ export const getEnums = async (type) => await getter('/api/' + type)
 export const getTurnos = async () => await getEnums('turnos')
 
 export const getResolucion = async () => await getEnums('resolucion')
-
-export const verifyAuth = async () => {
-  const { data } = await setter('/auth/verify', null, {
-    headers: { jwt_token: localStorage.getItem('token') },
-  })
-  return data
-}

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
-import { loginCall, register } from '../services/userService'
+import { loginCall, register, verifyAuth } from '../services/userService'
 import { history } from '../utils'
 
 const name = 'user'
@@ -10,16 +10,20 @@ const extraActions = createExtraActions()
 const extraReducers = createExtraReducers()
 const slice = createSlice({ name, initialState, reducers, extraReducers })
 
-function createInitialState() {
+async function createInitialState() {
   let user
+  let error = ''
+
   try {
+    await verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
-  } catch (error) {
+  } catch (err) {
+    error = err.response.data || err.message
     user = ''
   }
   return {
     user,
-    error: '',
+    error,
   }
 }
 

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
-import { loginCall, register, verifyAuth } from '../services/userService'
+import { loginCall, register } from '../services/userService'
 import { history } from '../utils'
 
 const name = 'user'
@@ -15,11 +15,9 @@ function createInitialState() {
   let error = ''
 
   try {
-    verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
     error = err.message
-    localStorage.removeItem('token')
   }
   return {
     user,

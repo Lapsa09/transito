@@ -91,7 +91,7 @@ function createExtraReducers() {
       },
       [rejected]: (state, action) => {
         console.log(action)
-        state.error = action.error
+        state.error = action.error.message
       },
     }
   }

@@ -17,7 +17,7 @@ function createInitialState() {
   try {
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
-    error = err.message
+    error = err
   }
   return {
     user,

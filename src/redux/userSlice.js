@@ -18,6 +18,7 @@ function createInitialState() {
     verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
+    console.log(err)
     error = err.message
   }
   return {

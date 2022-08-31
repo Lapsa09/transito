@@ -20,7 +20,6 @@ function createInitialState() {
   } catch (err) {
     error = err.message
     localStorage.removeItem('token')
-    history.navigate('/login')
   }
   return {
     user,

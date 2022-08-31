@@ -4,18 +4,18 @@ import { loginCall, register, verifyAuth } from '../services/userService'
 import { history } from '../utils'
 
 const name = 'user'
-const initialState = await createInitialState()
+const initialState = createInitialState()
 const reducers = createReducers()
 const extraActions = createExtraActions()
 const extraReducers = createExtraReducers()
 const slice = createSlice({ name, initialState, reducers, extraReducers })
 
-async function createInitialState() {
+function createInitialState() {
   let user = ''
   let error = ''
 
   try {
-    await verifyAuth()
+    verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
     error = err.response.data || err.message

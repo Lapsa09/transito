@@ -18,8 +18,9 @@ function createInitialState() {
     verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
-    slice.actions.logout()
     error = err.message
+    localStorage.removeItem('token')
+    history.navigate('/login')
   }
   return {
     user,

@@ -18,7 +18,7 @@ function createInitialState() {
     verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
-    reducers.logout()
+    slice.actions.logout()
     error = err.message
   }
   return {

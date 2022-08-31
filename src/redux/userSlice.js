@@ -18,7 +18,7 @@ function createInitialState() {
     verifyAuth()
     user = jwt_decode(localStorage.getItem('token'))
   } catch (err) {
-    console.log(err)
+    reducers.logout()
     error = err.message
   }
   return {
@@ -53,7 +53,6 @@ function createExtraActions() {
       try {
         return await loginCall(body)
       } catch (error) {
-        console.log(error)
         throw new Error(error.response.data)
       }
     })
@@ -91,7 +90,6 @@ function createExtraReducers() {
         history.navigate(from)
       },
       [rejected]: (state, action) => {
-        console.log(action)
         state.error = action.error.message
       },
     }

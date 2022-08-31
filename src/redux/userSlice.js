@@ -53,6 +53,7 @@ function createExtraActions() {
       try {
         return await loginCall(body)
       } catch (error) {
+        console.log(error.response)
         throw new Error(error.response.data)
       }
     })
@@ -62,6 +63,7 @@ function createExtraActions() {
       try {
         return await register(body)
       } catch (error) {
+        console.log(error.response)
         throw new Error(error.response.data)
       }
     })

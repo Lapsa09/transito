@@ -31,13 +31,18 @@ function NuevoCliente() {
   const { refetch } = useGetList('clientes/list')
   const [create] = useCreate()
   const save = useCallback(
-    async (values) => {
-      try {
-        await create('clientes', { data: values }, { returnPromise: true })
-        history.navigate('/sueldos/clientes')
-      } catch (error) {
-        return error.response.data
-      }
+    (values) => {
+      create(
+        'clientes',
+        { data: values },
+        {
+          returnPromise: true,
+          onError: (error) => console.log(error),
+          onSuccess: (data) => {
+            history.navigate('/sueldos/clientes')
+          },
+        }
+      )
     },
     [create]
   )

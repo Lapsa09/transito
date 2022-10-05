@@ -1,3 +1,4 @@
+export { default as ClientesMes } from './ClientesMes';
 export { default as ClientesServicios } from './ClientesServicios';
 export { PostCreate } from './CreatePost';
 export { Acopio, OpInput, Recibo, TotalInput } from './FormComponents';

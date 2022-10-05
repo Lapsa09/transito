@@ -5,45 +5,19 @@ import {
   ListContextProvider,
   NumberField,
   Pagination,
-  SelectInput,
   TextField,
   TextInput,
   useListController,
-  useTranslate,
-  FunctionField,
-  useGetList,
 } from 'react-admin'
-import { ClientesServicios } from '../../components'
+import { ClientesMes } from '../../components'
 import { refresh } from '../../utils'
 
 function Clientes() {
   const { data, ...listContext } = useListController()
-  const { data: meses } = useGetList('filters/months')
-  const { data: años } = useGetList('filters/years')
-
-  const translate = useTranslate()
 
   refresh.sueldos = listContext.refetch()
 
-  const filters = [
-    <TextInput label="Buscar por cliente" source="q" alwaysOn />,
-    <SelectInput
-      label="Buscar por mes"
-      source="m"
-      translateChoice={false}
-      alwaysOn
-      choices={
-        meses?.map((mes) => ({ ...mes, name: translate(mes.name) })) || []
-      }
-    />,
-    <SelectInput
-      label="Buscar por año"
-      source="y"
-      alwaysOn
-      translateChoice={false}
-      choices={años || []}
-    />,
-  ]
+  const filters = [<TextInput label="Buscar por cliente" source="q" alwaysOn />]
 
   return (
     <ListContextProvider value={{ data, ...listContext }}>
@@ -63,14 +37,9 @@ function Clientes() {
         <Datagrid
           expandSingle
           isRowSelectable={() => false}
-          expand={<ClientesServicios />}
+          expand={<ClientesMes />}
         >
           <TextField textAlign="right" source="cliente" />
-          <FunctionField
-            label="Mes"
-            render={(record) => translate(record.mes.name)}
-          />
-          <NumberField source="año" />
           <NumberField
             source="a_deudor"
             label="A liquidar"

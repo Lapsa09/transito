@@ -41,7 +41,7 @@ export const TimePickerComponent = ({
 }
 
 export const DatePickerComponent = ({ className, label, source }) => {
-  const { field } = useInput({ source, defaultValue: null })
+  const { field } = useInput({ source, defaultValue: '' })
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>

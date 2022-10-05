@@ -1,15 +1,18 @@
 import { Grid } from '@mui/material'
-import React from 'react'
+import React, { useCallback } from 'react'
 import {
   ArrayInput,
   AutocompleteInput,
   BooleanInput,
   Create,
   FormDataConsumer,
+  RadioButtonGroupInput,
   ReferenceInput,
   SimpleForm,
   SimpleFormIterator,
   TextInput,
+  useCreate,
+  useGetList,
 } from 'react-admin'
 import {
   CreateCliente,
@@ -19,19 +22,29 @@ import {
   Recibo,
   TotalInput,
   DatePickerComponent,
+  Acopio,
 } from '../../components'
 import styles from '../../styles/Sueldos.module.css'
+import { history } from '../../utils'
 
 function NuevoCliente() {
+  const { refetch } = useGetList('clientes/list')
+  const [create] = useCreate()
+  const save = useCallback(
+    async (values) => {
+      try {
+        await create('clientes', { data: values }, { returnPromise: true })
+        history.navigate('/sueldos/clientes')
+      } catch (error) {
+        return error.response.data
+      }
+    },
+    [create]
+  )
   return (
     <Create title="Nuevo servicio">
-      <SimpleForm>
-        <Grid
-          container
-          spacing={2}
-          columns={{ xs: 8, md: 16 }}
-          // className={styles.flexForm}
-        >
+      <SimpleForm onSubmit={save}>
+        <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8} sx={{ display: 'flex' }}>
             <ReferenceInput source="id_cliente" reference="clientes/list">
               <AutocompleteInput
@@ -41,7 +54,7 @@ function NuevoCliente() {
                 isRequired
               />
             </ReferenceInput>
-            <CreateCliente />
+            <CreateCliente refetch={refetch} />
           </Grid>
           <Grid item xs={8}>
             <TextInput
@@ -52,9 +65,32 @@ function NuevoCliente() {
             />
           </Grid>
           <FormDataConsumer>
-            {({ formData, ...rest }) => (
-              <Recibo formData={formData} {...rest} />
-            )}
+            {({ formData }) =>
+              formData.id_cliente && (
+                <Grid item xs={8}>
+                  <RadioButtonGroupInput
+                    source="medio_pago"
+                    label="Medio de pago"
+                    defaultValue="recibo"
+                    translateChoice={false}
+                    choices={[
+                      { id: 'recibo', name: 'Recibo' },
+                      { id: 'acopio', name: 'Acopio' },
+                    ]}
+                  />
+                </Grid>
+              )
+            }
+          </FormDataConsumer>
+          <FormDataConsumer>
+            {({ formData, ...rest }) =>
+              formData.id_cliente &&
+              (formData.medio_pago === 'recibo' ? (
+                <Recibo />
+              ) : (
+                <Acopio formData={formData} {...rest} />
+              ))
+            }
           </FormDataConsumer>
           <Grid item xs={8} sx={{ display: 'flex', gap: '10px' }}>
             <DatePickerComponent
@@ -85,20 +121,29 @@ function NuevoCliente() {
                     </Grid>
                   )}
                 </FormDataConsumer>
-                <Grid item xs={8}>
-                  <TimePickerComponent
-                    className={styles.inputs}
-                    source="hora_inicio"
-                    label="Hora de inicio"
-                  />
-                </Grid>
-                <Grid item xs={8}>
-                  <TimePickerComponent
-                    className={styles.inputs}
-                    source="hora_fin"
-                    label="Hora de finalizacion"
-                  />
-                </Grid>
+                <FormDataConsumer>
+                  {({ getSource }) => (
+                    <Grid item xs={8}>
+                      <TimePickerComponent
+                        className={styles.inputs}
+                        source={getSource('hora_inicio')}
+                        label="Hora de inicio"
+                      />
+                    </Grid>
+                  )}
+                </FormDataConsumer>
+
+                <FormDataConsumer>
+                  {({ getSource }) => (
+                    <Grid item xs={8}>
+                      <TimePickerComponent
+                        className={styles.inputs}
+                        source={getSource('hora_fin')}
+                        label="Hora de finalizacion"
+                      />
+                    </Grid>
+                  )}
+                </FormDataConsumer>
                 <FormDataConsumer>
                   {({ formData, getSource, scopedFormData }) => (
                     <Grid item xs={8}>

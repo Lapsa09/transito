@@ -9,15 +9,14 @@ import {
   FilterForm,
   SelectInput,
   TextInput,
+  FunctionField,
+  useTranslate,
 } from 'react-admin'
 import { OperariosServicios } from '../../components'
 
 export const Operarios = () => {
-  const { data, page, perPage, isLoading, ...listContext } = useListController()
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  const { data, ...listContext } = useListController()
+  const translate = useTranslate()
 
   const filters = [
     <TextInput
@@ -29,7 +28,7 @@ export const Operarios = () => {
       label="Buscar por mes"
       source="m"
       alwaysOn
-      choices={[...new Set(data.map((d) => d.mes))]
+      choices={[...new Set(data?.map((d) => d.mes))]
         .filter(
           (value, index, self) =>
             index ===
@@ -44,7 +43,7 @@ export const Operarios = () => {
       source="y"
       alwaysOn
       translateChoice={false}
-      choices={[...new Set(data.map((d) => d.año))]
+      choices={[...new Set(data?.map((d) => d.año))]
         .sort((a, b) => a.id - b.id)
         .map((c) => ({ id: c, name: c }))}
     />,
@@ -53,9 +52,7 @@ export const Operarios = () => {
   return (
     <ListContextProvider
       value={{
-        data: data.slice((page - 1) * perPage, perPage * page),
-        page,
-        perPage,
+        data,
         ...listContext,
       }}
     >
@@ -79,12 +76,20 @@ export const Operarios = () => {
         >
           <TextField textAlign="right" source="legajo" />
           <TextField textAlign="right" source="inspector" />
-          <TextField textAlign="right" source="mes.name" label="Mes" />
+          <FunctionField
+            textAlign="right"
+            label="Mes"
+            render={(record) => translate(record.mes.name)}
+          />
           <TextField textAlign="right" source="año" />
           <NumberField
             source="total"
             locales="es-AR"
-            options={{ style: 'currency', currency: 'ARS' }}
+            options={{
+              style: 'currency',
+              currency: 'ARS',
+              maximumFractionDigits: 0,
+            }}
           />
         </Datagrid>
         <Pagination />

@@ -52,7 +52,7 @@ function QuickCreate({ children, handleSubmit, title, reset }) {
   )
 }
 
-export function CreateCliente() {
+export function CreateCliente({ refetch }) {
   const [value, setValue] = useState('')
   const reset = () => setValue('')
   const [create] = useCreate()
@@ -60,6 +60,7 @@ export function CreateCliente() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     create('clientes/list', { data: { cliente: value } })
+    refetch()
   }
   return (
     <QuickCreate

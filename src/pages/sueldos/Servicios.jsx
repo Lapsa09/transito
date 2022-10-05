@@ -10,24 +10,14 @@ import {
   SelectInput,
   TextField,
   useListController,
-  BulkExportButton,
 } from 'react-admin'
 import { ServiciosMemo } from '../../components'
-
-const customExportFunction = (data, selectedIds, exporter) => {
-  const res = data.filter((row) => selectedIds.includes(row.id))
-  exporter(res, 'servicios')
-}
+import { refresh } from '../../utils'
 
 function Servicios() {
-  const { data, page, perPage, isLoading, ...listContext } = useListController()
+  const { data, ...listContext } = useListController()
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-  if (data == null) {
-    return <div>Vacio</div>
-  }
+  refresh.sueldos = listContext.refetch()
 
   const filters = [
     <SelectInput
@@ -46,14 +36,7 @@ function Servicios() {
   ]
 
   return (
-    <ListContextProvider
-      value={{
-        data: data?.slice((page - 1) * perPage, perPage * page),
-        page,
-        perPage,
-        ...listContext,
-      }}
-    >
+    <ListContextProvider value={{ data, ...listContext }}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
@@ -69,18 +52,11 @@ function Servicios() {
         </div>
         <Datagrid
           expandSingle
+          isRowSelectable={() => false}
           expand={<ServiciosMemo />}
-          bulkActionButtons={
-            <BulkExportButton
-              exporter={(items) =>
-                customExportFunction(
-                  items,
-                  listContext.selectedIds,
-                  listContext.exporter
-                )
-              }
-            />
-          }
+          rowStyle={(record) => ({
+            backgroundColor: record.cancelado ? 'red' : 'white',
+          })}
         >
           <DateField
             textAlign="right"

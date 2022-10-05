@@ -17,8 +17,11 @@ function ClientesServicios() {
   return (
     <ListContextProvider value={listContext}>
       <Datagrid
-        isRowExpandable={(row) => row.operarios.length > 0}
+        isRowExpandable={(row) => row.operarios?.length > 0}
         isRowSelectable={() => false}
+        rowStyle={(record) => ({
+          backgroundColor: record.cancelado ? 'red' : 'white',
+        })}
         expand={<ServiciosMemo />}
       >
         <TextField textAlign="right" source="memo" label="Nº Memo" />
@@ -32,7 +35,11 @@ function ClientesServicios() {
           source="importe_recibo"
           label="Importe del recibo"
           locales="es-AR"
-          options={{ style: 'currency', currency: 'ARS' }}
+          options={{
+            style: 'currency',
+            currency: 'ARS',
+            maximumFractionDigits: 0,
+          }}
         />
         <DateField
           textAlign="right"
@@ -43,13 +50,21 @@ function ClientesServicios() {
           source="importe_servicio"
           label="Importe del servicio"
           locales="es-AR"
-          options={{ style: 'currency', currency: 'ARS' }}
+          options={{
+            style: 'currency',
+            currency: 'ARS',
+            maximumFractionDigits: 0,
+          }}
         />
         <NumberField
           source="acopio"
           label="Acopio"
           locales="es-AR"
-          options={{ style: 'currency', currency: 'ARS' }}
+          options={{
+            style: 'currency',
+            currency: 'ARS',
+            maximumFractionDigits: 0,
+          }}
         />
         <EditButton />
       </Datagrid>

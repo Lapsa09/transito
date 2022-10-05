@@ -9,51 +9,44 @@ import {
   TextField,
   TextInput,
   useListController,
+  useTranslate,
+  FunctionField,
+  useGetList,
 } from 'react-admin'
 import { ClientesServicios } from '../../components'
+import { refresh } from '../../utils'
 
 function Clientes() {
-  const { data, page, perPage, isLoading, ...listContext } = useListController()
+  const { data, ...listContext } = useListController()
+  const { data: meses } = useGetList('filters/months')
+  const { data: años } = useGetList('filters/years')
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  const translate = useTranslate()
+
+  refresh.sueldos = listContext.refetch()
 
   const filters = [
     <TextInput label="Buscar por cliente" source="q" alwaysOn />,
     <SelectInput
       label="Buscar por mes"
       source="m"
+      translateChoice={false}
       alwaysOn
-      choices={[...new Set(data?.map((d) => d.mes))]
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.place === value.place && t.name === value.name
-            )
-        )
-        .sort((a, b) => a.id - b.id)}
+      choices={
+        meses?.map((mes) => ({ ...mes, name: translate(mes.name) })) || []
+      }
     />,
     <SelectInput
       label="Buscar por año"
       source="y"
       alwaysOn
-      choices={[...new Set(data?.map((d) => d.año))]
-        .sort((a, b) => a - b)
-        .map((año) => ({ id: año, name: año }))}
       translateChoice={false}
+      choices={años || []}
     />,
   ]
+
   return (
-    <ListContextProvider
-      value={{
-        data: data?.slice((page - 1) * perPage, perPage * page),
-        page,
-        perPage,
-        ...listContext,
-      }}
-    >
+    <ListContextProvider value={{ data, ...listContext }}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
@@ -73,18 +66,29 @@ function Clientes() {
           expand={<ClientesServicios />}
         >
           <TextField textAlign="right" source="cliente" />
-          <TextField textAlign="right" source="mes.name" label="Mes" />
+          <FunctionField
+            label="Mes"
+            render={(record) => translate(record.mes.name)}
+          />
           <NumberField source="año" />
           <NumberField
             source="a_deudor"
             label="A liquidar"
             locales="es-AR"
-            options={{ style: 'currency', currency: 'ARS' }}
+            options={{
+              style: 'currency',
+              currency: 'ARS',
+              maximumFractionDigits: 0,
+            }}
           />
           <NumberField
             source="a_favor"
             locales="es-AR"
-            options={{ style: 'currency', currency: 'ARS' }}
+            options={{
+              style: 'currency',
+              currency: 'ARS',
+              maximumFractionDigits: 0,
+            }}
           />
         </Datagrid>
         <Pagination />

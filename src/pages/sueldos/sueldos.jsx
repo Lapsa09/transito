@@ -8,6 +8,7 @@ import {
   NuevoCliente,
   Servicios,
   EditServicio,
+  Liqui,
 } from '.'
 import polyglotI18nProvider from 'ra-i18n-polyglot'
 import spanishMessages from '@blackbox-vision/ra-language-spanish'
@@ -18,7 +19,23 @@ const Sueldos = () => {
   )
 
   const i18nProvider = polyglotI18nProvider(
-    () => ({ ...spanishMessages, undefined: 'indefinido' }),
+    () => ({
+      ...spanishMessages,
+      undefined: '',
+      'JANUARY  ': 'ENERO',
+      'FEBRUARY ': 'FEBRERO',
+      'MARCH    ': 'MARZO',
+      'APRIL    ': 'ABRIL',
+      'MAY      ': 'MAYO',
+      'JUNE     ': 'JUNIO',
+      'JULY     ': 'JULIO',
+      'AUGUST   ': 'AGOSTO',
+      SEPTEMBER: 'SEPTIEMBRE',
+      'OCTOBER  ': 'OCTUBRE',
+      'NOVEMBER ': 'NOVIEMBRE',
+      'DECEMBER ': 'DICIEMBRE',
+      null: '',
+    }),
     resolveBrowserLocale()
   )
 
@@ -41,6 +58,11 @@ const Sueldos = () => {
         name="servicios"
         list={Servicios}
         options={{ label: 'Proximos Servicios' }}
+      />
+      <Resource
+        name="liqui"
+        list={Liqui}
+        options={{ label: 'Liquidacion x Mes' }}
       />
     </Admin>
   )

@@ -5,7 +5,6 @@ import {
   AutocompleteInput,
   BooleanInput,
   Button,
-  DateInput,
   Edit,
   FormDataConsumer,
   NumberInput,
@@ -20,6 +19,7 @@ import {
   CreateOperario,
   OpInput,
   TotalInput,
+  DatePickerComponent,
 } from '../../components'
 import styles from '../../styles/Sueldos.module.css'
 
@@ -32,22 +32,19 @@ export const EditServicio = (props) => {
             <div className={styles.flexForm}>
               <TextInput
                 className={styles.inputs}
-                disabled
                 source="memo"
                 label="Nº Memo"
                 isRequired
               />
-              <NumberInput className={styles.inputs} source="recibo" disabled />
+              <NumberInput className={styles.inputs} source="recibo" />
               <div
                 className={styles.inputs}
                 style={{ display: 'flex', alignItems: 'center', gap: '20px' }}
               >
-                <DateInput
+                <DatePickerComponent
                   source="fecha_servicio"
-                  disabled
                   className={styles.inputs}
                   label="Fecha del servicio"
-                  isRequired
                 />
                 <BooleanInput source="feriado" label="Es feriado?" />
               </div>
@@ -71,16 +68,26 @@ export const EditServicio = (props) => {
                     </div>
                   )}
                 </FormDataConsumer>
-                <TimePickerComponent
-                  className={styles.inputs}
-                  source="hora_inicio"
-                  label="Hora de inicio"
-                />
-                <TimePickerComponent
-                  className={styles.inputs}
-                  source="hora_fin"
-                  label="Hora de finalizacion"
-                />
+                <FormDataConsumer>
+                  {({ scopedFormData, getSource }) => (
+                    <TimePickerComponent
+                      className={styles.inputs}
+                      source={getSource('hora_inicio')}
+                      label="Hora de inicio"
+                      value={scopedFormData.hora_inicio}
+                    />
+                  )}
+                </FormDataConsumer>
+                <FormDataConsumer>
+                  {({ scopedFormData, getSource }) => (
+                    <TimePickerComponent
+                      className={styles.inputs}
+                      source={getSource('hora_fin')}
+                      label="Hora de finalizacion"
+                      value={scopedFormData.hora_fin}
+                    />
+                  )}
+                </FormDataConsumer>
                 <FormDataConsumer>
                   {({ formData, getSource, scopedFormData }) => (
                     <OpInput

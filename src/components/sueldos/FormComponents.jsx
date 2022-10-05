@@ -1,15 +1,18 @@
 import { Grid, InputAdornment, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { SelectInput, useGetList, useInput } from 'react-admin'
-import { CreateRecibo } from './QuickCreate'
+import { useEffect } from 'react'
+import { useGetOne, useInput } from 'react-admin'
 import { DatePickerComponent } from './TimePicker'
 import styles from '../../styles/Sueldos.module.css'
-import { Observable } from '../../utils'
+import { DateTime } from 'luxon'
 
-const getImporteOperario = (dia, inicio, fin, isFeriado, importe) => {
-  if ([dia, inicio, fin, isFeriado].some((e) => e == null)) {
+const getImporteOperario = (_dia, _inicio, _fin, isFeriado, importe) => {
+  if ([_dia, _inicio, _fin, isFeriado].some((e) => e == null)) {
     return importe
   }
+
+  const dia = DateTime.fromISO(_dia)
+  const inicio = DateTime.fromISO(_inicio)
+  const fin = DateTime.fromISO(_fin)
 
   const diff = fin.diff(inicio, 'hours').hours
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
@@ -82,53 +85,59 @@ export const TotalInput = ({ ops }) => {
   )
 }
 
-export const Recibo = ({ formData }) => {
-  const [options, setOptions] = useState([])
-  const { data, isLoading } = useGetList(
-    'recibos/' + (formData.id_cliente || 'none')
+export const Acopio = ({ formData }) => {
+  const { field: importe } = useInput({
+    source: 'acopio',
+    defaultValue: 0,
+  })
+
+  const { data } = useGetOne('acopio', { id: formData.id_cliente })
+
+  useEffect(() => {
+    importe.onChange(data?.acopio)
+  }, [formData.id_cliente, formData.medio_pago])
+
+  return (
+    <Grid item xs={8}>
+      <TextField
+        type="number"
+        {...importe}
+        label="Acopio"
+        className={styles.inputs}
+        required
+        disabled
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
+      />
+    </Grid>
   )
+}
+
+export const Recibo = () => {
   const { field: importe } = useInput({
     source: 'importe_recibo',
     defaultValue: '',
   })
 
-  const elegido = options?.find((d) => d.recibo === formData.recibo)
-
-  const observer = new Observable()
-
-  useEffect(() => {
-    setOptions(data)
-    // eslint-disable-next-line
-  }, [formData.id_cliente, isLoading])
-
-  useEffect(() => {
-    observer.notify(elegido?.fecha_recibo)
-    importe.onChange(elegido?.importe_recibo)
-    // eslint-disable-next-line
-  }, [formData.recibo])
+  const { field: recibo } = useInput({ source: 'recibo', defaultValue: '' })
 
   return (
     <Grid container item spacing={2} columns={{ xs: 8, md: 16 }}>
       <Grid item xs={8}>
-        <SelectInput
-          label="Nº Recibo"
-          source="recibo"
-          optionValue="recibo"
-          optionText="recibo"
-          emptyText="Elija una opcion"
-          choices={options}
-          translateChoice={false}
+        <TextField
+          type="number"
+          {...recibo}
+          label="Recibo"
           className={styles.inputs}
-          isRequired
+          required
         />
-        {formData.id_cliente && <CreateRecibo setData={setOptions} />}
       </Grid>
       <Grid item xs={8}>
         <DatePickerComponent
           source="fecha_recibo"
           className={styles.inputs}
           label="Fecha del recibo"
-          observer={observer}
         />
       </Grid>
       <Grid item xs={8}>

@@ -130,6 +130,7 @@ function Header() {
                     >
                       <ListItemButton
                         onTouchStart={() => onTouchStart(page.name)}
+                        onMouseDown={() => onTouchStart(page.name)}
                       >
                         <h3 className={styles.item}>{page.name}</h3>
                         {dropdown === page.name ? (

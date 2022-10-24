@@ -47,17 +47,22 @@ export const ServiciosMemo = () => {
         />
         <FunctionField
           render={(record) =>
-            DateTime.fromFormat(record.hora_inicio, 'hh:mm:ss').toLocaleString(
-              DateTime.TIME_24_SIMPLE
-            )
+            !!record.hora_inicio
+              ? DateTime.fromFormat(
+                  record.hora_inicio,
+                  'hh:mm:ss'
+                ).toLocaleString(DateTime.TIME_24_SIMPLE)
+              : ''
           }
           label="Hora de inicio"
         />
         <FunctionField
           render={(record) =>
-            DateTime.fromFormat(record.hora_fin, 'hh:mm:ss').toLocaleString(
-              DateTime.TIME_24_SIMPLE
-            )
+            !!record.hora_fin
+              ? DateTime.fromFormat(record.hora_fin, 'hh:mm:ss').toLocaleString(
+                  DateTime.TIME_24_SIMPLE
+                )
+              : ''
           }
           label="Hora final"
         />

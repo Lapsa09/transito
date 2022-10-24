@@ -13,14 +13,14 @@ export const TimePickerComponent = ({
   className,
   source,
   label,
-  value = '',
+  value = null,
 }) => {
   const { field } = useInput({
     source,
-    defaultValue: '',
+    defaultValue: null,
   })
   useEffect(() => {
-    field.onChange(DateTime.fromFormat(value, 'HH:mm:ss'))
+    field.onChange(value ? DateTime.fromFormat(value, 'HH:mm:ss') : null)
   }, [])
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -41,7 +41,7 @@ export const TimePickerComponent = ({
 }
 
 export const DatePickerComponent = ({ className, label, source }) => {
-  const { field } = useInput({ source, defaultValue: '' })
+  const { field } = useInput({ source, defaultValue: null })
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>

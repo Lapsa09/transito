@@ -38,7 +38,7 @@ function NuevoCliente() {
         {
           returnPromise: true,
           onError: (error) => console.log(error),
-          onSuccess: (data) => {
+          onSuccess: () => {
             history.navigate('/sueldos/clientes')
           },
         }

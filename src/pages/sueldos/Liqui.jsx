@@ -112,6 +112,7 @@ function LiquiServicios() {
     <ListContextProvider value={listContext}>
       <Datagrid
         expand={<ServiciosMemo />}
+        isRowExpandable={(record) => !!record.operarios}
         rowStyle={(record) => ({
           backgroundColor: record.cancelado ? 'red' : 'white',
         })}

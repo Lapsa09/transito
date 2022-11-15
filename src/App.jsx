@@ -24,12 +24,18 @@ import './styles/globals.css'
 import PrivateRoute from './layouts/PrivateRoute'
 import { Header } from './components'
 import { history } from './utils'
+// import { authActions } from './redux/userSlice'
 
 function App() {
   const user = useSelector((x) => x.user.user)
+  // const dispatch = useDispatch()
 
   history.navigate = useNavigate()
   history.location = useLocation()
+
+  // useEffect(() => {
+  //   dispatch(authActions.verify())
+  // }, [])
 
   return (
     <Fragment>

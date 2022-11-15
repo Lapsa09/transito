@@ -113,11 +113,10 @@ function Header() {
             onClose={handleCloseNavMenu}
           >
             <List>
-              {pages
-                .filter(
-                  (page) => user.rol === 'ADMIN' || user.rol === page.permission
-                )
-                .map((page) =>
+              {user.rol !== 'ADMIN' ? (
+                <h3>Legajo: {user.legajo}</h3>
+              ) : (
+                pages.map((page) =>
                   page.links ? (
                     <ListItem
                       sx={{
@@ -163,7 +162,8 @@ function Header() {
                       </Link>
                     </ListItem>
                   )
-                )}
+                )
+              )}
             </List>
           </Drawer>
           <Logout className={styles.logout} onClick={handleLogout} />
@@ -177,11 +177,10 @@ function Header() {
             marginInline: '60px',
           }}
         >
-          {pages
-            .filter(
-              (page) => user.rol === 'ADMIN' || user.rol === page.permission
-            )
-            .map((page) => (
+          {user.rol !== 'ADMIN' ? (
+            <h3>Legajo: {user.legajo}</h3>
+          ) : (
+            pages.map((page) => (
               <div
                 onMouseEnter={() => onMouseEnter(page.name)}
                 onMouseLeave={onMouseLeave}
@@ -202,7 +201,8 @@ function Header() {
                   </Link>
                 )}
               </div>
-            ))}
+            ))
+          )}
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
         <Box sx={{ ...basicMaxHeight }}>

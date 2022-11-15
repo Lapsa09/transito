@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import {
-  getLocalidades,
   getMotivosPaseo,
   nuevoControlPaseo,
   getZonasPaseo,
@@ -10,9 +9,8 @@ import {
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
-  CustomAutocomplete,
 } from '../ui'
-import { getResolucion, getTurnos } from '../../services/index'
+import { getResolucion, getTurnos } from '../../services'
 
 import { useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
@@ -40,10 +38,9 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     },
   })
   const {
-    data: [localidades, motivos, turnos, resolucion, zonas],
+    data: [motivos, turnos, resolucion, zonas],
     error,
   } = useSelects([
-    getLocalidades(),
     getMotivosPaseo(),
     getTurnos(),
     getResolucion(),
@@ -52,27 +49,17 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
   const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
-    const [
-      fecha,
-      hora,
-      direccion,
-      turno,
-      dominio,
-      lp,
-      resolucion,
-      motivo,
-      localidadInfractor,
-    ] = watch([
-      'fecha',
-      'hora',
-      'direccion',
-      'turno',
-      'dominio',
-      'lp',
-      'resolucion',
-      'motivo',
-      'localidadInfractor',
-    ])
+    const [fecha, hora, direccion, turno, dominio, lp, resolucion, motivo] =
+      watch([
+        'fecha',
+        'hora',
+        'direccion',
+        'turno',
+        'dominio',
+        'lp',
+        'resolucion',
+        'motivo',
+      ])
     return [
       {
         label: 'Operativo',
@@ -90,7 +77,6 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
           dominio,
           direccion,
           resolucion,
-          localidadInfractor,
         },
       },
     ]
@@ -98,10 +84,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
 
   const submitting = async (data) => {
     await nuevoControlPaseo(data)
-    reset(
-      { ...data, dominio: '', localidadInfractor: null },
-      { keepDefaultValues: true }
-    )
+    reset({ ...data, dominio: '' }, { keepDefaultValues: true })
     if (handleRol()) {
       await afterCreate()
     } else {
@@ -232,15 +215,6 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
             />
           </Grid>
         )}
-        <Grid item xs={8}>
-          <CustomAutocomplete
-            control={control}
-            name="localidadInfractor"
-            rules={{ required: 'Elija una opcion' }}
-            label="Localidad del infractor"
-            options={localidades}
-          />
-        </Grid>
       </Grid>
     </Layout>
   )

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
-import { loginCall, register } from '../services/userService'
+import { loginCall, register, verifyAuth } from '../services/userService'
 import { history } from '../utils'
 
 const name = 'user'
@@ -19,6 +19,7 @@ function createInitialState() {
   } catch (err) {
     error = err
   }
+
   return {
     user,
     error,
@@ -44,6 +45,7 @@ function createExtraActions() {
   return {
     login: login(),
     register: signUp(),
+    verify: verify(),
   }
 
   function login() {
@@ -64,40 +66,61 @@ function createExtraActions() {
       }
     })
   }
+
+  function verify() {
+    return createAsyncThunk('user/verify', async () => {
+      try {
+        return await verifyAuth()
+      } catch (error) {
+        throw new Error(error.response.data)
+      }
+    })
+  }
 }
 
 function createExtraReducers() {
-  return {
-    ...login(),
-    ...register(),
+  const baseUserReducer = {
+    pending: (state) => {
+      state.error = null
+    },
+    fulfilled: (state, action) => {
+      const user = action.payload
+
+      localStorage.setItem('token', user)
+      state.user = jwt_decode(user)
+
+      const { from } = history.location.state || { from: { pathname: '/' } }
+      history.navigate(from)
+    },
+    rejected: (state, action) => {
+      localStorage.removeItem('token')
+      state.error = action.error
+    },
   }
 
-  function baseUserReducer(actions) {
-    const { pending, fulfilled, rejected } = actions
-    return {
-      [pending]: (state) => {
-        state.error = null
-      },
-      [fulfilled]: (state, action) => {
-        const user = action.payload
-
-        localStorage.setItem('token', user)
-        state.user = jwt_decode(user)
-
-        const { from } = history.location.state || { from: { pathname: '/' } }
-        history.navigate(from)
-      },
-      [rejected]: (state, action) => {
-        state.error = action.error
-      },
-    }
+  const verifyingUser = {
+    pending: (state) => {
+      state.error = null
+    },
+    fulfilled: (state) => {
+      state.user = jwt_decode(localStorage.getItem('token'))
+      const { from } = history.location.state || { from: { pathname: '/' } }
+      history.navigate(from)
+    },
+    rejected: (state, action) => {
+      state.error = action.error
+    },
   }
-
-  function login() {
-    return baseUserReducer(extraActions.login)
-  }
-
-  function register() {
-    return baseUserReducer(extraActions.register)
+  return (builder) => {
+    builder
+      .addCase(extraActions.login.fulfilled, baseUserReducer.fulfilled)
+      .addCase(extraActions.login.pending, baseUserReducer.pending)
+      .addCase(extraActions.login.rejected, baseUserReducer.rejected)
+      .addCase(extraActions.register.fulfilled, baseUserReducer.fulfilled)
+      .addCase(extraActions.register.pending, baseUserReducer.pending)
+      .addCase(extraActions.register.rejected, baseUserReducer.rejected)
+      .addCase(extraActions.verify.fulfilled, verifyingUser.fulfilled)
+      .addCase(extraActions.verify.pending, verifyingUser.pending)
+      .addCase(extraActions.verify.rejected, verifyingUser.rejected)
   }
 }

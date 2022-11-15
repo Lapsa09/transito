@@ -89,3 +89,8 @@ header img {
   width: 150px;
   height: 70px;
 }
+
+.card {
+  background-color: #b7e912;
+  color: white;
+}

@@ -1,6 +1,6 @@
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import React from 'react'
-import DateAdapter from '@mui/lab/AdapterLuxon'
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { useController } from 'react-hook-form'
 import { currentDate } from '../../utils'
@@ -33,17 +33,13 @@ function CustomDatePicker({
     defaultValue,
   })
 
-  const parseDate = (newDate) => {
-    field.onChange(newDate)
-  }
-
   return (
-    <LocalizationProvider dateAdapter={DateAdapter}>
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
       <DatePicker
         {...field}
-        onChange={parseDate}
         disabled={disabled}
         label={label}
+        mask="__/__/____"
         inputFormat="dd/MM/yyyy"
         renderInput={(props) => (
           <TextField
@@ -56,7 +52,7 @@ function CustomDatePicker({
           />
         )}
         minDate={currentDate().minus({ month: 6 })}
-        maxDate={currentDate()}
+        disableFuture
       />
     </LocalizationProvider>
   )

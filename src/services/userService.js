@@ -10,7 +10,7 @@ export const loginCall = async (body) => {
 }
 
 export const verifyAuth = async () => {
-  const { data } = await setter('/auth/verify', null, {
+  const data = await setter('/auth/verify', null, {
     headers: { jwt_token: localStorage.getItem('token') },
   })
   return data

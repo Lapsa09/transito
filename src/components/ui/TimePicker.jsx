@@ -1,6 +1,6 @@
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
 import React from 'react'
-import DateAdapter from '@mui/lab/AdapterLuxon'
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { useController } from 'react-hook-form'
 
@@ -31,12 +31,13 @@ function CustomTimePicker({
     field.onChange(newTime)
   }
   return (
-    <LocalizationProvider dateAdapter={DateAdapter}>
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TimePicker
         {...field}
         onChange={parseTime}
         disabled={disabled}
         label={label}
+        disableMaskedInput
         inputFormat="HH:mm"
         renderInput={(props) => (
           <TextField

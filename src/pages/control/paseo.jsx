@@ -41,7 +41,6 @@ function ControlPaseoPage() {
       valueFormatter: ({ value }) => (value ? dateTimeSQLFormat(value) : ''),
     },
     { field: 'lpcarga', headerName: 'Legajo carga', width: 150 },
-    { field: 'mes', headerName: 'Mes', width: 150 },
   ]
 
   return (

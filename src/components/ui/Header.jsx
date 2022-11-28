@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import LogoVL from '../../assets/imgs/LOGO_V_LOPEZ.png'
 import LogoOVT from '../../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import { authActions } from '../../redux/userSlice'
@@ -47,7 +47,6 @@ function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const dispatch = useDispatch()
   const [dropdown, setDropdown] = useState(null)
-  const user = useSelector((x) => x.user.user)
 
   const onMouseEnter = (_menu) => {
     setDropdown(_menu)
@@ -113,55 +112,51 @@ function Header() {
             onClose={handleCloseNavMenu}
           >
             <List>
-              {user.rol !== 'ADMIN' ? (
-                <h3>Legajo: {user.legajo}</h3>
-              ) : (
-                pages.map((page) =>
-                  page.links ? (
-                    <ListItem
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        padding: '0',
-                      }}
-                      key={page.name}
+              {pages.map((page) =>
+                page.links ? (
+                  <ListItem
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      padding: '0',
+                    }}
+                    key={page.name}
+                  >
+                    <ListItemButton
+                      onTouchStart={() => onTouchStart(page.name)}
+                      onMouseDown={() => onTouchStart(page.name)}
                     >
-                      <ListItemButton
-                        onTouchStart={() => onTouchStart(page.name)}
-                        onMouseDown={() => onTouchStart(page.name)}
-                      >
-                        <h3 className={styles.item}>{page.name}</h3>
-                        {dropdown === page.name ? (
-                          <ExpandMore />
-                        ) : (
-                          <ChevronRight />
-                        )}
-                      </ListItemButton>
-                      <Collapse
-                        sx={{ marginLeft: '20px' }}
-                        in={dropdown === page.name}
-                      >
-                        {page.links.map((link) => (
-                          <ListItemButton key={link.title}>
-                            <Link className={styles.subitem} to={link.link}>
-                              {link.title}
-                            </Link>
-                          </ListItemButton>
-                        ))}
-                      </Collapse>
-                    </ListItem>
-                  ) : (
-                    <ListItem key={page.name}>
-                      <Link
-                        onClick={handleCloseNavMenu}
-                        to={page.link}
-                        className={styles.item}
-                      >
-                        {page.name}
-                      </Link>
-                    </ListItem>
-                  )
+                      <h3 className={styles.item}>{page.name}</h3>
+                      {dropdown === page.name ? (
+                        <ExpandMore />
+                      ) : (
+                        <ChevronRight />
+                      )}
+                    </ListItemButton>
+                    <Collapse
+                      sx={{ marginLeft: '20px' }}
+                      in={dropdown === page.name}
+                    >
+                      {page.links.map((link) => (
+                        <ListItemButton key={link.title}>
+                          <Link className={styles.subitem} to={link.link}>
+                            {link.title}
+                          </Link>
+                        </ListItemButton>
+                      ))}
+                    </Collapse>
+                  </ListItem>
+                ) : (
+                  <ListItem key={page.name}>
+                    <Link
+                      onClick={handleCloseNavMenu}
+                      to={page.link}
+                      className={styles.item}
+                    >
+                      {page.name}
+                    </Link>
+                  </ListItem>
                 )
               )}
             </List>
@@ -177,32 +172,28 @@ function Header() {
             marginInline: '60px',
           }}
         >
-          {user.rol !== 'ADMIN' ? (
-            <h3>Legajo: {user.legajo}</h3>
-          ) : (
-            pages.map((page) => (
-              <div
-                onMouseEnter={() => onMouseEnter(page.name)}
-                onMouseLeave={onMouseLeave}
-                onTouchStart={() => onMouseEnter(page.name)}
-                className={styles['nav-link']}
-                key={page.name}
-              >
-                {page.links ? (
-                  <Fragment>
-                    <h3 className={styles.item}>{page.name}</h3>
-                    {dropdown === page.name && (
-                      <CustomPopover links={page.links} />
-                    )}
-                  </Fragment>
-                ) : (
-                  <Link key={page.name} to={page.link} className={styles.item}>
-                    {page.name}
-                  </Link>
-                )}
-              </div>
-            ))
-          )}
+          {pages.map((page) => (
+            <div
+              onMouseEnter={() => onMouseEnter(page.name)}
+              onMouseLeave={onMouseLeave}
+              onTouchStart={() => onMouseEnter(page.name)}
+              className={styles['nav-link']}
+              key={page.name}
+            >
+              {page.links ? (
+                <Fragment>
+                  <h3 className={styles.item}>{page.name}</h3>
+                  {dropdown === page.name && (
+                    <CustomPopover links={page.links} />
+                  )}
+                </Fragment>
+              ) : (
+                <Link key={page.name} to={page.link} className={styles.item}>
+                  {page.name}
+                </Link>
+              )}
+            </div>
+          ))}
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
         <Box sx={{ ...basicMaxHeight }}>

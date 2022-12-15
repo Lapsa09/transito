@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@mui/material'
 import React from 'react'
-import GaugeChart from 'react-gauge-chart'
+import Chart from 'react-google-charts'
 
 const NIVEL_TRAFICO = [
   'NORMAL',
@@ -18,6 +18,19 @@ const NIVEL_TRAFICO = [
 ]
 
 function TableWaze({ data }) {
+  const options = {
+    redFrom: 3,
+    redTo: 4,
+    yellowFrom: 1,
+    yellowTo: 3,
+    greenFrom: 0,
+    greenTo: 1,
+    minorTicks: 5,
+    width: 100,
+    height: 100,
+    min: 0,
+    max: 4,
+  }
   return (
     <TableContainer>
       <Table>
@@ -41,19 +54,16 @@ function TableWaze({ data }) {
                   paddingTop: '16px',
                 }}
               >
-                <GaugeChart
-                  id={`${value.calles}-${value.id}`}
-                  nrOfLevels={5}
-                  style={{ width: '70%', fontWeight: 700 }}
-                  arcPadding={0}
-                  cornerRadius={0}
-                  percent={(value.trafico - 1) / 5 + 0.05}
-                  textColor="000000"
-                  needleColor="#0a9396"
-                  needleBaseColor="#0a9396"
-                  formatTextValue={(value) =>
-                    NIVEL_TRAFICO[((value - 5) * 5) / 100]
-                  }
+                <Chart
+                  chartType="Gauge"
+                  width="100px"
+                  height="100px"
+                  data={[
+                    ['Label', 'Value'],
+                    [NIVEL_TRAFICO[value.trafico - 1], value.trafico - 1],
+                  ]}
+                  options={options}
+                  style={{ marginInline: 'auto' }}
                 />
               </TableCell>
               <TableCell>{value.tiempo} min</TableCell>

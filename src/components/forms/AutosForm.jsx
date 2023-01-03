@@ -121,7 +121,6 @@ function OperativosForm({ handleClose, afterCreate }) {
       {
         dominio: '',
         zona_infractor: null,
-        resolucion: null,
         motivo: null,
         licencia: '',
         tipo_licencia: null,

@@ -269,15 +269,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomSelect
-            control={control}
-            name="motivo"
-            label="Motivo"
-            rules={{ required: 'Inserte un motivo' }}
-            options={motivos}
-          />
-        </Grid>
-        <Grid item xs={8}>
           <CustomTextField
             type="number"
             control={control}
@@ -290,25 +281,35 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="resolucion"
             label="Resolucion"
-            rules={{ required: 'Elija una opcion valida' }}
             options={resolucion}
           />
         </Grid>
-        {getValues('resolucion') === 'ACTA' && (
-          <Grid item xs={8}>
-            <CustomTextField
-              type="number"
-              control={control}
-              name="acta"
-              label="Acta"
-              rules={{
-                required: {
-                  value: getValues('resolucion') === 'ACTA',
-                  message: 'Ingrese un nro de acta',
-                },
-              }}
-            />
-          </Grid>
+        {(getValues('resolucion') === 'ACTA' ||
+          getValues('resolucion') === 'REMITIDO') && (
+          <>
+            <Grid item xs={8}>
+              <CustomSelect
+                control={control}
+                name="motivo"
+                label="Motivo"
+                options={motivos}
+              />
+            </Grid>
+            <Grid item xs={8}>
+              <CustomTextField
+                type="number"
+                control={control}
+                name="acta"
+                label="Acta"
+                rules={{
+                  required: {
+                    value: getValues('resolucion') === 'ACTA',
+                    message: 'Ingrese un nro de acta',
+                  },
+                }}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
     </Layout>

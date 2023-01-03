@@ -297,7 +297,6 @@ function OperativosForm({ handleClose, afterCreate }) {
             control={control}
             name="resolucion"
             label="Resolucion"
-            rules={{ required: 'Elija una opcion valida' }}
             options={resolucion}
           />
         </Grid>

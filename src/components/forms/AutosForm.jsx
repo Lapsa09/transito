@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -33,7 +33,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     getValues,
     watch,
     setValue,
-    formState: { isValid },
+    formState: { isValid, isSubmitted },
   } = useForm({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
@@ -117,9 +117,12 @@ function OperativosForm({ handleClose, afterCreate }) {
   const submitEvent = async (data) => {
     await nuevoOperativoAuto(data)
     await afterCreate()
+  }
+
+  useEffect(() => {
     reset(
       {
-        ...data,
+        ...getValues(),
         dominio: '',
         zona_infractor: null,
         motivo: null,
@@ -131,7 +134,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       },
       { keepDefaultValues: true }
     )
-  }
+  }, [isSubmitted])
 
   return (
     <Layout

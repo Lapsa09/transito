@@ -119,6 +119,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     await afterCreate()
     reset(
       {
+        ...data,
         dominio: '',
         zona_infractor: null,
         motivo: null,

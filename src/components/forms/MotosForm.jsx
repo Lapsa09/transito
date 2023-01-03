@@ -39,7 +39,7 @@ function MotosForm({ handleClose, afterCreate }) {
   } = useForm({
     mode: 'all',
     defaultValues: {
-      motivos: [{ motivo: null }],
+      motivos: [],
       lpcarga: user.legajo,
     },
   })
@@ -152,7 +152,7 @@ function MotosForm({ handleClose, afterCreate }) {
   }
 
   const restarMotivos = () => {
-    if (fields.length > 1) {
+    if (fields.length > 0) {
       remove(fields.at(-1))
     }
   }
@@ -167,8 +167,8 @@ function MotosForm({ handleClose, afterCreate }) {
         licencia: '',
         tipo_licencia: null,
         zona_infractor: null,
-        motivos: [{ motivo: '' }],
-        acta: null,
+        motivos: [],
+        acta: '',
       },
       { keepDefaultValues: true }
     )
@@ -297,7 +297,7 @@ function MotosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomSelect
+          <CustomAutocomplete
             control={control}
             name="tipo_licencia"
             label="Tipo de licencia"
@@ -315,7 +315,7 @@ function MotosForm({ handleClose, afterCreate }) {
         </Grid>
         {fields.map((item, index) => (
           <Grid key={index} item xs={8}>
-            <CustomSelect
+            <CustomAutocomplete
               control={control}
               key={item.id}
               name={`motivos.${index}.motivo`}

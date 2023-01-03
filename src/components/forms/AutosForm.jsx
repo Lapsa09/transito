@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -33,7 +33,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     getValues,
     watch,
     setValue,
-    formState: { isValid, isSubmitted },
+    formState: { isValid },
   } = useForm({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
@@ -117,12 +117,9 @@ function OperativosForm({ handleClose, afterCreate }) {
   const submitEvent = async (data) => {
     await nuevoOperativoAuto(data)
     await afterCreate()
-  }
-
-  useEffect(() => {
     reset(
       {
-        ...getValues(),
+        ...data,
         dominio: '',
         zona_infractor: null,
         motivo: null,
@@ -134,7 +131,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       },
       { keepDefaultValues: true }
     )
-  }, [isSubmitted])
+  }
 
   return (
     <Layout
@@ -290,7 +287,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           getValues('resolucion') === 'REMITIDO') && (
           <>
             <Grid item xs={8}>
-              <CustomSelect
+              <CustomAutocomplete
                 control={control}
                 name="motivo"
                 label="Motivo"

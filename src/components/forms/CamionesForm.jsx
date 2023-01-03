@@ -125,17 +125,15 @@ function OperativosForm({ handleClose, afterCreate }) {
     reset(
       {
         ...data,
-        hora: null,
-        dominio: null,
+        dominio: '',
         licencia: '',
-        origen: null,
+        origen: '',
         localidad_origen: null,
-        destino: null,
-        localidad_destino: '',
+        destino: '',
+        localidad_destino: null,
         remito: false,
         carga: false,
         motivo: null,
-        resolucion: null,
       },
       { keepDefaultValues: true }
     )
@@ -235,9 +233,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomTextField control={control} name="licencia" label="Licencia" />
-        </Grid>
-        <Grid item xs={8}>
           <CustomTextField control={control} name="origen" label="Origen" />
         </Grid>
         <Grid item xs={8}>
@@ -276,6 +271,9 @@ function OperativosForm({ handleClose, afterCreate }) {
             <CustomSwitch control={control} name="carga" label="Carga" />
           </Grid>
         </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="licencia" label="Licencia" />
+        </Grid>
         {getValues('resolucion') === 'ACTA' && (
           <Grid item xs={8}>
             <CustomTextField
@@ -303,7 +301,7 @@ function OperativosForm({ handleClose, afterCreate }) {
         {(getValues('resolucion') === 'ACTA' ||
           getValues('resolucion') === 'REMITIDO') && (
           <Grid item xs={8}>
-            <CustomSelect
+            <CustomAutocomplete
               control={control}
               name="motivo"
               label="Motivo"

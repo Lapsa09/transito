@@ -251,7 +251,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomSelect
+          <CustomAutocomplete
             control={control}
             name="tipo_licencia"
             label="Tipo de licencia"

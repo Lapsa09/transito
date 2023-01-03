@@ -119,15 +119,14 @@ function OperativosForm({ handleClose, afterCreate }) {
     await afterCreate()
     reset(
       {
-        ...data,
-        dominio: null,
+        dominio: '',
         zona_infractor: null,
         resolucion: null,
         motivo: null,
-        licencia: null,
+        licencia: '',
         tipo_licencia: null,
-        graduacion_alcoholica: null,
-        acta: null,
+        graduacion_alcoholica: '',
+        acta: '',
         lpcarga: user?.legajo,
       },
       { keepDefaultValues: true }

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
-  getMotivosMoto,
+  getMotivos,
   getSeguridad,
   getZonasVL,
   nuevoOperativoMoto,
@@ -65,7 +65,7 @@ function MotosForm({ handleClose, afterCreate }) {
     getTurnos(),
     getSeguridad(),
     getResolucion(),
-    getMotivosMoto(),
+    getMotivos(),
   ])
   const [activeStep, setActiveStep] = useState(0)
 

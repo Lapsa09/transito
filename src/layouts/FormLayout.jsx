@@ -154,7 +154,7 @@ function FormLayout({
             <Button
               type="submit"
               disabled={!isValid || activeStep === 0}
-              onSubmit={handleSubmit(submiting)}
+              onClick={handleSubmit(submiting)}
             >
               Guardar
             </Button>

@@ -2,7 +2,7 @@ import { Autocomplete, TextField } from '@mui/material'
 import React from 'react'
 import { useController } from 'react-hook-form'
 
-function CustomAutocomplete({ control, name, rules, label, options }) {
+function CustomAutocomplete({ control, name, rules, label, options = [] }) {
   const {
     field,
     fieldState: { error },
@@ -15,7 +15,7 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
   })
 
   const optionLabel = (option) => {
-    return Object.entries(option)[1][1]
+    return Object.values(option)[1]
   }
 
   return (
@@ -30,7 +30,7 @@ function CustomAutocomplete({ control, name, rules, label, options }) {
         <TextField
           {...params}
           label={label}
-          required
+          required={rules?.required != null}
           error={error}
           helperText={errors[name]?.message}
         />

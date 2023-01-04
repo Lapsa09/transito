@@ -51,6 +51,7 @@ function ControlPaseoPage() {
       loading={loading}
       columns={columns}
       operativos={data}
+      path="Paseo del rio"
     >
       <ControlPaseoForm
         afterCreate={refresh}

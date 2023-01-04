@@ -13,10 +13,12 @@ function OperativosLayout({
   open,
   handleOpen,
   handleClose,
+  path,
 }) {
   const user = useSelector((x) => x.user.user)
   return user?.rol === 'ADMIN' ? (
     <div className={styles.Operativos}>
+      <h1 style={{ textAlign: 'center' }}>{path}</h1>
       <div className="control_buttons">
         <Button
           color="error"

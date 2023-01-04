@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -147,15 +147,29 @@ function MotosForm({ handleClose, afterCreate }) {
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
-      append({ motivo: null })
+      append()
     }
   }
 
   const restarMotivos = () => {
-    if (fields.length > 0) {
+    if (fields.length > 1) {
       remove(fields.at(-1))
     }
   }
+
+  const esSancionable =
+    getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
+
+  useEffect(() => {
+    if (esSancionable) {
+      if (fields.length === 0) {
+        sumarMotivos()
+      }
+    } else {
+      remove()
+      setValue('acta', '')
+    }
+  }, [esSancionable])
 
   const submitEvent = async (data) => {
     await nuevoOperativoMoto(data)
@@ -185,6 +199,7 @@ function MotosForm({ handleClose, afterCreate }) {
       path="motos"
       setValue={setValue}
       steps={steps()}
+      reset={reset}
       handleClose={handleClose}
     >
       <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
@@ -194,7 +209,7 @@ function MotosForm({ handleClose, afterCreate }) {
             name="fecha"
             label="Fecha"
             disabled={!handleRol()}
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate() : ''}
           />
         </Grid>
         <Grid item xs={8}>
@@ -209,7 +224,7 @@ function MotosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomSelect
+          <CustomAutocomplete
             control={control}
             name="zona"
             label="Zona"
@@ -254,7 +269,7 @@ function MotosForm({ handleClose, afterCreate }) {
             label="Turno"
             rules={{ required: 'Elija una opcion' }}
             disabled={!handleRol()}
-            defaultValue={!handleRol() ? user.turno : null}
+            defaultValue={!handleRol() ? user.turno : ''}
             options={turnos}
           />
         </Grid>
@@ -269,11 +284,13 @@ function MotosForm({ handleClose, afterCreate }) {
         </Grid>
       </Grid>
       <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
-        <Grid container justifyContent="center" alignItems="center">
-          <h4>Motivos: {fields.length}</h4>
-          <AddBoxSharpIcon onClick={sumarMotivos} />
-          <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
-        </Grid>
+        {esSancionable && (
+          <Grid container justifyContent="center" alignItems="center">
+            <h4>Motivos: {fields.length}</h4>
+            <AddBoxSharpIcon onClick={sumarMotivos} />
+            <IndeterminateCheckBoxSharpIcon onClick={restarMotivos} />
+          </Grid>
+        )}
         <Grid item xs={8}>
           <CustomTextField
             control={control}
@@ -313,17 +330,18 @@ function MotosForm({ handleClose, afterCreate }) {
             options={allZonas}
           />
         </Grid>
-        {fields.map((item, index) => (
-          <Grid key={index} item xs={8}>
-            <CustomAutocomplete
-              control={control}
-              key={item.id}
-              name={`motivos.${index}.motivo`}
-              label={`Motivo ${index + 1}`}
-              options={motivos}
-            />
-          </Grid>
-        ))}
+        {esSancionable &&
+          fields.map((item, index) => (
+            <Grid key={index} item xs={8}>
+              <CustomAutocomplete
+                control={control}
+                key={item.id}
+                name={`motivos.${index}`}
+                label={`Motivo ${index + 1}`}
+                options={motivos}
+              />
+            </Grid>
+          ))}
         <Grid item xs={8}>
           <CustomSelect
             control={control}
@@ -332,8 +350,7 @@ function MotosForm({ handleClose, afterCreate }) {
             options={resolucion}
           />
         </Grid>
-        {(getValues('resolucion') === 'ACTA' ||
-          getValues('resolucion') === 'REMITIDO') && (
+        {esSancionable && (
           <Grid item xs={8}>
             <CustomTextField
               type="number"
@@ -342,9 +359,7 @@ function MotosForm({ handleClose, afterCreate }) {
               label="Acta"
               rules={{
                 required: {
-                  value:
-                    getValues('resolucion') === 'ACTA' ||
-                    getValues('resolucion') === 'REMITIDO',
+                  value: esSancionable,
                   message: 'Ingrese un nro de acta',
                 },
               }}

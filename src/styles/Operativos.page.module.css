@@ -1,7 +1,7 @@
 .Operativos {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 17px);
+  height: calc(100vh - 76px);
 }
 
 .header {

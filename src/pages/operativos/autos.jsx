@@ -16,6 +16,11 @@ function AutosPage() {
 
   const columns = [
     {
+      field: 'id',
+      headerName: 'ID',
+      width: 300,
+    },
+    {
       field: 'fecha',
       headerName: 'Fecha',
       width: 300,
@@ -72,6 +77,7 @@ function AutosPage() {
       columns={columns}
       operativos={data}
       loading={loading}
+      path="Autos"
     >
       <OperativosForm
         afterCreate={refresh}

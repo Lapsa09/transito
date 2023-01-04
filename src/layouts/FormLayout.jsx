@@ -154,7 +154,7 @@ function FormLayout({
             <Button
               type="submit"
               disabled={!isValid || activeStep === 0}
-              onClick={handleSubmit(submiting)}
+              onSubmit={handleSubmit(submiting)}
             >
               Guardar
             </Button>
@@ -162,7 +162,7 @@ function FormLayout({
         </Box>
       </div>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <WarningModal reset={nuevoOperativo} setOpen={setOpen} />
+        <WarningModal reset={nuevoOperativo} close={setOpen} />
       </Modal>
       <CustomSnackbar
         res={response}
@@ -173,7 +173,7 @@ function FormLayout({
   )
 }
 
-const WarningModal = ({ setOpen, reset }) => {
+const WarningModal = ({ close, reset }) => {
   return (
     <Box sx={adminStyle}>
       <p>
@@ -181,12 +181,12 @@ const WarningModal = ({ setOpen, reset }) => {
         ingresados
       </p>
       <Box sx={{ display: 'flex' }}>
-        <Button onClick={() => setOpen(false)}>No</Button>
+        <Button onClick={close}>No</Button>
         <Box sx={{ flex: '1 1 auto' }} />
         <Button
           onClick={() => {
             reset()
-            setOpen(false)
+            close()
           }}
         >
           Si

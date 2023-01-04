@@ -16,6 +16,11 @@ function MotosPage() {
 
   const columns = [
     {
+      field: 'id',
+      headerName: 'ID',
+      width: 300,
+    },
+    {
       field: 'fecha',
       headerName: 'Fecha',
       width: 300,
@@ -67,6 +72,7 @@ function MotosPage() {
       columns={columns}
       operativos={data}
       loading={loading}
+      path="Motos"
     >
       <MotosForm
         afterCreate={refresh}

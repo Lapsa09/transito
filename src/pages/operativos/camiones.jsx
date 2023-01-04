@@ -16,6 +16,11 @@ function CamionesPage() {
 
   const columns = [
     {
+      field: 'id',
+      headerName: 'ID',
+      width: 300,
+    },
+    {
       field: 'fecha',
       headerName: 'Fecha',
       width: 300,
@@ -65,6 +70,7 @@ function CamionesPage() {
       columns={columns}
       operativos={data}
       loading={loading}
+      path="Camiones"
     >
       <OperativosForm
         afterCreate={refresh}

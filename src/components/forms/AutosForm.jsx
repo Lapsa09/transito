@@ -144,6 +144,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       submitEvent={submitEvent}
       error={error}
       path="autos"
+      reset={reset}
       setValue={setValue}
     >
       <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
@@ -218,7 +219,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomSelect
+          <CustomAutocomplete
             control={control}
             name="zona"
             label="Zona"

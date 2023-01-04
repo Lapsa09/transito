@@ -28,7 +28,7 @@ export default function Home() {
           title="Tablero de Control OVT"
           width="100%"
           height="750"
-          src="https://app.powerbi.com/reportEmbed?reportId=9932ac42-95de-48a7-a501-9118a0905a7f&autoAuth=true&ctid=4d5bce01-0858-4559-ab59-4a838e82866b"
+          src="https://app.powerbi.com/reportEmbed?reportId=1851e267-4ce8-4405-a8b5-d6ba66c36d81&autoAuth=true&ctid=4d5bce01-0858-4559-ab59-4a838e82866b"
           frameBorder="1"
           allowFullScreen="true"
         ></iframe>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   getAllZonas,
   getZonasVL,
@@ -139,6 +139,16 @@ function OperativosForm({ handleClose, afterCreate }) {
     )
   }
 
+  const esSancionable =
+    getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
+
+  useEffect(() => {
+    if (!esSancionable) {
+      setValue('acta', '')
+      setValue('motivo', '')
+    }
+  }, [esSancionable])
+
   return (
     <Layout
       error={error}
@@ -150,6 +160,7 @@ function OperativosForm({ handleClose, afterCreate }) {
       handleSubmit={handleSubmit}
       submitEvent={submitEvent}
       path="camiones"
+      reset={reset}
       setValue={setValue}
     >
       <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
@@ -171,7 +182,7 @@ function OperativosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         <Grid item xs={8}>
-          <CustomSelect
+          <CustomAutocomplete
             control={control}
             name="zona"
             label="Zona"
@@ -274,22 +285,6 @@ function OperativosForm({ handleClose, afterCreate }) {
         <Grid item xs={8}>
           <CustomTextField control={control} name="licencia" label="Licencia" />
         </Grid>
-        {getValues('resolucion') === 'ACTA' && (
-          <Grid item xs={8}>
-            <CustomTextField
-              type="number"
-              control={control}
-              name="acta"
-              label="Acta"
-              rules={{
-                required: {
-                  value: getValues('resolucion') === 'ACTA',
-                  message: 'Ingrese un nro de acta',
-                },
-              }}
-            />
-          </Grid>
-        )}
         <Grid item xs={8}>
           <CustomSelect
             control={control}
@@ -298,8 +293,20 @@ function OperativosForm({ handleClose, afterCreate }) {
             options={resolucion}
           />
         </Grid>
-        {(getValues('resolucion') === 'ACTA' ||
-          getValues('resolucion') === 'REMITIDO') && (
+        {esSancionable && (
+          <Grid item xs={8}>
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              label="Acta"
+              rules={{
+                required: 'Ingrese un nro de acta',
+              }}
+            />
+          </Grid>
+        )}
+        {esSancionable && (
           <Grid item xs={8}>
             <CustomAutocomplete
               control={control}

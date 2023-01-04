@@ -9,7 +9,7 @@ function CustomTimePicker({
   name,
   control,
   disabled = false,
-  defaultValue,
+  defaultValue = '',
 }) {
   const {
     field,

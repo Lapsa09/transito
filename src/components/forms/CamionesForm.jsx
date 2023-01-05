@@ -145,7 +145,7 @@ function OperativosForm({ handleClose, afterCreate }) {
   useEffect(() => {
     if (!esSancionable) {
       setValue('acta', '')
-      setValue('motivo', '')
+      setValue('motivo', null)
     }
   }, [esSancionable])
 

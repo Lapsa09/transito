@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -114,6 +114,9 @@ function OperativosForm({ handleClose, afterCreate }) {
     ]
   }
 
+  const esSancionable =
+    getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
+
   const submitEvent = async (data) => {
     await nuevoOperativoAuto(data)
     await afterCreate()
@@ -132,6 +135,13 @@ function OperativosForm({ handleClose, afterCreate }) {
       { keepDefaultValues: true }
     )
   }
+
+  useEffect(() => {
+    if (!esSancionable) {
+      setValue('acta', '')
+      setValue('motivo', null)
+    }
+  }, [esSancionable])
 
   return (
     <Layout
@@ -284,8 +294,7 @@ function OperativosForm({ handleClose, afterCreate }) {
             options={resolucion}
           />
         </Grid>
-        {(getValues('resolucion') === 'ACTA' ||
-          getValues('resolucion') === 'REMITIDO') && (
+        {esSancionable && (
           <>
             <Grid item xs={8}>
               <CustomAutocomplete
@@ -302,10 +311,7 @@ function OperativosForm({ handleClose, afterCreate }) {
                 name="acta"
                 label="Acta"
                 rules={{
-                  required: {
-                    value: getValues('resolucion') === 'ACTA',
-                    message: 'Ingrese un nro de acta',
-                  },
+                  required: 'Ingrese un nro de acta',
                 }}
               />
             </Grid>

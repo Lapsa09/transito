@@ -20,7 +20,7 @@ import {
 } from '../ui'
 import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
-import { Grid } from '@mui/material'
+import { Checkbox, FormControlLabel, Grid } from '@mui/material'
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user)
@@ -33,6 +33,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     watch,
     setValue,
     formState: { isValid },
+    trigger,
   } = useForm({
     mode: 'all',
     defaultValues: { lpcarga: user?.legajo },
@@ -48,6 +49,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     getMotivos(),
   ])
   const [activeStep, setActiveStep] = useState(0)
+  const [extranjero, setExtranjero] = useState(false)
 
   const steps = () => {
     const [
@@ -149,6 +151,10 @@ function OperativosForm({ handleClose, afterCreate }) {
     }
   }, [esSancionable])
 
+  useEffect(() => {
+    trigger('dominio')
+  }, [extranjero])
+
   return (
     <Layout
       error={error}
@@ -237,10 +243,20 @@ function OperativosForm({ handleClose, afterCreate }) {
             rules={{
               required: 'Inserte una patente',
               pattern: {
-                value: DOMINIO_PATTERN,
+                value: !extranjero ? DOMINIO_PATTERN : /./,
                 message: 'Inserte una patente valida',
               },
             }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                title="Extranjero"
+                value={extranjero}
+                onChange={() => setExtranjero((e) => !e)}
+              />
+            }
+            label="Extranjero"
           />
         </Grid>
         <Grid item xs={8}>
@@ -267,6 +283,9 @@ function OperativosForm({ handleClose, afterCreate }) {
             options={allZonas}
           />
         </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="licencia" label="Licencia" />
+        </Grid>
         <Grid
           item
           container
@@ -281,9 +300,6 @@ function OperativosForm({ handleClose, afterCreate }) {
           <Grid item xs={4}>
             <CustomSwitch control={control} name="carga" label="Carga" />
           </Grid>
-        </Grid>
-        <Grid item xs={8}>
-          <CustomTextField control={control} name="licencia" label="Licencia" />
         </Grid>
         <Grid item xs={8}>
           <CustomSelect

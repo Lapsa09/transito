@@ -56,6 +56,7 @@ function NuevoCliente() {
                 label="Cliente"
                 className={styles.inputs}
                 translateChoice={false}
+                optionText="name"
                 isRequired
               />
             </ReferenceInput>
@@ -105,7 +106,7 @@ function NuevoCliente() {
             />
             <BooleanInput source="feriado" label="Es feriado?" />
           </Grid>
-          <Grid container item columns={{ xs: 8, md: 16 }}>
+          <Grid container item columns={{ xs: 8, md: 1 }}>
             <ArrayInput source="operarios">
               <SimpleFormIterator>
                 <FormDataConsumer>

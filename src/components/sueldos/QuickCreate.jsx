@@ -59,8 +59,8 @@ export function CreateCliente({ refetch }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    create('clientes/list', { data: { cliente: value } })
-    refetch()
+    await create('clientes/list', { data: { cliente: value } })
+    await refetch()
   }
   return (
     <QuickCreate
@@ -85,7 +85,7 @@ export function CreateOperario() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    create('operarios/list', { data: { ...value } })
+    await create('operarios/list', { data: { ...value } })
   }
   return (
     <QuickCreate

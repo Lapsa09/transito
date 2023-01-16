@@ -46,6 +46,10 @@ body {
   margin-top: 0 !important;
 }
 
+.RaSimpleFormIterator-form {
+  width: 40%;
+}
+
 .RaSimpleFormIterator-form > .MuiGrid-root {
   width: 80%;
 }

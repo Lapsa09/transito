@@ -56,16 +56,6 @@ function ClientesServicios() {
             maximumFractionDigits: 0,
           }}
         />
-        <NumberField
-          source="acopio"
-          label="Acopio"
-          locales="es-AR"
-          options={{
-            style: 'currency',
-            currency: 'ARS',
-            maximumFractionDigits: 0,
-          }}
-        />
         <EditButton />
       </Datagrid>
     </ListContextProvider>

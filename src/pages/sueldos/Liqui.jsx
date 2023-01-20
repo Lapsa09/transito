@@ -2,25 +2,20 @@ import React from 'react'
 import {
   BulkExportButton,
   Datagrid,
-  DateField,
   FilterForm,
   FunctionField,
   ListContextProvider,
   NumberField,
   Pagination,
   SelectInput,
-  TextField,
-  useList,
   useListController,
-  useRecordContext,
   useTranslate,
 } from 'react-admin'
-import { ServiciosMemo } from '../../components'
 import { refresh } from '../../utils'
 
 const customExportFunction = (data, selectedIds, exporter) => {
-  const res = data.filter((row) => selectedIds.includes(row.id))
-  exporter(res, '_', '_', 'servicios')
+  const res = data.find((row) => selectedIds.includes(row.id)).servicios
+  exporter(res, null, null, 'servicios')
 }
 
 function Liqui() {
@@ -79,8 +74,6 @@ function Liqui() {
           <FilterForm filters={filters} />
         </div>
         <Datagrid
-          expandSingle
-          expand={<LiquiServicios />}
           bulkActionButtons={
             <BulkExportButton
               exporter={(items) =>
@@ -101,48 +94,6 @@ function Liqui() {
         </Datagrid>
         <Pagination />
       </div>
-    </ListContextProvider>
-  )
-}
-
-function LiquiServicios() {
-  const record = useRecordContext()
-  const listContext = useList({ data: record.servicios })
-  return (
-    <ListContextProvider value={listContext}>
-      <Datagrid
-        expand={<ServiciosMemo />}
-        isRowExpandable={(record) => !!record.operarios}
-        rowStyle={(record) => ({
-          backgroundColor: record.cancelado ? 'red' : 'white',
-        })}
-      >
-        <DateField
-          textAlign="right"
-          source="fecha_servicio"
-          label="Fecha del servicio"
-        />
-        <TextField textAlign="right" source="memo" label="Nº Memo" />
-        <TextField textAlign="right" source="cliente" />
-        <NumberField source="recibo" label="Nº Recibo" />
-        <DateField
-          textAlign="right"
-          source="fecha_recibo"
-          label="Fecha del recibo"
-        />
-        <NumberField
-          source="importe_recibo"
-          label="Importe del recibo"
-          locales="es-AR"
-          options={{ style: 'currency', currency: 'ARS' }}
-        />
-        <NumberField
-          source="importe_servicio"
-          label="Importe del servicio"
-          locales="es-AR"
-          options={{ style: 'currency', currency: 'ARS' }}
-        />
-      </Datagrid>
     </ListContextProvider>
   )
 }

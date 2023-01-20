@@ -116,53 +116,58 @@ function Header() {
               {user.rol !== 'ADMIN' ? (
                 <h3>Legajo: {user.legajo}</h3>
               ) : (
-                pages.map((page) =>
-                  page.links ? (
-                    <ListItem
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        padding: '0',
-                      }}
-                      key={page.name}
-                    >
-                      <ListItemButton
-                        onTouchStart={() => onTouchStart(page.name)}
-                        onMouseDown={() => onTouchStart(page.name)}
-                      >
-                        <h3 className={styles.item}>{page.name}</h3>
-                        {dropdown === page.name ? (
-                          <ExpandMore />
-                        ) : (
-                          <ChevronRight />
-                        )}
-                      </ListItemButton>
-                      <Collapse
-                        sx={{ marginLeft: '20px' }}
-                        in={dropdown === page.name}
-                      >
-                        {page.links.map((link) => (
-                          <ListItemButton key={link.title}>
-                            <Link className={styles.subitem} to={link.link}>
-                              {link.title}
-                            </Link>
-                          </ListItemButton>
-                        ))}
-                      </Collapse>
-                    </ListItem>
-                  ) : (
-                    <ListItem key={page.name}>
-                      <Link
-                        onClick={handleCloseNavMenu}
-                        to={page.link}
-                        className={styles.item}
-                      >
-                        {page.name}
-                      </Link>
-                    </ListItem>
+                pages
+                  .filter(
+                    (page) =>
+                      user.rol === 'ADMIN' || user.rol === page.permission
                   )
-                )
+                  .map((page) =>
+                    page.links ? (
+                      <ListItem
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          padding: '0',
+                        }}
+                        key={page.name}
+                      >
+                        <ListItemButton
+                          onTouchStart={() => onTouchStart(page.name)}
+                          onMouseDown={() => onTouchStart(page.name)}
+                        >
+                          <h3 className={styles.item}>{page.name}</h3>
+                          {dropdown === page.name ? (
+                            <ExpandMore />
+                          ) : (
+                            <ChevronRight />
+                          )}
+                        </ListItemButton>
+                        <Collapse
+                          sx={{ marginLeft: '20px' }}
+                          in={dropdown === page.name}
+                        >
+                          {page.links.map((link) => (
+                            <ListItemButton key={link.title}>
+                              <Link className={styles.subitem} to={link.link}>
+                                {link.title}
+                              </Link>
+                            </ListItemButton>
+                          ))}
+                        </Collapse>
+                      </ListItem>
+                    ) : (
+                      <ListItem key={page.name}>
+                        <Link
+                          onClick={handleCloseNavMenu}
+                          to={page.link}
+                          className={styles.item}
+                        >
+                          {page.name}
+                        </Link>
+                      </ListItem>
+                    )
+                  )
               )}
             </List>
           </Drawer>
@@ -177,10 +182,11 @@ function Header() {
             marginInline: '60px',
           }}
         >
-          {user.rol !== 'ADMIN' ? (
-            <h3>Legajo: {user.legajo}</h3>
-          ) : (
-            pages.map((page) => (
+          {pages
+            .filter(
+              (page) => user.rol === 'ADMIN' || user.rol === page.permission
+            )
+            .map((page) => (
               <div
                 onMouseEnter={() => onMouseEnter(page.name)}
                 onMouseLeave={onMouseLeave}
@@ -201,8 +207,7 @@ function Header() {
                   </Link>
                 )}
               </div>
-            ))
-          )}
+            ))}
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
         <Box sx={{ ...basicMaxHeight }}>

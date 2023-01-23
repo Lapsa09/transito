@@ -1,7 +1,7 @@
 import React from 'react'
 import {
-  BulkExportButton,
   Datagrid,
+  ExportButton,
   FilterForm,
   FunctionField,
   ListContextProvider,
@@ -13,9 +13,9 @@ import {
 } from 'react-admin'
 import { refresh } from '../../utils'
 
-const customExportFunction = (data, selectedIds, exporter) => {
-  const res = data.find((row) => selectedIds.includes(row.id)).servicios
-  exporter(res, null, null, 'servicios')
+const customExportFunction = (data, exporter) => {
+  const res = data.servicios
+  exporter(res, null, null, `${data.mes.name.trim()} ${data.año}`)
 }
 
 function Liqui() {
@@ -73,25 +73,21 @@ function Liqui() {
           <h1>Liquidacion x Mes</h1>
           <FilterForm filters={filters} />
         </div>
-        <Datagrid
-          bulkActionButtons={
-            <BulkExportButton
-              exporter={(items) =>
-                customExportFunction(
-                  items,
-                  listContext.selectedIds,
-                  listContext.exporter
-                )
-              }
-            />
-          }
-        >
+        <Datagrid isRowExpandable={() => false}>
           <FunctionField
             label="Mes"
             render={(record) => translate(record.mes.name)}
           />
           <NumberField source="año" />
+          <FunctionField
+            render={(row) => (
+              <ExportButton
+                exporter={() => customExportFunction(row, listContext.exporter)}
+              />
+            )}
+          />
         </Datagrid>
+
         <Pagination />
       </div>
     </ListContextProvider>

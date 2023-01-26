@@ -1,11 +1,19 @@
 import { Grid, InputAdornment, TextField } from '@mui/material'
 import { useEffect } from 'react'
-import { useGetOne, useInput } from 'react-admin'
+import { useGetList, useGetOne, useInput } from 'react-admin'
 import { DatePickerComponent } from './TimePicker'
 import styles from '../../styles/Sueldos.module.css'
 import { DateTime } from 'luxon'
 
-const getImporteOperario = (_dia, _inicio, _fin, isFeriado, importe) => {
+const getImporteOperario = (
+  _dia,
+  _inicio,
+  _fin,
+  isFeriado,
+  importe,
+  precioNormal,
+  precioPico
+) => {
   if ([_dia, _inicio, _fin, isFeriado].some((e) => e == null)) {
     return importe
   }
@@ -17,15 +25,17 @@ const getImporteOperario = (_dia, _inicio, _fin, isFeriado, importe) => {
   const diff = fin.diff(inicio, 'hours').hours
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio.hour >= 8 && fin.hour <= 20) {
-      return 644 * parseInt(diff)
+      return precioNormal * parseInt(diff)
     }
   }
-  return 1036 * parseInt(diff)
+  return precioPico * parseInt(diff)
 }
 
 export const OpInput = ({ source, formData, scopedFormData }) => {
+  const { data: precios } = useGetList('precios')
   const { fecha_servicio, feriado } = formData
   const { hora_inicio, hora_fin } = scopedFormData
+  const { precio_normal, precio_pico } = precios
 
   const { field } = useInput({
     source,
@@ -37,7 +47,9 @@ export const OpInput = ({ source, formData, scopedFormData }) => {
     hora_inicio,
     hora_fin,
     feriado,
-    field.value
+    field.value,
+    precio_normal,
+    precio_pico
   )
 
   useEffect(() => {

@@ -10,20 +10,21 @@ import {
   Button,
   FunctionField,
   useUpdate,
+  useListController,
 } from 'react-admin'
-import { refresh } from '../../utils'
 
-export const ServiciosMemo = () => {
+export const ServiciosMemo = ({ name }) => {
   const record = useRecordContext()
   const listContext = useList({ data: record.operarios })
+  const { refetch } = useListController({ resource: name })
   const [update] = useUpdate()
 
-  const cancelarOperario = (record) => {
-    update('operario/cliente', {
+  const cancelarOperario = async (record) => {
+    await update('operario/cliente', {
       id: record.id_servicio,
       data: { cancelado: !record.cancelado, legajo: record.legajo },
     })
-    refresh.sueldos()
+    await refetch()
   }
   return (
     <ListContextProvider value={listContext}>

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { CreateButton } from 'react-admin'
+import { CreateButton, EditButton } from 'react-admin'
 
 export const Dashboard = () => {
   return (
@@ -7,6 +7,7 @@ export const Dashboard = () => {
       <h1>This is the dashboard</h1>
 
       <CreateButton resource="clientes" label="Nuevo servicio" />
+      <EditButton resource="precios" label="Editar precios" />
     </div>
   )
 }

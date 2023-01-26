@@ -1,5 +1,11 @@
 import React from 'react'
-import { Admin, Layout, resolveBrowserLocale, Resource } from 'react-admin'
+import {
+  Admin,
+  Layout,
+  memoryStore,
+  resolveBrowserLocale,
+  Resource,
+} from 'react-admin'
 import jsonServerProvider from 'ra-data-json-server'
 import {
   Dashboard,
@@ -9,6 +15,7 @@ import {
   Servicios,
   EditServicio,
   Liqui,
+  EditPrecio,
 } from '.'
 import polyglotI18nProvider from 'ra-i18n-polyglot'
 import spanishMessages from '@blackbox-vision/ra-language-spanish'
@@ -45,25 +52,23 @@ const Sueldos = () => {
       layout={CustomLayout}
       dashboard={Dashboard}
       dataProvider={restProvider}
+      store={memoryStore()}
       basename="/sueldos"
     >
-      <Resource
-        name="clientes"
-        list={Clientes}
-        create={NuevoCliente}
-        edit={EditServicio}
-      />
+      <Resource name="clientes" list={Clientes} create={NuevoCliente} />
       <Resource name="operarios" list={Operarios} />
       <Resource
         name="servicios"
         list={Servicios}
-        options={{ label: 'Proximos Servicios' }}
+        edit={EditServicio}
+        options={{ label: 'Todos los Servicios' }}
       />
       <Resource
-        name="liqui"
+        name="servicios/liqui"
         list={Liqui}
         options={{ label: 'Liquidacion x Mes' }}
       />
+      <Resource name="precios" edit={EditPrecio} />
     </Admin>
   )
 }

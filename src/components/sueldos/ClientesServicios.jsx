@@ -3,13 +3,13 @@ import {
   Datagrid,
   DateField,
   EditButton,
+  FunctionField,
   ListContextProvider,
   NumberField,
-  TextField,
   useList,
   useRecordContext,
 } from 'react-admin'
-import { ServiciosMemo } from '.'
+import { CreateMemo, ServiciosMemo } from '.'
 
 function ClientesServicios() {
   const record = useRecordContext()
@@ -22,9 +22,15 @@ function ClientesServicios() {
         rowStyle={(record) => ({
           backgroundColor: record.cancelado ? 'red' : 'white',
         })}
-        expand={<ServiciosMemo />}
+        expand={<ServiciosMemo name="clientes" />}
       >
-        <TextField textAlign="right" source="memo" label="Nº Memo" />
+        <FunctionField
+          textAlign="right"
+          label="Nº Memo"
+          render={(record) =>
+            record.memo || <CreateMemo id={record.id} resource="clientes" />
+          }
+        />
         <NumberField source="recibo" label="Nº Recibo" />
         <DateField
           textAlign="right"
@@ -56,7 +62,7 @@ function ClientesServicios() {
             maximumFractionDigits: 0,
           }}
         />
-        <EditButton />
+        <EditButton resource="servicios" />
       </Datagrid>
     </ListContextProvider>
   )

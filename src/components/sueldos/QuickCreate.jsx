@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { Add } from '@mui/icons-material'
 import styles from '../../styles/Sueldos.module.css'
-import { useCreate } from 'react-admin'
+import { useCreate, useGetList, useUpdate } from 'react-admin'
 
 function QuickCreate({ children, handleSubmit, title, reset }) {
   const [open, setOpen] = useState(false)
@@ -52,15 +52,19 @@ function QuickCreate({ children, handleSubmit, title, reset }) {
   )
 }
 
-export function CreateCliente({ refetch }) {
+export function CreateCliente() {
+  const { refetch } = useGetList('clientes/list')
   const [value, setValue] = useState('')
   const reset = () => setValue('')
   const [create] = useCreate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await create('clientes/list', { data: { cliente: value } })
-    await refetch()
+    await create(
+      'clientes/list',
+      { data: { cliente: value } },
+      { onSuccess: await refetch() }
+    )
   }
   return (
     <QuickCreate
@@ -79,13 +83,18 @@ export function CreateCliente({ refetch }) {
 }
 
 export function CreateOperario() {
+  const { refetch } = useGetList('operarios/list')
   const [value, setValue] = useState({ id: '', name: '' })
-  const reset = () => setValue('')
+  const reset = () => setValue({ id: '', name: '' })
   const [create] = useCreate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await create('operarios/list', { data: { ...value } })
+    await create(
+      'operarios/list',
+      { data: value },
+      { onSuccess: await refetch() }
+    )
   }
   return (
     <QuickCreate
@@ -111,30 +120,60 @@ export function CreateOperario() {
   )
 }
 
-export function CreateRecibo({ setData }) {
+export function CreateMemo({ id, resource }) {
+  const { refetch } = useGetList(resource)
+  const [open, setOpen] = useState(false)
   const [value, setValue] = useState('')
-  const reset = () => setValue('')
-  const handleSubmit = (e) => {
+  const [update] = useUpdate()
+
+  const handleExit = () => {
+    setValue('')
+    setOpen(false)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setData((data) => [
-      ...data,
+
+    await update(
+      'memos',
+      { id, data: { memo: value } },
       {
-        id: 0,
-        recibo: value,
-        fecha_recibo: new Date(),
-        importe_recibo: '',
-      },
-    ])
+        onSuccess: refetch,
+        onSettled: handleExit,
+        onError: (e) => console.log(e),
+      }
+    )
   }
   return (
-    <QuickCreate handleSubmit={handleSubmit} reset={reset} title="Nuevo Recibo">
-      <TextField
-        type="number"
-        className={styles.inputs}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        label="Nº de recibo"
-      />
-    </QuickCreate>
+    <Fragment>
+      <Button
+        className={styles.button}
+        onClick={() => setOpen(true)}
+        label="Agregar Memo"
+      >
+        Agregar Memo
+      </Button>
+      <Dialog
+        fullWidth
+        open={open}
+        onClose={handleExit}
+        aria-label="Create post"
+      >
+        <DialogTitle>Agregar Memo</DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <TextField
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              label="Memo"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleExit}>Cancelar</Button>
+            <Button type="submit">Guardar</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Fragment>
   )
 }

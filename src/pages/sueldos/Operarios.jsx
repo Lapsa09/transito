@@ -11,11 +11,12 @@ import {
   TextInput,
   FunctionField,
   useTranslate,
+  ReferenceInput,
 } from 'react-admin'
 import { OperariosServicios } from '../../components'
 
 export const Operarios = () => {
-  const { data, ...listContext } = useListController()
+  const listContext = useListController()
   const translate = useTranslate()
 
   const filters = [
@@ -24,38 +25,34 @@ export const Operarios = () => {
       source="q"
       alwaysOn
     />,
-    <SelectInput
+    <ReferenceInput
       label="Buscar por mes"
       source="m"
+      reference="filters/months"
       alwaysOn
-      choices={[...new Set(data?.map((d) => d.mes))]
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.place === value.place && t.name === value.name
-            )
-        )
-        .sort((a, b) => a.id - b.id)}
-    />,
-    <SelectInput
+    >
+      <SelectInput
+        translateChoice={false}
+        label="Buscar por mes"
+        optionText={(row) => translate(row.name).trim()}
+      />
+    </ReferenceInput>,
+    <ReferenceInput
       label="Buscar por año"
       source="y"
+      reference="filters/years"
       alwaysOn
-      translateChoice={false}
-      choices={[...new Set(data?.map((d) => d.año))]
-        .sort((a, b) => a.id - b.id)
-        .map((c) => ({ id: c, name: c }))}
-    />,
+    >
+      <SelectInput
+        translateChoice={false}
+        optionText="name"
+        label="Buscar por año"
+      />
+    </ReferenceInput>,
   ]
 
   return (
-    <ListContextProvider
-      value={{
-        data,
-        ...listContext,
-      }}
-    >
+    <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{

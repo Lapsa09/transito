@@ -1,13 +1,14 @@
 import React from 'react'
 import {
   Datagrid,
-  TextField,
   useRecordContext,
   ListContextProvider,
   useList,
   NumberField,
   DateField,
+  FunctionField,
 } from 'react-admin'
+import { CreateMemo } from '.'
 
 export const OperariosServicios = () => {
   const record = useRecordContext()
@@ -15,7 +16,13 @@ export const OperariosServicios = () => {
   return (
     <ListContextProvider value={listContext}>
       <Datagrid isRowSelectable={() => false}>
-        <TextField textAlign="right" source="memo" label="Nº Memo" />
+        <FunctionField
+          textAlign="right"
+          label="Nº Memo"
+          render={(record) =>
+            record.memo || <CreateMemo id={record.id} resource="operarios" />
+          }
+        />
         <NumberField source="recibo" label="Nº Recibo" />
         <DateField
           textAlign="right"

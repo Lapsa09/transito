@@ -7,59 +7,55 @@ import {
   ListContextProvider,
   NumberField,
   Pagination,
+  ReferenceInput,
   SelectInput,
   useListController,
   useTranslate,
 } from 'react-admin'
-import { refresh } from '../../utils'
-
-const customExportFunction = (data, exporter) => {
-  const res = data.servicios
-  exporter(res, null, null, `${data.mes.name.trim()} ${data.año}`)
-}
 
 function Liqui() {
-  const { data, ...listContext } = useListController()
-
-  refresh.sueldos = listContext.refetch()
+  const listContext = useListController()
 
   const translate = useTranslate()
 
+  const customExportFunction = (data) => {
+    const res = data.servicios.filter((servicio) => !servicio.cancelado)
+    listContext.exporter(
+      res,
+      null,
+      null,
+      `${translate(data.mes.name.trim())} ${data.año}`
+    )
+  }
+
   const filters = [
-    <SelectInput
+    <ReferenceInput
       label="Buscar por mes"
       source="m"
+      reference="filters/months"
       alwaysOn
-      choices={[...new Set(data?.map((d) => d.mes))]
-        .sort((a, b) => a.id - b.id)
-        .map((fecha) => ({
-          id: fecha.id,
-          name: translate(fecha.name),
-        }))
-        .slice(0, 20)}
-      translateChoice={false}
-    />,
-    <SelectInput
+    >
+      <SelectInput
+        translateChoice={false}
+        label="Buscar por mes"
+        optionText={(row) => translate(row.name).trim()}
+      />
+    </ReferenceInput>,
+    <ReferenceInput
       label="Buscar por año"
       source="y"
+      reference="filters/years"
       alwaysOn
-      choices={[...new Set(data?.map((d) => d.año))]
-        .sort((a, b) => a - b)
-        .map((año) => ({
-          id: año,
-          name: año,
-        }))
-        .slice(0, 20)}
-      translateChoice={false}
-    />,
+    >
+      <SelectInput
+        translateChoice={false}
+        optionText="name"
+        label="Buscar por año"
+      />
+    </ReferenceInput>,
   ]
   return (
-    <ListContextProvider
-      value={{
-        data,
-        ...listContext,
-      }}
-    >
+    <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
@@ -81,9 +77,7 @@ function Liqui() {
           <NumberField source="año" />
           <FunctionField
             render={(row) => (
-              <ExportButton
-                exporter={() => customExportFunction(row, listContext.exporter)}
-              />
+              <ExportButton exporter={() => customExportFunction(row)} />
             )}
           />
         </Datagrid>

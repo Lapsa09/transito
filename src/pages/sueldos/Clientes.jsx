@@ -10,17 +10,14 @@ import {
   useListController,
 } from 'react-admin'
 import { ClientesMes } from '../../components'
-import { refresh } from '../../utils'
 
 function Clientes() {
-  const { data, ...listContext } = useListController()
-
-  refresh.sueldos = listContext.refetch()
+  const listContext = useListController()
 
   const filters = [<TextInput label="Buscar por cliente" source="q" alwaysOn />]
 
   return (
-    <ListContextProvider value={{ data, ...listContext }}>
+    <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{

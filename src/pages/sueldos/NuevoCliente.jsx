@@ -4,15 +4,13 @@ import {
   ArrayInput,
   AutocompleteInput,
   BooleanInput,
+  CheckboxGroupInput,
   Create,
   FormDataConsumer,
-  RadioButtonGroupInput,
   ReferenceInput,
   SimpleForm,
   SimpleFormIterator,
-  TextInput,
   useCreate,
-  useGetList,
 } from 'react-admin'
 import {
   CreateCliente,
@@ -28,7 +26,6 @@ import styles from '../../styles/Sueldos.module.css'
 import { history } from '../../utils'
 
 function NuevoCliente() {
-  const { refetch } = useGetList('clientes/list')
   const [create] = useCreate()
   const save = useCallback(
     (values) => {
@@ -60,24 +57,15 @@ function NuevoCliente() {
                 isRequired
               />
             </ReferenceInput>
-            <CreateCliente refetch={refetch} />
-          </Grid>
-          <Grid item xs={8}>
-            <TextInput
-              className={styles.inputs}
-              source="memo"
-              label="Nº Memo"
-              isRequired
-            />
+            <CreateCliente />
           </Grid>
           <FormDataConsumer>
             {({ formData }) =>
               formData.id_cliente && (
                 <Grid item xs={8}>
-                  <RadioButtonGroupInput
+                  <CheckboxGroupInput
                     source="medio_pago"
                     label="Medio de pago"
-                    defaultValue="recibo"
                     translateChoice={false}
                     choices={[
                       { id: 'recibo', name: 'Recibo' },
@@ -91,7 +79,13 @@ function NuevoCliente() {
           <FormDataConsumer>
             {({ formData, ...rest }) =>
               formData.id_cliente &&
-              (formData.medio_pago === 'recibo' ? (
+              (formData.medio_pago.includes('recibo') &&
+              formData.medio_pago.includes('acopio') ? (
+                <>
+                  <Recibo />
+                  <Acopio formData={formData} {...rest} />
+                </>
+              ) : formData.medio_pago.includes('recibo') ? (
                 <Recibo />
               ) : (
                 <Acopio formData={formData} {...rest} />

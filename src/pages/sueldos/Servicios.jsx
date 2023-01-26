@@ -1,94 +1,113 @@
+import { Chip } from '@mui/material'
 import { DateTime } from 'luxon'
 import React from 'react'
 import {
+  Button,
   Datagrid,
   DateField,
+  DateInput,
+  EditButton,
+  ExportButton,
+  FilterButton,
   FilterForm,
+  FunctionField,
   ListContextProvider,
-  NumberField,
   Pagination,
+  ReferenceInput,
   SelectInput,
   TextField,
+  TextInput,
   useListController,
+  useTranslate,
 } from 'react-admin'
-import { ServiciosMemo } from '../../components'
-import { refresh } from '../../utils'
+import { CreateMemo, ServiciosMemo } from '../../components'
 
 function Servicios() {
-  const { data, ...listContext } = useListController()
+  const translate = useTranslate()
 
-  refresh.sueldos = listContext.refetch()
+  const listContext = useListController({
+    filterDefaultValues: { d: DateTime.now().toFormat('yyyy-MM-dd') },
+  })
 
   const filters = [
-    <SelectInput
-      label="Buscar por dia"
-      source="d"
-      alwaysOn
-      choices={[...new Set(data?.map((d) => d.fecha_servicio))]
-        .sort((a, b) => a - b)
-        .map((fecha) => ({
-          id: fecha,
-          name: DateTime.fromISO(fecha).toLocaleString(DateTime.DATE_SHORT),
-        }))
-        .slice(0, 20)}
-      translateChoice={false}
+    <DateInput label="Buscar por dia" source="d" alwaysOn />,
+    <ReferenceInput
+      label="Buscar por mes"
+      source="m"
+      reference="filters/months"
+    >
+      <SelectInput
+        translateChoice={false}
+        label="Buscar por mes"
+        optionText={(row) => translate(row.name).trim()}
+      />
+    </ReferenceInput>,
+    <ReferenceInput label="Buscar por año" source="y" reference="filters/years">
+      <SelectInput
+        translateChoice={false}
+        optionText="name"
+        label="Buscar por año"
+      />
+    </ReferenceInput>,
+    <TextInput source="q" label="Buscar por nombre o memo" />,
+    <Chip
+      source="no_memo"
+      label="Buscar los sin memos"
+      defaultValue={true}
+      sx={{ marginBottom: 1.5 }}
     />,
   ]
 
+  const customExport = (data) => {
+    const res = data.map((row) => row.operarios).filter((row) => !row.cancelado)
+
+    listContext.exporter(res, null, null, 'servicios del dia')
+  }
+
   return (
-    <ListContextProvider value={{ data, ...listContext }}>
+    <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            alignSelf: 'flex-end',
             width: '95%',
           }}
         >
-          <h1>Proximos Servicios</h1>
+          <h1>Todos los Servicios</h1>
+          <Button
+            label="Borrar Filtros"
+            onClick={() => listContext.setFilters({})}
+          />
           <FilterForm filters={filters} />
+          <FilterButton filters={filters} />
+          <ExportButton exporter={customExport} />
         </div>
         <Datagrid
           expandSingle
           isRowSelectable={() => false}
-          expand={<ServiciosMemo />}
+          isRowExpandable={(row) => row.operarios.length === 0}
+          expand={<ServiciosMemo name="servicios" />}
           rowStyle={(record) => ({
             backgroundColor: record.cancelado ? 'red' : 'white',
           })}
         >
+          <TextField textAlign="right" source="cliente" />
           <DateField
             textAlign="right"
             source="fecha_servicio"
             label="Fecha del servicio"
           />
-          <TextField textAlign="right" source="memo" label="Nº Memo" />
-          <TextField textAlign="right" source="cliente" />
-          <NumberField source="recibo" label="Nº Recibo" />
-          <DateField
+          <FunctionField
+            source="memo"
             textAlign="right"
-            source="fecha_recibo"
-            label="Fecha del recibo"
+            label="Nº Memo"
+            render={(record) =>
+              record.memo || <CreateMemo id={record.id} resource="servicios" />
+            }
           />
-          <NumberField
-            source="importe_recibo"
-            label="Importe del recibo"
-            locales="es-AR"
-            options={{ style: 'currency', currency: 'ARS' }}
-          />
-          <NumberField
-            source="importe_servicio"
-            label="Importe del servicio"
-            locales="es-AR"
-            options={{ style: 'currency', currency: 'ARS' }}
-          />
-          <NumberField
-            source="acopio"
-            label="Acopio"
-            locales="es-AR"
-            options={{ style: 'currency', currency: 'ARS' }}
-          />
+          <EditButton />
         </Datagrid>
         <Pagination />
       </div>

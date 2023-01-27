@@ -8,11 +8,13 @@ import {
   FormDataConsumer,
   NumberInput,
   ReferenceInput,
+  SaveButton,
   SimpleForm,
   SimpleFormIterator,
   TextInput,
+  Toolbar,
+  useRedirect,
 } from 'react-admin'
-import { history } from '../../utils'
 import {
   TimePickerComponent,
   CreateOperario,
@@ -21,13 +23,15 @@ import {
   DatePickerComponent,
 } from '../../components'
 import styles from '../../styles/Sueldos.module.css'
+import CancelIcon from '@mui/icons-material/Cancel'
 
 export const EditServicio = (props) => {
   return (
     <Edit {...props}>
-      <SimpleForm>
+      <SimpleForm toolbar={<ToolBar />}>
         <div className={styles.flexForm}>
           <TextInput
+            variant="standard"
             className={styles.inputs}
             source="memo"
             label="Nº Memo"
@@ -56,6 +60,7 @@ export const EditServicio = (props) => {
                     reference="operarios/list"
                   >
                     <AutocompleteInput
+                      variant="standard"
                       label="Operario"
                       optionText={(choice) => `${choice.id} ${choice.name}`}
                       isRequired
@@ -102,10 +107,23 @@ export const EditServicio = (props) => {
           )}
         </FormDataConsumer>
       </SimpleForm>
-      <Button
-        onClick={() => history.navigate('/sueldos/clientes', { replace: true })}
-        label="ra.action.cancel"
-      />
     </Edit>
+  )
+}
+
+function ToolBar() {
+  const navigate = useRedirect()
+  return (
+    <Toolbar sx={{ gap: '10px' }}>
+      <Button
+        size="medium"
+        variant="contained"
+        color="error"
+        onClick={() => navigate('/sueldos')}
+        startIcon={<CancelIcon />}
+        label="Cancelar"
+      />
+      <SaveButton>Guardar</SaveButton>
+    </Toolbar>
   )
 }

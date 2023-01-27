@@ -4,9 +4,9 @@ import {
   ArrayInput,
   AutocompleteInput,
   BooleanInput,
-  CheckboxGroupInput,
   Create,
   FormDataConsumer,
+  RadioButtonGroupInput,
   ReferenceInput,
   SimpleForm,
   SimpleFormIterator,
@@ -50,6 +50,7 @@ function NuevoCliente() {
           <Grid item xs={8} sx={{ display: 'flex' }}>
             <ReferenceInput source="id_cliente" reference="clientes/list">
               <AutocompleteInput
+                variant="standard"
                 label="Cliente"
                 className={styles.inputs}
                 translateChoice={false}
@@ -63,10 +64,11 @@ function NuevoCliente() {
             {({ formData }) =>
               formData.id_cliente && (
                 <Grid item xs={8}>
-                  <CheckboxGroupInput
+                  <RadioButtonGroupInput
                     source="medio_pago"
                     label="Medio de pago"
                     translateChoice={false}
+                    defaultValue="recibo"
                     choices={[
                       { id: 'recibo', name: 'Recibo' },
                       { id: 'acopio', name: 'Acopio' },
@@ -79,13 +81,7 @@ function NuevoCliente() {
           <FormDataConsumer>
             {({ formData, ...rest }) =>
               formData.id_cliente &&
-              (formData.medio_pago.includes('recibo') &&
-              formData.medio_pago.includes('acopio') ? (
-                <>
-                  <Recibo />
-                  <Acopio formData={formData} {...rest} />
-                </>
-              ) : formData.medio_pago.includes('recibo') ? (
+              (formData.medio_pago?.includes('recibo') ? (
                 <Recibo />
               ) : (
                 <Acopio formData={formData} {...rest} />
@@ -111,6 +107,7 @@ function NuevoCliente() {
                         reference="operarios/list"
                       >
                         <AutocompleteInput
+                          variant="standard"
                           label="Operario"
                           optionText={(choice) => `${choice.id} ${choice.name}`}
                           className={styles.inputs}

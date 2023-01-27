@@ -21,6 +21,7 @@ export const Operarios = () => {
 
   const filters = [
     <TextInput
+      variant="standard"
       label="Buscar operario por legajo o nombre"
       source="q"
       alwaysOn
@@ -32,6 +33,7 @@ export const Operarios = () => {
       alwaysOn
     >
       <SelectInput
+        variant="standard"
         translateChoice={false}
         label="Buscar por mes"
         optionText={(row) => translate(row.name).trim()}
@@ -44,6 +46,7 @@ export const Operarios = () => {
       alwaysOn
     >
       <SelectInput
+        variant="standard"
         translateChoice={false}
         optionText="name"
         label="Buscar por año"
@@ -54,16 +57,14 @@ export const Operarios = () => {
   return (
     <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <h1>Operarios</h1>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            alignSelf: 'flex-end',
             width: '95%',
-            justifyContent: 'space-between',
           }}
         >
-          <h1>Operarios</h1>
           <FilterForm filters={filters} />
         </div>
         <Datagrid

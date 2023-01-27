@@ -14,21 +14,26 @@ import { ClientesMes } from '../../components'
 function Clientes() {
   const listContext = useListController()
 
-  const filters = [<TextInput label="Buscar por cliente" source="q" alwaysOn />]
+  const filters = [
+    <TextInput
+      variant="standard"
+      label="Buscar por cliente"
+      source="q"
+      alwaysOn
+    />,
+  ]
 
   return (
     <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <h1>Clientes</h1>
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            alignSelf: 'flex-end',
             width: '95%',
           }}
         >
-          <h1>Clientes</h1>
           <FilterForm filters={filters} />
         </div>
         <Datagrid

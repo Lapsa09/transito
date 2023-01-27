@@ -1,11 +1,20 @@
 import React from 'react'
-import { Button, Edit, NumberInput, SimpleForm } from 'react-admin'
+import {
+  Button,
+  Edit,
+  NumberInput,
+  SaveButton,
+  SimpleForm,
+  Toolbar,
+  useRedirect,
+} from 'react-admin'
+import CancelIcon from '@mui/icons-material/Cancel'
 import styles from '../../styles/Sueldos.module.css'
 
 function EditPrecio(props) {
   return (
     <Edit {...props}>
-      <SimpleForm>
+      <SimpleForm toolbar={<ToolBar />}>
         <NumberInput
           className={styles.inputs}
           source="precio_normal"
@@ -18,12 +27,24 @@ function EditPrecio(props) {
           label="Precio Pico"
         />
       </SimpleForm>
-      <Button
-        onClick={() => history.navigate('/sueldos', { replace: true })}
-        label="ra.action.cancel"
-      />
     </Edit>
   )
 }
 
+function ToolBar() {
+  const navigate = useRedirect()
+  return (
+    <Toolbar sx={{ gap: '10px' }}>
+      <Button
+        size="medium"
+        variant="contained"
+        color="error"
+        onClick={() => navigate('/sueldos')}
+        startIcon={<CancelIcon />}
+        label="Cancelar"
+      />
+      <SaveButton>Guardar</SaveButton>
+    </Toolbar>
+  )
+}
 export default EditPrecio

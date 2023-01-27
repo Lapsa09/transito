@@ -4,7 +4,6 @@ import React from 'react'
 import {
   Button,
   Datagrid,
-  DateField,
   DateInput,
   EditButton,
   ExportButton,
@@ -30,13 +29,14 @@ function Servicios() {
   })
 
   const filters = [
-    <DateInput label="Buscar por dia" source="d" alwaysOn />,
+    <DateInput label="Buscar por dia" source="d" alwaysOn variant="standard" />,
     <ReferenceInput
       label="Buscar por mes"
       source="m"
       reference="filters/months"
     >
       <SelectInput
+        variant="standard"
         translateChoice={false}
         label="Buscar por mes"
         optionText={(row) => translate(row.name).trim()}
@@ -44,12 +44,17 @@ function Servicios() {
     </ReferenceInput>,
     <ReferenceInput label="Buscar por año" source="y" reference="filters/years">
       <SelectInput
+        variant="standard"
         translateChoice={false}
         optionText="name"
         label="Buscar por año"
       />
     </ReferenceInput>,
-    <TextInput source="q" label="Buscar por nombre o memo" />,
+    <TextInput
+      variant="standard"
+      source="q"
+      label="Buscar por nombre o memo"
+    />,
     <Chip
       source="no_memo"
       label="Buscar los sin memos"
@@ -67,20 +72,20 @@ function Servicios() {
   return (
     <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <h1>Todos los Servicios</h1>
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
             width: '95%',
+            gap: 50,
           }}
         >
-          <h1>Todos los Servicios</h1>
           <Button
             label="Borrar Filtros"
             onClick={() => listContext.setFilters({})}
           />
-          <FilterForm filters={filters} />
+          <FilterForm style={{ width: '50%' }} filters={filters} />
           <FilterButton filters={filters} />
           <ExportButton exporter={customExport} />
         </div>
@@ -94,7 +99,7 @@ function Servicios() {
           })}
         >
           <TextField textAlign="right" source="cliente" />
-          <DateField
+          <TextField
             textAlign="right"
             source="fecha_servicio"
             label="Fecha del servicio"

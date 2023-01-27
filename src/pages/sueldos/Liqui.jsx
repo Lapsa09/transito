@@ -36,6 +36,7 @@ function Liqui() {
       alwaysOn
     >
       <SelectInput
+        variant="standard"
         translateChoice={false}
         label="Buscar por mes"
         optionText={(row) => translate(row.name).trim()}
@@ -48,6 +49,7 @@ function Liqui() {
       alwaysOn
     >
       <SelectInput
+        variant="standard"
         translateChoice={false}
         optionText="name"
         label="Buscar por año"
@@ -57,16 +59,14 @@ function Liqui() {
   return (
     <ListContextProvider value={listContext}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <h1>Liquidacion x Mes</h1>
         <div
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            alignSelf: 'flex-end',
             width: '95%',
           }}
         >
-          <h1>Liquidacion x Mes</h1>
           <FilterForm filters={filters} />
         </div>
         <Datagrid isRowExpandable={() => false}>

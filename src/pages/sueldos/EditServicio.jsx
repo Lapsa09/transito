@@ -47,7 +47,11 @@ export const EditServicio = (props) => {
               className={styles.inputs}
               label="Fecha del servicio"
             />
-            <BooleanInput source="feriado" label="Es feriado?" />
+            <BooleanInput
+              source="feriado"
+              label="Es feriado?"
+              parse={(v) => v === 'true'}
+            />
           </div>
         </div>
         <ArrayInput source="operarios">
@@ -64,9 +68,9 @@ export const EditServicio = (props) => {
                       label="Operario"
                       optionText={(choice) => `${choice.id} ${choice.name}`}
                       isRequired
+                      create={<CreateOperario />}
                     />
                   </ReferenceInput>
-                  <CreateOperario />
                 </div>
               )}
             </FormDataConsumer>

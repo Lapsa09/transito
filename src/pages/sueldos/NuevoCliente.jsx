@@ -47,7 +47,7 @@ function NuevoCliente() {
     <Create title="Nuevo servicio">
       <SimpleForm onSubmit={save}>
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
-          <Grid item xs={8} sx={{ display: 'flex' }}>
+          <Grid item xs={8}>
             <ReferenceInput source="id_cliente" reference="clientes/list">
               <AutocompleteInput
                 variant="standard"
@@ -56,9 +56,9 @@ function NuevoCliente() {
                 translateChoice={false}
                 optionText="name"
                 isRequired
+                create={<CreateCliente />}
               />
             </ReferenceInput>
-            <CreateCliente />
           </Grid>
           <FormDataConsumer>
             {({ formData }) =>
@@ -88,12 +88,14 @@ function NuevoCliente() {
               ))
             }
           </FormDataConsumer>
-          <Grid item xs={8} sx={{ display: 'flex', gap: '10px' }}>
+          <Grid item xs={6}>
             <DatePickerComponent
               source="fecha_servicio"
               className={styles.inputs}
               label="Fecha del servicio"
             />
+          </Grid>
+          <Grid item xs={2}>
             <BooleanInput source="feriado" label="Es feriado?" />
           </Grid>
           <Grid container item columns={{ xs: 8, md: 1 }}>
@@ -112,9 +114,9 @@ function NuevoCliente() {
                           optionText={(choice) => `${choice.id} ${choice.name}`}
                           className={styles.inputs}
                           isRequired
+                          create={<CreateOperario />}
                         />
                       </ReferenceInput>
-                      <CreateOperario />
                     </Grid>
                   )}
                 </FormDataConsumer>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useInput } from 'react-admin'
 import {
   DatePicker,
@@ -9,31 +9,29 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { DateTime } from 'luxon'
 
-export const TimePickerComponent = ({
-  className,
-  source,
-  label,
-  value = null,
-}) => {
-  const { field } = useInput({
+export const TimePickerComponent = ({ className, source, label, value }) => {
+  const {
+    field,
+    fieldState: { error },
+  } = useInput({
     source,
-    defaultValue: null,
+    defaultValue: value ? DateTime.fromFormat(value, 'HH:mm:ss') : null,
   })
-  useEffect(() => {
-    field.onChange(value ? DateTime.fromFormat(value, 'HH:mm:ss') : null)
-  }, [])
+
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TimePicker
         {...field}
         label={label}
         inputFormat="HH:mm"
+        className={className}
         renderInput={(props) => (
           <TextField
             {...props}
-            className={className}
+            error={error}
             required
             placeholder="HH:mm"
+            variant="standard"
           />
         )}
       />
@@ -41,17 +39,14 @@ export const TimePickerComponent = ({
   )
 }
 
-export const DatePickerComponent = ({
-  className,
-  label,
-  source,
-  value = '',
-}) => {
-  const { field } = useInput({ source, defaultValue: null })
-
-  useEffect(() => {
-    field.onChange(value ? DateTime.fromFormat(value, 'dd/MM/yyyy') : null)
-  }, [])
+export const DatePickerComponent = ({ className, label, source, value }) => {
+  const {
+    field,
+    fieldState: { error },
+  } = useInput({
+    source,
+    defaultValue: value ? DateTime.fromFormat(value, 'dd/MM/yyyy') : null,
+  })
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -60,11 +55,13 @@ export const DatePickerComponent = ({
         mask="__/__/____"
         label={label}
         inputFormat="dd/MM/yyyy"
+        className={className}
         renderInput={(props) => (
           <TextField
             {...props}
-            className={className}
             required
+            error={error}
+            variant="standard"
             placeholder="dd/MM/yyyy"
           />
         )}

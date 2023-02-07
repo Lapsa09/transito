@@ -12,8 +12,12 @@ import CancelIcon from '@mui/icons-material/Cancel'
 import styles from '../../styles/Sueldos.module.css'
 
 function EditPrecio(props) {
+  const redirect = useRedirect()
   return (
-    <Edit {...props}>
+    <Edit
+      mutationOptions={{ onSuccess: () => redirect('/sueldos') }}
+      {...props}
+    >
       <SimpleForm toolbar={<ToolBar />}>
         <NumberInput
           className={styles.inputs}

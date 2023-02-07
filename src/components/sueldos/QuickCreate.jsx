@@ -7,69 +7,57 @@ import {
   TextField,
   Button,
 } from '@mui/material'
-import { Add } from '@mui/icons-material'
 import styles from '../../styles/Sueldos.module.css'
-import { useCreate, useGetList, useUpdate } from 'react-admin'
+import {
+  useCreate,
+  useCreateSuggestionContext,
+  useGetList,
+  useUpdate,
+} from 'react-admin'
 
-function QuickCreate({ children, handleSubmit, title, reset }) {
-  const [open, setOpen] = useState(false)
-
-  const handleExit = () => {
-    reset()
-    setOpen(false)
-  }
+function QuickCreate({ children, handleSubmit, title, handleExit }) {
   return (
-    <Fragment>
-      <Button
-        className={styles.button}
-        onClick={() => setOpen(true)}
-        label="ra.action.create"
-      >
-        <Add />
-      </Button>
-      <Dialog
-        fullWidth
-        open={open}
-        onClose={handleExit}
-        aria-label="Create post"
-      >
-        <DialogTitle>{title}</DialogTitle>
+    <Dialog fullWidth open onClose={handleExit} aria-label="Create post">
+      <DialogTitle>{title}</DialogTitle>
 
-        <form
-          onSubmit={(e) => {
-            handleSubmit(e)
-            handleExit()
-          }}
-        >
-          <DialogContent>{children}</DialogContent>
-          <DialogActions>
-            <Button onClick={handleExit}>Cancelar</Button>
-            <Button type="submit">Guardar</Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-    </Fragment>
+      <form onSubmit={handleSubmit}>
+        <DialogContent>{children}</DialogContent>
+        <DialogActions>
+          <Button onClick={handleExit}>Cancelar</Button>
+          <Button type="submit">Guardar</Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   )
 }
 
 export function CreateCliente() {
-  const { refetch } = useGetList('clientes/list')
-  const [value, setValue] = useState('')
-  const reset = () => setValue('')
+  const { filter, onCancel, onCreate } = useCreateSuggestionContext()
+  const [value, setValue] = useState(filter.toUpperCase() || '')
   const [create] = useCreate()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    await create(
+    create(
       'clientes/list',
       { data: { cliente: value } },
-      { onSuccess: await refetch() }
+      {
+        onSuccess: (data) => {
+          onCreate(data)
+        },
+      }
     )
   }
+
+  const handleExit = () => {
+    setValue('')
+    onCancel()
+  }
+
   return (
     <QuickCreate
       handleSubmit={handleSubmit}
-      reset={reset}
+      handleExit={handleExit}
       title="Nuevo Cliente"
     >
       <TextField
@@ -83,29 +71,41 @@ export function CreateCliente() {
 }
 
 export function CreateOperario() {
-  const { refetch } = useGetList('operarios/list')
-  const [value, setValue] = useState({ id: '', name: '' })
+  const { filter, onCancel, onCreate } = useCreateSuggestionContext()
+  const [value, setValue] = useState({
+    id: +filter || '',
+    name: !+filter ? filter.toUpperCase() : '',
+  })
   const reset = () => setValue({ id: '', name: '' })
   const [create] = useCreate()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    await create(
+    create(
       'operarios/list',
       { data: value },
-      { onSuccess: await refetch() }
+      {
+        onSuccess: (data) => {
+          onCreate(data)
+        },
+      }
     )
+  }
+
+  const handleExit = () => {
+    reset()
+    onCancel()
   }
   return (
     <QuickCreate
       handleSubmit={handleSubmit}
-      reset={reset}
+      handleExit={handleExit}
       title="Nuevo Operario"
     >
       <TextField
         value={value.id}
         type="number"
-        onChange={(e) => setValue({ ...value, id: e.target.value })}
+        onChange={(e) => setValue({ ...value, id: +e.target.value })}
         label="Legajo"
         autoFocus
       />

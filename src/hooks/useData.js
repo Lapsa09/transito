@@ -20,7 +20,7 @@ export default function useData(input) {
     fetchData()
   }, [])
 
-  const refresh = async () => await fetchData()
+  const refresh = (_data) => setData((data) => [...data, _data])
 
   return { loading, data, error, refresh }
 }

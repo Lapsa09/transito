@@ -122,8 +122,8 @@ function OperativosForm({ handleClose, afterCreate }) {
   }
 
   const submitEvent = async (data) => {
-    await nuevoOperativoCamiones(data)
-    await afterCreate()
+    const res = await nuevoOperativoCamiones(data)
+    afterCreate(res)
     reset(
       {
         ...data,

@@ -118,8 +118,8 @@ function OperativosForm({ handleClose, afterCreate }) {
     getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
 
   const submitEvent = async (data) => {
-    await nuevoOperativoAuto(data)
-    await afterCreate()
+    const res = await nuevoOperativoAuto(data)
+    afterCreate(res)
     reset(
       {
         ...data,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import {
   getAllZonas,
   getLicencias,
@@ -172,8 +172,8 @@ function MotosForm({ handleClose, afterCreate }) {
   }, [esSancionable])
 
   const submitEvent = async (data) => {
-    await nuevoOperativoMoto(data)
-    await afterCreate()
+    const res = await nuevoOperativoMoto(data)
+    afterCreate(res)
     reset(
       {
         ...data,
@@ -181,7 +181,6 @@ function MotosForm({ handleClose, afterCreate }) {
         licencia: '',
         tipo_licencia: null,
         zona_infractor: null,
-        motivos: [],
         acta: '',
       },
       { keepDefaultValues: true }
@@ -330,18 +329,6 @@ function MotosForm({ handleClose, afterCreate }) {
             options={allZonas}
           />
         </Grid>
-        {esSancionable &&
-          fields.map((item, index) => (
-            <Grid key={index} item xs={8}>
-              <CustomAutocomplete
-                control={control}
-                key={item.id}
-                name={`motivos.${index}`}
-                label={`Motivo ${index + 1}`}
-                options={motivos}
-              />
-            </Grid>
-          ))}
         <Grid item xs={8}>
           <CustomSelect
             control={control}
@@ -351,20 +338,33 @@ function MotosForm({ handleClose, afterCreate }) {
           />
         </Grid>
         {esSancionable && (
-          <Grid item xs={8}>
-            <CustomTextField
-              type="number"
-              control={control}
-              name="acta"
-              label="Acta"
-              rules={{
-                required: {
-                  value: esSancionable,
-                  message: 'Ingrese un nro de acta',
-                },
-              }}
-            />
-          </Grid>
+          <Fragment>
+            <Grid item xs={8}>
+              <CustomTextField
+                type="number"
+                control={control}
+                name="acta"
+                label="Acta"
+                rules={{
+                  required: {
+                    value: esSancionable,
+                    message: 'Ingrese un nro de acta',
+                  },
+                }}
+              />
+            </Grid>
+            {fields.map((item, index) => (
+              <Grid key={index} item xs={8}>
+                <CustomAutocomplete
+                  control={control}
+                  key={item.id}
+                  name={`motivos.${index}`}
+                  label={`Motivo ${index + 1}`}
+                  options={motivos}
+                />
+              </Grid>
+            ))}
+          </Fragment>
         )}
       </Grid>
     </Layout>

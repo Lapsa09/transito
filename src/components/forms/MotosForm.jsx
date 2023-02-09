@@ -36,6 +36,7 @@ function MotosForm({ handleClose, afterCreate }) {
     setValue,
     watch,
     formState: { isValid },
+    setFocus,
   } = useForm({
     mode: 'all',
     defaultValues: {
@@ -174,6 +175,7 @@ function MotosForm({ handleClose, afterCreate }) {
   const submitEvent = async (data) => {
     const res = await nuevoOperativoMoto(data)
     afterCreate(res)
+    setFocus('dominio')
     reset(
       {
         ...data,

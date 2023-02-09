@@ -30,6 +30,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     setValue,
     watch,
     formState: { isValid },
+    setFocus,
   } = useForm({
     mode: 'all',
     defaultValues: {
@@ -84,6 +85,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
 
   const submitting = async (data) => {
     await nuevoControlPaseo(data)
+    setFocus('dominio')
     reset({ ...data, dominio: '' }, { keepDefaultValues: true })
     if (handleRol()) {
       await afterCreate()

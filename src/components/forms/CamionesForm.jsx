@@ -34,6 +34,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     setValue,
     formState: { isValid },
     trigger,
+    setFocus,
   } = useForm({
     mode: 'all',
     defaultValues: { lpcarga: user?.legajo },
@@ -124,6 +125,7 @@ function OperativosForm({ handleClose, afterCreate }) {
   const submitEvent = async (data) => {
     const res = await nuevoOperativoCamiones(data)
     afterCreate(res)
+    setFocus('dominio')
     reset(
       {
         ...data,

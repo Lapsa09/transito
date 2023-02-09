@@ -92,7 +92,7 @@ function Servicios() {
         <Datagrid
           expandSingle
           isRowSelectable={() => false}
-          isRowExpandable={(row) => row.operarios.length === 0}
+          isRowExpandable={(row) => row.operarios.length > 0}
           expand={<ServiciosMemo name="servicios" />}
           rowStyle={(record) => ({
             backgroundColor: record.cancelado ? 'red' : 'white',

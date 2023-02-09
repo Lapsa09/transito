@@ -49,7 +49,9 @@ function FormLayout({
 
   const handleNext = () => {
     if (isCompleted(steps[activeStep]?.values)) saveOp()
-    setActiveStep(activeStep + 1)
+    setTimeout(() => {
+      setActiveStep(activeStep + 1)
+    }, 250)
   }
 
   const saveOp = () => {
@@ -134,31 +136,42 @@ function FormLayout({
           handleStep={handleStep}
           activeStep={activeStep}
         />
-        <Box component="form" className={styles.form__box} autoComplete="off">
-          {children?.map((child, index) => (
-            <CustomStepForm key={index} activeStep={activeStep} step={index}>
-              {child}
-            </CustomStepForm>
-          ))}
-        </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          <Button disabled={isFirstStep()} onClick={handleBack} sx={{ mr: 1 }}>
-            Anterior
-          </Button>
-          <Box sx={{ flex: '1 1 auto' }} />
-          {activeStep === 0 ? (
-            <Button onClick={handleNext} disabled={isLastStep()} sx={{ mr: 1 }}>
-              Siguiente
-            </Button>
-          ) : (
+        <Box
+          onSubmit={handleSubmit(submiting)}
+          component="form"
+          className={styles.form__box}
+          autoComplete="off"
+        >
+          <Box sx={{ display: 'flex' }}>
+            {children?.map((child, index) => (
+              <CustomStepForm key={index} activeStep={activeStep} step={index}>
+                {child}
+              </CustomStepForm>
+            ))}
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Button
-              type="submit"
-              disabled={!isValid || activeStep === 0}
-              onClick={handleSubmit(submiting)}
+              disabled={isFirstStep()}
+              onClick={handleBack}
+              sx={{ mr: 1 }}
             >
-              Guardar
+              Anterior
             </Button>
-          )}
+            <Box sx={{ flex: '0.45 1 auto' }} />
+            {activeStep === 0 ? (
+              <Button
+                onClick={handleNext}
+                disabled={isLastStep()}
+                sx={{ mr: 1 }}
+              >
+                Siguiente
+              </Button>
+            ) : (
+              <Button type="submit" disabled={!isValid || activeStep === 0}>
+                Guardar
+              </Button>
+            )}
+          </Box>
         </Box>
       </div>
       <Modal open={open} onClose={() => setOpen(false)}>

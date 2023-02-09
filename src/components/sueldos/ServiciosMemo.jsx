@@ -19,12 +19,19 @@ export const ServiciosMemo = ({ name }) => {
   const { refetch } = useListController({ resource: name })
   const [update] = useUpdate()
 
-  const cancelarOperario = async (record) => {
-    await update('operario/cliente', {
-      id: record.id_servicio,
-      data: { cancelado: !record.cancelado, legajo: record.legajo },
-    })
-    await refetch()
+  const cancelarOperario = (record) => {
+    update(
+      'operarios/cliente',
+      {
+        id: record.id,
+        data: { cancelado: !record.cancelado, legajo: record.legajo },
+      },
+      {
+        onSuccess: () => {
+          refetch()
+        },
+      }
+    )
   }
   return (
     <ListContextProvider value={listContext}>

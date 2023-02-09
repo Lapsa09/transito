@@ -13,7 +13,7 @@ function CustomTextField({
   className,
 }) {
   const {
-    field,
+    field: { ref, ...field },
     fieldState: { error },
     formState: { errors },
   } = useController({
@@ -43,6 +43,7 @@ function CustomTextField({
       error={error}
       label={label}
       fullWidth
+      inputRef={ref}
     />
   )
 }

@@ -17,7 +17,9 @@ function ClientesServicios() {
   return (
     <ListContextProvider value={listContext}>
       <Datagrid
-        isRowExpandable={(row) => row.operarios?.length > 0}
+        isRowExpandable={(row) =>
+          row.operarios?.some((operario) => !!operario.legajo)
+        }
         isRowSelectable={() => false}
         rowStyle={(record) => ({
           backgroundColor: record.cancelado ? 'red' : 'white',

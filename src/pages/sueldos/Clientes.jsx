@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  BulkExportButton,
   Datagrid,
   FilterForm,
   ListContextProvider,
@@ -38,7 +39,7 @@ function Clientes() {
         </div>
         <Datagrid
           expandSingle
-          isRowSelectable={() => false}
+          bulkActionButtons={<BulkExportButton label="Exportar" />}
           expand={<ClientesMes />}
         >
           <TextField textAlign="right" source="cliente" />

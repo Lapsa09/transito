@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Modal, Skeleton } from '@mui/material'
+import { Button, Modal } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
 import { history } from '../utils/history'
@@ -35,10 +35,10 @@ function OperativosLayout({
         {children}
       </Modal>
       {loading ? (
-        <Skeleton
-          variant="rectangular"
-          width={window.innerWidth}
-          height={window.innerHeight}
+        <img
+          src="/loading.gif"
+          alt="loading"
+          style={{ width: '35%', marginInline: 'auto' }}
         />
       ) : (
         <DataGrid rows={operativos} columns={columns} />

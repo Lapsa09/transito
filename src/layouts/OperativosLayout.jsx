@@ -4,6 +4,7 @@ import { DataGrid } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
 import { history } from '../utils/history'
 import styles from '../styles/Operativos.page.module.css'
+import { geocoding } from '../services/operativosService'
 
 function OperativosLayout({
   columns,
@@ -16,6 +17,10 @@ function OperativosLayout({
   path,
 }) {
   const user = useSelector((x) => x.user.user)
+
+  const handleGeocode = async () => {
+    await geocoding(path)
+  }
   return user?.rol === 'ADMIN' ? (
     <div className={styles.Operativos}>
       <h1 style={{ textAlign: 'center' }}>{path}</h1>
@@ -29,6 +34,9 @@ function OperativosLayout({
         </Button>
         <Button variant="contained" onClick={handleOpen}>
           Nuevo
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleGeocode}>
+          Geocodificar
         </Button>
       </div>
       <Modal open={open} onClose={handleClose}>

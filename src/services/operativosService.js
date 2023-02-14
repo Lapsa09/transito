@@ -30,3 +30,25 @@ export const getOperativosCamiones = async () =>
 
 export const nuevoOperativoCamiones = async (body) =>
   await setter('/operativos/camiones', body)
+
+const geocodingAutos = async () => {
+  await setter('/operativos/autos/geocoding')
+}
+
+const geocodingMotos = async () => {
+  await setter('/operativos/motos/geocoding')
+}
+
+const geocodingCamiones = async () => {
+  await setter('/operativos/camiones/geocoding')
+}
+
+export const geocoding = async (type) => {
+  const types = {
+    Autos: geocodingAutos,
+    Motos: geocodingMotos,
+    Camiones: geocodingCamiones,
+  }
+
+  await types[type]()
+}

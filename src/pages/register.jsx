@@ -80,7 +80,7 @@ function Register() {
           label="Contraseña"
         />
         <CustomTextField
-          type="pasword"
+          type="password"
           control={control}
           name="confirmPassword"
           rules={{
@@ -97,7 +97,9 @@ function Register() {
           <Button onClick={loginNav}>
             Ya te registraste? ir a iniciar Sesion
           </Button>
-          <Button variant="contained">Registrarse</Button>
+          <Button type="submit" variant="contained">
+            Registrarse
+          </Button>
         </Box>
       </Box>
     </div>

@@ -93,12 +93,7 @@ function Servicios() {
           expandSingle
           isRowSelectable={() => false}
           isRowExpandable={(row) =>
-            row.operarios.every(
-              (operario) =>
-                operario.legajo !== 0 &&
-                operario.hora_inicio != null &&
-                operario.hora_fin != null
-            )
+            row.operarios.some((operario) => operario.a_cobrar !== 0)
           }
           expand={<ServiciosMemo name="servicios" />}
           rowStyle={(record) => ({

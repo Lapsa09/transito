@@ -55,10 +55,10 @@ export const ServiciosMemo = ({ name }) => {
         />
         <FunctionField
           render={(record) =>
-            !!record.hora_inicio
+            record.hora_inicio
               ? DateTime.fromFormat(
                   record.hora_inicio,
-                  'hh:mm:ss'
+                  'HH:mm:ss'
                 ).toLocaleString(DateTime.TIME_24_SIMPLE)
               : ''
           }
@@ -67,7 +67,7 @@ export const ServiciosMemo = ({ name }) => {
         <FunctionField
           render={(record) =>
             !!record.hora_fin
-              ? DateTime.fromFormat(record.hora_fin, 'hh:mm:ss').toLocaleString(
+              ? DateTime.fromFormat(record.hora_fin, 'HH:mm:ss').toLocaleString(
                   DateTime.TIME_24_SIMPLE
                 )
               : ''

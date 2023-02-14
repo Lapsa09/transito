@@ -14,7 +14,12 @@ const getImporteOperario = (
   precios
 ) => {
   const { precio_normal, precio_pico } = precios
-  if ([_dia, _inicio, _fin, isFeriado].some((e) => e == null)) {
+
+  if (
+    ![_dia, _inicio, _fin, isFeriado].every((e) => e != null) ||
+    _inicio.invalid != null ||
+    _inicio._fin != null
+  ) {
     return importe
   }
 
@@ -22,9 +27,9 @@ const getImporteOperario = (
   const inicio = DateTime.fromISO(_inicio)
   const fin = DateTime.fromISO(_fin)
 
-  const diff = fin.diff(inicio, 'hours').hours
+  const diff = fin?.diff(inicio, 'hours').hours
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
-    if (inicio.hour >= 8 && fin.hour <= 20) {
+    if (inicio?.hour >= 8 && fin?.hour <= 20) {
       return precio_normal * parseInt(diff)
     }
   }
@@ -38,7 +43,7 @@ export const OpInput = ({ source, formData, scopedFormData }) => {
 
   const { field } = useInput({
     source,
-    defaultValue: 0,
+    defaultValue: scopedFormData.a_cobrar,
   })
 
   const cuenta = precios
@@ -77,6 +82,7 @@ export const TotalInput = ({ ops }) => {
     source: 'importe_servicio',
     defaultValue: 0,
   })
+
   const cuenta = !!ops ? ops.reduce((a, b) => a + b?.a_cobrar, 0) : 0
 
   useEffect(() => {

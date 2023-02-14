@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux'
 import { history } from '../utils/history'
 import styles from '../styles/Operativos.page.module.css'
 import { geocoding } from '../services/operativosService'
+import { CustomSnackbar } from '../components/ui'
+import { useSnackBar } from '../hooks'
 
 function OperativosLayout({
   columns,
@@ -17,9 +19,16 @@ function OperativosLayout({
   path,
 }) {
   const user = useSelector((x) => x.user.user)
+  const { openSB, closeSnackbar, response, setError, setSuccess } =
+    useSnackBar()
 
   const handleGeocode = async () => {
-    await geocoding(path)
+    try {
+      await geocoding(path)
+      setSuccess('Geocoding realizado con exito')
+    } catch (error) {
+      setError(error.response?.data)
+    }
   }
   return user?.rol === 'ADMIN' ? (
     <div className={styles.Operativos}>
@@ -51,6 +60,11 @@ function OperativosLayout({
       ) : (
         <DataGrid rows={operativos} columns={columns} />
       )}
+      <CustomSnackbar
+        res={response}
+        open={openSB}
+        handleClose={closeSnackbar}
+      />
     </div>
   ) : (
     <div className={styles.Operativos}>{children}</div>

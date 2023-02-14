@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useInput } from 'react-admin'
 import {
   DatePicker,
@@ -9,14 +9,19 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { DateTime } from 'luxon'
 
-export const TimePickerComponent = ({ className, source, label, value }) => {
+export const TimePickerComponent = ({ className, source, label }) => {
   const {
     field,
     fieldState: { error },
   } = useInput({
     source,
-    defaultValue: value ? DateTime.fromFormat(value, 'HH:mm:ss') : null,
   })
+
+  useEffect(() => {
+    if (typeof field.value === 'string') {
+      field.onChange(DateTime.fromFormat(field.value, 'HH:mm:ss'))
+    }
+  }, [])
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -26,13 +31,7 @@ export const TimePickerComponent = ({ className, source, label, value }) => {
         inputFormat="HH:mm"
         className={className}
         renderInput={(props) => (
-          <TextField
-            {...props}
-            error={error}
-            required
-            placeholder="HH:mm"
-            variant="standard"
-          />
+          <TextField {...props} error={error} required variant="standard" />
         )}
       />
     </LocalizationProvider>

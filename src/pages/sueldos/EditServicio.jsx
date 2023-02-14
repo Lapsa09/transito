@@ -56,44 +56,28 @@ export const EditServicio = (props) => {
         </div>
         <ArrayInput source="operarios">
           <SimpleFormIterator>
-            <FormDataConsumer>
-              {({ getSource }) => (
-                <div className={styles.dbInput}>
-                  <ReferenceInput
-                    source={getSource('legajo')}
-                    reference="operarios/list"
-                  >
-                    <AutocompleteInput
-                      variant="standard"
-                      label="Operario"
-                      optionText={(choice) => `${choice.id} ${choice.name}`}
-                      isRequired
-                      create={<CreateOperario />}
-                    />
-                  </ReferenceInput>
-                </div>
-              )}
-            </FormDataConsumer>
-            <FormDataConsumer>
-              {({ scopedFormData, getSource }) => (
-                <TimePickerComponent
-                  className={styles.inputs}
-                  source={getSource('hora_inicio')}
-                  label="Hora de inicio"
-                  value={scopedFormData.hora_inicio}
-                />
-              )}
-            </FormDataConsumer>
-            <FormDataConsumer>
-              {({ scopedFormData, getSource }) => (
-                <TimePickerComponent
-                  className={styles.inputs}
-                  source={getSource('hora_fin')}
-                  label="Hora de finalizacion"
-                  value={scopedFormData.hora_fin}
-                />
-              )}
-            </FormDataConsumer>
+            <ReferenceInput source={'legajo'} reference="operarios/list">
+              <AutocompleteInput
+                variant="standard"
+                label="Operario"
+                optionText={(choice) => `${choice?.id} ${choice?.name}`}
+                create={<CreateOperario />}
+                className={styles.dbInput}
+              />
+            </ReferenceInput>
+
+            <TimePickerComponent
+              className={styles.inputs}
+              source={'hora_inicio'}
+              label="Hora de inicio"
+            />
+
+            <TimePickerComponent
+              className={styles.inputs}
+              source={'hora_fin'}
+              label="Hora de finalizacion"
+            />
+
             <FormDataConsumer>
               {({ formData, getSource, scopedFormData }) => (
                 <OpInput

@@ -78,12 +78,12 @@ export const OpInput = ({ source }) => {
 }
 
 export const TotalInput = () => {
-  const ops = useWatch({ name: 'operarios' })
+  const ops = useWatch()
   const { field } = useInput({
     source: 'importe_servicio',
     defaultValue: ops.importe_servicio,
   })
-  const cuenta = ops?.reduce((a, b) => a + b?.a_cobrar, 0)
+  const cuenta = ops?.operarios?.reduce((a, b) => a + b?.a_cobrar, 0)
 
   useEffect(() => {
     field.onChange(cuenta)

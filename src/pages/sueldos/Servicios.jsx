@@ -115,6 +115,28 @@ function Servicios() {
               record.memo || <CreateMemo id={record.id} resource="servicios" />
             }
           />
+          <FunctionField
+            render={(record) =>
+              record.hora_inicio
+                ? DateTime.fromFormat(
+                    record.hora_inicio,
+                    'HH:mm:ss'
+                  ).toLocaleString(DateTime.TIME_24_SIMPLE)
+                : ''
+            }
+            label="Hora de inicio"
+          />
+          <FunctionField
+            render={(record) =>
+              !!record.hora_fin
+                ? DateTime.fromFormat(
+                    record.hora_fin,
+                    'HH:mm:ss'
+                  ).toLocaleString(DateTime.TIME_24_SIMPLE)
+                : ''
+            }
+            label="Hora final"
+          />
           <EditButton />
         </Datagrid>
         <Pagination />

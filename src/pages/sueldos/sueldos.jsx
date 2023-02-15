@@ -55,12 +55,13 @@ const Sueldos = () => {
       store={memoryStore()}
       basename="/sueldos"
     >
-      <Resource name="clientes" list={Clientes} create={NuevoCliente} />
+      <Resource name="clientes" list={Clientes} />
       <Resource name="operarios" list={Operarios} />
       <Resource
         name="servicios"
         list={Servicios}
         edit={EditServicio}
+        create={NuevoCliente}
         options={{ label: 'Todos los Servicios' }}
       />
       <Resource

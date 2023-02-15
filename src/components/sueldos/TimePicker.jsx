@@ -38,13 +38,12 @@ export const TimePickerComponent = ({ className, source, label }) => {
   )
 }
 
-export const DatePickerComponent = ({ className, label, source, value }) => {
+export const DatePickerComponent = ({ className, label, source }) => {
   const {
     field,
     fieldState: { error },
   } = useInput({
     source,
-    defaultValue: value ? DateTime.fromFormat(value, 'dd/MM/yyyy') : null,
   })
 
   return (

@@ -1,9 +1,10 @@
 import { Grid, InputAdornment, TextField } from '@mui/material'
 import { useEffect } from 'react'
-import { useGetOne, useInput } from 'react-admin'
+import { NumberInput, useGetOne, useInput } from 'react-admin'
 import { DatePickerComponent } from './TimePicker'
 import styles from '../../styles/Sueldos.module.css'
 import { DateTime } from 'luxon'
+import { useWatch } from 'react-hook-form'
 
 const getImporteOperario = (
   _dia,
@@ -13,16 +14,16 @@ const getImporteOperario = (
   importe,
   precios
 ) => {
-  const { precio_normal, precio_pico } = precios
-
   if (
     ![_dia, _inicio, _fin, isFeriado].every((e) => e != null) ||
     _inicio.invalid != null ||
-    _inicio._fin != null
+    _inicio._fin != null ||
+    !precios
   ) {
     return importe
   }
 
+  const { precio_normal, precio_pico } = precios
   const dia = DateTime.fromISO(_dia)
   const inicio = DateTime.fromISO(_inicio)
   const fin = DateTime.fromISO(_fin)
@@ -36,38 +37,37 @@ const getImporteOperario = (
   return precio_pico * parseInt(diff)
 }
 
-export const OpInput = ({ source, formData, scopedFormData }) => {
+export const OpInput = ({ source }) => {
+  const index = source.split('.')[1]
+  const { fecha_servicio, feriado } = useWatch()
+  const operario = useWatch({ name: 'operarios.' + index })
   const { data: precios } = useGetOne('precios', { id: 0 })
-  const { fecha_servicio, feriado } = formData
-  const { hora_inicio, hora_fin } = scopedFormData
 
   const { field } = useInput({
     source,
-    defaultValue: scopedFormData.a_cobrar,
+    defaultValue: operario.a_cobrar,
   })
 
-  const cuenta = precios
-    ? getImporteOperario(
-        fecha_servicio,
-        hora_inicio,
-        hora_fin,
-        feriado,
-        field.value,
-        precios
-      )
-    : 0
-
   useEffect(() => {
+    const cuenta = getImporteOperario(
+      fecha_servicio,
+      operario.hora_inicio,
+      operario.hora_fin,
+      feriado,
+      field.value,
+      precios
+    )
     field.onChange(cuenta)
 
     // eslint-disable-next-line
-  }, [cuenta])
+  }, [operario.hora_inicio, operario.hora_fin, fecha_servicio, feriado])
 
   return (
     <TextField
       {...field}
       className={styles.inputs}
       type="number"
+      variant="standard"
       label="A cobrar"
       disabled
       InputProps={{
@@ -77,13 +77,13 @@ export const OpInput = ({ source, formData, scopedFormData }) => {
   )
 }
 
-export const TotalInput = ({ ops }) => {
+export const TotalInput = () => {
+  const ops = useWatch({ name: 'operarios' })
   const { field } = useInput({
     source: 'importe_servicio',
-    defaultValue: 0,
+    defaultValue: ops.importe_servicio,
   })
-
-  const cuenta = !!ops ? ops.reduce((a, b) => a + b?.a_cobrar, 0) : 0
+  const cuenta = ops?.reduce((a, b) => a + b?.a_cobrar, 0)
 
   useEffect(() => {
     field.onChange(cuenta)
@@ -95,6 +95,7 @@ export const TotalInput = ({ ops }) => {
       {...field}
       className="inputs total"
       type="number"
+      variant="standard"
       label="Importe del servicio"
       disabled
       InputProps={{
@@ -104,17 +105,19 @@ export const TotalInput = ({ ops }) => {
   )
 }
 
-export const Acopio = ({ formData }) => {
+export const Acopio = () => {
   const { field: importe } = useInput({
     source: 'acopio',
     defaultValue: 0,
   })
 
-  const { data } = useGetOne('acopio', { id: formData.id_cliente })
+  const id_cliente = useWatch({ name: 'id_cliente' })
+
+  const { data } = useGetOne('acopio', { id: id_cliente })
 
   useEffect(() => {
     importe.onChange(data?.acopio)
-  }, [formData.id_cliente, formData.medio_pago])
+  }, [id_cliente])
 
   return (
     <Grid item xs={8}>
@@ -122,6 +125,7 @@ export const Acopio = ({ formData }) => {
         type="number"
         {...importe}
         label="Acopio"
+        variant="standard"
         className={styles.inputs}
         required
         disabled
@@ -134,22 +138,15 @@ export const Acopio = ({ formData }) => {
 }
 
 export const Recibo = () => {
-  const { field: importe } = useInput({
-    source: 'importe_recibo',
-    defaultValue: '',
-  })
-
-  const { field: recibo } = useInput({ source: 'recibo', defaultValue: '' })
-
   return (
     <Grid container item spacing={2} columns={{ xs: 8, md: 16 }}>
       <Grid item xs={8}>
-        <TextField
-          type="number"
-          {...recibo}
+        <NumberInput
+          source="recibo"
           label="Recibo"
           className={styles.inputs}
           required
+          variant="standard"
         />
       </Grid>
       <Grid item xs={8}>
@@ -160,9 +157,9 @@ export const Recibo = () => {
         />
       </Grid>
       <Grid item xs={8}>
-        <TextField
-          type="number"
-          {...importe}
+        <NumberInput
+          source="importe_recibo"
+          variant="standard"
           label="Importe del recibo"
           className={styles.inputs}
           required

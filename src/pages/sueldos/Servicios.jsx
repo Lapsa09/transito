@@ -26,6 +26,7 @@ function Servicios() {
 
   const listContext = useListController({
     filterDefaultValues: { d: DateTime.now().toFormat('yyyy-MM-dd') },
+    sort: { order: 'DESC', field: 'fecha_servicio' },
   })
 
   const filters = [

@@ -11,6 +11,7 @@ import {
   SimpleForm,
   SimpleFormIterator,
   useCreate,
+  useRedirect,
 } from 'react-admin'
 import {
   CreateCliente,
@@ -23,10 +24,10 @@ import {
   Acopio,
 } from '../../components'
 import styles from '../../styles/Sueldos.module.css'
-import { history } from '../../utils'
 
 function NuevoCliente() {
   const [create] = useCreate()
+  const history = useRedirect()
   const save = useCallback(
     (values) => {
       create(
@@ -36,7 +37,7 @@ function NuevoCliente() {
           returnPromise: true,
           onError: (error) => console.log(error),
           onSuccess: () => {
-            history.navigate('/sueldos/clientes')
+            history(-1)
           },
         }
       )
@@ -79,13 +80,9 @@ function NuevoCliente() {
             }
           </FormDataConsumer>
           <FormDataConsumer>
-            {({ formData, ...rest }) =>
+            {({ formData }) =>
               formData.id_cliente &&
-              (formData.medio_pago?.includes('recibo') ? (
-                <Recibo />
-              ) : (
-                <Acopio formData={formData} {...rest} />
-              ))
+              (formData.medio_pago === 'recibo' ? <Recibo /> : <Acopio />)
             }
           </FormDataConsumer>
           <Grid item xs={6}>
@@ -103,66 +100,49 @@ function NuevoCliente() {
               <SimpleFormIterator>
                 <FormDataConsumer>
                   {({ getSource }) => (
-                    <Grid item xs={8} sx={{ display: 'flex' }}>
-                      <ReferenceInput
-                        source={getSource('legajo')}
-                        reference="operarios/list"
-                      >
-                        <AutocompleteInput
-                          variant="standard"
-                          label="Operario"
-                          optionText={(choice) => `${choice.id} ${choice.name}`}
+                    <>
+                      <Grid item xs={8} sx={{ display: 'flex' }}>
+                        <ReferenceInput
+                          source={getSource('legajo')}
+                          reference="operarios/list"
+                        >
+                          <AutocompleteInput
+                            variant="standard"
+                            label="Operario"
+                            optionText={(choice) =>
+                              `${choice.id} ${choice.name}`
+                            }
+                            className={styles.inputs}
+                            isRequired
+                            create={<CreateOperario />}
+                          />
+                        </ReferenceInput>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <TimePickerComponent
                           className={styles.inputs}
-                          isRequired
-                          create={<CreateOperario />}
+                          source={getSource('hora_inicio')}
+                          label="Hora de inicio"
                         />
-                      </ReferenceInput>
-                    </Grid>
-                  )}
-                </FormDataConsumer>
-                <FormDataConsumer>
-                  {({ getSource }) => (
-                    <Grid item xs={8}>
-                      <TimePickerComponent
-                        className={styles.inputs}
-                        source={getSource('hora_inicio')}
-                        label="Hora de inicio"
-                      />
-                    </Grid>
-                  )}
-                </FormDataConsumer>
-
-                <FormDataConsumer>
-                  {({ getSource }) => (
-                    <Grid item xs={8}>
-                      <TimePickerComponent
-                        className={styles.inputs}
-                        source={getSource('hora_fin')}
-                        label="Hora de finalizacion"
-                      />
-                    </Grid>
-                  )}
-                </FormDataConsumer>
-                <FormDataConsumer>
-                  {({ formData, getSource, scopedFormData }) => (
-                    <Grid item xs={8}>
-                      <OpInput
-                        source={getSource('a_cobrar')}
-                        formData={formData}
-                        scopedFormData={scopedFormData}
-                      />
-                    </Grid>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <TimePickerComponent
+                          className={styles.inputs}
+                          source={getSource('hora_fin')}
+                          label="Hora de finalizacion"
+                        />
+                      </Grid>
+                      <Grid item xs={8}>
+                        <OpInput source={getSource('a_cobrar')} />
+                      </Grid>
+                    </>
                   )}
                 </FormDataConsumer>
               </SimpleFormIterator>
             </ArrayInput>
           </Grid>
         </Grid>
-        <FormDataConsumer>
-          {({ formData, ...rest }) => (
-            <TotalInput ops={formData.operarios} {...rest} />
-          )}
-        </FormDataConsumer>
+        <TotalInput />
       </SimpleForm>
     </Create>
   )

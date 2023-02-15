@@ -37,7 +37,11 @@ export const EditServicio = (props) => {
             label="Nº Memo"
             isRequired
           />
-          <NumberInput className={styles.inputs} source="recibo" />
+          <NumberInput
+            variant="standard"
+            className={styles.inputs}
+            source="recibo"
+          />
           <div
             className={styles.inputs}
             style={{ display: 'flex', alignItems: 'center', gap: '20px' }}
@@ -47,23 +51,20 @@ export const EditServicio = (props) => {
               className={styles.inputs}
               label="Fecha del servicio"
             />
-            <BooleanInput
-              source="feriado"
-              label="Es feriado?"
-              parse={(v) => v === 'true'}
-            />
+            <BooleanInput source="feriado" label="Es feriado?" />
           </div>
         </div>
         <ArrayInput source="operarios">
           <SimpleFormIterator>
             <FormDataConsumer>
               {({ getSource }) => (
-                <div className={styles.dbInput}>
+                <>
                   <ReferenceInput
                     source={getSource('legajo')}
                     reference="operarios/list"
                   >
                     <AutocompleteInput
+                      className={styles.dbInput}
                       variant="standard"
                       label="Operario"
                       optionText={(choice) => `${choice.id} ${choice.name}`}
@@ -71,46 +72,26 @@ export const EditServicio = (props) => {
                       create={<CreateOperario />}
                     />
                   </ReferenceInput>
-                </div>
-              )}
-            </FormDataConsumer>
-            <FormDataConsumer>
-              {({ scopedFormData, getSource }) => (
-                <TimePickerComponent
-                  className={styles.inputs}
-                  source={getSource('hora_inicio')}
-                  label="Hora de inicio"
-                  value={scopedFormData.hora_inicio}
-                />
-              )}
-            </FormDataConsumer>
-            <FormDataConsumer>
-              {({ scopedFormData, getSource }) => (
-                <TimePickerComponent
-                  className={styles.inputs}
-                  source={getSource('hora_fin')}
-                  label="Hora de finalizacion"
-                  value={scopedFormData.hora_fin}
-                />
-              )}
-            </FormDataConsumer>
 
-            <FormDataConsumer>
-              {({ formData, getSource, scopedFormData }) => (
-                <OpInput
-                  source={getSource('a_cobrar')}
-                  formData={formData}
-                  scopedFormData={scopedFormData}
-                />
+                  <TimePickerComponent
+                    className={styles.inputs}
+                    source={getSource('hora_inicio')}
+                    label="Hora de inicio"
+                  />
+
+                  <TimePickerComponent
+                    className={styles.inputs}
+                    source={getSource('hora_fin')}
+                    label="Hora de finalizacion"
+                  />
+                  <OpInput source={getSource('a_cobrar')} />
+                </>
               )}
             </FormDataConsumer>
           </SimpleFormIterator>
         </ArrayInput>
-        <FormDataConsumer>
-          {({ formData, ...rest }) => (
-            <TotalInput ops={formData.operarios} {...rest} />
-          )}
-        </FormDataConsumer>
+
+        <TotalInput />
       </SimpleForm>
     </Edit>
   )

@@ -8,7 +8,7 @@ export const Dashboard = () => {
     <div>
       <h1>This is the dashboard</h1>
 
-      <CreateButton size="medium" resource="clientes" label="Nuevo servicio" />
+      <CreateButton size="medium" resource="servicios" label="Nuevo servicio" />
       <Button
         onClick={() => router('/sueldos/precios/0')}
         startIcon={<EditRounded />}

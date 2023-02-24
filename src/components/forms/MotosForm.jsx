@@ -298,7 +298,6 @@ function MotosForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: 'Ingrese una patente valida',
               pattern: {
                 value: DOMINIO_PATTERN,
                 message: 'Ingrese una patente valida',

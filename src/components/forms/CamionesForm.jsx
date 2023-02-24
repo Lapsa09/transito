@@ -243,7 +243,6 @@ function OperativosForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: 'Inserte una patente',
               pattern: {
                 value: !extranjero ? DOMINIO_PATTERN : /./,
                 message: 'Inserte una patente valida',

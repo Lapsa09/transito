@@ -21,7 +21,8 @@
     "react/react-in-jsx-scope": 0,
     "no-extra-boolean-cast": 0,
     "react/jsx-key": 0,
-    "no-unused-vars": 1
+    "no-unused-vars": 1,
+    "no-undef": 0
   },
   "settings": {
     "react": {

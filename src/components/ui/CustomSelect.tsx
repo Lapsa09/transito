@@ -1,16 +1,34 @@
 import { MenuItem, TextField } from '@mui/material'
 import React, { ReactNode } from 'react'
-import { useController } from 'react-hook-form'
+import {
+  Control,
+  FieldValues,
+  RegisterOptions,
+  useController,
+} from 'react-hook-form'
+
+type ISelect = {
+  control: Control<any, any>
+  name: string
+  rules?: Omit<
+    RegisterOptions<FieldValues, any>,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
+  >
+  options?: any[]
+  label: string
+  defaultValue?: string
+  disabled?: boolean
+}
 
 function CustomSelect({
   control,
   name,
-  rules = null,
+  rules,
   label,
   options,
-  defaultValue = '',
-  disabled = false,
-}) {
+  defaultValue,
+  disabled,
+}: ISelect) {
   const {
     field,
     fieldState: { error },

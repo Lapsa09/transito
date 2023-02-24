@@ -8,6 +8,7 @@ import {
   DateField,
   FunctionField,
 } from 'react-admin'
+import { IServicio } from 'types/Sueldos'
 import { CreateMemo } from '.'
 
 export const OperariosServicios = () => {
@@ -19,7 +20,7 @@ export const OperariosServicios = () => {
         <FunctionField
           textAlign="right"
           label="Nº Memo"
-          render={(record) =>
+          render={(record: IServicio) =>
             record.memo || <CreateMemo id={record.id} resource="operarios" />
           }
         />

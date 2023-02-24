@@ -31,10 +31,10 @@ const getImporteOperario = (
   const diff = fin?.diff(inicio, 'hours').hours
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio?.hour >= 8 && fin?.hour <= 20) {
-      return precio_normal * parseInt(diff)
+      return precio_normal * diff
     }
   }
-  return precio_pico * parseInt(diff)
+  return precio_pico * diff
 }
 
 export const OpInput = ({ source }) => {

@@ -12,6 +12,7 @@ import {
   useUpdate,
   useListController,
 } from 'react-admin'
+import { IOperario } from 'types/Sueldos'
 
 export const ServiciosMemo = ({ name }) => {
   const record = useRecordContext()
@@ -19,7 +20,7 @@ export const ServiciosMemo = ({ name }) => {
   const { refetch } = useListController({ resource: name })
   const [update] = useUpdate()
 
-  const cancelarOperario = (record) => {
+  const cancelarOperario = (record: IOperario) => {
     update(
       'operarios/cliente',
       {
@@ -54,7 +55,7 @@ export const ServiciosMemo = ({ name }) => {
           }}
         />
         <FunctionField
-          render={(record) =>
+          render={(record: IOperario) =>
             record.hora_inicio
               ? DateTime.fromFormat(
                   record.hora_inicio,
@@ -65,7 +66,7 @@ export const ServiciosMemo = ({ name }) => {
           label="Hora de inicio"
         />
         <FunctionField
-          render={(record) =>
+          render={(record: IOperario) =>
             !!record.hora_fin
               ? DateTime.fromFormat(record.hora_fin, 'HH:mm:ss').toLocaleString(
                   DateTime.TIME_24_SIMPLE
@@ -75,7 +76,7 @@ export const ServiciosMemo = ({ name }) => {
           label="Hora final"
         />
         <FunctionField
-          render={(record) => (
+          render={(record: IOperario) => (
             <Button onClick={() => cancelarOperario(record)} label="Cancelar" />
           )}
         />

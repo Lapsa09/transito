@@ -9,6 +9,7 @@ import {
   useList,
   useRecordContext,
 } from 'react-admin'
+import { IOperario, IServicio } from 'types/Sueldos'
 import { CreateMemo, ServiciosMemo } from '.'
 
 function ClientesServicios() {
@@ -17,19 +18,23 @@ function ClientesServicios() {
   return (
     <ListContextProvider value={listContext}>
       <Datagrid
-        isRowExpandable={(row) =>
-          row.operarios?.some((operario) => !!operario.legajo)
+        isRowExpandable={(row: IServicio) =>
+          row.operarios?.some((operario: IOperario) => !!operario.legajo)
         }
         isRowSelectable={() => false}
-        rowStyle={(record) => ({
-          backgroundColor: record.cancelado ? 'red' : 'white',
+        rowStyle={(record: IServicio) => ({
+          backgroundColor: record.operarios.every(
+            (operario) => operario.cancelado
+          )
+            ? 'red'
+            : 'white',
         })}
         expand={<ServiciosMemo name="clientes" />}
       >
         <FunctionField
           textAlign="right"
           label="Nº Memo"
-          render={(record) =>
+          render={(record: IServicio) =>
             record.memo || <CreateMemo id={record.id} resource="clientes" />
           }
         />

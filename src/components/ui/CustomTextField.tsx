@@ -1,6 +1,26 @@
 import { TextField } from '@mui/material'
-import React from 'react'
-import { useController } from 'react-hook-form'
+import React, { ChangeEvent } from 'react'
+import {
+  Control,
+  FieldValues,
+  RegisterOptions,
+  useController,
+} from 'react-hook-form'
+
+type ITextField = {
+  control: Control<any, any>
+  name: string
+  rules?: Omit<
+    RegisterOptions<FieldValues, any>,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
+  >
+  options?: any[]
+  label: string
+  defaultValue?: string
+  type?: 'text' | 'number' | 'password'
+  disabled?: boolean
+  className?: string
+}
 
 function CustomTextField({
   control,
@@ -11,7 +31,7 @@ function CustomTextField({
   type = 'text',
   disabled = false,
   className = '',
-}) {
+}: ITextField) {
   const {
     field: { ref, ...field },
     fieldState: { error },
@@ -22,7 +42,7 @@ function CustomTextField({
     defaultValue,
   })
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     field.onChange(
       typeof e.target.value === 'string' && type !== 'password'
         ? e.target.value.toUpperCase()

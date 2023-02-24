@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { FormEvent, Fragment, useState } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -15,7 +15,19 @@ import {
   useUpdate,
 } from 'react-admin'
 
-function QuickCreate({ children, handleSubmit, title, handleExit }) {
+type QuickCreateProps = {
+  children: JSX.Element | JSX.Element[]
+  handleSubmit: (e: FormEvent) => void
+  handleExit: () => void
+  title: string
+}
+
+function QuickCreate({
+  children,
+  handleSubmit,
+  title,
+  handleExit,
+}: QuickCreateProps) {
   return (
     <Dialog fullWidth open onClose={handleExit} aria-label="Create post">
       <DialogTitle>{title}</DialogTitle>
@@ -36,7 +48,7 @@ export function CreateCliente() {
   const [value, setValue] = useState(filter.toUpperCase() || '')
   const [create] = useCreate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     create(
       'clientes/list',
@@ -79,7 +91,7 @@ export function CreateOperario() {
   const reset = () => setValue({ id: '', name: '' })
   const [create] = useCreate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     create(
       'operarios/list',
@@ -138,8 +150,8 @@ export function CreateMemo({ id, resource }) {
       'memos',
       { id, data: { memo: value } },
       {
-        onSuccess: refetch,
-        onSettled: handleExit,
+        onSuccess: async () => await refetch(),
+        onSettled: () => handleExit(),
         onError: (e) => console.log(e),
       }
     )

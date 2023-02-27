@@ -23,7 +23,7 @@ import IndeterminateCheckBoxSharpIcon from '@mui/icons-material/IndeterminateChe
 import { useForm, useFieldArray } from 'react-hook-form'
 import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
-import { Grid } from '@mui/material'
+import { Checkbox, FormControlLabel, Grid } from '@mui/material'
 
 function MotosForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user)
@@ -37,6 +37,7 @@ function MotosForm({ handleClose, afterCreate }) {
     watch,
     formState: { isValid },
     setFocus,
+    trigger,
   } = useForm({
     mode: 'all',
     defaultValues: {
@@ -69,6 +70,7 @@ function MotosForm({ handleClose, afterCreate }) {
     getMotivos(),
   ])
   const [activeStep, setActiveStep] = useState(0)
+  const [extranjero, setExtranjero] = useState(false)
 
   const steps = () => {
     const [
@@ -176,6 +178,7 @@ function MotosForm({ handleClose, afterCreate }) {
     const res = await nuevoOperativoMoto(data)
     afterCreate(res)
     setFocus('dominio')
+    setExtranjero(false)
     reset(
       {
         ...data,
@@ -188,6 +191,10 @@ function MotosForm({ handleClose, afterCreate }) {
       { keepDefaultValues: true }
     )
   }
+
+  useEffect(() => {
+    trigger('dominio')
+  }, [extranjero])
 
   return (
     <Layout
@@ -302,7 +309,21 @@ function MotosForm({ handleClose, afterCreate }) {
                 value: DOMINIO_PATTERN,
                 message: 'Ingrese una patente valida',
               },
+              required: 'Ingrese una patente',
             }}
+            EndIcon={
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    title="Extranjero"
+                    tabIndex="-1"
+                    value={extranjero}
+                    onChange={() => setExtranjero((e) => !e)}
+                  />
+                }
+                label="Extranjero"
+              />
+            }
           />
         </Grid>
         <Grid item xs={8}>

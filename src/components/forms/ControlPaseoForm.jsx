@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   getMotivosPaseo,
   nuevoControlPaseo,
@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from '../../utils'
 import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
-import { Grid } from '@mui/material'
+import { Checkbox, FormControlLabel, Grid } from '@mui/material'
 
 function ControlPaseoForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user)
@@ -31,6 +31,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     watch,
     formState: { isValid },
     setFocus,
+    trigger,
   } = useForm({
     mode: 'all',
     defaultValues: {
@@ -48,6 +49,7 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
     getZonasPaseo(),
   ])
   const [activeStep, setActiveStep] = useState(0)
+  const [extranjero, setExtranjero] = useState(false)
 
   const steps = () => {
     const [fecha, hora, direccion, turno, dominio, lp, resolucion, motivo] =
@@ -84,15 +86,20 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
   }
 
   const submitting = async (data) => {
-    await nuevoControlPaseo(data)
+    const res = await nuevoControlPaseo(data)
     setFocus('dominio')
+    setExtranjero(false)
     reset({ ...data, dominio: '' }, { keepDefaultValues: true })
     if (handleRol()) {
-      await afterCreate()
+      afterCreate(res)
     } else {
       setTimeout(handleClose, 2000)
     }
   }
+
+  useEffect(() => {
+    trigger('dominio')
+  }, [extranjero])
 
   return (
     <Layout
@@ -184,12 +191,25 @@ function ControlPaseoForm({ handleClose, afterCreate }) {
             name="dominio"
             label="Dominio"
             rules={{
-              required: 'Ingrese una patente valida',
+              required: 'Ingrese una patente',
               pattern: {
                 value: DOMINIO_PATTERN,
                 message: 'Ingrese una patente valida',
               },
             }}
+            EndIcon={
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    title="Extranjero"
+                    tabIndex="-1"
+                    value={extranjero}
+                    onChange={() => setExtranjero((e) => !e)}
+                  />
+                }
+                label="Extranjero"
+              />
+            }
           />
         </Grid>
         <Grid item xs={8}>

@@ -11,6 +11,7 @@ function CustomTextField({
   type = 'text',
   disabled = false,
   className,
+  EndIcon = null,
 }) {
   const {
     field: { ref, ...field },
@@ -44,6 +45,7 @@ function CustomTextField({
       label={label}
       fullWidth
       inputRef={ref}
+      InputProps={{ endAdornment: EndIcon }}
     />
   )
 }

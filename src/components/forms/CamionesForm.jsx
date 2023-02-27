@@ -126,6 +126,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     const res = await nuevoOperativoCamiones(data)
     afterCreate(res)
     setFocus('dominio')
+    setExtranjero(false)
     reset(
       {
         ...data,
@@ -245,19 +246,23 @@ function OperativosForm({ handleClose, afterCreate }) {
             rules={{
               pattern: {
                 value: !extranjero ? DOMINIO_PATTERN : /./,
-                message: 'Inserte una patente valida',
+                message: 'Ingrese una patente valida',
               },
+              required: 'Ingrese una patente',
             }}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                title="Extranjero"
-                value={extranjero}
-                onChange={() => setExtranjero((e) => !e)}
+            EndIcon={
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    title="Extranjero"
+                    tabIndex="-1"
+                    value={extranjero}
+                    onChange={() => setExtranjero((e) => !e)}
+                  />
+                }
+                label="Extranjero"
               />
             }
-            label="Extranjero"
           />
         </Grid>
         <Grid item xs={8}>

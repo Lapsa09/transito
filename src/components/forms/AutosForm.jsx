@@ -21,7 +21,7 @@ import {
 import { useForm } from 'react-hook-form'
 import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
-import { Grid } from '@mui/material'
+import { Checkbox, FormControlLabel, Grid } from '@mui/material'
 
 function OperativosForm({ handleClose, afterCreate }) {
   const user = useSelector((x) => x.user.user)
@@ -34,12 +34,14 @@ function OperativosForm({ handleClose, afterCreate }) {
     watch,
     setValue,
     formState: { isValid },
+    trigger,
     setFocus,
   } = useForm({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
   })
   const [activeStep, setActiveStep] = useState(0)
+  const [extranjero, setExtranjero] = useState(false)
   const {
     data: [
       licencias,
@@ -122,6 +124,7 @@ function OperativosForm({ handleClose, afterCreate }) {
     const res = await nuevoOperativoAuto(data)
     afterCreate(res)
     setFocus('dominio')
+    setExtranjero(false)
     reset(
       {
         ...data,
@@ -144,6 +147,10 @@ function OperativosForm({ handleClose, afterCreate }) {
       setValue('motivo', null)
     }
   }, [esSancionable])
+
+  useEffect(() => {
+    trigger('dominio')
+  }, [extranjero])
 
   return (
     <Layout
@@ -249,9 +256,23 @@ function OperativosForm({ handleClose, afterCreate }) {
             rules={{
               pattern: {
                 value: DOMINIO_PATTERN,
-                message: 'Inserte una patente valida',
+                message: 'Ingrese una patente valida',
               },
+              required: 'Ingrese una patente',
             }}
+            EndIcon={
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    title="Extranjero"
+                    tabIndex="-1"
+                    value={extranjero}
+                    onChange={() => setExtranjero((e) => !e)}
+                  />
+                }
+                label="Extranjero"
+              />
+            }
           />
         </Grid>
         <Grid item xs={8}>

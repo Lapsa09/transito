@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import ControlDiarioForm from '../../components/forms/ControlDiarioForm'
 import { getControles } from 'services/controlDiarioService'
 import { useSelector } from 'react-redux'
-
 import Layout from 'layouts/OperativosLayout'
 import { dateFormat, dateTimeSQLFormat, timeFormat, history } from 'utils'
 import { useData } from 'hooks'
 import { IRootState } from '@redux/store'
+import { GridColumns } from '@mui/x-data-grid'
+import { OperativoDiario } from 'types/Operativos'
 
 function ControlDiarioPage() {
   const [open, setOpen] = useState(false)
@@ -16,7 +17,7 @@ function ControlDiarioPage() {
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getControles)
 
-  const columns = [
+  const columns: GridColumns<OperativoDiario[]> = [
     {
       field: 'fecha',
       headerName: 'Fecha',

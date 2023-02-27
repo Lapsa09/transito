@@ -24,7 +24,7 @@ import {
   Collapse,
 } from '@mui/material'
 import { basicMaxHeight, history } from 'utils'
-import { IRootState } from '@redux/store'
+import { AppDispatch, IRootState } from '@redux/store'
 
 const controles = [
   { link: '/control/diario', title: 'Diario' },
@@ -46,7 +46,7 @@ const pages = [
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [dropdown, setDropdown] = useState(null)
   const user = useSelector((x: IRootState) => x.user.user)
 

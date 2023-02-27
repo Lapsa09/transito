@@ -6,6 +6,8 @@ import { dateFormat, history, timeFormat } from 'utils'
 import { useData } from 'hooks'
 import { useSelector } from 'react-redux'
 import { IRootState } from '@redux/store'
+import { GridColumns } from '@mui/x-data-grid'
+import { OperativoCamiones } from 'types/Operativos'
 
 function CamionesPage() {
   const [open, setOpen] = useState(false)
@@ -15,7 +17,7 @@ function CamionesPage() {
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getOperativosCamiones)
 
-  const columns = [
+  const columns: GridColumns<OperativoCamiones[]> = [
     {
       field: 'id',
       headerName: 'ID',

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
 import { loginCall, register, verifyAuth } from 'services/userService'
+import { User } from 'types/Misc'
 import { history } from 'utils'
 
 const name = 'user'
@@ -9,16 +10,6 @@ const reducers = createReducers()
 const extraActions = createExtraActions()
 const extraReducers = createExtraReducers()
 const slice = createSlice({ name, initialState, reducers, extraReducers })
-
-type User = {
-  legajo: number
-  nombre: string
-  apellido: string
-  telefono: number
-  turno?: string
-  rol?: string
-  iat: number
-}
 
 export type IRootUser = {
   user?: User

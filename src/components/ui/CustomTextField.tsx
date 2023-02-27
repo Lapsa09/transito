@@ -16,7 +16,7 @@ type ITextField = {
   >
   options?: any[]
   label: string
-  defaultValue?: string
+  defaultValue?: string | number
   type?: 'text' | 'number' | 'password'
   disabled?: boolean
   className?: string

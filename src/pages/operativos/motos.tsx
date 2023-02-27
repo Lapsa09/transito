@@ -6,6 +6,8 @@ import { dateFormat, dateTimeFormat, history, timeFormat } from 'utils'
 import { useData } from 'hooks'
 import { useSelector } from 'react-redux'
 import { IRootState } from '@redux/store'
+import { GridColumns } from '@mui/x-data-grid'
+import { OperativoMotos } from 'types/Operativos'
 
 function MotosPage() {
   const [open, setOpen] = useState(false)
@@ -15,7 +17,7 @@ function MotosPage() {
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getOperativosMotos)
 
-  const columns = [
+  const columns: GridColumns<OperativoMotos[]> = [
     {
       field: 'id',
       headerName: 'ID',

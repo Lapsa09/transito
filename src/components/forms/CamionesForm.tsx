@@ -24,28 +24,15 @@ import { Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
 import { FormProps } from 'types/Misc'
 
-interface IFormInputs {
-  legajo_a_cargo: number
-  legajo_planilla: number
-  seguridad: string
-  hora: string
-  dominio: string
-  direccion: string
-  zona: { id: number; zona: string }
+interface CamionesForm extends FormInputProps {
   localidad_destino: { id: number; zona_infractor: string }
-  resolucion?: string
-  motivo: { id_motivo: number; motivo: string }
-  fecha: string
-  turno: string
-  acta?: number
-  lpcarga: number
   remito: boolean
   carga: boolean
   origen: string
   destino: string
   localidad_origen: { id: number; zona_infractor: string }
   legajo: number
-  licencia: number
+  motivo: { id_motivo: number; motivo: string }
 }
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
@@ -61,7 +48,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     formState: { isValid },
     trigger,
     setFocus,
-  } = useForm<IFormInputs>({
+  } = useForm<CamionesForm>({
     mode: 'all',
     defaultValues: { lpcarga: user?.legajo },
   })
@@ -148,7 +135,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     ]
   }
 
-  const submitEvent = async (data: IFormInputs) => {
+  const submitEvent = async (data: CamionesForm) => {
     const res = await nuevoOperativoCamiones(data)
     afterCreate(res)
     setFocus('dominio')
@@ -260,7 +247,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             name="hora"
             label="Hora"
             disabled={!handleRol()}
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate().toLocaleString() : null}
           />
         </Grid>
         <Grid item xs={8}>

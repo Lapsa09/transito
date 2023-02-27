@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux'
 import { dateFormat, dateTimeFormat, timeFormat, history } from 'utils'
 import { useData } from 'hooks'
 import { IRootState } from '@redux/store'
+import { GridColumns } from '@mui/x-data-grid'
+import { OperativoAutos } from 'types/Operativos'
 
 function AutosPage() {
   const [open, setOpen] = useState(false)
@@ -15,7 +17,7 @@ function AutosPage() {
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getOperativosAutos)
 
-  const columns = [
+  const columns: GridColumns<OperativoAutos[]> = [
     {
       field: 'id',
       headerName: 'ID',

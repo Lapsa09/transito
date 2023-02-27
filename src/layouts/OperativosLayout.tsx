@@ -1,4 +1,4 @@
-import React, { ElementType, ReactNode } from 'react'
+import React from 'react'
 import { Button, Modal } from '@mui/material'
 import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'

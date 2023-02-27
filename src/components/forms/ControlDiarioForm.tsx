@@ -22,19 +22,11 @@ import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
 import { FormProps } from 'types/Misc'
 
-interface IFormInputs {
-  fecha: string
-  hora: string
-  direccion: string
-  turno: string
-  dominio: string
+interface DiarioForm extends FormInputProps {
   lp: number
-  resolucion?: string
-  motivo?: { id: number; motivo: string }
   localidad: string
-  acta?: number
+  motivo: { id_motivo: number; motivo: string }
   otroMotivo?: string
-  lpcarga: number
 }
 
 function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
@@ -48,7 +40,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
     watch,
     formState: { isValid },
     setValue,
-  } = useForm<IFormInputs>({
+  } = useForm<DiarioForm>({
     mode: 'all',
     defaultValues: {
       lpcarga: user?.legajo,
@@ -112,7 +104,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
     ]
   }
 
-  const submitting = async (data: IFormInputs) => {
+  const submitting = async (data: DiarioForm) => {
     const res = await nuevoControl(data)
     reset(
       {
@@ -200,7 +192,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             control={control}
             name="hora"
             label="Hora"
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate().toLocaleString() : null}
             disabled={!handleRol()}
           />
         </Grid>

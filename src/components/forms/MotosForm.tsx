@@ -27,23 +27,8 @@ import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
 import { FormProps } from 'types/Misc'
 
-interface IFormInputs {
-  fecha: string
-  hora: string
-  direccion: string
-  zona: string
-  legajo_a_cargo: number
-  legajo_planilla: number
-  turno: string
-  seguridad: string
-  dominio: string
-  licencia?: string
-  tipo_licencia?: string
-  zona_infractor: { id_zona: number; zona: string }
-  resolucion?: string
-  acta?: number
+interface MotosForm extends FormInputProps {
   motivos?: { id_motivo: number; motivo: string }[]
-  lpcarga: number
 }
 
 function MotosForm({ handleClose, afterCreate }: FormProps) {
@@ -58,7 +43,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     watch,
     formState: { isValid },
     setFocus,
-  } = useForm<IFormInputs>({
+  } = useForm<MotosForm>({
     mode: 'all',
     defaultValues: {
       motivos: [],
@@ -181,7 +166,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     }
   }, [esSancionable])
 
-  const submitEvent = async (data) => {
+  const submitEvent = async (data: MotosForm) => {
     const res = await nuevoOperativoMoto(data)
     afterCreate(res)
     setFocus('dominio')
@@ -189,10 +174,10 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
       {
         ...data,
         dominio: '',
-        licencia: '',
+        licencia: null,
         tipo_licencia: null,
         zona_infractor: null,
-        acta: '',
+        acta: null,
       },
       { keepDefaultValues: true }
     )

@@ -6,6 +6,8 @@ import Layout from 'layouts/OperativosLayout'
 import { useData } from 'hooks'
 import { dateFormat, dateTimeSQLFormat, timeFormat, history } from 'utils'
 import { IRootState } from '@redux/store'
+import { GridColumns } from '@mui/x-data-grid'
+import { OperativoPaseo } from 'types/Operativos'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)
@@ -14,7 +16,7 @@ function ControlPaseoPage() {
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData(getControlesPaseo)
-  const columns = [
+  const columns: GridColumns<OperativoPaseo[]> = [
     {
       field: 'fecha',
       headerName: 'Fecha',

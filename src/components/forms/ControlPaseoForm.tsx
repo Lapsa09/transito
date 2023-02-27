@@ -21,14 +21,8 @@ import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
 import { FormProps } from 'types/Misc'
 
-interface IFormInputs {
-  fecha: string
-  hora: string
-  direccion: string
-  turno: string
-  dominio: string
+interface PaseoForm extends FormInputProps {
   lp: number
-  resolucion: string
   motivo: string
   lpcarga: number
 }
@@ -45,7 +39,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
     watch,
     formState: { isValid },
     setFocus,
-  } = useForm<IFormInputs>({
+  } = useForm<PaseoForm>({
     mode: 'all',
     defaultValues: {
       lpcarga: user?.legajo,
@@ -97,7 +91,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
     ]
   }
 
-  const submitting = async (data: IFormInputs) => {
+  const submitting = async (data: PaseoForm) => {
     const res = await nuevoControlPaseo(data)
     setFocus('dominio')
     reset({ ...data, dominio: '' }, { keepDefaultValues: true })
@@ -179,7 +173,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             control={control}
             name="hora"
             label="Hora"
-            defaultValue={!handleRol() ? currentDate() : null}
+            defaultValue={!handleRol() ? currentDate().toLocaleString() : null}
             disabled={!handleRol()}
           />
         </Grid>

@@ -1,8 +1,10 @@
+import { User } from 'types/Misc'
 import { setter } from './index'
 
-export const register = async (body) => await setter('/auth/register', body)
+export const register = async (body) =>
+  await setter<User>('/auth/register', body)
 
-export const loginCall = async (body) => await setter('/auth/login', body)
+export const loginCall = async (body) => await setter<User>('/auth/login', body)
 
 export const verifyAuth = async () =>
   await setter('/auth/verify', null, {

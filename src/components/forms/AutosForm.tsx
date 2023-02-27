@@ -25,24 +25,9 @@ import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
 import { FormProps } from 'types/Misc'
 
-interface IFormInputs {
-  legajo_a_cargo: number
-  legajo_planilla: number
-  seguridad: string
-  hora: string
-  dominio: string
-  direccion: string
-  zona: { id: number; zona: string }
-  zona_infractor: { id: number; zona_infractor: string }
-  resolucion?: string
+interface AutosForm extends FormInputProps {
   motivo: { id_motivo: number; motivo: string }
-  fecha: string
-  turno: string
-  acta?: number
-  lpcarga: number
   graduacion_alcoholica?: number
-  licencia?: number
-  tipo_licencia?: { id_tipo: number; tipo: string }
 }
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
@@ -57,7 +42,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     setValue,
     formState: { isValid },
     setFocus,
-  } = useForm<IFormInputs>({
+  } = useForm<AutosForm>({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
   })
@@ -137,7 +122,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const esSancionable =
     getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
 
-  const submitEvent = async (data: IFormInputs) => {
+  const submitEvent = async (data: AutosForm) => {
     const res = await nuevoOperativoAuto(data)
     afterCreate(res)
     setFocus('dominio')

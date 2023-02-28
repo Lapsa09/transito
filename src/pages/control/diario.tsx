@@ -15,7 +15,7 @@ function ControlDiarioPage() {
   const handleClose = () => setOpen(false)
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
-  const { data, loading, refresh } = useData(getControles)
+  const { data, loading, refresh } = useData<OperativoDiario>(getControles)
 
   const columns: GridColumns<OperativoDiario[]> = [
     {

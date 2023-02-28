@@ -15,7 +15,9 @@ function CamionesPage() {
   const handleOpen = () => setOpen(true)
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
-  const { data, loading, refresh } = useData(getOperativosCamiones)
+  const { data, loading, refresh } = useData<OperativoCamiones>(
+    getOperativosCamiones
+  )
 
   const columns: GridColumns<OperativoCamiones[]> = [
     {

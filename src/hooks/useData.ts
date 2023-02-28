@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 
-export default function useData(input: any) {
+export default function useData<T>(input: <T>() => Promise<T[]>) {
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState([])
+  const [data, setData] = useState<T[]>([])
   const [error, setError] = useState(null)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      setData(await input())
+      setData(await input<T>())
       setLoading(false)
     } catch (err) {
       setLoading(false)

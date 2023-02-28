@@ -88,7 +88,7 @@ function FormLayout({
   const cargarOperativo = () => {
     try {
       if (currentDate().toMillis() < operative.expiresAt) {
-        Object.entries(operative).forEach(([key, value]) => {
+        Object.entries(operative).forEach(([key, value]: [string, string]) => {
           key === 'fecha' || key === 'hora'
             ? setValue(key, DateTime.fromISO(value))
             : setValue(key, value)

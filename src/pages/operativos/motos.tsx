@@ -15,7 +15,7 @@ function MotosPage() {
   const handleOpen = () => setOpen(true)
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
-  const { data, loading, refresh } = useData(getOperativosMotos)
+  const { data, loading, refresh } = useData<OperativoMotos>(getOperativosMotos)
 
   const columns: GridColumns<OperativoMotos[]> = [
     {

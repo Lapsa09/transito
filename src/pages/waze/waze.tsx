@@ -4,7 +4,7 @@ import { history } from 'utils'
 import { Table } from '../../components'
 import { mainWazeGetter } from 'services/wazeService'
 import style from '../../styles/Waze.module.css'
-import { WazePromedio, WazeRes, Horario } from 'types/Waze'
+import { WazePromedio, WazeRes, Horario, Waze } from 'types/Waze'
 
 function App() {
   const [data, setData] = useState<WazeRes>()
@@ -16,7 +16,7 @@ function App() {
   }
 
   const fetch = async () => {
-    const { res, promedio } = await mainWazeGetter()
+    const { res, promedio }: Waze = await mainWazeGetter()
     setData(res)
     setProm(promedio)
   }

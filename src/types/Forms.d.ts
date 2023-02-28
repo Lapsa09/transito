@@ -12,7 +12,6 @@ interface FormInputProps {
   zona_infractor: { id: number; zona_infractor: string }
   licencia?: number
   tipo_licencia?: { id_tipo: number; tipo: string }
-  zona_infractor: { id: number; zona_infractor: string }
   resolucion?: string
   acta?: number
 }

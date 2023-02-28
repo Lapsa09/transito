@@ -15,7 +15,8 @@ function ControlPaseoPage() {
   const handleClose = () => setOpen(false)
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
-  const { data, loading, refresh } = useData(getControlesPaseo)
+  const { data, loading, refresh } = useData<OperativoPaseo>(getControlesPaseo)
+
   const columns: GridColumns<OperativoPaseo[]> = [
     {
       field: 'fecha',

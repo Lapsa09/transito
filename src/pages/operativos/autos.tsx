@@ -15,7 +15,7 @@ function AutosPage() {
   const handleClose = () => setOpen(false)
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
-  const { data, loading, refresh } = useData(getOperativosAutos)
+  const { data, loading, refresh } = useData<OperativoAutos>(getOperativosAutos)
 
   const columns: GridColumns<OperativoAutos[]> = [
     {

@@ -1,58 +1,49 @@
-export interface OperativoAutos {
+export interface Operativo {
+  id: number
   fecha: string
-  hora: string
+  hora?: string
+  legajo_planilla: number
+  acta?: number
+  resolucion?: string
+  turno: string
+  fechacarga?: string
+  lpcarga?: number
+  motivo?: string
+}
+
+export interface OperativoAutos extends Operativo {
   qth: string
   barrio: string
   cp: string
   legajo_a_cargo: number
-  legajo_planilla: number
-  turno?: string
   seguridad: string
   dominio: string
   licencia?: number
   tipo_licencia?: string
   tipo_vehiculo?: string
   zona_infractor: string
-  acta?: number
   motivo?: string
   graduacion_alcoholica?: number
-  resolucion?: string
-  fechacarga?: string
-  lpcarga?: number
   mes: number
   semana: number
   es_del?: string
   resultado?: string
-  id: number
 }
 
-export interface OperativoMotos {
-  id: number
-  fecha: string
-  hora: string
+export interface OperativoMotos extends Operativo {
   direccion: string
   zona: string
   cp: string
   legajo_a_cargo?: number
-  legajo_planilla: number
-  turno: string
   seguridad: string
   dominio: string
   licencia?: number
   tipo_licencia?: string
   motivos?: string[]
-  acta?: number
-  resolucion?: string
   zona_infractor?: string
-  fechacarga: string
-  lpcarga: number
 }
 
-export interface OperativoCamiones {
-  fecha: string
-  hora?: string
-  turno: string
-  legajo: number
+export interface OperativoCamiones extends Operativo {
   direccion: string
   localidad?: string
   cp?: string
@@ -64,46 +55,26 @@ export interface OperativoCamiones {
   licencia?: number
   remito: boolean
   carga: boolean
-  resolucion?: string
   acta?: number
   motivo?: string
   hora_carga: string
   legajo_carga: string
-  id: number
 }
 
-export interface OperativoPaseo {
-  id: number
-  fecha: string
-  hora: string
+export interface OperativoPaseo extends Operativo {
   zona: string
   barrio?: string
   dominio: string
   lp?: number
   acta?: number
-  resolucion: string
-  turno: string
-  fechacarga: string
-  lpcarga: number
   motivo: string
   mes: number
 }
 
-export interface OperativoDiario {
-  id: number
-  fecha: string
-  hora?: string
+export interface OperativoDiario extends Operativo {
   direccion: string
   barrio?: string
   dominio?: string
-  legajo_planilla: number
-  acta?: number
-  resolucion?: string
-  turno: string
-  fechacarga?: string
-  lpcarga?: number
-  mes?: number
-  motivo?: any
   otro_motivo?: string
 }
 

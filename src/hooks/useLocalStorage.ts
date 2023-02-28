@@ -1,43 +1,35 @@
 import { useEffect, useState } from 'react'
 
-export default function useLocalStorage(key, initialValue = null) {
+export default function useLocalStorage<T>(key: string) {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
-  const [storedValue, setStoredValue] = useState(() => {
-    if (typeof window === 'undefined') {
-      return initialValue
-    }
+  const [storedValue, setStoredValue] = useState<T>(() => {
     // Get from local storage by key
     const item = window.localStorage.getItem(key)
     try {
       // Parse stored json or if none return initialValue
-      return item ? JSON.parse(item) : initialValue
+      return JSON.parse(item)
     } catch (error) {
       // If error also return initialValue
-      return item || initialValue
+      return item
     }
   })
 
   useEffect(() => {
-    setStoredValue(window.localStorage.getItem(key))
+    const item = JSON.parse(window.localStorage.getItem(key))
+    setStoredValue(item)
   }, [window.localStorage.getItem(key)])
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
-  const setValue = (value) => {
+  const setValue = (value: T) => {
     try {
-      // Allow value to be a function so we have same API as useState
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value
       // Save state
-      setStoredValue(valueToStore)
+      setStoredValue(value)
       // Save to local storage
       if (typeof window !== 'undefined') {
         if (value) {
-          window.localStorage.setItem(
-            key,
-            JSON.stringify(valueToStore, null, 2)
-          )
+          window.localStorage.setItem(key, JSON.stringify(value, null, 2))
         } else {
           window.localStorage.removeItem(key)
         }
@@ -46,5 +38,5 @@ export default function useLocalStorage(key, initialValue = null) {
       // A more advanced implementation would handle the error case
     }
   }
-  return [storedValue, setValue]
+  return [storedValue, setValue] as [T, (value: T) => void]
 }

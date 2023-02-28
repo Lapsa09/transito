@@ -14,6 +14,7 @@ import {
   UseFormReset,
   UseFormSetValue,
 } from 'react-hook-form'
+import { Operativo } from 'types/Operativos'
 
 interface FormLayoutProps {
   children: JSX.Element[]
@@ -28,6 +29,10 @@ interface FormLayoutProps {
   submitEvent: (data: any) => Promise<void>
   reset: UseFormReset<any>
   setValue: UseFormSetValue<any>
+}
+
+interface Operative extends Operativo {
+  expiresAt: number
 }
 
 function FormLayout({
@@ -47,7 +52,7 @@ function FormLayout({
   const user = useSelector((x: IRootState) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const [open, setOpen] = useState(false)
-  const [operative, setOperative] = useLocalStorage(path)
+  const [operative, setOperative] = useLocalStorage<Operative>(path)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
     useSnackBar()
 
@@ -88,7 +93,7 @@ function FormLayout({
   const cargarOperativo = () => {
     try {
       if (currentDate().toMillis() < operative.expiresAt) {
-        Object.entries(operative).forEach(([key, value]: [string, string]) => {
+        Object.entries(operative).forEach(([key, value]) => {
           key === 'fecha' || key === 'hora'
             ? setValue(key, DateTime.fromISO(value))
             : setValue(key, value)

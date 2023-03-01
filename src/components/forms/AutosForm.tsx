@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  getAllZonas,
-  getLicencias,
-  getSeguridad,
-  getZonasVL,
-  nuevoOperativoAuto,
-  getMotivos,
-} from 'services/operativosService'
-import { getResolucion, getTurnos } from 'services/index'
+import { nuevoOperativoAuto } from 'services/operativosService'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from 'utils'
 import { useSelector } from 'react-redux'
 import {
@@ -17,7 +9,6 @@ import {
   CustomSelect,
   CustomAutocomplete,
 } from '../ui'
-
 import { useForm } from 'react-hook-form'
 import Layout from 'layouts/FormLayout'
 import { useSelects } from 'hooks'
@@ -48,25 +39,17 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   })
   const [activeStep, setActiveStep] = useState(0)
   const {
-    data: [
-      licencias,
-      zonasVL,
-      allZonas,
+    data: {
       turnos,
       seguridad,
+      vicente_lopez,
+      licencias,
       resolucion,
       motivos,
-    ],
+      barrios,
+    },
     error,
-  } = useSelects([
-    getLicencias(),
-    getZonasVL(),
-    getAllZonas(),
-    getTurnos(),
-    getSeguridad(),
-    getResolucion(),
-    getMotivos(),
-  ])
+  } = useSelects()
 
   const steps = () => {
     const [
@@ -239,7 +222,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             name="zona"
             label="Zona"
             rules={{ required: 'Elija una localidad' }}
-            options={zonasVL}
+            options={vicente_lopez}
           />
         </Grid>
       </Grid>
@@ -280,7 +263,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             name="zona_infractor"
             rules={{ required: 'Elija una opcion' }}
             label="Localidad del infractor"
-            options={allZonas}
+            options={barrios}
           />
         </Grid>
         <Grid item xs={8}>

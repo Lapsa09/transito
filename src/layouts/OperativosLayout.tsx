@@ -8,10 +8,11 @@ import { geocoding } from 'services/operativosService'
 import { CustomSnackbar } from '../components/ui'
 import { useSnackBar } from 'hooks'
 import { IRootState } from '@redux/store'
+import { Operativo } from 'types/Operativos'
 
 interface OperativosLayoutProps {
   columns: GridColumns
-  operativos: any
+  operativos: Operativo[]
   children: JSX.Element
   loading: boolean
   open: boolean

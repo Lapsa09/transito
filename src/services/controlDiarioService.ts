@@ -6,12 +6,6 @@ import {
 } from 'types/Operativos'
 import { getEnums, getter, setter } from './index'
 
-export const getMotivos = async () => await getter<IMotivos[]>('/motivos')
-
-export const getLocalidades = async () => await getter<IZona[]>('/zonas')
-
-export const getZonasVL = async () => await getter<IZona[]>('/zonas/vl')
-
 export const nuevoControl = async (body) =>
   await setter('/control/diario', body)
 

@@ -1,11 +1,5 @@
 import React, { useState } from 'react'
-import {
-  getLocalidades,
-  getMotivos,
-  nuevoControl,
-} from 'services/controlDiarioService'
-import { getResolucion, getTurnos } from 'services/index'
-
+import { nuevoControl } from 'services/controlDiarioService'
 import { useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import {
@@ -48,9 +42,9 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
     },
   })
   const {
-    data: [localidades, motivos, turnos, resolucion],
+    data: { barrios, motivos, turnos, resolucion },
     error,
-  } = useSelects([getLocalidades(), getMotivos(), getTurnos(), getResolucion()])
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
@@ -125,12 +119,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
     } else {
       setTimeout(handleClose, 2000)
     }
-  }
-
-  const getMotivo = () => {
-    return (
-      motivos.find((motivo) => motivo.id === getValues('motivo'))?.motivo || ''
-    )
   }
 
   return (
@@ -210,7 +198,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             name="localidad"
             rules={{ required: 'Elija una opcion' }}
             label="Localidad"
-            options={localidades}
+            options={barrios}
           />
         </Grid>
         <Grid item xs={8}>
@@ -261,14 +249,14 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             options={motivos}
           />
         </Grid>
-        {motivos?.length > 0 && getMotivo() === 'OTRO' && (
+        {motivos?.length > 0 && getValues('motivo').motivo === 'OTRO' && (
           <Grid item xs={8}>
             <CustomTextField
               control={control}
               name="otroMotivo"
               rules={{
                 required: {
-                  value: getMotivo() === 'OTRO',
+                  value: getValues('motivo').motivo === 'OTRO',
                   message: 'Inserte un motivo valido',
                 },
               }}

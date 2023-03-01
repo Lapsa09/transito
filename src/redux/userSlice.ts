@@ -114,7 +114,12 @@ function createExtraReducers() {
       history.navigate(from)
     },
     rejected: (state, action) => {
+      localStorage.removeItem('token')
       state.error = action.error
+      const { from } = history.location.state || {
+        from: { pathname: '/login' },
+      }
+      history.navigate(from)
     },
   }
   return (builder) => {

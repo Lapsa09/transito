@@ -6,7 +6,7 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   Home,
   Login,
@@ -24,19 +24,17 @@ import './styles/globals.css'
 import PrivateRoute from 'layouts/PrivateRoute'
 import { Header } from 'components'
 import { history } from 'utils'
-import { IRootState } from '@redux/store'
-// import { authActions } from './redux/userSlice'
+import { AppDispatch, IRootState } from '@redux/store'
+import { authActions } from './redux/userSlice'
 
 function App() {
   const user = useSelector((x: IRootState) => x.user.user)
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
   history.navigate = useNavigate()
   history.location = useLocation()
 
-  // useEffect(() => {
-  //   dispatch(authActions.verify())
-  // }, [])
+  dispatch(authActions.verify())
 
   return (
     <Fragment>

@@ -1,12 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import {
-  getAllZonas,
-  getLicencias,
-  getMotivos,
-  getSeguridad,
-  getZonasVL,
-  nuevoOperativoMoto,
-} from 'services/operativosService'
+import { nuevoOperativoMoto } from 'services/operativosService'
 import {
   CustomDatePicker,
   CustomTimePicker,
@@ -14,7 +7,6 @@ import {
   CustomSelect,
   CustomAutocomplete,
 } from '../ui'
-import { getResolucion, getTurnos } from 'services/index'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from 'utils'
 import { useSelector } from 'react-redux'
 
@@ -55,25 +47,17 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     name: 'motivos',
   })
   const {
-    data: [
+    data: {
       licencias,
-      zonasVL,
-      allZonas,
+      vicente_lopez,
+      barrios,
       turnos,
       seguridad,
       resolucion,
       motivos,
-    ],
+    },
     error,
-  } = useSelects([
-    getLicencias(),
-    getZonasVL(),
-    getAllZonas(),
-    getTurnos(),
-    getSeguridad(),
-    getResolucion(),
-    getMotivos(),
-  ])
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
@@ -224,7 +208,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             name="zona"
             label="Zona"
             rules={{ required: 'Elija una localidad' }}
-            options={zonasVL}
+            options={vicente_lopez}
           />
         </Grid>
         <Grid item xs={8}>
@@ -322,7 +306,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             name="zona_infractor"
             label="Localidad del infractor"
             rules={{ required: 'Elija una opcion' }}
-            options={allZonas}
+            options={barrios}
           />
         </Grid>
         <Grid item xs={8}>

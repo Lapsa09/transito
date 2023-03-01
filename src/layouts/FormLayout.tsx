@@ -23,11 +23,11 @@ interface FormLayoutProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
   handleClose: () => void
   isValid: boolean
-  handleSubmit: UseFormHandleSubmit<any>
+  handleSubmit: UseFormHandleSubmit<FormInputProps>
   path: string
   error: any
-  submitEvent: (data: any) => Promise<void>
-  reset: UseFormReset<any>
+  submitEvent: (data: FormInputProps) => Promise<void>
+  reset: UseFormReset<FormInputProps>
   setValue: UseFormSetValue<any>
 }
 

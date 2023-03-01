@@ -1,16 +1,11 @@
 import React, { useState } from 'react'
-import {
-  getMotivosPaseo,
-  nuevoControlPaseo,
-  getZonasPaseo,
-} from 'services/controlDiarioService'
+import { nuevoControlPaseo } from 'services/controlDiarioService'
 import {
   CustomDatePicker,
   CustomTimePicker,
   CustomTextField,
   CustomSelect,
 } from '../ui'
-import { getResolucion, getTurnos } from 'services'
 
 import { useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
@@ -47,14 +42,9 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
     },
   })
   const {
-    data: [motivos, turnos, resolucion, zonas],
+    data: { motivos, turnos, resolucion, zonas_paseo },
     error,
-  } = useSelects([
-    getMotivosPaseo(),
-    getTurnos(),
-    getResolucion(),
-    getZonasPaseo(),
-  ])
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
@@ -183,7 +173,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             name="direccion"
             rules={{ required: 'Elija una opcion' }}
             label="Direccion"
-            options={zonas}
+            options={zonas_paseo}
           />
         </Grid>
         <Grid item xs={8}>

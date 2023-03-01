@@ -4,12 +4,12 @@ export default function useSnackBar() {
   const [openSB, setOpenSB] = useState(false)
   const [response, setResponse] = useState({ severity: '', message: '' })
 
-  const setError = (message) => {
+  const setError = (message: string) => {
     setResponse({ severity: 'error', message })
     setOpenSB(true)
   }
 
-  const closeSnackbar = (event, reason) => {
+  const closeSnackbar = (_, reason: string) => {
     if (reason === 'clickaway') {
       return
     }
@@ -17,7 +17,7 @@ export default function useSnackBar() {
     setOpenSB(false)
   }
 
-  const setSuccess = (message) => {
+  const setSuccess = (message: string) => {
     setResponse({ severity: 'success', message })
     setOpenSB(true)
   }

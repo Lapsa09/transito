@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  getAllZonas,
-  getZonasVL,
-  nuevoOperativoCamiones,
-  getMotivos,
-} from 'services/operativosService'
-import { getResolucion, getTurnos } from 'services/index'
+import { nuevoOperativoCamiones } from 'services/operativosService'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN, currentDate } from 'utils'
 import { useSelector } from 'react-redux'
 
@@ -53,15 +47,9 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     defaultValues: { lpcarga: user?.legajo },
   })
   const {
-    data: [zonasVL, allZonas, turnos, resolucion, motivos],
+    data: { vicente_lopez, barrios, turnos, resolucion, motivos },
     error,
-  } = useSelects([
-    getZonasVL(),
-    getAllZonas(),
-    getTurnos(),
-    getResolucion(),
-    getMotivos(),
-  ])
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
   const [extranjero, setExtranjero] = useState(false)
 
@@ -208,7 +196,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             name="zona"
             label="Zona"
             rules={{ required: 'Inserte una localidad' }}
-            options={zonasVL}
+            options={vicente_lopez}
           />
         </Grid>
         <Grid item xs={8}>
@@ -283,7 +271,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             name="localidad_origen"
             label="Localidad de origen"
             rules={{ required: 'Elija una opcion' }}
-            options={allZonas}
+            options={barrios}
           />
         </Grid>
         <Grid item xs={8}>
@@ -295,7 +283,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             name="localidad_destino"
             label="Localidad de destino"
             rules={{ required: 'Elija una opcion' }}
-            options={allZonas}
+            options={barrios}
           />
         </Grid>
         <Grid item xs={8}>

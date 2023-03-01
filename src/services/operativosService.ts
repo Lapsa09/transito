@@ -8,16 +8,6 @@ import {
 } from 'types/Operativos'
 import { getEnums, getter, setter } from './index'
 
-export const getLicencias = async () => await getter<ILicencias[]>('/licencias')
-
-export const getZonasVL = async () => await getter<IZona[]>('/zonas/vl')
-
-export const getAllZonas = async () => await getter<IZona[]>('/zonas')
-
-export const getSeguridad = async () => await getEnums('seguridad')
-
-export const getMotivos = async () => await getter<IMotivos[]>('/motivos')
-
 export const getMotivosCamion = async () =>
   await getEnums<IMotivos[]>('motivos_camion')
 

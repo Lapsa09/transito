@@ -13,6 +13,7 @@ import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
+import { useFormContext } from 'react-hook-form'
 
 function FormLayout({
   children,
@@ -20,13 +21,9 @@ function FormLayout({
   activeStep,
   setActiveStep,
   handleClose,
-  isValid,
-  handleSubmit,
   path,
   error,
   submitEvent,
-  reset,
-  setValue,
 }) {
   const user = useSelector((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
@@ -34,6 +31,12 @@ function FormLayout({
   const [operative, setOperative] = useLocalStorage(path)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
     useSnackBar()
+  const {
+    setValue,
+    reset,
+    handleSubmit,
+    formState: { isValid },
+  } = useFormContext()
 
   const totalSteps = () => {
     return steps.length

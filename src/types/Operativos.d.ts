@@ -90,7 +90,16 @@ export interface IZona {
   cp: string
 }
 
+export interface IBarrio {
+  id_barrio: number
+  barrio: string
+}
+
 export interface IMotivos {
   id_motivo: number
   motivo: string
+}
+
+export interface IMotivosPaseo {
+  enumlabel: 'ESTACIONAMIENTO' | 'VELOCIDAD'
 }

@@ -31,7 +31,7 @@ function CustomSelect({
 }: ISelect) {
   const {
     field,
-    fieldState: { error },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -43,7 +43,7 @@ function CustomSelect({
       {...field}
       select
       sx={{ width: '100%' }}
-      error={!!error}
+      error={invalid}
       label={label}
       disabled={disabled}
       required={rules !== undefined}

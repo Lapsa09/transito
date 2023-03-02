@@ -3,7 +3,7 @@ export interface FormProps {
   afterCreate: (_data: any) => void
 }
 
-type User = {
+export type User = {
   legajo: number
   nombre: string
   apellido: string
@@ -11,4 +11,16 @@ type User = {
   turno?: string
   rol?: string
   iat: number
+}
+
+export interface ITurnos {
+  enumlabel: 'MAÑANA' | 'TARDE' | 'NOCHE'
+}
+
+export interface IResolucion {
+  enumlabel: 'PREVENCION' | 'ACTA' | 'REMITIDO'
+}
+
+export interface ISeguridad {
+  enumlabel: 'NO' | 'POLICIA' | 'PREFECTURA' | 'SECRETARIA DE SEGURIDAD'
 }

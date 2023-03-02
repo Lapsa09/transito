@@ -9,16 +9,26 @@ import {
   getZonasVL,
 } from '@services/index'
 import { useEffect, useState } from 'react'
+import {
+  IMotivosPaseo,
+  IResolucion,
+  ISeguridad,
+  ITurnos,
+  ILicencias,
+  IMotivos,
+  IZona,
+  IBarrio,
+} from 'types'
 
 interface SelectData {
-  resolucion: string[]
-  turnos: string[]
-  barrios: { id_barrio: number; barrio: string }[]
-  vicente_lopez: { id_barrio: number; barrio: string }[]
-  motivos: { id_motivo: number; motivo: string }[]
-  licencias: { id_tipo: number; tipo: string }[]
-  seguridad: string[]
-  motivos_paseo: string[]
+  resolucion: IResolucion[]
+  turnos: ITurnos[]
+  barrios: IBarrio[]
+  vicente_lopez: IZona[]
+  motivos: IMotivos[]
+  licencias: ILicencias[]
+  seguridad: ISeguridad[]
+  motivos_paseo: IMotivosPaseo[]
   zonas_paseo: { id_zona: number; zona: string }[]
 }
 

@@ -27,7 +27,7 @@ function CustomAutocomplete({
 }: IAutoComplete) {
   const {
     field,
-    fieldState: { error },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -44,7 +44,7 @@ function CustomAutocomplete({
       {...field}
       options={options}
       getOptionLabel={optionLabel}
-      onChange={(e, value, reason) =>
+      onChange={(_, value, reason) =>
         field.onChange(reason === 'clear' ? null : value)
       }
       renderInput={(params) => (
@@ -52,7 +52,7 @@ function CustomAutocomplete({
           {...params}
           label={label}
           required={rules?.required != null}
-          error={!!error}
+          error={invalid}
           helperText={error?.message}
         />
       )}

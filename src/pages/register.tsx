@@ -2,13 +2,12 @@ import React, { useEffect } from 'react'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { authActions } from 'redux/userSlice'
-import CustomTextField from 'components/ui/CustomTextField'
+import { CustomTextField } from 'components'
 import { basicWidth, history } from 'utils'
 import LogoOVT from 'assets/imgs/OVT_LETRAS_NEGRAS.png'
+import { AppDispatch, IRootState, authActions } from 'redux'
+import { User } from 'types'
 import 'styles/register.css'
-import { AppDispatch, IRootState } from '@redux/store'
-import { User } from 'types/Misc'
 
 function Register() {
   const { control, handleSubmit, getValues } = useForm()

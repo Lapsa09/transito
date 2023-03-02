@@ -11,4 +11,4 @@ export type IRootState = {
   user?: IRootUser
 }
 
-export default store
+export { store }

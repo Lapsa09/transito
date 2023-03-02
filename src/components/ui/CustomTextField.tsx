@@ -1,11 +1,13 @@
-import { TextField } from '@mui/material'
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import {
   Control,
   FieldValues,
   RegisterOptions,
   useController,
+  useFormContext,
 } from 'react-hook-form'
+import { Checkbox, FormControlLabel, TextField } from '@mui/material'
+import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '@utils'
 
 type ITextField = {
   control: Control<any, any>
@@ -20,9 +22,10 @@ type ITextField = {
   type?: 'text' | 'number' | 'password'
   disabled?: boolean
   className?: string
+  InputProps?: any
 }
 
-function CustomTextField({
+export function CustomTextField({
   control,
   name,
   defaultValue = null,
@@ -31,10 +34,11 @@ function CustomTextField({
   type = 'text',
   disabled = false,
   className = '',
+  ...props
 }: ITextField) {
   const {
     field: { ref, ...field },
-    fieldState: { error },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -59,12 +63,72 @@ function CustomTextField({
       required={rules !== undefined}
       disabled={disabled}
       className={className}
-      error={!!error}
+      error={invalid}
       label={label}
       fullWidth
       inputRef={ref}
+      {...props}
     />
   )
 }
 
-export default CustomTextField
+export function DomainField({ control, name, className = '' }) {
+  const [extranjero, setExtranjero] = useState(false)
+  const { trigger } = useFormContext()
+
+  const changeDomainStatus = () => {
+    setExtranjero((e) => !e)
+    setTimeout(() => {
+      trigger('dominio')
+    }, 100)
+  }
+
+  return (
+    <CustomTextField
+      control={control}
+      label="Dominio"
+      name={name}
+      className={className}
+      rules={{
+        pattern: {
+          value: !extranjero ? DOMINIO_PATTERN : /./,
+          message: 'Ingrese una patente valida',
+        },
+        required: 'Ingrese una patente',
+      }}
+      defaultValue=""
+      InputProps={{
+        endAdornment: (
+          <FormControlLabel
+            control={
+              <Checkbox
+                title="Extranjero"
+                tabIndex={-1}
+                checked={extranjero}
+                onChange={changeDomainStatus}
+              />
+            }
+            label="Extranjero"
+          />
+        ),
+      }}
+    />
+  )
+}
+
+export const FileNumberField = ({ control, name, className = '', label }) => (
+  <CustomTextField
+    className={className}
+    label={label}
+    name={name}
+    control={control}
+    type="number"
+    rules={{
+      required: 'Ingrese un legajo',
+      pattern: {
+        value: LEGAJO_PATTERN,
+        message: 'Ingrese un legajo valido',
+      },
+    }}
+  />
+)

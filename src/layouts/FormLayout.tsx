@@ -9,13 +9,10 @@ import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from 'hooks'
 import styles from 'styles/FormLayout.module.css'
 import { IRootState } from '@redux/store'
-import {
-  UseFormHandleSubmit,
-  UseFormReset,
-  UseFormSetValue,
-} from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import { Operativo } from 'types/Operativos'
 import { User } from 'types/Misc'
+import { FormInputProps } from 'types'
 
 interface FormLayoutProps {
   children: JSX.Element[]
@@ -23,13 +20,9 @@ interface FormLayoutProps {
   activeStep: number
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
   handleClose: () => void
-  isValid: boolean
-  handleSubmit: UseFormHandleSubmit<FormInputProps>
   path: string
   error: any
   submitEvent: (data: FormInputProps) => Promise<void>
-  reset: UseFormReset<FormInputProps>
-  setValue: UseFormSetValue<any>
 }
 
 interface Operative extends Operativo {
@@ -42,13 +35,9 @@ function FormLayout({
   activeStep,
   setActiveStep,
   handleClose,
-  isValid,
-  handleSubmit,
   path,
   error,
   submitEvent,
-  reset,
-  setValue,
 }: FormLayoutProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
@@ -56,6 +45,12 @@ function FormLayout({
   const [operative, setOperative] = useLocalStorage<Operative>(path)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
     useSnackBar()
+  const {
+    setValue,
+    reset,
+    handleSubmit,
+    formState: { isValid },
+  } = useFormContext<FormInputProps>()
 
   const totalSteps = () => {
     return steps.length
@@ -94,7 +89,7 @@ function FormLayout({
   const cargarOperativo = () => {
     try {
       if (currentDate().toMillis() < operative.expiresAt) {
-        Object.entries(operative).forEach(([key, value]) => {
+        Object.entries(operative).forEach(([key, value]: [any, any]) => {
           key === 'fecha' || key === 'hora'
             ? setValue(key, DateTime.fromISO(value))
             : setValue(key, value)

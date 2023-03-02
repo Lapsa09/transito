@@ -20,13 +20,12 @@ import {
   Waze,
   History,
 } from 'pages'
-import './styles/globals.css'
-import PrivateRoute from 'layouts/PrivateRoute'
+import { PrivateRoute } from 'layouts'
 import { Header } from 'components'
 import { history } from 'utils'
-import { AppDispatch, IRootState } from '@redux/store'
-import { authActions } from './redux/userSlice'
-import { User } from 'types/Misc'
+import { AppDispatch, IRootState, authActions } from 'redux'
+import { User } from 'types'
+import 'styles/globals.css'
 
 function App() {
   const user = useSelector<IRootState, User>((x) => x.user.user)

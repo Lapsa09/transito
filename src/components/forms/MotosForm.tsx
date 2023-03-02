@@ -17,14 +17,14 @@ import Layout from 'layouts/FormLayout'
 import { useSelects } from 'hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
-import { FormProps } from 'types/Misc'
+import { FormProps, User } from 'types/Misc'
 
 interface MotosForm extends FormInputProps {
   motivos?: { id_motivo: number; motivo: string }[]
 }
 
 function MotosForm({ handleClose, afterCreate }: FormProps) {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const {
     handleSubmit,

@@ -6,6 +6,7 @@ import styles from 'styles/Home.module.css'
 import { history } from 'utils'
 import React from 'react'
 import { IRootState } from '@redux/store'
+import { User } from 'types/Misc'
 
 const cardStyle = {
   backgroundColor: '#b7e912',
@@ -14,7 +15,7 @@ const cardStyle = {
 }
 
 export default function Home() {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
 
   const navigate = (route) => {
     history.navigate(route)

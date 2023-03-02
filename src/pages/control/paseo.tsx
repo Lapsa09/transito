@@ -8,12 +8,13 @@ import { dateFormat, dateTimeSQLFormat, timeFormat, history } from 'utils'
 import { IRootState } from '@redux/store'
 import { GridColumns } from '@mui/x-data-grid'
 import { OperativoPaseo } from 'types/Operativos'
+import { User } from 'types/Misc'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData<OperativoPaseo>(getControlesPaseo)
 

@@ -9,6 +9,7 @@ import { CustomSnackbar } from '../components/ui'
 import { useSnackBar } from 'hooks'
 import { IRootState } from '@redux/store'
 import { Operativo } from 'types/Operativos'
+import { User } from 'types/Misc'
 
 interface OperativosLayoutProps {
   columns: GridColumns
@@ -31,7 +32,7 @@ function OperativosLayout({
   handleClose,
   path,
 }: OperativosLayoutProps) {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
     useSnackBar()
 

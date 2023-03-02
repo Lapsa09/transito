@@ -25,6 +25,7 @@ import {
 } from '@mui/material'
 import { basicMaxHeight, history } from 'utils'
 import { AppDispatch, IRootState } from '@redux/store'
+import { User } from 'types/Misc'
 
 const controles = [
   { link: '/control/diario', title: 'Diario' },
@@ -48,7 +49,7 @@ function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null)
   const dispatch = useDispatch<AppDispatch>()
   const [dropdown, setDropdown] = useState(null)
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
 
   const onMouseEnter = (_menu) => {
     setDropdown(_menu)

@@ -16,7 +16,7 @@ import Layout from 'layouts/FormLayout'
 import { useSelects } from 'hooks'
 import { Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
-import { FormProps } from 'types/Misc'
+import { FormProps, User } from 'types/Misc'
 
 interface CamionesForm extends FormInputProps {
   localidad_destino: { id: number; zona_infractor: string }
@@ -30,7 +30,7 @@ interface CamionesForm extends FormInputProps {
 }
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const {
     handleSubmit,

@@ -14,7 +14,7 @@ import Layout from 'layouts/FormLayout'
 import { useSelects } from 'hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
-import { FormProps } from 'types/Misc'
+import { FormProps, User } from 'types/Misc'
 
 interface AutosForm extends FormInputProps {
   motivo: { id_motivo: number; motivo: string }
@@ -22,7 +22,7 @@ interface AutosForm extends FormInputProps {
 }
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const {
     handleSubmit,

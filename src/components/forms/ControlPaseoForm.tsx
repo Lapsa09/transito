@@ -14,7 +14,7 @@ import Layout from 'layouts/FormLayout'
 import { useSelects } from 'hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '@redux/store'
-import { FormProps } from 'types/Misc'
+import { FormProps, User } from 'types/Misc'
 
 interface PaseoForm extends FormInputProps {
   lp: number
@@ -23,7 +23,7 @@ interface PaseoForm extends FormInputProps {
 }
 
 function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const {
     handleSubmit,

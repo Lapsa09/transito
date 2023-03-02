@@ -8,11 +8,12 @@ import { CustomTextField } from 'components'
 import { basicWidth, history } from 'utils'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import '../styles/login.css'
+import { User } from 'types/Misc'
 
 function Login() {
   const { control, handleSubmit } = useForm()
   const dispatch = useDispatch<AppDispatch>()
-  const authUser = useSelector((x: IRootState) => x.user.user)
+  const authUser = useSelector<IRootState, User>((x) => x.user.user)
   const authError = useSelector((x: IRootState) => x.user.error)
 
   useEffect(() => {

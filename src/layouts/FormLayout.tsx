@@ -15,6 +15,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 import { Operativo } from 'types/Operativos'
+import { User } from 'types/Misc'
 
 interface FormLayoutProps {
   children: JSX.Element[]
@@ -49,7 +50,7 @@ function FormLayout({
   reset,
   setValue,
 }: FormLayoutProps) {
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const [open, setOpen] = useState(false)
   const [operative, setOperative] = useLocalStorage<Operative>(path)

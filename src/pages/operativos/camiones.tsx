@@ -8,12 +8,13 @@ import { useSelector } from 'react-redux'
 import { IRootState } from '@redux/store'
 import { GridColumns } from '@mui/x-data-grid'
 import { OperativoCamiones } from 'types/Operativos'
+import { User } from 'types/Misc'
 
 function CamionesPage() {
   const [open, setOpen] = useState(false)
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
-  const user = useSelector((x: IRootState) => x.user.user)
+  const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
   const { data, loading, refresh } = useData<OperativoCamiones>(
     getOperativosCamiones

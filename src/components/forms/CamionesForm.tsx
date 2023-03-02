@@ -88,6 +88,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         remito: false,
         carga: false,
         motivo: null,
+        acta: null,
       },
       { keepDefaultValues: true }
     )

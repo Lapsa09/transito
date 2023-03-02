@@ -12,7 +12,7 @@ import { DateTime } from 'luxon'
 export const TimePickerComponent = ({ className, source, label }) => {
   const {
     field,
-    fieldState: { error },
+    fieldState: { error, invalid },
   } = useInput({
     source,
   })
@@ -31,7 +31,13 @@ export const TimePickerComponent = ({ className, source, label }) => {
         inputFormat="HH:mm"
         className={className}
         renderInput={(props) => (
-          <TextField {...props} error={error} required variant="standard" />
+          <TextField
+            {...props}
+            error={invalid}
+            helperText={error?.message}
+            required
+            variant="standard"
+          />
         )}
       />
     </LocalizationProvider>
@@ -41,7 +47,7 @@ export const TimePickerComponent = ({ className, source, label }) => {
 export const DatePickerComponent = ({ className, label, source }) => {
   const {
     field,
-    fieldState: { error },
+    fieldState: { error, invalid },
   } = useInput({
     source,
   })
@@ -58,7 +64,8 @@ export const DatePickerComponent = ({ className, label, source }) => {
           <TextField
             {...props}
             required
-            error={error}
+            helperText={error?.message}
+            error={invalid}
             variant="standard"
             placeholder="dd/MM/yyyy"
           />

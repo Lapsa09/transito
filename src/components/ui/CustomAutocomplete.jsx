@@ -5,8 +5,7 @@ import { useController } from 'react-hook-form'
 function CustomAutocomplete({ control, name, rules, label, options = [] }) {
   const {
     field,
-    fieldState: { error },
-    formState: { errors },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -23,7 +22,7 @@ function CustomAutocomplete({ control, name, rules, label, options = [] }) {
       {...field}
       options={options}
       getOptionLabel={optionLabel}
-      onChange={(e, value, reason) =>
+      onChange={(_, value, reason) =>
         field.onChange(reason === 'clear' ? null : value)
       }
       renderInput={(params) => (
@@ -31,8 +30,8 @@ function CustomAutocomplete({ control, name, rules, label, options = [] }) {
           {...params}
           label={label}
           required={rules?.required != null}
-          error={error}
-          helperText={errors[name]?.message}
+          error={invalid}
+          helperText={error?.message}
         />
       )}
     />

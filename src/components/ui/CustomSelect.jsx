@@ -13,8 +13,7 @@ function CustomSelect({
 }) {
   const {
     field,
-    fieldState: { error },
-    formState: { errors },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -26,11 +25,11 @@ function CustomSelect({
       {...field}
       select
       sx={{ width: '100%' }}
-      error={error}
+      error={invalid}
       label={label}
       disabled={disabled}
       required={rules !== undefined}
-      helperText={errors[name]?.message}
+      helperText={error?.message}
     >
       <MenuItem value="">ELIJA UNA OPCION</MenuItem>
       {options?.map((option) =>

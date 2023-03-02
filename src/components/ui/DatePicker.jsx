@@ -14,8 +14,7 @@ function CustomDatePicker({
 }) {
   const {
     field,
-    fieldState: { error },
-    formState: { errors },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -46,9 +45,9 @@ function CustomDatePicker({
             {...props}
             required
             placeholder="dd/MM/yyyy"
-            helperText={errors[name]?.message}
+            helperText={error?.message}
             fullWidth
-            error={error}
+            error={invalid}
           />
         )}
         minDate={currentDate().minus({ month: 6 })}

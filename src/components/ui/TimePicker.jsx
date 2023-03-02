@@ -13,8 +13,7 @@ function CustomTimePicker({
 }) {
   const {
     field,
-    fieldState: { error },
-    formState: { errors },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -44,8 +43,8 @@ function CustomTimePicker({
             {...props}
             required
             placeholder="HH:mm"
-            helperText={errors[name]?.message}
-            error={error}
+            helperText={error?.message}
+            error={invalid}
             fullWidth
           />
         )}

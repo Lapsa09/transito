@@ -12,6 +12,7 @@ export function CustomTextField({
   type = 'text',
   disabled = false,
   className,
+  ...props
 }) {
   const {
     field: { ref, ...field },
@@ -44,6 +45,7 @@ export function CustomTextField({
       label={label}
       fullWidth
       inputRef={ref}
+      {...props}
     />
   )
 }
@@ -51,29 +53,6 @@ export function CustomTextField({
 export function DomainField({ control, name, className }) {
   const [extranjero, setExtranjero] = useState(false)
   const { trigger } = useFormContext()
-  const {
-    field: { ref, ...field },
-    fieldState: { error, invalid },
-  } = useController({
-    name,
-    control,
-    rules: {
-      pattern: {
-        value: !extranjero ? DOMINIO_PATTERN : /./,
-        message: 'Ingrese una patente valida',
-      },
-      required: 'Ingrese una patente',
-    },
-    defaultValue: '',
-  })
-
-  const handleChange = (e) => {
-    field.onChange(
-      typeof e.target.value === 'string'
-        ? e.target.value.toUpperCase()
-        : e.target.value
-    )
-  }
 
   const changeDomainStatus = () => {
     setExtranjero((e) => !e)
@@ -83,16 +62,19 @@ export function DomainField({ control, name, className }) {
   }
 
   return (
-    <TextField
-      {...field}
-      onChange={handleChange}
-      helperText={error?.message}
-      required
-      className={className}
-      error={invalid}
+    <CustomTextField
+      control={control}
       label="Dominio"
-      fullWidth
-      inputRef={ref}
+      name={name}
+      className={className}
+      rules={{
+        pattern: {
+          value: !extranjero ? DOMINIO_PATTERN : /./,
+          message: 'Ingrese una patente valida',
+        },
+        required: 'Ingrese una patente',
+      }}
+      defaultValue=""
       InputProps={{
         endAdornment: (
           <FormControlLabel
@@ -112,34 +94,19 @@ export function DomainField({ control, name, className }) {
   )
 }
 
-export function FileNumberField({ control, name, className, label }) {
-  const {
-    field: { ref, ...field },
-    fieldState: { error, invalid },
-  } = useController({
-    name,
-    control,
-    rules: {
+export const FileNumberField = ({ control, name, className, label }) => (
+  <CustomTextField
+    className={className}
+    label={label}
+    name={name}
+    control={control}
+    type="number"
+    rules={{
       required: 'Ingrese un legajo',
       pattern: {
         value: LEGAJO_PATTERN,
         message: 'Ingrese un legajo valido',
       },
-    },
-    defaultValue: '',
-  })
-
-  return (
-    <TextField
-      {...field}
-      helperText={error?.message}
-      required
-      type="number"
-      className={className}
-      error={invalid}
-      label={label}
-      fullWidth
-      inputRef={ref}
-    />
-  )
-}
+    }}
+  />
+)

@@ -5,8 +5,7 @@ import { useController } from 'react-hook-form'
 function CustomSwitch({ control, name, label, rules }) {
   const {
     field,
-    fieldState: { error },
-    formState: { errors },
+    fieldState: { error, invalid },
   } = useController({
     name,
     control,
@@ -18,8 +17,8 @@ function CustomSwitch({ control, name, label, rules }) {
       control={
         <Switch
           {...field}
-          error={error}
-          helperText={errors[name]?.message}
+          error={invalid}
+          helperText={error?.message}
           checked={field.value}
         />
       }

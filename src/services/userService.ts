@@ -1,4 +1,4 @@
-import { User } from 'types/Misc'
+import { User } from '../types'
 import { setter } from './index'
 
 export const register = async (body) =>

@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import OperativosForm from '../../components/forms/CamionesForm'
-import { getOperativosCamiones } from 'services/operativosService'
-import Layout from 'layouts/OperativosLayout'
-import { dateFormat, history, timeFormat } from 'utils'
-import { useData } from 'hooks'
+import { getOperativosCamiones } from '../../services/operativosService'
+import Layout from '../../layouts/OperativosLayout'
+import { dateFormat, history, timeFormat } from '../../utils'
+import { useData } from '../../hooks'
 import { useSelector } from 'react-redux'
-import { IRootState } from '@redux/store'
+import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoCamiones } from 'types/Operativos'
-import { User } from 'types/Misc'
+import { OperativoCamiones, User } from '../../types'
 
 function CamionesPage() {
   const [open, setOpen] = useState(false)

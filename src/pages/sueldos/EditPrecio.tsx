@@ -9,7 +9,7 @@ import {
   useRedirect,
 } from 'react-admin'
 import CancelIcon from '@mui/icons-material/Cancel'
-import styles from 'styles/Sueldos.module.css'
+import styles from '../../styles/Sueldos.module.css'
 
 function EditPrecio(props) {
   const redirect = useRedirect()

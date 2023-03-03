@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
-import { getOperativosMotos } from 'services/operativosService'
+import { getOperativosMotos } from '../../services/operativosService'
 import MotosForm from '../../components/forms/MotosForm'
-import Layout from 'layouts/OperativosLayout'
-import { dateFormat, dateTimeFormat, history, timeFormat } from 'utils'
-import { useData } from 'hooks'
+import Layout from '../../layouts/OperativosLayout'
+import { dateFormat, dateTimeFormat, history, timeFormat } from '../../utils'
+import { useData } from '../../hooks'
 import { useSelector } from 'react-redux'
-import { IRootState } from '@redux/store'
+import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoMotos } from 'types/Operativos'
-import { User } from 'types/Misc'
+import { OperativoMotos, User } from '../../types'
 
 function MotosPage() {
   const [open, setOpen] = useState(false)

@@ -2,13 +2,12 @@ import React, { useEffect } from 'react'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { authActions } from 'redux/userSlice'
-import { AppDispatch, IRootState } from '@redux/store'
-import { CustomTextField } from 'components'
-import { basicWidth, history } from 'utils'
+import { AppDispatch, IRootState, authActions } from '../redux'
+import { CustomTextField } from '../components'
+import { basicWidth, history } from '../utils'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import '../styles/login.css'
-import { User } from 'types/Misc'
+import { User } from '../types'
 
 function Login() {
   const { control, handleSubmit } = useForm()

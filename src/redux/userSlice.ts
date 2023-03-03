@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
-import { loginCall, register, verifyAuth } from 'services/userService'
-import { User } from 'types/Misc'
-import { history } from 'utils'
+import { loginCall, register, verifyAuth } from '../services/userService'
+import { User } from '../types'
+import { history } from '../utils'
 
 const name = 'user'
 const initialState = createInitialState()

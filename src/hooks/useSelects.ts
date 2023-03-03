@@ -1,4 +1,7 @@
-import { getMotivosPaseo, getZonasPaseo } from '@services/controlDiarioService'
+import {
+  getMotivosPaseo,
+  getZonasPaseo,
+} from '../services/controlDiarioService'
 import {
   getAllZonas,
   getLicencias,
@@ -7,7 +10,7 @@ import {
   getSeguridad,
   getTurnos,
   getZonasVL,
-} from '@services/index'
+} from '../services'
 import { useEffect, useState } from 'react'
 import {
   IMotivosPaseo,
@@ -18,7 +21,7 @@ import {
   IMotivos,
   IZona,
   IBarrio,
-} from 'types'
+} from '../types'
 
 interface SelectData {
   resolucion: IResolucion[]

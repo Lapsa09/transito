@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import ControlPaseoForm from '../../components/forms/ControlPaseoForm'
-import { getControlesPaseo } from 'services/controlDiarioService'
+import { getControlesPaseo } from '../../services/controlDiarioService'
 import { useSelector } from 'react-redux'
-import Layout from 'layouts/OperativosLayout'
-import { useData } from 'hooks'
-import { dateFormat, dateTimeSQLFormat, timeFormat, history } from 'utils'
-import { IRootState } from '@redux/store'
+import Layout from '../../layouts/OperativosLayout'
+import { useData } from '../../hooks'
+import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
+import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoPaseo } from 'types/Operativos'
-import { User } from 'types/Misc'
+import { OperativoPaseo, User } from '../../types'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)

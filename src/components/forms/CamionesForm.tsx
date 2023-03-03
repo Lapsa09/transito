@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { nuevoOperativoCamiones } from 'services/operativosService'
-import { currentDate } from 'utils'
+import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import {
@@ -13,11 +13,11 @@ import {
   DomainField,
   FileNumberField,
 } from '../ui'
-import Layout from 'layouts/FormLayout'
-import { useSelects } from 'hooks'
+import Layout from '../../layouts/FormLayout'
+import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
-import { IRootState } from '@redux/store'
-import { FormInputProps, FormProps, User } from 'types'
+import { IRootState } from '../../redux/store'
+import { FormInputProps, FormProps, User } from '../../types'
 
 interface CamionesForm extends FormInputProps {
   localidad_destino: { id: number; zona_infractor: string }

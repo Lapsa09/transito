@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DateTime } from 'luxon'
-import { Table } from 'components'
-import { getDates, getOneDate } from 'services/wazeService'
+import { Table } from '../../components'
+import { getDates, getOneDate } from '../../services/wazeService'
 import {
   Collapse,
   Drawer,
@@ -12,8 +12,7 @@ import {
 } from '@mui/material'
 import { ChevronRight, ExpandMore } from '@mui/icons-material'
 import style from '../../styles/Waze.module.css'
-import { history } from 'utils'
-import { dateFormat, mesName } from 'utils/dates'
+import { dateFormat, mesName, history } from '../../utils'
 
 function History() {
   const [meses, setMeses] = useState([])

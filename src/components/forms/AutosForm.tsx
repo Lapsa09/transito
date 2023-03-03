@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { nuevoOperativoAuto } from 'services/operativosService'
-import { currentDate } from 'utils'
+import { nuevoOperativoAuto } from '../../services/operativosService'
+import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import {
   CustomDatePicker,
@@ -12,11 +12,11 @@ import {
   FileNumberField,
 } from '../ui'
 import { FormProvider, useForm } from 'react-hook-form'
-import Layout from 'layouts/FormLayout'
+import Layout from '../../layouts/FormLayout'
 import { useSelects } from 'hooks'
 import { Grid } from '@mui/material'
-import { IRootState } from '@redux/store'
-import { FormInputProps, FormProps, User } from 'types'
+import { IRootState } from '../../redux'
+import { FormInputProps, FormProps, User } from '../../types'
 
 interface AutosForm extends FormInputProps {
   motivo?: { id_motivo: number; motivo: string }

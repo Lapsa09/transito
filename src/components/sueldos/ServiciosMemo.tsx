@@ -12,7 +12,7 @@ import {
   useUpdate,
   useListController,
 } from 'react-admin'
-import { IOperario } from 'types/Sueldos'
+import { IOperario } from '../../types'
 
 export const ServiciosMemo = ({ name }) => {
   const record = useRecordContext()

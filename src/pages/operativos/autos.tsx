@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
-import OperativosForm from 'components/forms/AutosForm'
-import { getOperativosAutos } from 'services/operativosService'
-import Layout from 'layouts/OperativosLayout'
+import OperativosForm from '../../components/forms/AutosForm'
+import { getOperativosAutos } from '../../services/operativosService'
+import Layout from '../../layouts/OperativosLayout'
 import { useSelector } from 'react-redux'
-import { dateFormat, dateTimeFormat, timeFormat, history } from 'utils'
-import { useData } from 'hooks'
-import { IRootState } from '@redux/store'
+import { dateFormat, dateTimeFormat, timeFormat, history } from '../../utils'
+import { useData } from '../../hooks'
+import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoAutos } from 'types/Operativos'
-import { User } from 'types/Misc'
+import { OperativoAutos, User } from '../../types'
 
 function AutosPage() {
   const [open, setOpen] = useState(false)

@@ -9,7 +9,7 @@ import {
   useList,
   useRecordContext,
 } from 'react-admin'
-import { IOperario, IServicio } from 'types/Sueldos'
+import { IOperario, IServicio } from '../../types'
 import { CreateMemo, ServiciosMemo } from '.'
 
 function ClientesServicios() {

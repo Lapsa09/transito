@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { nuevoOperativoMoto } from 'services/operativosService'
+import { nuevoOperativoMoto } from '../../services/operativosService'
 import {
   CustomDatePicker,
   CustomTimePicker,
@@ -9,15 +9,15 @@ import {
   DomainField,
   FileNumberField,
 } from '../ui'
-import { currentDate } from 'utils'
+import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import { AddBoxSharp, IndeterminateCheckBoxSharp } from '@mui/icons-material'
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form'
-import Layout from 'layouts/FormLayout'
-import { useSelects } from 'hooks'
+import Layout from '../../layouts/FormLayout'
+import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
-import { IRootState } from '@redux/store'
-import { FormProps, User, FormInputProps } from 'types'
+import { IRootState } from '../../redux'
+import { FormProps, User, FormInputProps } from '../../types'
 
 interface MotosForm extends FormInputProps {
   motivos?: { id_motivo: number; motivo: string }[]

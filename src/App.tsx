@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import {
   Navigate,
   Route,
@@ -19,12 +19,12 @@ import {
   Sueldos,
   Waze,
   History,
-} from 'pages'
-import { PrivateRoute } from 'layouts'
-import { Header } from 'components'
-import { history } from 'utils'
-import { AppDispatch, IRootState, authActions } from 'redux'
-import { User } from 'types'
+} from './pages'
+import { PrivateRoute } from './layouts'
+import { Header } from './components'
+import { history } from './utils'
+import { AppDispatch, IRootState, authActions } from './redux'
+import { User } from './types'
 import 'styles/globals.css'
 
 function App() {
@@ -34,7 +34,9 @@ function App() {
   history.navigate = useNavigate()
   history.location = useLocation()
 
-  dispatch(authActions.verify())
+  useEffect(() => {
+    dispatch(authActions.verify())
+  }, [])
 
   return (
     <Fragment>

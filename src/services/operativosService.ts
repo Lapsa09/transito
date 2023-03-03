@@ -1,11 +1,9 @@
 import {
-  ILicencias,
   IMotivos,
-  IZona,
   OperativoAutos,
   OperativoCamiones,
   OperativoMotos,
-} from 'types/Operativos'
+} from '../types'
 import { getEnums, getter, setter } from './index'
 
 export const getMotivosCamion = async () =>

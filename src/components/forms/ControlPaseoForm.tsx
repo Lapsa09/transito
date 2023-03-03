@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { nuevoControlPaseo } from 'services/controlDiarioService'
+import { nuevoControlPaseo } from '../../services/controlDiarioService'
 import {
   CustomDatePicker,
   CustomTimePicker,
@@ -10,12 +10,12 @@ import {
 } from '../ui'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
-import { currentDate } from 'utils'
+import { currentDate } from '../../utils'
 import Layout from 'layouts/FormLayout'
-import { useSelects } from 'hooks'
+import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
-import { IRootState } from '@redux/store'
-import { FormProps, User, FormInputProps } from 'types'
+import { IRootState } from '../../redux'
+import { FormProps, User, FormInputProps } from '../../types'
 
 interface PaseoForm extends FormInputProps {
   lp: number

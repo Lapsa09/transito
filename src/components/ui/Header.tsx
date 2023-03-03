@@ -23,9 +23,9 @@ import {
   ListItemButton,
   Collapse,
 } from '@mui/material'
-import { basicMaxHeight, history } from 'utils'
-import { AppDispatch, IRootState } from '@redux/store'
-import { User } from 'types/Misc'
+import { basicMaxHeight, history } from '../../utils'
+import { AppDispatch, IRootState } from '../../redux'
+import { User } from '../../types'
 
 const controles = [
   { link: '/control/diario', title: 'Diario' },

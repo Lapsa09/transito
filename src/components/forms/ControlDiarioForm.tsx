@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { nuevoControl } from 'services/controlDiarioService'
+import { nuevoControl } from '../../services/controlDiarioService'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import {
@@ -11,12 +11,12 @@ import {
   FileNumberField,
   DomainField,
 } from '../ui'
-import { currentDate } from 'utils'
-import Layout from 'layouts/FormLayout'
-import { useSelects } from 'hooks'
+import { currentDate } from '../../utils'
+import Layout from '../../layouts/FormLayout'
+import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
-import { IRootState } from '@redux/store'
-import { FormProps, User, FormInputProps } from 'types'
+import { IRootState } from '../../redux'
+import { FormProps, User, FormInputProps } from '../../types'
 
 interface DiarioForm extends FormInputProps {
   lp: number

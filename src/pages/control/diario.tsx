@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import ControlDiarioForm from '../../components/forms/ControlDiarioForm'
-import { getControles } from 'services/controlDiarioService'
+import { getControles } from '../../services/controlDiarioService'
 import { useSelector } from 'react-redux'
-import Layout from 'layouts/OperativosLayout'
-import { dateFormat, dateTimeSQLFormat, timeFormat, history } from 'utils'
-import { useData } from 'hooks'
-import { IRootState } from '@redux/store'
+import Layout from '../../layouts/OperativosLayout'
+import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
+import { useData } from '../../hooks'
+import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoDiario } from 'types/Operativos'
-import { User } from 'types/Misc'
+import { OperativoDiario, User } from '../../types'
 
 function ControlDiarioPage() {
   const [open, setOpen] = useState(false)

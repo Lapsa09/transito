@@ -7,7 +7,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { Checkbox, FormControlLabel, TextField } from '@mui/material'
-import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '@utils'
+import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '../../utils'
 
 type ITextField = {
   control: Control<any, any>

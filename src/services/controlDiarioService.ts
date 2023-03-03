@@ -1,9 +1,4 @@
-import {
-  IMotivos,
-  IZona,
-  OperativoDiario,
-  OperativoPaseo,
-} from 'types/Operativos'
+import { OperativoDiario, OperativoPaseo } from '../types'
 import { getEnums, getter, setter } from './index'
 
 export const nuevoControl = async (body) =>

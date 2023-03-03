@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { getDatosPaseo } from 'services/controlDiarioService'
+import { getDatosPaseo } from '../../services/controlDiarioService'
 import {
   CustomRadioGroup,
   CustomSelect,
   CustomBarchart,
 } from '../../components/ui'
-import { dateNameFormat } from 'utils'
+import { dateNameFormat } from '../../utils'
 import { useForm } from 'react-hook-form'
 import '../../styles/data.css'
 

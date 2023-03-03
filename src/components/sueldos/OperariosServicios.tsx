@@ -8,7 +8,7 @@ import {
   DateField,
   FunctionField,
 } from 'react-admin'
-import { IServicio } from 'types/Sueldos'
+import { IServicio } from '../../types/Sueldos'
 import { CreateMemo } from '.'
 
 export const OperariosServicios = () => {

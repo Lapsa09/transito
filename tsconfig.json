@@ -1,27 +1,21 @@
 {
   "compilerOptions": {
     "jsx": "react",
-
     "target": "ES6",
-
     "module": "ES2020",
     "moduleResolution": "node",
     "baseUrl": "src",
     "paths": {
-      "@components": ["components"],
       "@components/*": ["components/*"],
-      "@pages": ["pages"],
       "@pages/*": ["pages/*"],
-      "@utils": ["utils"],
       "@utils/*": ["utils/*"],
       "@layouts/*": ["layouts/*"],
       "@services/*": ["services/*"],
-      "@services": ["services"],
       "@hooks/*": ["hooks/*"],
-      "@hooks": ["hooks"],
       "@assets/*": ["assets/*"],
-      "@styles": ["styles"],
-      "@redux/*": ["redux/*"]
+      "@styles/*": ["styles/*"],
+      "@redux/*": ["redux/*"],
+      "@types/*": ["types/*"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -29,6 +23,6 @@
     "strict": false,
     "skipLibCheck": true
   },
-  "include": ["**/*", "src/index.tsx", "src/index.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules", ".vscode"]
 }

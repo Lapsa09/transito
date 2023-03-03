@@ -1,4 +1,4 @@
-import { Waze, WazeRes } from 'types/Waze'
+import { Waze, WazeRes } from '../types'
 import { getter } from '.'
 
 const mainWazeGetter = async () => await getter<Waze>('/waze')

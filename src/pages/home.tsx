@@ -1,12 +1,11 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
-import { CustomizedMenus, CustomMenuItem } from 'components'
-
-import styles from 'styles/Home.module.css'
-import { history } from 'utils'
+import { CustomizedMenus, CustomMenuItem } from '../components'
+import styles from '../styles/Home.module.css'
+import { history } from '../utils'
 import React from 'react'
-import { IRootState } from '@redux/store'
-import { User } from 'types/Misc'
+import { IRootState } from '../redux'
+import { User } from '../types'
 
 const cardStyle = {
   backgroundColor: '#b7e912',

@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Button, Modal } from '@mui/material'
 import { useSelector } from 'react-redux'
-import LogoVL from 'assets/imgs/LOGO_V_LOPEZ.png'
-import LogoOVT from 'assets/imgs/OVT_LETRAS_NEGRAS.png'
-import { currentDate, adminStyle, inspectorStyle, basicMaxHeight } from 'utils'
-import { CustomSnackbar, CustomStepForm, CustomStepper } from 'components/ui'
+import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png'
+import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
+import {
+  currentDate,
+  adminStyle,
+  inspectorStyle,
+  basicMaxHeight,
+} from '../utils'
+import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
 import { DateTime } from 'luxon'
-import { useLocalStorage, useSnackBar } from 'hooks'
-import styles from 'styles/FormLayout.module.css'
-import { IRootState } from '@redux/store'
+import { useLocalStorage, useSnackBar } from '../hooks'
+import styles from '../styles/FormLayout.module.css'
+import { IRootState } from '../redux/store'
 import { useFormContext } from 'react-hook-form'
-import { Operativo } from 'types/Operativos'
-import { User } from 'types/Misc'
-import { FormInputProps } from 'types'
+import { User, FormInputProps, Operativo } from '../types'
 
 interface FormLayoutProps {
   children: JSX.Element[]

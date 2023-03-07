@@ -104,7 +104,7 @@ function ToolBar() {
       <Button
         size="medium"
         variant="contained"
-        color="error"
+        sx={{ backgroundColor: 'red' }}
         onClick={() => navigate('-1')}
         startIcon={<CancelIcon />}
         label="Cancelar"

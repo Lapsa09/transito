@@ -42,7 +42,7 @@ function ToolBar() {
       <Button
         size="medium"
         variant="contained"
-        color="error"
+        sx={{ backgroundColor: 'red' }}
         onClick={() => navigate('/sueldos')}
         startIcon={<CancelIcon />}
         label="Cancelar"

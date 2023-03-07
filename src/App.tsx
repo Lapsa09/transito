@@ -25,7 +25,7 @@ import { Header } from './components'
 import { history } from './utils'
 import { AppDispatch, IRootState, authActions } from './redux'
 import { User } from './types'
-import 'styles/globals.css'
+import './styles/globals.css'
 
 function App() {
   const user = useSelector<IRootState, User>((x) => x.user.user)

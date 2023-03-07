@@ -3,9 +3,10 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 import { history } from '../utils'
+import { User } from '../types'
 
 function PrivateRoute({ children, permission }) {
-  const { user: authUser } = useSelector((x: IRootState) => x.user)
+  const authUser = useSelector<IRootState, User>((x) => x.user.user)
 
   if (!authUser) {
     // not logged in so redirect to login page with the return url

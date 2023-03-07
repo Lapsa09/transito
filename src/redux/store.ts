@@ -9,6 +9,6 @@ export const store = configureStore({
 export type AppDispatch = typeof store.dispatch
 
 export type IRootState = {
-  user?: IRootUser
-  selects?: ISelectRouter
+  user: IRootUser
+  selects: ISelectRouter
 }

@@ -5,22 +5,20 @@ import { useForm } from 'react-hook-form'
 import { CustomTextField } from '../components'
 import { basicWidth, history } from '../utils'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
-import { AppDispatch, IRootState, authActions } from '../redux'
-import { User } from '../types'
+import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
 import '../styles/register.css'
 
 function Register() {
   const { control, handleSubmit, getValues } = useForm()
   const dispatch = useDispatch<AppDispatch>()
-  const authUser = useSelector<IRootState, User>((x) => x.user.user)
-  const authError = useSelector((x: IRootState) => x.user.error)
+  const { user, error } = useSelector<IRootState, IRootUser>((x) => x.user)
 
   const loginNav = () => {
     history.navigate('/login')
   }
 
   useEffect(() => {
-    if (authUser) history.navigate('/')
+    if (user) history.navigate('/')
   }, [])
 
   const submitEvent = async (data) => {
@@ -91,9 +89,7 @@ function Register() {
           }}
           label="Confirmar contraseña"
         />
-        {authError && (
-          <FormHelperText error>{authError.message}</FormHelperText>
-        )}
+        {error && <FormHelperText error>{error.message}</FormHelperText>}
         <Box sx={{ ...basicWidth }} className="buttons">
           <Button onClick={loginNav}>
             Ya te registraste? ir a iniciar Sesion

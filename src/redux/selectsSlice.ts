@@ -36,8 +36,8 @@ export interface SelectData {
 }
 
 export interface ISelectRouter {
-  selects?: SelectData
-  error?: ErrorEvent
+  selects: SelectData
+  error: ErrorEvent
 }
 
 function createInitialState() {

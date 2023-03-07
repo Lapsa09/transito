@@ -12,8 +12,8 @@ const extraReducers = createExtraReducers()
 const slice = createSlice({ name, initialState, reducers, extraReducers })
 
 export type IRootUser = {
-  user?: User
-  error?: ErrorEvent
+  user: User
+  error: ErrorEvent
 }
 
 function createInitialState() {
@@ -110,16 +110,14 @@ function createExtraReducers() {
     },
     fulfilled: (state) => {
       state.user = jwt_decode(localStorage.getItem('token'))
-      const { from } = history.location.state || { from: { pathname: '/' } }
-      history.navigate(from)
+      const { pathname } = history.location || { pathname: '/' }
+      history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
       state.error = action.error
-      const { from } = history.location.state || {
-        from: { pathname: '/login' },
-      }
-      history.navigate(from)
+      const { pathname } = history.location || { pathname: '/login' }
+      history.navigate(pathname)
     },
   }
   return (builder) => {

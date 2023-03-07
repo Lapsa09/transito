@@ -32,18 +32,17 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   })
   const { control, reset, getValues, watch, setValue, setFocus } = methods
   const [activeStep, setActiveStep] = useState(0)
+  const { selects, error } = useSelects()
+
   const {
-    selects: {
-      turnos,
-      seguridad,
-      vicente_lopez,
-      licencias,
-      resolucion,
-      motivos,
-      barrios,
-    },
-    error,
-  } = useSelects()
+    turnos,
+    seguridad,
+    vicente_lopez,
+    licencias,
+    resolucion,
+    motivos,
+    barrios,
+  } = selects || {}
 
   const steps = [
     {

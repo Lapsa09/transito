@@ -8,7 +8,7 @@ import { geocoding } from '../services/operativosService'
 import { CustomSnackbar } from '../components'
 import { useSnackBar } from '../hooks'
 import { IRootState } from '../redux'
-import { Operativo, User } from 'types'
+import { Operativo, User } from '../types'
 
 interface OperativosLayoutProps {
   columns: GridColumns

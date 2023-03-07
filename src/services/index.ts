@@ -1,6 +1,13 @@
 import Axios, { AxiosResponse } from 'axios'
-import { IResolucion, ISeguridad, ITurnos } from 'types'
-import { IBarrio, ILicencias, IMotivos, IZona } from 'types/Operativos'
+import {
+  IResolucion,
+  ISeguridad,
+  ITurnos,
+  IBarrio,
+  ILicencias,
+  IMotivos,
+  IZona,
+} from '../types'
 
 const axios = Axios.create({ baseURL: process.env.REACT_APP_BASE_URL })
 

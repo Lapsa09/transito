@@ -39,7 +39,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     name: 'motivos',
   })
   const {
-    data: {
+    selects: {
       licencias,
       vicente_lopez,
       barrios,

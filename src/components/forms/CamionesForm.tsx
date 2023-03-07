@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { nuevoOperativoCamiones } from 'services/operativosService'
+import { nuevoOperativoCamiones } from '../../services/operativosService'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -39,7 +39,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   })
   const { control, reset, getValues, watch, setValue, setFocus } = methods
   const {
-    data: { vicente_lopez, barrios, turnos, resolucion, motivos },
+    selects: { vicente_lopez, barrios, turnos, resolucion, motivos },
     error,
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)

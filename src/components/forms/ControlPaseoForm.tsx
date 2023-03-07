@@ -11,7 +11,7 @@ import {
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { currentDate } from '../../utils'
-import Layout from 'layouts/FormLayout'
+import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
@@ -35,7 +35,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   })
   const { control, reset, getValues, watch, setFocus } = methods
   const {
-    data: { motivos, turnos, resolucion, zonas_paseo },
+    selects: { motivos, turnos, resolucion, zonas_paseo },
     error,
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)

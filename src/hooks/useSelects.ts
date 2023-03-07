@@ -1,84 +1,16 @@
-import {
-  getMotivosPaseo,
-  getZonasPaseo,
-} from '../services/controlDiarioService'
-import {
-  getAllZonas,
-  getLicencias,
-  getMotivos,
-  getResolucion,
-  getSeguridad,
-  getTurnos,
-  getZonasVL,
-} from '../services'
-import { useEffect, useState } from 'react'
-import {
-  IMotivosPaseo,
-  IResolucion,
-  ISeguridad,
-  ITurnos,
-  ILicencias,
-  IMotivos,
-  IZona,
-  IBarrio,
-} from '../types'
-
-interface SelectData {
-  resolucion: IResolucion[]
-  turnos: ITurnos[]
-  barrios: IBarrio[]
-  vicente_lopez: IZona[]
-  motivos: IMotivos[]
-  licencias: ILicencias[]
-  seguridad: ISeguridad[]
-  motivos_paseo: IMotivosPaseo[]
-  zonas_paseo: { id_zona: number; zona: string }[]
-}
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, IRootState, selectActions, SelectData } from '../redux'
 
 export default function useSelects() {
-  const [data, setData] = useState<SelectData>()
-  const [error, setError] = useState(null)
+  const dispatch = useDispatch<AppDispatch>()
+  const selects = useSelector<IRootState, SelectData>((x) => x.selects.selects)
+  const error = useSelector<IRootState, ErrorEvent>((x) => x.selects.error)
 
   useEffect(() => {
-    const fetchSelects = async () => {
-      try {
-        const [
-          resolucion,
-          turnos,
-          barrios,
-          vicente_lopez,
-          motivos,
-          licencias,
-          seguridad,
-          motivos_paseo,
-          zonas_paseo,
-        ] = await Promise.all([
-          getResolucion(),
-          getTurnos(),
-          getAllZonas(),
-          getZonasVL(),
-          getMotivos(),
-          getLicencias(),
-          getSeguridad(),
-          getMotivosPaseo(),
-          getZonasPaseo(),
-        ])
-        setData({
-          resolucion,
-          turnos,
-          barrios,
-          vicente_lopez,
-          motivos,
-          licencias,
-          seguridad,
-          motivos_paseo,
-          zonas_paseo,
-        })
-      } catch (err) {
-        setError(err.response?.data)
-      }
+    if (!selects) {
+      dispatch(selectActions.fetchSelects())
     }
-    fetchSelects()
   }, [])
-  return { data, error }
+  return { selects, error }
 }

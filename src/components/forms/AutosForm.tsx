@@ -13,7 +13,7 @@ import {
 } from '../ui'
 import { FormProvider, useForm } from 'react-hook-form'
 import Layout from '../../layouts/FormLayout'
-import { useSelects } from 'hooks'
+import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
 import { FormInputProps, FormProps, User } from '../../types'
@@ -33,7 +33,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const { control, reset, getValues, watch, setValue, setFocus } = methods
   const [activeStep, setActiveStep] = useState(0)
   const {
-    data: {
+    selects: {
       turnos,
       seguridad,
       vicente_lopez,

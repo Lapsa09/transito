@@ -1,4 +1,4 @@
-import { IRootState } from '@redux/store'
+import { IRootState } from '../redux'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'

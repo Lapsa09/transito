@@ -73,11 +73,16 @@ export function CustomTextField({
 }
 
 export function DomainField({ control, name, className = '' }) {
-  const [extranjero, setExtranjero] = useState(false)
   const { trigger } = useFormContext()
 
+  const { field } = useController({
+    name: 'extranjero',
+    control,
+    defaultValue: false,
+  })
+
   const changeDomainStatus = () => {
-    setExtranjero((e) => !e)
+    field.onChange(!field.value)
     setTimeout(() => {
       trigger('dominio')
     }, 100)
@@ -91,7 +96,7 @@ export function DomainField({ control, name, className = '' }) {
       className={className}
       rules={{
         pattern: {
-          value: !extranjero ? DOMINIO_PATTERN : /./,
+          value: !field.value ? DOMINIO_PATTERN : /./,
           message: 'Ingrese una patente valida',
         },
         required: 'Ingrese una patente',
@@ -104,7 +109,8 @@ export function DomainField({ control, name, className = '' }) {
               <Checkbox
                 title="Extranjero"
                 tabIndex={-1}
-                checked={extranjero}
+                name={field.name}
+                checked={field.value}
                 onChange={changeDomainStatus}
               />
             }

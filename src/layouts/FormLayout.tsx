@@ -5,9 +5,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Modal,
 } from '@mui/material'
-import { useSelector } from 'react-redux'
 import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import { currentDate, adminStyle, basicMaxHeight } from '../utils'
@@ -15,9 +13,8 @@ import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
-import { IRootState } from '../redux/store'
 import { useFormContext } from 'react-hook-form'
-import { User, FormInputProps, Operativo } from '../types'
+import { FormInputProps, Operativo } from '../types'
 
 interface FormLayoutProps {
   children: JSX.Element[]
@@ -44,8 +41,6 @@ function FormLayout({
   error,
   submitEvent,
 }: FormLayoutProps) {
-  const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
   const [open, setOpen] = useState(false)
   const [operative, setOperative] = useLocalStorage<Operative>(path)
   const { openSB, closeSnackbar, response, setError, setSuccess } =

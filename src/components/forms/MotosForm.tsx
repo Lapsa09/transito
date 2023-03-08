@@ -19,14 +19,14 @@ import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
 import { FormProps, User, FormInputProps } from '../../types'
 
-interface MotosForm extends FormInputProps {
+interface IMotosForm extends FormInputProps {
   motivos?: { id_motivo: number; motivo: string }[]
 }
 
 function MotosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
   const handleRol = () => user?.rol === 'ADMIN'
-  const methods = useForm<MotosForm>({
+  const methods = useForm<IMotosForm>({
     mode: 'all',
     defaultValues: {
       motivos: [],
@@ -110,7 +110,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     }
   }, [esSancionable])
 
-  const submitEvent = async (data: MotosForm) => {
+  const submitEvent = async (data: IMotosForm) => {
     const res = await nuevoOperativoMoto(data)
     afterCreate(res)
     setFocus('dominio')

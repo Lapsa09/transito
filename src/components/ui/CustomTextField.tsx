@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent } from 'react'
 import {
   Control,
   FieldValues,
@@ -9,7 +9,7 @@ import {
 import { Checkbox, FormControlLabel, TextField } from '@mui/material'
 import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '../../utils'
 
-type ITextField = {
+type TextFieldProps = {
   control: Control<any, any>
   name: string
   rules?: Omit<
@@ -35,7 +35,7 @@ export function CustomTextField({
   disabled = false,
   className = '',
   ...props
-}: ITextField) {
+}: TextFieldProps) {
   const {
     field: { ref, ...field },
     fieldState: { error, invalid },

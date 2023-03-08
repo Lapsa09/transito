@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Dialog, Modal } from '@mui/material'
+import { Button, Dialog } from '@mui/material'
 import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
 import { history } from '../utils'
@@ -57,9 +57,11 @@ function OperativosLayout({
         <Button variant="contained" onClick={handleOpen}>
           Nuevo
         </Button>
-        <Button variant="contained" color="secondary" onClick={handleGeocode}>
-          Geocodificar
-        </Button>
+        {['Motos', 'Autos', 'Camiones'].includes(path) && (
+          <Button variant="contained" color="secondary" onClick={handleGeocode}>
+            Geocodificar
+          </Button>
+        )}
       </div>
       <Dialog fullWidth maxWidth="lg" open={open} onClose={handleClose}>
         {children}

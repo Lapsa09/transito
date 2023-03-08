@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, Modal } from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Modal,
+} from '@mui/material'
 import { useSelector } from 'react-redux'
 import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png'
 import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
-import {
-  currentDate,
-  adminStyle,
-  inspectorStyle,
-  basicMaxHeight,
-} from '../utils'
+import { currentDate, adminStyle, basicMaxHeight } from '../utils'
 import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
@@ -138,7 +140,7 @@ function FormLayout({
   }
 
   return (
-    <Box sx={handleRol() ? adminStyle : inspectorStyle} className={styles.form}>
+    <Box sx={adminStyle} className={styles.form}>
       <div className={styles.header}>
         <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
           <img src={LogoVL} alt="Logo Vicente Lopez" />
@@ -196,9 +198,13 @@ function FormLayout({
           </Box>
         </Box>
       </div>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <WarningModal reset={nuevoOperativo} close={setOpen} />
-      </Modal>
+
+      <WarningModal
+        open={open}
+        reset={nuevoOperativo}
+        close={() => setOpen(false)}
+      />
+
       <CustomSnackbar
         res={response}
         open={openSB}
@@ -208,26 +214,28 @@ function FormLayout({
   )
 }
 
-const WarningModal = ({ close, reset }) => {
+const WarningModal = ({ close, reset, open }) => {
   return (
-    <Box sx={adminStyle}>
-      <p>
-        Seguro que desea reiniciar el operativo? Se borraran todos los datos
-        ingresados
-      </p>
-      <Box sx={{ display: 'flex' }}>
-        <Button onClick={close}>No</Button>
-        <Box sx={{ flex: '1 1 auto' }} />
-        <Button
-          onClick={() => {
-            reset()
-            close()
-          }}
-        >
-          Si
-        </Button>
-      </Box>
-    </Box>
+    <Dialog fullWidth maxWidth="md" onClose={close} open={open}>
+      <DialogContent sx={adminStyle}>
+        <p>
+          Seguro que desea reiniciar el operativo? Se borraran todos los datos
+          ingresados
+        </p>
+        <DialogActions sx={{ display: 'flex' }}>
+          <Button onClick={close}>No</Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+          <Button
+            onClick={() => {
+              reset()
+              close()
+            }}
+          >
+            Si
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
   )
 }
 

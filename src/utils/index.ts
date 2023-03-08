@@ -9,10 +9,5 @@ export {
 } from './dates'
 export { history } from './history'
 export { refresh } from './refetch'
-export {
-  adminStyle,
-  basicMaxHeight,
-  basicWidth,
-  inspectorStyle,
-} from './sxEdits'
+export { adminStyle, basicMaxHeight, basicWidth } from './sxEdits'
 export { DOMINIO_PATTERN, LEGAJO_PATTERN } from './validations'

@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import {
+  ActionReducerMapBuilder,
+  createAsyncThunk,
+  createSlice,
+} from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
 import { loginCall, register, verifyAuth } from '../services/userService'
 import { User } from '../types'
@@ -93,14 +97,14 @@ function createExtraReducers() {
       const user = action.payload
 
       localStorage.setItem('token', user)
-      state.user = jwt_decode(user)
+      state.user = { ...jwt_decode(user) }
 
-      const { from } = history.location.state || { from: { pathname: '/' } }
-      history.navigate(from)
+      const { pathname } = history.location || { pathname: '/' }
+      history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
-      state.error = action.error
+      state.error = { ...action.error }
     },
   }
 
@@ -109,18 +113,18 @@ function createExtraReducers() {
       state.error = null
     },
     fulfilled: (state) => {
-      state.user = jwt_decode(localStorage.getItem('token'))
+      state.user = { ...jwt_decode(localStorage.getItem('token')) }
       const { pathname } = history.location || { pathname: '/' }
       history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
-      state.error = action.error
+      state.error = { ...action.error }
       const { pathname } = history.location || { pathname: '/login' }
       history.navigate(pathname)
     },
   }
-  return (builder) => {
+  return (builder: ActionReducerMapBuilder<IRootUser>) => {
     builder
       .addCase(extraActions.login.fulfilled, baseUserReducer.fulfilled)
       .addCase(extraActions.login.pending, baseUserReducer.pending)

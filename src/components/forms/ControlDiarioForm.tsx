@@ -36,10 +36,11 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
     },
   })
   const { control, reset, getValues, watch } = methods
-  const { selects, error } = useSelects()
+  const {
+    selects: { barrios, motivos, turnos, resolucion },
+    error,
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
-
-  const { barrios, motivos, turnos, resolucion } = selects || {}
 
   const steps = [
     {

@@ -34,10 +34,11 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
     },
   })
   const { control, reset, getValues, watch, setFocus } = methods
-  const { selects, error } = useSelects()
+  const {
+    selects: { motivos, turnos, resolucion, zonas_paseo },
+    error,
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
-
-  const { motivos, turnos, resolucion, zonas_paseo } = selects || {}
 
   const steps = [
     {

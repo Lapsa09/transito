@@ -2,6 +2,7 @@ import {
   ActionReducerMapBuilder,
   createAsyncThunk,
   createSlice,
+  SerializedError,
 } from '@reduxjs/toolkit'
 import {
   getAllZonas,
@@ -41,12 +42,22 @@ export interface SelectData {
 
 export interface ISelectRouter {
   selects: SelectData
-  error: ErrorEvent
+  error: SerializedError
 }
 
 function createInitialState() {
-  const selects: SelectData = null
-  const error: ErrorEvent = null
+  const selects: SelectData = {
+    barrios: null,
+    licencias: null,
+    motivos: null,
+    motivos_paseo: null,
+    resolucion: null,
+    seguridad: null,
+    turnos: null,
+    vicente_lopez: null,
+    zonas_paseo: null,
+  }
+  const error: SerializedError = null
 
   return {
     selects,
@@ -105,10 +116,10 @@ function createExtraReducers() {
         state.error = null
       })
       .addCase(extraActions.fetchSelects.fulfilled, (state, action) => {
-        state.selects = action.payload
+        state.selects = { ...action.payload }
       })
       .addCase(extraActions.fetchSelects.rejected, (state, action) => {
-        state.error = action.error as ErrorEvent
+        state.error = { ...action.error }
       })
   }
 }

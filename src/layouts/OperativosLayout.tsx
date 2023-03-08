@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Modal } from '@mui/material'
+import { Button, Dialog, Modal } from '@mui/material'
 import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
 import { history } from '../utils'
@@ -61,9 +61,9 @@ function OperativosLayout({
           Geocodificar
         </Button>
       </div>
-      <Modal open={open} onClose={handleClose}>
+      <Dialog fullWidth maxWidth="lg" open={open} onClose={handleClose}>
         {children}
-      </Modal>
+      </Dialog>
       {loading ? (
         <img
           src="/loading.gif"

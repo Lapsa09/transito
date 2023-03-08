@@ -38,10 +38,11 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     defaultValues: { lpcarga: user?.legajo },
   })
   const { control, reset, getValues, watch, setValue, setFocus } = methods
-  const { selects, error } = useSelects()
+  const {
+    selects: { vicente_lopez, barrios, turnos, resolucion, motivos },
+    error,
+  } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
-
-  const { vicente_lopez, barrios, turnos, resolucion, motivos } = selects || {}
 
   const steps = [
     {

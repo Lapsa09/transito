@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import {
+  ActionReducerMapBuilder,
+  createAsyncThunk,
+  createSlice,
+} from '@reduxjs/toolkit'
 import {
   getAllZonas,
   getLicencias,
@@ -95,7 +99,7 @@ function createExtraActions() {
 }
 
 function createExtraReducers() {
-  return (builder) => {
+  return (builder: ActionReducerMapBuilder<ISelectRouter>) => {
     builder
       .addCase(extraActions.fetchSelects.pending, (state) => {
         state.error = null
@@ -104,7 +108,7 @@ function createExtraReducers() {
         state.selects = action.payload
       })
       .addCase(extraActions.fetchSelects.rejected, (state, action) => {
-        state.error = action.error
+        state.error = action.error as ErrorEvent
       })
   }
 }

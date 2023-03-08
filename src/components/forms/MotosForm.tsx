@@ -38,19 +38,18 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     control,
     name: 'motivos',
   })
-  const {
-    selects: {
-      licencias,
-      vicente_lopez,
-      barrios,
-      turnos,
-      seguridad,
-      resolucion,
-      motivos,
-    },
-    error,
-  } = useSelects()
+  const { selects, error } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
+
+  const {
+    licencias,
+    vicente_lopez,
+    barrios,
+    turnos,
+    seguridad,
+    resolucion,
+    motivos,
+  } = selects || {}
 
   const steps = [
     {

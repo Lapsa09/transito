@@ -15,6 +15,7 @@ import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
 import { useFormContext } from 'react-hook-form'
 import { FormInputProps, Operativo } from '../types'
+import { SerializedError } from '@reduxjs/toolkit'
 
 interface FormLayoutProps {
   children: JSX.Element[]
@@ -23,7 +24,7 @@ interface FormLayoutProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
   handleClose: () => void
   path: string
-  error: any
+  error: SerializedError
   submitEvent: (data: FormInputProps) => Promise<void>
 }
 
@@ -81,7 +82,7 @@ function FormLayout({
 
   useEffect(() => {
     if (error) {
-      setError(error)
+      setError(error.message)
     }
     cargarOperativo()
   }, [])
@@ -112,7 +113,7 @@ function FormLayout({
 
   const nuevoOperativo = () => {
     setOperative(null)
-    reset(null, { keepDefaultValues: true })
+    reset({}, { keepDefaultValues: true })
     setActiveStep(0)
   }
 

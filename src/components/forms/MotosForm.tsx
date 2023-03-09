@@ -52,37 +52,52 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
-  const steps = [
-    {
-      label: 'Operativo',
-      values: {
-        ...watch([
-          'fecha',
-          'hora',
-          'direccion',
-          'zona',
-          'legajo_a_cargo',
-          'legajo_planilla',
-          'turno',
-          'seguridad',
-        ]),
+  const steps = () => {
+    const {
+      fecha,
+      hora,
+      direccion,
+      zona,
+      legajo_a_cargo,
+      legajo_planilla,
+      turno,
+      seguridad,
+      dominio,
+      licencia,
+      tipo_licencia,
+      zona_infractor,
+      resolucion,
+      acta,
+      motivos,
+    } = watch()
+    return [
+      {
+        label: 'Operativo',
+        values: {
+          fecha,
+          hora,
+          direccion,
+          zona,
+          legajo_a_cargo,
+          legajo_planilla,
+          turno,
+          seguridad,
+        },
       },
-    },
-    {
-      label: 'Vehiculo',
-      values: {
-        ...watch([
-          'dominio',
-          'licencia',
-          'tipo_licencia',
-          'zona_infractor',
-          'resolucion',
-          'acta',
-          'motivos',
-        ]),
+      {
+        label: 'Vehiculo',
+        values: {
+          dominio,
+          licencia,
+          tipo_licencia,
+          zona_infractor,
+          resolucion,
+          acta,
+          motivos,
+        },
       },
-    },
-  ]
+    ]
+  }
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
@@ -135,7 +150,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
         setActiveStep={setActiveStep}
         submitEvent={submitEvent}
         path="motos"
-        steps={steps}
+        steps={steps()}
         handleClose={handleClose}
       >
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>

@@ -44,33 +44,56 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
-  const steps = [
-    {
-      label: 'Operativo',
-      values: {
-        ...watch(['fecha', 'legajo', 'direccion', 'zona', 'turno']),
+  const steps = () => {
+    const {
+      fecha,
+      legajo,
+      direccion,
+      zona,
+      turno,
+      hora,
+      dominio,
+      licencia,
+      origen,
+      localidad_origen,
+      destino,
+      localidad_destino,
+      remito,
+      carga,
+      acta,
+      motivo,
+      resolucion,
+    } = watch()
+    return [
+      {
+        label: 'Operativo',
+        values: {
+          fecha,
+          legajo,
+          direccion,
+          zona,
+          turno,
+        },
       },
-    },
-    {
-      label: 'Vehiculo',
-      values: {
-        ...watch([
-          'hora',
-          'dominio',
-          'licencia',
-          'origen',
-          'localidad_origen',
-          'destino',
-          'localidad_destino',
-          'remito',
-          'carga',
-          'acta',
-          'motivo',
-          'resolucion',
-        ]),
+      {
+        label: 'Vehiculo',
+        values: {
+          hora,
+          dominio,
+          licencia,
+          origen,
+          localidad_origen,
+          destino,
+          localidad_destino,
+          remito,
+          carga,
+          acta,
+          motivo,
+          resolucion,
+        },
       },
-    },
-  ]
+    ]
+  }
 
   const submitEvent = async (data: CamionesForm) => {
     const res = await nuevoOperativoCamiones(data)
@@ -108,7 +131,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     <FormProvider {...methods}>
       <Layout
         error={error}
-        steps={steps}
+        steps={steps()}
         activeStep={activeStep}
         setActiveStep={setActiveStep}
         handleClose={handleClose}

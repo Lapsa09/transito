@@ -42,29 +42,44 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
-  const steps = [
-    {
-      label: 'Operativo',
-      values: {
-        ...watch(['fecha', 'turno', 'lp']),
+  const steps = () => {
+    const {
+      fecha,
+      turno,
+      lp,
+      hora,
+      direccion,
+      dominio,
+      resolucion,
+      motivo,
+      localidad,
+      acta,
+      otroMotivo,
+    } = watch()
+    return [
+      {
+        label: 'Operativo',
+        values: {
+          fecha,
+          turno,
+          lp,
+        },
       },
-    },
-    {
-      label: 'Vehiculo',
-      values: {
-        ...watch([
-          'hora',
-          'direccion',
-          'dominio',
-          'resolucion',
-          'motivo',
-          'localidad',
-          'acta',
-          'otroMotivo',
-        ]),
+      {
+        label: 'Vehiculo',
+        values: {
+          hora,
+          direccion,
+          dominio,
+          resolucion,
+          motivo,
+          localidad,
+          acta,
+          otroMotivo,
+        },
       },
-    },
-  ]
+    ]
+  }
 
   const submitting = async (data: DiarioForm) => {
     const res = await nuevoControl(data)
@@ -92,7 +107,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
   return (
     <FormProvider {...methods}>
       <Layout
-        steps={steps}
+        steps={steps()}
         activeStep={activeStep}
         setActiveStep={setActiveStep}
         handleClose={handleClose}

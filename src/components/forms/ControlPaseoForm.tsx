@@ -40,20 +40,30 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
 
-  const steps = [
-    {
-      label: 'Operativo',
-      values: {
-        ...watch(['fecha', 'turno', 'lp', 'motivo']),
+  const steps = () => {
+    const { fecha, turno, lp, motivo, hora, direccion, dominio, resolucion } =
+      watch()
+    return [
+      {
+        label: 'Operativo',
+        values: {
+          fecha,
+          turno,
+          lp,
+          motivo,
+        },
       },
-    },
-    {
-      label: 'Vehiculo',
-      values: {
-        ...watch(['hora', 'direccion', 'dominio', 'resolucion']),
+      {
+        label: 'Vehiculo',
+        values: {
+          hora,
+          direccion,
+          dominio,
+          resolucion,
+        },
       },
-    },
-  ]
+    ]
+  }
 
   const submitting = async (data: PaseoForm) => {
     const res = await nuevoControlPaseo(data)
@@ -69,7 +79,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   return (
     <FormProvider {...methods}>
       <Layout
-        steps={steps}
+        steps={steps()}
         activeStep={activeStep}
         setActiveStep={setActiveStep}
         handleClose={handleClose}

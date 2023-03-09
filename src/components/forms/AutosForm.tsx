@@ -45,29 +45,48 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     error,
   } = useSelects()
 
-  const steps = [
-    {
-      label: 'Operativo',
-      values: {
-        ...watch([
-          'legajo_a_cargo',
-          'legajo_planilla',
-          'seguridad',
-          'fecha',
-          'turno',
-          'direccion',
-          'zona',
-          'hora',
-        ]),
+  const steps = () => {
+    const {
+      legajo_a_cargo,
+      legajo_planilla,
+      seguridad,
+      fecha,
+      turno,
+      direccion,
+      zona,
+      hora,
+      dominio,
+      zona_infractor,
+      resolucion,
+      motivo,
+      acta,
+    } = watch()
+    return [
+      {
+        label: 'Operativo',
+        values: {
+          legajo_a_cargo,
+          legajo_planilla,
+          seguridad,
+          fecha,
+          turno,
+          direccion,
+          zona,
+          hora,
+        },
       },
-    },
-    {
-      label: 'Vehiculo',
-      values: {
-        ...watch(['dominio', 'zona_infractor', 'resolucion', 'motivo', 'acta']),
+      {
+        label: 'Vehiculo',
+        values: {
+          dominio,
+          zona_infractor,
+          resolucion,
+          motivo,
+          acta,
+        },
       },
-    },
-  ]
+    ]
+  }
 
   const esSancionable =
     getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
@@ -101,7 +120,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   return (
     <FormProvider {...methods}>
       <Layout
-        steps={steps}
+        steps={steps()}
         activeStep={activeStep}
         setActiveStep={setActiveStep}
         handleClose={handleClose}

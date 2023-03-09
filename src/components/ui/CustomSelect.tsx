@@ -26,7 +26,7 @@ function CustomSelect({
   rules,
   label,
   options,
-  defaultValue,
+  defaultValue = '',
   disabled,
 }: ISelect) {
   const {

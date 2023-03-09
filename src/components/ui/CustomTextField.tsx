@@ -128,6 +128,7 @@ export const FileNumberField = ({ control, name, className = '', label }) => (
     label={label}
     name={name}
     control={control}
+    defaultValue=""
     type="number"
     rules={{
       required: 'Ingrese un legajo',

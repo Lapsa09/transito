@@ -2,7 +2,10 @@ import { useState } from 'react'
 
 export default function useSnackBar() {
   const [openSB, setOpenSB] = useState(false)
-  const [response, setResponse] = useState({ severity: '', message: '' })
+  const [response, setResponse] = useState<{
+    severity: 'error' | 'success'
+    message: string
+  }>({ severity: null, message: '' })
 
   const setError = (message: string) => {
     setResponse({ severity: 'error', message })

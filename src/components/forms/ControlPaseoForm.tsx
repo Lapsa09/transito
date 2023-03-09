@@ -35,7 +35,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   })
   const { control, reset, getValues, watch, setFocus } = methods
   const {
-    selects: { motivos, turnos, resolucion, zonas_paseo },
+    selects: { motivos_paseo, turnos, resolucion, zonas_paseo },
     error,
   } = useSelects()
   const [activeStep, setActiveStep] = useState(0)
@@ -111,7 +111,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               name="motivo"
               rules={{ required: 'Elija una opcion' }}
               label="Motivo"
-              options={motivos}
+              options={motivos_paseo}
             />
           </Grid>
         </Grid>

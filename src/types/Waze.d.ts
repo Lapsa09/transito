@@ -1,6 +1,11 @@
-export interface Waze {
-  res: WazeRes
-  promedio: WazePromedio
+interface Horario {
+  id: number
+  calles: string
+  trafico: number
+  tiempo: number
+  tiempo_hist: number
+  velocidad: number
+  velocidad_hist: number
 }
 
 interface WazePromedio {
@@ -17,12 +22,7 @@ interface WazeRes {
   '17:30:00': Horario[]
 }
 
-interface Horario {
-  id: number
-  calles: string
-  trafico: number
-  tiempo: number
-  tiempo_hist: number
-  velocidad: number
-  velocidad_hist: number
+export interface Waze {
+  res: WazeRes
+  promedio: WazePromedio
 }

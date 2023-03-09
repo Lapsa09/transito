@@ -15,7 +15,7 @@ import {
 } from 'react-admin'
 import { OperariosServicios } from '../../components'
 
-export const Operarios = () => {
+const Operarios = () => {
   const listContext = useListController()
   const translate = useTranslate()
 
@@ -95,3 +95,5 @@ export const Operarios = () => {
     </ListContextProvider>
   )
 }
+
+export default Operarios

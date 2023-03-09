@@ -1,31 +1,20 @@
-import React, { Fragment, useEffect } from 'react'
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom'
+import React, { lazy, useEffect } from 'react'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Home,
-  Login,
-  Register,
-  ControlDiarioPage,
-  ControlPaseoPage,
-  AutosPage,
-  MotosPage,
-  CamionesPage,
-  Sueldos,
-  Waze,
-  History,
-} from './pages'
-import { PrivateRoute } from './layouts'
 import { Header } from './components'
 import { history } from './utils'
 import { AppDispatch, IRootState, authActions } from './redux'
-import { User } from './types'
+import { Roles, User } from './types'
 import './styles/globals.css'
+import { AuthGuard, RoleGuard } from './guards'
+
+const Login = lazy(() => import('./pages/login'))
+const Register = lazy(() => import('./pages/register'))
+const Home = lazy(() => import('./pages/home'))
+const Controles = lazy(() => import('./pages/control/Controles'))
+const Operativos = lazy(() => import('./pages/operativos/Operativos'))
+const Sueldos = lazy(() => import('./pages/sueldos/sueldos'))
+const Waze = lazy(() => import('./pages/waze/Main'))
 
 function App() {
   const user = useSelector<IRootState, User>((x) => x.user.user)
@@ -39,92 +28,26 @@ function App() {
   }, [])
 
   return (
-    <Fragment>
-      {user && <Header />}
+    <div className="App">
+      {user.legajo && <Header />}
       <Routes>
-        <Route
-          index
-          path="/"
-          element={
-            <PrivateRoute permission="public">
-              <Home />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/login"
-          element={!user ? <Login /> : <Navigate to="/" replace />}
-        />
-        <Route
-          path="/register"
-          element={!user ? <Register /> : <Navigate to="/" replace />}
-        />
-        <Route
-          path="/control/diario"
-          element={
-            <PrivateRoute permission="INSPECTOR">
-              <ControlDiarioPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/control/paseo"
-          element={
-            <PrivateRoute permission="INSPECTOR">
-              <ControlPaseoPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/operativos/autos"
-          element={
-            <PrivateRoute permission="INSPECTOR">
-              <AutosPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/operativos/motos"
-          element={
-            <PrivateRoute permission="INSPECTOR">
-              <MotosPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/operativos/camiones"
-          element={
-            <PrivateRoute permission="INSPECTOR">
-              <CamionesPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/sueldos/*"
-          element={
-            <PrivateRoute permission="ADMINISTRATIVO">
-              <Sueldos />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/waze"
-          element={
-            <PrivateRoute permission="TRAFICO">
-              <Waze />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="waze/historial"
-          element={
-            <PrivateRoute permission="TRAFICO">
-              <History />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<AuthGuard />}>
+          <Route index path="/" element={<Home />} />
+        </Route>
+        <Route element={<RoleGuard rol={Roles.INSPECTOR} />}>
+          <Route path="/control/*" element={<Controles />} />
+          <Route path="/operativos/*" element={<Operativos />} />
+        </Route>
+        <Route element={<RoleGuard rol={Roles.ADMINISTRATIVO} />}>
+          <Route path="/sueldos/*" element={<Sueldos />} />
+        </Route>
+        <Route element={<RoleGuard rol={Roles.WAZE} />}>
+          <Route path="/waze" element={<Waze />} />
+        </Route>
       </Routes>
-    </Fragment>
+    </div>
   )
 }
 

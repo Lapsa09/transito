@@ -2,7 +2,7 @@ import { EditRounded } from '@mui/icons-material'
 import * as React from 'react'
 import { CreateButton, useRedirect, Button } from 'react-admin'
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const router = useRedirect()
   return (
     <div>
@@ -17,3 +17,4 @@ export const Dashboard = () => {
     </div>
   )
 }
+export default Dashboard

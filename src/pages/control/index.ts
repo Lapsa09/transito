@@ -1,3 +1,5 @@
-export { default as Datacharts } from './data'
-export { default as ControlDiarioPage } from './diario'
-export { default as ControlPaseoPage } from './paseo'
+export { default as Controles } from './Controles'
+export { default as data } from './data'
+export { default as diario } from './diario'
+export * from './index'
+export { default as paseo } from './paseo'

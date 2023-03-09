@@ -7,14 +7,14 @@ import { useData } from '../../hooks'
 import { useSelector } from 'react-redux'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoCamiones, User } from '../../types'
+import { OperativoCamiones, Roles, User } from '../../types'
 
 function CamionesPage() {
   const [open, setOpen] = useState(false)
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoCamiones>(
     getOperativosCamiones
   )

@@ -5,7 +5,7 @@ import styles from '../styles/Home.module.css'
 import { history } from '../utils'
 import React from 'react'
 import { IRootState } from '../redux'
-import { User } from '../types'
+import { Roles, User } from '../types'
 
 const cardStyle = {
   backgroundColor: '#b7e912',
@@ -16,16 +16,14 @@ const cardStyle = {
 export default function Home() {
   const user = useSelector<IRootState, User>((x) => x.user.user)
 
-  const navigate = (route) => {
-    history.navigate(route)
-  }
+  const { navigate } = history
 
   return (
     <div className={styles.home}>
       <h1>
-        BIENVENIDO {user?.nombre} {user?.apellido} LP {user?.legajo}
+        BIENVENIDO {user.nombre} {user.apellido} LP {user.legajo}
       </h1>
-      {user.rol === 'ADMIN' ? (
+      {user.rol === Roles.ADMIN ? (
         <iframe
           title="Tablero de Control OVT"
           width="100%"

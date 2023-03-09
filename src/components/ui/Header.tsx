@@ -1,7 +1,5 @@
 import React, { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import LogoVL from '../../assets/imgs/LOGO_V_LOPEZ.png'
-import LogoOVT from '../../assets/imgs/OVT_LETRAS_NEGRAS.png'
 import { authActions } from '../../redux/userSlice'
 import CustomPopover from './Popover'
 import styles from '../../styles/Home.module.css'
@@ -23,9 +21,9 @@ import {
   ListItemButton,
   Collapse,
 } from '@mui/material'
-import { basicMaxHeight, history } from '../../utils'
 import { AppDispatch, IRootState } from '../../redux'
-import { User } from '../../types'
+import { Roles, User } from '../../types'
+import { LogoOVT, LogoVL } from './Logos'
 
 const controles = [
   { link: '/control/diario', title: 'Diario' },
@@ -80,13 +78,7 @@ function Header() {
   return (
     <AppBar position="sticky" color="default">
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
-          <img
-            src={LogoVL}
-            onClick={() => history.navigate('/')}
-            alt="Logo Vicente Lopez"
-          />
-        </Box>
+        <LogoVL link />
         <Box
           sx={{
             flexGrow: 1,
@@ -115,61 +107,56 @@ function Header() {
             onClose={handleCloseNavMenu}
           >
             <List>
-              {user.rol !== 'ADMIN' ? (
+              {user.rol !== Roles.ADMIN ? (
                 <h3>Legajo: {user.legajo}</h3>
               ) : (
-                pages
-                  .filter(
-                    (page) =>
-                      user.rol === 'ADMIN' || user.rol === page.permission
-                  )
-                  .map((page) =>
-                    page.links ? (
-                      <ListItem
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                          padding: '0',
-                        }}
-                        key={page.name}
+                pages.map((page) =>
+                  page.links ? (
+                    <ListItem
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        padding: '0',
+                      }}
+                      key={page.name}
+                    >
+                      <ListItemButton
+                        onTouchStart={() => onTouchStart(page.name)}
+                        onMouseDown={() => onTouchStart(page.name)}
                       >
-                        <ListItemButton
-                          onTouchStart={() => onTouchStart(page.name)}
-                          onMouseDown={() => onTouchStart(page.name)}
-                        >
-                          <h3 className={styles.item}>{page.name}</h3>
-                          {dropdown === page.name ? (
-                            <ExpandMore />
-                          ) : (
-                            <ChevronRight />
-                          )}
-                        </ListItemButton>
-                        <Collapse
-                          sx={{ marginLeft: '20px' }}
-                          in={dropdown === page.name}
-                        >
-                          {page.links.map((link) => (
-                            <ListItemButton key={link.title}>
-                              <Link className={styles.subitem} to={link.link}>
-                                {link.title}
-                              </Link>
-                            </ListItemButton>
-                          ))}
-                        </Collapse>
-                      </ListItem>
-                    ) : (
-                      <ListItem key={page.name}>
-                        <Link
-                          onClick={handleCloseNavMenu}
-                          to={page.link}
-                          className={styles.item}
-                        >
-                          {page.name}
-                        </Link>
-                      </ListItem>
-                    )
+                        <h3 className={styles.item}>{page.name}</h3>
+                        {dropdown === page.name ? (
+                          <ExpandMore />
+                        ) : (
+                          <ChevronRight />
+                        )}
+                      </ListItemButton>
+                      <Collapse
+                        sx={{ marginLeft: '20px' }}
+                        in={dropdown === page.name}
+                      >
+                        {page.links.map((link) => (
+                          <ListItemButton key={link.title}>
+                            <Link className={styles.subitem} to={link.link}>
+                              {link.title}
+                            </Link>
+                          </ListItemButton>
+                        ))}
+                      </Collapse>
+                    </ListItem>
+                  ) : (
+                    <ListItem key={page.name}>
+                      <Link
+                        onClick={handleCloseNavMenu}
+                        to={page.link}
+                        className={styles.item}
+                      >
+                        {page.name}
+                      </Link>
+                    </ListItem>
                   )
+                )
               )}
             </List>
           </Drawer>
@@ -186,7 +173,7 @@ function Header() {
         >
           {pages
             .filter(
-              (page) => user.rol === 'ADMIN' || user.rol === page.permission
+              (page) => user.rol === Roles.ADMIN || user.rol === page.permission
             )
             .map((page) => (
               <div
@@ -212,9 +199,8 @@ function Header() {
             ))}
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
-        <Box sx={{ ...basicMaxHeight }}>
-          <img src={LogoOVT} alt="Logo Observatorio Vial" />
-        </Box>
+
+        <LogoOVT />
       </Toolbar>
     </AppBar>
   )

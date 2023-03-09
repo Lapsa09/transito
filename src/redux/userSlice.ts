@@ -2,6 +2,7 @@ import {
   ActionReducerMapBuilder,
   createAsyncThunk,
   createSlice,
+  SerializedError,
 } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
 import { loginCall, register, verifyAuth } from '../services/userService'
@@ -17,12 +18,20 @@ const slice = createSlice({ name, initialState, reducers, extraReducers })
 
 export type IRootUser = {
   user: User
-  error: ErrorEvent
+  error: SerializedError
 }
 
 function createInitialState() {
-  let user: User = null
-  let error: ErrorEvent = null
+  let user: User = {
+    apellido: '',
+    legajo: 0,
+    iat: 0,
+    nombre: '',
+    telefono: 0,
+    rol: null,
+    turno: '',
+  }
+  let error: SerializedError = { code: '', message: '', name: '', stack: '' }
 
   try {
     user = jwt_decode(localStorage.getItem('token'))

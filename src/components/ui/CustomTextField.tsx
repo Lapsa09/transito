@@ -28,7 +28,7 @@ type TextFieldProps = {
 export function CustomTextField({
   control,
   name,
-  defaultValue = null,
+  defaultValue = '',
   rules = null,
   label,
   type = 'text',
@@ -128,7 +128,7 @@ export const FileNumberField = ({ control, name, className = '', label }) => (
     label={label}
     name={name}
     control={control}
-    defaultValue=""
+    defaultValue={0}
     type="number"
     rules={{
       required: 'Ingrese un legajo',

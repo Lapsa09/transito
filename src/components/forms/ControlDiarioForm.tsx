@@ -16,7 +16,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormProps, User, FormInputProps } from '../../types'
+import { FormProps, User, FormInputProps, Roles } from '../../types'
 
 interface DiarioForm extends FormInputProps {
   lp: number
@@ -27,12 +27,12 @@ interface DiarioForm extends FormInputProps {
 
 function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<DiarioForm>({
     mode: 'all',
     defaultValues: {
-      lpcarga: user?.legajo,
-      lp: !handleRol() ? user?.legajo : null,
+      lpcarga: user.legajo,
+      lp: !handleRol() ? user.legajo : null,
     },
   })
   const { control, reset, getValues, watch } = methods

@@ -7,14 +7,14 @@ import { dateFormat, dateTimeFormat, timeFormat, history } from '../../utils'
 import { useData } from '../../hooks'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoAutos, User } from '../../types'
+import { OperativoAutos, Roles, User } from '../../types'
 
 function AutosPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoAutos>(getOperativosAutos)
 
   const columns: GridColumns<OperativoAutos[]> = [

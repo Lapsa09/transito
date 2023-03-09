@@ -7,14 +7,14 @@ import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
 import { useData } from '../../hooks'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoDiario, User } from '../../types'
+import { OperativoDiario, Roles, User } from '../../types'
 
 function ControlDiarioPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoDiario>(getControles)
 
   const columns: GridColumns<OperativoDiario[]> = [

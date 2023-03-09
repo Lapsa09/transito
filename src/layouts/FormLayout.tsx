@@ -6,10 +6,14 @@ import {
   DialogActions,
   DialogContent,
 } from '@mui/material'
-import LogoVL from '../assets/imgs/LOGO_V_LOPEZ.png'
-import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
-import { currentDate, adminStyle, basicMaxHeight } from '../utils'
-import { CustomSnackbar, CustomStepForm, CustomStepper } from '../components/ui'
+import { currentDate, adminStyle } from '../utils'
+import {
+  CustomSnackbar,
+  CustomStepForm,
+  CustomStepper,
+  LogoOVT,
+  LogoVL,
+} from '../components/ui'
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
@@ -138,16 +142,12 @@ function FormLayout({
   return (
     <Box sx={adminStyle} className={styles.form}>
       <div className={styles.header}>
-        <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
-          <img src={LogoVL} alt="Logo Vicente Lopez" />
-        </Box>
+        <LogoVL />
         <Button onClick={handleClose}>Cerrar</Button>
         <Button color="error" onClick={() => setOpen(true)} sx={{ mr: 1 }}>
           Nuevo Operativo
         </Button>
-        <Box sx={{ ...basicMaxHeight, cursor: 'pointer' }}>
-          <img src={LogoOVT} alt="Logo Observatorio Vial" />
-        </Box>
+        <LogoOVT />
       </div>
       <div className={styles.form__form}>
         <CustomStepper

@@ -7,12 +7,11 @@ export { default as CustomSnackbar } from './CustomSnackbar'
 export { default as CustomStepForm } from './CustomStepForm'
 export { default as CustomStepper } from './CustomStepper'
 export { default as CustomSwitch } from './CustomSwitch'
-export {
-  CustomTextField,
-  DomainField,
-  FileNumberField,
-} from './CustomTextField'
+export * from './CustomTextField'
 export { default as CustomDatePicker } from './DatePicker'
 export { default as Header } from './Header'
-export { default as CustomPopover } from './Popover'
+export { default as Loader } from './Loader'
+export * from './Logos'
+export { default as Popover } from './Popover'
 export { default as CustomTimePicker } from './TimePicker'
+export * from './index'

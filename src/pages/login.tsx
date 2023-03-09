@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
@@ -13,10 +13,8 @@ function Login() {
   const dispatch = useDispatch<AppDispatch>()
   const { user, error } = useSelector<IRootState, IRootUser>((x) => x.user)
 
-  useEffect(() => {
-    // redirect to home if already logged in
-    if (user) history.navigate('/')
-  }, [])
+  // redirect to home if already logged in
+  if (user.legajo) history.navigate('/')
 
   const submitEvent = (data: any) => {
     dispatch(authActions.login(data))
@@ -59,7 +57,7 @@ function Login() {
           label="Contraseña"
           className="MuiTextField-root"
         />
-        {error && <FormHelperText error>{error.message}</FormHelperText>}
+        {error?.code && <FormHelperText error>{error.message}</FormHelperText>}
         <Box className="buttons" sx={{ ...basicWidth }}>
           <Button type="submit" variant="contained">
             Iniciar sesion

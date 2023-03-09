@@ -3,6 +3,7 @@ import React from 'react'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { useController } from 'react-hook-form'
+import { DateTime } from 'luxon'
 
 function CustomTimePicker({
   label,
@@ -20,20 +21,16 @@ function CustomTimePicker({
     rules: {
       required: 'Ingrese una hora',
       validate: {
-        validDate: (v) => v.isValid || 'Ingrese una hora valida',
+        validDate: (v: DateTime) => v.isValid || 'Ingrese una hora valida',
       },
     },
     defaultValue,
   })
 
-  const parseTime = (newTime) => {
-    field.onChange(newTime)
-  }
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TimePicker
         {...field}
-        onChange={parseTime}
         disabled={disabled}
         label={label}
         disableMaskedInput

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import {
   Admin,
   Layout,
@@ -7,19 +7,18 @@ import {
   Resource,
 } from 'react-admin'
 import jsonServerProvider from 'ra-data-json-server'
-import {
-  Dashboard,
-  Operarios,
-  Clientes,
-  NuevoCliente,
-  Servicios,
-  EditServicio,
-  Liqui,
-  EditPrecio,
-} from '.'
 import polyglotI18nProvider from 'ra-i18n-polyglot'
 // @ts-ignore
 import spanishMessages from '@blackbox-vision/ra-language-spanish'
+
+const DashBoard = lazy(() => import('./DashBoard'))
+const Operarios = lazy(() => import('./Operarios'))
+const Clientes = lazy(() => import('./Clientes'))
+const NuevoCliente = lazy(() => import('./NuevoCliente'))
+const Servicios = lazy(() => import('./Servicios'))
+const EditServicio = lazy(() => import('./EditServicio'))
+const Liqui = lazy(() => import('./Liqui'))
+const EditPrecio = lazy(() => import('./EditPrecio'))
 
 const Sueldos = () => {
   const restProvider = jsonServerProvider(
@@ -50,8 +49,8 @@ const Sueldos = () => {
   return (
     <Admin
       i18nProvider={i18nProvider}
-      layout={CustomLayout}
-      dashboard={Dashboard}
+      layout={lazyLayout}
+      dashboard={DashBoard}
       dataProvider={restProvider}
       store={memoryStore()}
       basename="/sueldos"
@@ -78,5 +77,7 @@ const Sueldos = () => {
 const CustomLayout = (props) => {
   return <Layout {...props} appBar={'span'} />
 }
+
+const lazyLayout = lazy(async () => await { default: CustomLayout })
 
 export default Sueldos

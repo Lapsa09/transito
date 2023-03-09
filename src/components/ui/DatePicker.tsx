@@ -4,13 +4,14 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { useController } from 'react-hook-form'
 import { currentDate } from '../../utils'
+import { DateTime } from 'luxon'
 
 function CustomDatePicker({
   label,
   name,
   control,
   disabled = false,
-  defaultValue,
+  defaultValue = null,
 }) {
   const {
     field,
@@ -21,11 +22,11 @@ function CustomDatePicker({
     rules: {
       required: 'Ingrese una fecha',
       validate: {
-        validDate: (v) => v.isValid || 'Ingrese una fecha valida',
-        minDate: (v) =>
+        validDate: (v: DateTime) => v.isValid || 'Ingrese una fecha valida',
+        minDate: (v: DateTime) =>
           v.toMillis() > currentDate().minus({ months: 6 }).toMillis() ||
           'Elija una fecha mas reciente',
-        maxDate: (v) =>
+        maxDate: (v: DateTime) =>
           v.toMillis() < currentDate().toMillis() || 'Elija una fecha pasada',
       },
     },

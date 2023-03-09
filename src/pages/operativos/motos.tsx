@@ -7,14 +7,14 @@ import { useData } from '../../hooks'
 import { useSelector } from 'react-redux'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoMotos, User } from '../../types'
+import { OperativoMotos, Roles, User } from '../../types'
 
 function MotosPage() {
   const [open, setOpen] = useState(false)
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoMotos>(getOperativosMotos)
 
   const columns: GridColumns<OperativoMotos[]> = [

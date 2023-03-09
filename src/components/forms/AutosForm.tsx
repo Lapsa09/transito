@@ -16,7 +16,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormInputProps, FormProps, User } from '../../types'
+import { FormInputProps, FormProps, Roles, User } from '../../types'
 
 interface AutosForm extends FormInputProps {
   motivo?: { id_motivo: number; motivo: string }
@@ -25,7 +25,7 @@ interface AutosForm extends FormInputProps {
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<AutosForm>({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
@@ -135,7 +135,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="fecha"
               disabled={!handleRol()}
               label="Fecha"
-              defaultValue={!handleRol() ? currentDate() : ''}
+              defaultValue={!handleRol() ? currentDate() : null}
             />
           </Grid>
           <Grid item xs={8}>

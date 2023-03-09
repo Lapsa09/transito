@@ -7,14 +7,14 @@ import { useData } from '../../hooks'
 import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoPaseo, User } from '../../types'
+import { OperativoPaseo, Roles, User } from '../../types'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoPaseo>(getControlesPaseo)
 
   const columns: GridColumns<OperativoPaseo[]> = [

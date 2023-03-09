@@ -3,13 +3,20 @@ export interface FormProps {
   afterCreate: (_data: any) => void
 }
 
+export enum Roles {
+  ADMIN = 'ADMIN',
+  INSPECTOR = 'INSPECTOR',
+  ADMINISTRATIVO = 'ADMINISTRATIVO',
+  WAZE = 'TRAFICO',
+}
+
 export type User = {
   legajo: number
   nombre: string
   apellido: string
   telefono: number
   turno?: string
-  rol?: string
+  rol?: Roles
   iat: number
 }
 

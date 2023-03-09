@@ -17,7 +17,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux/store'
-import { FormInputProps, FormProps, User } from '../../types'
+import { FormInputProps, FormProps, Roles, User } from '../../types'
 
 interface CamionesForm extends FormInputProps {
   localidad_destino: { id: number; zona_infractor: string }
@@ -32,10 +32,10 @@ interface CamionesForm extends FormInputProps {
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user?.rol === 'ADMIN'
+  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<CamionesForm>({
     mode: 'all',
-    defaultValues: { lpcarga: user?.legajo },
+    defaultValues: { lpcarga: user.legajo },
   })
   const { control, reset, getValues, watch, setValue, setFocus } = methods
   const {

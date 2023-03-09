@@ -5,10 +5,10 @@ import { useSelector } from 'react-redux'
 import { history } from '../utils'
 import styles from '../styles/Operativos.page.module.css'
 import { geocoding } from '../services/operativosService'
-import { CustomSnackbar } from '../components'
+import { CustomSnackbar, Loader } from '../components'
 import { useSnackBar } from '../hooks'
 import { IRootState } from '../redux'
-import { Operativo, User } from '../types'
+import { Operativo, Roles, User } from '../types'
 
 interface OperativosLayoutProps {
   columns: GridColumns
@@ -43,7 +43,7 @@ function OperativosLayout({
       setError(error.response?.data)
     }
   }
-  return user?.rol === 'ADMIN' ? (
+  return user.rol === Roles.ADMIN ? (
     <div className={styles.Operativos}>
       <h1 style={{ textAlign: 'center' }}>{path}</h1>
       <div className="control_buttons">
@@ -66,15 +66,7 @@ function OperativosLayout({
       <Dialog fullWidth maxWidth="lg" open={open} onClose={handleClose}>
         {children}
       </Dialog>
-      {loading ? (
-        <img
-          src="/loading.gif"
-          alt="loading"
-          style={{ width: '35%', marginInline: 'auto' }}
-        />
-      ) : (
-        <DataGrid rows={operativos} columns={columns} />
-      )}
+      {loading ? <Loader /> : <DataGrid rows={operativos} columns={columns} />}
       <CustomSnackbar
         res={response}
         open={openSB}

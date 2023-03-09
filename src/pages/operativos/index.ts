@@ -1,3 +1,5 @@
-export { default as AutosPage } from './autos'
-export { default as CamionesPage } from './camiones'
-export { default as MotosPage } from './motos'
+export { default as operativos } from './Operativos'
+export { default as autos } from './autos'
+export { default as camiones } from './camiones'
+export * from './index'
+export { default as motos } from './motos'

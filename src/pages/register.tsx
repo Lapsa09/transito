@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
@@ -17,9 +17,7 @@ function Register() {
     history.navigate('/login')
   }
 
-  useEffect(() => {
-    if (user) history.navigate('/')
-  }, [])
+  if (user.legajo) history.navigate('/')
 
   const submitEvent = async (data) => {
     dispatch(authActions.register(data))
@@ -89,7 +87,7 @@ function Register() {
           }}
           label="Confirmar contraseña"
         />
-        {error && <FormHelperText error>{error.message}</FormHelperText>}
+        {error?.code && <FormHelperText error>{error.message}</FormHelperText>}
         <Box sx={{ ...basicWidth }} className="buttons">
           <Button onClick={loginNav}>
             Ya te registraste? ir a iniciar Sesion

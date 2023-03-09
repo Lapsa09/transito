@@ -25,7 +25,7 @@ import {
 import styles from '../../styles/Sueldos.module.css'
 import CancelIcon from '@mui/icons-material/Cancel'
 
-export const EditServicio = (props) => {
+const EditServicio = (props) => {
   return (
     <Edit {...props}>
       <SimpleForm toolbar={<ToolBar />}>
@@ -113,3 +113,5 @@ function ToolBar() {
     </Toolbar>
   )
 }
+
+export default EditServicio

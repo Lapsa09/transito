@@ -48,9 +48,7 @@ export function CustomTextField({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     field.onChange(
-      typeof e.target.value === 'string' && type !== 'password'
-        ? e.target.value.toUpperCase()
-        : e.target.value
+      type === 'text' ? e.target.value.toUpperCase() : e.target.value
     )
   }
 

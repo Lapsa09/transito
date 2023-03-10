@@ -103,7 +103,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
       {
         ...data,
         dominio: '',
-        licencia: null,
+        licencia: undefined,
         origen: '',
         localidad_origen: null,
         destino: '',
@@ -111,7 +111,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         remito: false,
         carga: false,
         motivo: null,
-        acta: null,
+        acta: undefined,
       },
       { keepDefaultValues: true }
     )

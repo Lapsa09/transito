@@ -101,10 +101,10 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         dominio: '',
         zona_infractor: null,
         motivo: null,
-        licencia: null,
+        licencia: undefined,
         tipo_licencia: null,
-        graduacion_alcoholica: null,
-        acta: null,
+        graduacion_alcoholica: undefined,
+        acta: undefined,
       },
       { keepDefaultValues: true }
     )

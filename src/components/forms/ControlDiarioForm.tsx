@@ -93,7 +93,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
         localidad: null,
         motivo: null,
         otroMotivo: null,
-        acta: null,
+        acta: undefined,
       },
       { keepDefaultValues: true }
     )

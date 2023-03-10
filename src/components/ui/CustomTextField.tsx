@@ -60,7 +60,7 @@ export function CustomTextField({
       onChange={handleChange}
       type={type}
       helperText={error?.message}
-      required={rules !== undefined}
+      required={rules != null}
       disabled={disabled}
       className={className}
       error={invalid}
@@ -128,7 +128,7 @@ export const FileNumberField = ({ control, name, className = '', label }) => (
     label={label}
     name={name}
     control={control}
-    defaultValue={0}
+    defaultValue={''}
     type="number"
     rules={{
       required: 'Ingrese un legajo',

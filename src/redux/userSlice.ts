@@ -2,12 +2,30 @@ import {
   ActionReducerMapBuilder,
   createAsyncThunk,
   createSlice,
+  PayloadAction,
   SerializedError,
 } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
 import { loginCall, register, verifyAuth } from '../services/userService'
 import { User } from '../types'
 import { history } from '../utils'
+
+const emptyUser: User = {
+  apellido: '',
+  legajo: 0,
+  iat: 0,
+  nombre: '',
+  telefono: 0,
+  rol: null,
+  turno: '',
+}
+
+const emptyError: SerializedError = {
+  code: '',
+  message: '',
+  name: '',
+  stack: '',
+}
 
 const name = 'user'
 const initialState = createInitialState()
@@ -21,17 +39,9 @@ export type IRootUser = {
   error: SerializedError
 }
 
-function createInitialState() {
-  let user: User = {
-    apellido: '',
-    legajo: 0,
-    iat: 0,
-    nombre: '',
-    telefono: 0,
-    rol: null,
-    turno: '',
-  }
-  let error: SerializedError = { code: '', message: '', name: '', stack: '' }
+function createInitialState(): IRootUser {
+  let user = emptyUser
+  let error = emptyError
 
   try {
     user = jwt_decode(localStorage.getItem('token'))
@@ -54,7 +64,7 @@ function createReducers() {
   }
 
   function logout(state) {
-    state.user = null
+    state.user = emptyUser
     localStorage.removeItem('token')
     history.navigate('/login')
   }
@@ -100,7 +110,7 @@ function createExtraActions() {
 function createExtraReducers() {
   const baseUserReducer = {
     pending: (state) => {
-      state.error = null
+      state.error = emptyError
     },
     fulfilled: (state, action) => {
       const user = action.payload
@@ -119,7 +129,7 @@ function createExtraReducers() {
 
   const verifyingUser = {
     pending: (state) => {
-      state.error = null
+      state.error = emptyError
     },
     fulfilled: (state) => {
       state.user = { ...jwt_decode(localStorage.getItem('token')) }

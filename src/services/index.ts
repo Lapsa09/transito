@@ -9,7 +9,7 @@ import {
   IZona,
 } from '../types'
 
-const axios = Axios.create({ baseURL: process.env.REACT_APP_BASE_URL })
+const axios = Axios.create({ baseURL: import.meta.env.VITE_BASE_URL })
 
 export const getter = async <T = null>(route: string) => {
   const { data }: AxiosResponse = await axios.get<T>(route)

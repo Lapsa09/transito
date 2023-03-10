@@ -22,7 +22,7 @@ const EditPrecio = lazy(() => import('./EditPrecio'))
 
 const Sueldos = () => {
   const restProvider = jsonServerProvider(
-    process.env.REACT_APP_BASE_URL + '/sueldos'
+    import.meta.env.VITE_BASE_URL + '/sueldos'
   )
 
   const i18nProvider = polyglotI18nProvider(

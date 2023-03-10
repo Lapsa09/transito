@@ -28,8 +28,8 @@ function App() {
   }, [])
 
   return (
-    <div className="App">
-      {user.legajo && <Header />}
+    <>
+      {user?.legajo ? <Header /> : null}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -44,10 +44,10 @@ function App() {
           <Route path="/sueldos/*" element={<Sueldos />} />
         </Route>
         <Route element={<RoleGuard rol={Roles.WAZE} />}>
-          <Route path="/waze" element={<Waze />} />
+          <Route path="/waze/*" element={<Waze />} />
         </Route>
       </Routes>
-    </div>
+    </>
   )
 }
 

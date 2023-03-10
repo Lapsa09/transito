@@ -117,7 +117,7 @@ function Header() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'flex-start',
-                        padding: '0',
+                        padding: 0,
                       }}
                       key={page.name}
                     >

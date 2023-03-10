@@ -181,6 +181,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               label="Zona"
               rules={{ required: 'Elija una localidad' }}
               options={vicente_lopez}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>
@@ -243,6 +244,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               name="tipo_licencia"
               label="Tipo de licencia"
               options={licencias}
+              labelOption="tipo"
             />
           </Grid>
           <Grid item xs={8}>
@@ -252,6 +254,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               label="Localidad del infractor"
               rules={{ required: 'Elija una opcion' }}
               options={barrios}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>
@@ -286,6 +289,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
                     name={`motivos.${index}`}
                     label={`Motivo ${index + 1}`}
                     options={motivos}
+                    labelOption="motivo"
                   />
                 </Grid>
               ))}

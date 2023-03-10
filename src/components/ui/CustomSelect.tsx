@@ -26,7 +26,7 @@ function CustomSelect({
   rules,
   label,
   options,
-  defaultValue = '',
+  defaultValue = undefined,
   disabled,
 }: ISelect) {
   const {
@@ -36,7 +36,7 @@ function CustomSelect({
     name,
     control,
     rules,
-    defaultValue,
+    defaultValue: '',
   })
   return (
     <TextField
@@ -52,9 +52,14 @@ function CustomSelect({
       <MenuItem value="">ELIJA UNA OPCION</MenuItem>
       {options?.map((option) =>
         option.enumlabel ? (
-          <MenuItem value={option.enumlabel}>{option.enumlabel}</MenuItem>
+          <MenuItem key={option.enumlabel} value={option.enumlabel}>
+            {option.enumlabel}
+          </MenuItem>
         ) : (
-          <MenuItem value={Object.values(option)[0] as any}>
+          <MenuItem
+            key={Object.values(option)[0] as any}
+            value={Object.values(option)[0] as any}
+          >
             {Object.values(option)[1] as ReactNode}
           </MenuItem>
         )

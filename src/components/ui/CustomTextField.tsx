@@ -5,45 +5,45 @@ import {
   RegisterOptions,
   useController,
   useFormContext,
+  Path,
+  PathValue,
 } from 'react-hook-form'
 import { Checkbox, FormControlLabel, TextField } from '@mui/material'
 import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '../../utils'
 
-type TextFieldProps = {
-  control: Control<any, any>
-  name: string
+type TextFieldProps<T> = {
+  control: Control<T, any>
+  name: Path<T>
   rules?: Omit<
-    RegisterOptions<FieldValues, any>,
+    RegisterOptions<T, any>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >
   options?: any[]
-  label: string
-  defaultValue?: string | number
+  label?: string
   type?: 'text' | 'number' | 'password'
   disabled?: boolean
   className?: string
   InputProps?: any
 }
 
-export function CustomTextField({
+export function CustomTextField<T>({
   control,
   name,
-  defaultValue = '',
   rules = null,
   label,
   type = 'text',
   disabled = false,
   className = '',
   ...props
-}: TextFieldProps) {
+}: TextFieldProps<T>) {
   const {
     field: { ref, ...field },
     fieldState: { error, invalid },
-  } = useController({
+  } = useController<T>({
     name,
     control,
     rules,
-    defaultValue,
+    defaultValue: '' as PathValue<T, Path<T>>,
   })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +58,7 @@ export function CustomTextField({
       onChange={handleChange}
       type={type}
       helperText={error?.message}
-      required={rules != null}
+      required={rules?.required != null}
       disabled={disabled}
       className={className}
       error={invalid}
@@ -70,13 +70,17 @@ export function CustomTextField({
   )
 }
 
-export function DomainField({ control, name, className = '' }) {
+export function DomainField<T>({
+  control,
+  name,
+  className = '',
+}: TextFieldProps<T>) {
   const { trigger } = useFormContext()
 
-  const { field } = useController({
-    name: 'extranjero',
+  const { field } = useController<T>({
+    name: 'extranjero' as Path<T>,
     control,
-    defaultValue: false,
+    defaultValue: false as PathValue<T, Path<T>>,
   })
 
   const changeDomainStatus = () => {
@@ -99,7 +103,6 @@ export function DomainField({ control, name, className = '' }) {
         },
         required: 'Ingrese una patente',
       }}
-      defaultValue=""
       InputProps={{
         endAdornment: (
           <FormControlLabel
@@ -108,7 +111,7 @@ export function DomainField({ control, name, className = '' }) {
                 title="Extranjero"
                 tabIndex={-1}
                 name={field.name}
-                checked={field.value}
+                checked={field.value as boolean}
                 onChange={changeDomainStatus}
               />
             }
@@ -120,20 +123,26 @@ export function DomainField({ control, name, className = '' }) {
   )
 }
 
-export const FileNumberField = ({ control, name, className = '', label }) => (
-  <CustomTextField
-    className={className}
-    label={label}
-    name={name}
-    control={control}
-    defaultValue={''}
-    type="number"
-    rules={{
-      required: 'Ingrese un legajo',
-      pattern: {
-        value: LEGAJO_PATTERN,
-        message: 'Ingrese un legajo valido',
-      },
-    }}
-  />
-)
+export function FileNumberField<T>({
+  control,
+  name,
+  className = '',
+  label,
+}: TextFieldProps<T>) {
+  return (
+    <CustomTextField
+      className={className}
+      label={label}
+      name={name}
+      control={control}
+      type="number"
+      rules={{
+        required: 'Ingrese un legajo',
+        pattern: {
+          value: LEGAJO_PATTERN,
+          message: 'Ingrese un legajo valido',
+        },
+      }}
+    />
+  )
+}

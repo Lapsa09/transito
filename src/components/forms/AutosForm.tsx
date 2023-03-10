@@ -190,6 +190,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               label="Zona"
               rules={{ required: 'Elija una localidad' }}
               options={vicente_lopez}
+              labelOption="barrio"
             />
           </Grid>
         </Grid>
@@ -211,6 +212,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="tipo_licencia"
               label="Tipo de licencia"
               options={licencias}
+              labelOption="tipo"
             />
           </Grid>
           <Grid item xs={8}>
@@ -220,6 +222,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               rules={{ required: 'Elija una opcion' }}
               label="Localidad del infractor"
               options={barrios}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>
@@ -246,6 +249,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
                   name="motivo"
                   label="Motivo"
                   options={motivos}
+                  labelOption="motivo"
                 />
               </Grid>
               <Grid item xs={8}>

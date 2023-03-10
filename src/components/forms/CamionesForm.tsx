@@ -163,6 +163,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               label="Zona"
               rules={{ required: 'Inserte una localidad' }}
               options={vicente_lopez}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>
@@ -203,6 +204,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               label="Localidad de origen"
               rules={{ required: 'Elija una opcion' }}
               options={barrios}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>
@@ -215,6 +217,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               label="Localidad de destino"
               rules={{ required: 'Elija una opcion' }}
               options={barrios}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>
@@ -268,6 +271,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
                 label="Motivo"
                 options={motivos}
                 rules={{ required: 'Inserte un motivo valido' }}
+                labelOption="barrio"
               />
             </Grid>
           )}

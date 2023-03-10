@@ -8,7 +8,8 @@ export default function useSelects() {
     (x) => x.selects
   )
 
-  const isEmpty = (object: any) => Object.values(object).every((x) => x == null)
+  const isEmpty = (object: any) =>
+    Object.values(object).every((x: any[]) => x.length === 0)
 
   useEffect(() => {
     if (isEmpty(selects)) {

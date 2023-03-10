@@ -169,6 +169,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               rules={{ required: 'Elija una opcion' }}
               label="Localidad"
               options={barrios}
+              labelOption="barrio"
             />
           </Grid>
           <Grid item xs={8}>

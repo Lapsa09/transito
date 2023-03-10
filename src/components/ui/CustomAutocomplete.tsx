@@ -1,44 +1,39 @@
 import { Autocomplete, TextField } from '@mui/material'
 import React from 'react'
-import {
-  Control,
-  FieldValues,
-  RegisterOptions,
-  useController,
-} from 'react-hook-form'
+import { Control, Path, RegisterOptions, useController } from 'react-hook-form'
 
-type IAutoComplete = {
-  control: Control<any, any>
-  name: string
+type IAutoComplete<T, K> = {
+  control: Control<T>
+  name: Path<T>
   rules?: Omit<
-    RegisterOptions<FieldValues, any>,
+    RegisterOptions<T>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
   >
-  options?: any[]
+  options: K[]
   label: string
+  labelOption: string
 }
 
-function CustomAutocomplete({
+function CustomAutocomplete<T, K>({
   control,
   name,
   rules = null,
   label,
-  options = [],
-}: IAutoComplete) {
+  options,
+  labelOption,
+}: IAutoComplete<T, K>) {
   const {
     field,
     fieldState: { error, invalid },
-  } = useController({
+  } = useController<T>({
     name,
     control,
     rules,
     defaultValue: null,
   })
-
-  const optionLabel = (option: any) => {
-    return Object.values(option)[1] as string
+  const optionLabel = (option: any): string => {
+    return option[labelOption]
   }
-
   return (
     <Autocomplete
       {...field}

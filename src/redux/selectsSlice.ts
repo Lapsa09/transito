@@ -45,19 +45,28 @@ export interface ISelectRouter {
   error: SerializedError
 }
 
+const emptySelectors: SelectData = {
+  barrios: [],
+  licencias: [],
+  motivos: [],
+  motivos_paseo: [],
+  resolucion: [],
+  seguridad: [],
+  turnos: [],
+  vicente_lopez: [],
+  zonas_paseo: [],
+}
+
+const emptyError: SerializedError = {
+  code: '',
+  message: '',
+  name: '',
+  stack: '',
+}
+
 function createInitialState() {
-  const selects: SelectData = {
-    barrios: null,
-    licencias: null,
-    motivos: null,
-    motivos_paseo: null,
-    resolucion: null,
-    seguridad: null,
-    turnos: null,
-    vicente_lopez: null,
-    zonas_paseo: null,
-  }
-  const error: SerializedError = null
+  const selects = emptySelectors
+  const error = emptyError
 
   return {
     selects,
@@ -113,13 +122,13 @@ function createExtraReducers() {
   return (builder: ActionReducerMapBuilder<ISelectRouter>) => {
     builder
       .addCase(extraActions.fetchSelects.pending, (state) => {
-        state.error = null
+        state.error = emptyError
       })
       .addCase(extraActions.fetchSelects.fulfilled, (state, action) => {
-        state.selects = { ...action.payload }
+        state.selects = action.payload
       })
       .addCase(extraActions.fetchSelects.rejected, (state, action) => {
-        state.error = { ...action.error }
+        state.error = action.error
       })
   }
 }

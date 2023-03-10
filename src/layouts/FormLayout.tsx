@@ -85,7 +85,7 @@ function FormLayout({
   }
 
   useEffect(() => {
-    if (error) {
+    if (error.code) {
       setError(error.message)
     }
     cargarOperativo()

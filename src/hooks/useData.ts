@@ -20,7 +20,7 @@ export default function useData<T>(input: <T>() => Promise<T[]>) {
     fetchData()
   }, [])
 
-  const refresh = (_data: any) => setData((data) => [...data, _data])
+  const refresh = (_data: T) => setData((data) => [...data, _data])
 
   return { loading, data, error, refresh }
 }

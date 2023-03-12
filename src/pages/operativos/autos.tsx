@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import OperativosForm from '../../components/forms/AutosForm'
-import { getOperativosAutos } from '../../services/operativosService'
+import { AutosForm } from '../../components'
+import { getOperativosAutos } from '../../services'
 import Layout from '../../layouts/OperativosLayout'
 import { useSelector } from 'react-redux'
 import { dateFormat, dateTimeFormat, timeFormat, history } from '../../utils'
@@ -14,10 +14,9 @@ function AutosPage() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoAutos>(getOperativosAutos)
 
-  const columns: GridColumns<OperativoAutos[]> = [
+  const columns: GridColumns<OperativoAutos> = [
     {
       field: 'id',
       headerName: 'ID',
@@ -82,9 +81,9 @@ function AutosPage() {
       loading={loading}
       path="Autos"
     >
-      <OperativosForm
+      <AutosForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

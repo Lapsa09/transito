@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { nuevoOperativoCamiones } from '../../services/operativosService'
+import { nuevoOperativoCamiones } from '../../services'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -17,22 +17,28 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux/store'
-import { FormInputProps, FormProps, Roles, User } from '../../types'
+import {
+  FormInputProps,
+  FormProps,
+  IBarrio,
+  IMotivos,
+  Roles,
+  User,
+} from '../../types'
 
 interface CamionesForm extends FormInputProps {
-  localidad_destino: { id: number; zona_infractor: string }
+  localidad_destino: IBarrio
   remito: boolean
   carga: boolean
   origen: string
   destino: string
-  localidad_origen: { id: number; zona_infractor: string }
+  localidad_origen: IBarrio
   legajo: number
-  motivo: { id_motivo: number; motivo: string }
+  motivo: IMotivos
 }
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<CamionesForm>({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
@@ -144,8 +150,8 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="fecha"
               label="Fecha"
-              disabled={!handleRol()}
-              defaultValue={!handleRol() ? currentDate() : ''}
+              disabled={!user.isAdmin()}
+              defaultValue={!user.isAdmin() ? currentDate() : ''}
             />
           </Grid>
           <Grid item xs={8}>
@@ -176,8 +182,8 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
               options={turnos}
-              disabled={!handleRol()}
-              defaultValue={!handleRol() ? user.turno : ''}
+              disabled={!user.isAdmin()}
+              defaultValue={!user.isAdmin() ? user.turno : ''}
             />
           </Grid>
         </Grid>
@@ -187,8 +193,8 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="hora"
               label="Hora"
-              disabled={!handleRol()}
-              defaultValue={!handleRol() ? currentDate() : null}
+              disabled={!user.isAdmin()}
+              defaultValue={!user.isAdmin() ? currentDate() : null}
             />
           </Grid>
           <Grid item xs={8}>

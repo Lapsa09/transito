@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import ControlPaseoForm from '../../components/forms/ControlPaseoForm'
-import { getControlesPaseo } from '../../services/controlDiarioService'
+import { ControlPaseoForm } from '../../components'
+import { getControlesPaseo } from '../../services'
 import { useSelector } from 'react-redux'
 import Layout from '../../layouts/OperativosLayout'
 import { useData } from '../../hooks'
@@ -14,10 +14,9 @@ function ControlPaseoPage() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoPaseo>(getControlesPaseo)
 
-  const columns: GridColumns<OperativoPaseo[]> = [
+  const columns: GridColumns<OperativoPaseo> = [
     {
       field: 'fecha',
       headerName: 'Fecha',
@@ -59,7 +58,7 @@ function ControlPaseoPage() {
     >
       <ControlPaseoForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

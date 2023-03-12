@@ -17,11 +17,10 @@ import {
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
-import { useFormContext } from 'react-hook-form'
-import { FormInputProps, Operativo } from '../types'
+import { Path, PathValue, useFormContext } from 'react-hook-form'
 import { SerializedError } from '@reduxjs/toolkit'
 
-interface FormLayoutProps {
+interface Props<T> {
   children: JSX.Element[]
   steps: { label: string; values: any }[]
   activeStep: number
@@ -29,14 +28,14 @@ interface FormLayoutProps {
   handleClose: () => void
   path: string
   error: SerializedError
-  submitEvent: (data: FormInputProps) => Promise<void>
+  submitEvent: (data: T) => Promise<void>
 }
 
-interface Operative extends Operativo {
+type Operativo<T> = T & {
   expiresAt: number
 }
 
-function FormLayout({
+function FormLayout<T>({
   children,
   steps,
   activeStep,
@@ -45,9 +44,9 @@ function FormLayout({
   path,
   error,
   submitEvent,
-}: FormLayoutProps) {
+}: Props<T>) {
   const [open, setOpen] = useState(false)
-  const [operative, setOperative] = useLocalStorage<Operative>(path)
+  const [operativo, setOperativo] = useLocalStorage<Operativo<T>>(path)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
     useSnackBar()
   const {
@@ -55,7 +54,7 @@ function FormLayout({
     reset,
     handleSubmit,
     formState: { isValid },
-  } = useFormContext<FormInputProps>()
+  } = useFormContext<T>()
 
   const totalSteps = () => {
     return steps.length
@@ -77,8 +76,8 @@ function FormLayout({
   }
 
   const saveOp = () => {
-    const expirationTime = operative?.expiresAt
-    setOperative({
+    const expirationTime = operativo?.expiresAt
+    setOperativo({
       ...steps[0].values,
       expiresAt: expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
     })
@@ -93,20 +92,20 @@ function FormLayout({
 
   const cargarOperativo = () => {
     try {
-      if (currentDate().toMillis() < operative.expiresAt) {
-        Object.entries(operative).forEach(([key, value]: [any, any]) => {
+      if (currentDate().toMillis() < operativo.expiresAt) {
+        Object.entries(operativo).forEach(([key, value]: [Path<T>, any]) => {
           key === 'fecha' || key === 'hora'
-            ? setValue(key, DateTime.fromISO(value))
+            ? setValue(key, DateTime.fromISO(value) as PathValue<T, Path<T>>)
             : setValue(key, value)
         })
-        isCompleted(operative) && setActiveStep(1)
+        isCompleted(operativo) && setActiveStep(1)
       } else nuevoOperativo()
     } catch (error) {
       nuevoOperativo()
     }
   }
 
-  const submiting = async (data) => {
+  const submiting = async (data: T) => {
     try {
       await submitEvent(data)
       setSuccess('Cargado con exito')
@@ -116,8 +115,8 @@ function FormLayout({
   }
 
   const nuevoOperativo = () => {
-    setOperative(null)
-    reset({}, { keepDefaultValues: true })
+    setOperativo(null)
+    reset(null, { keepDefaultValues: true })
     setActiveStep(0)
   }
 

@@ -4,7 +4,7 @@ import {
   OperativoCamiones,
   OperativoMotos,
 } from '../types'
-import { getEnums, getter, setter } from './index'
+import { getEnums, getter, setter } from '.'
 
 export const getMotivosCamion = async () =>
   await getEnums<IMotivos[]>('motivos_camion')

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { nuevoControlPaseo } from '../../services/controlDiarioService'
+import { nuevoControlPaseo } from '../../services'
 import {
   CustomDatePicker,
   CustomTimePicker,
@@ -25,12 +25,11 @@ interface PaseoForm extends FormInputProps {
 
 function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<PaseoForm>({
     mode: 'all',
     defaultValues: {
       lpcarga: user.legajo,
-      lp: !handleRol() ? user.legajo : null,
+      lp: !user.isAdmin() ? user.legajo : null,
     },
   })
   const { control, reset, getValues, watch, setFocus } = methods
@@ -69,7 +68,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
     const res = await nuevoControlPaseo(data)
     setFocus('dominio')
     reset({ ...data, dominio: '' }, { keepDefaultValues: true })
-    if (handleRol()) {
+    if (user.isAdmin()) {
       afterCreate(res)
     } else {
       setTimeout(handleClose, 2000)
@@ -93,8 +92,8 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               label="Fecha"
               name="fecha"
-              defaultValue={!handleRol() ? currentDate() : ''}
-              disabled={!handleRol()}
+              defaultValue={!user.isAdmin() ? currentDate() : ''}
+              disabled={!user.isAdmin()}
             />
           </Grid>
           <Grid item xs={8}>
@@ -103,8 +102,8 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               name="turno"
               rules={{ required: 'Elija una opcion' }}
               label="Turno"
-              defaultValue={!handleRol() ? user.turno : ''}
-              disabled={!handleRol()}
+              defaultValue={!user.isAdmin() ? user.turno : ''}
+              disabled={!user.isAdmin()}
               options={turnos}
             />
           </Grid>
@@ -131,8 +130,8 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="hora"
               label="Hora"
-              defaultValue={!handleRol() ? currentDate() : null}
-              disabled={!handleRol()}
+              defaultValue={!user.isAdmin() ? currentDate() : null}
+              disabled={!user.isAdmin()}
             />
           </Grid>
           <Grid item xs={8}>

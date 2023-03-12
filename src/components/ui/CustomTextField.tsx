@@ -1,30 +1,21 @@
 import React, { ChangeEvent } from 'react'
 import {
-  Control,
-  FieldValues,
-  RegisterOptions,
   useController,
   useFormContext,
   Path,
   PathValue,
+  UseControllerProps,
 } from 'react-hook-form'
-import { Checkbox, FormControlLabel, TextField } from '@mui/material'
+import {
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  TextFieldProps,
+} from '@mui/material'
 import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '../../utils'
 
-type TextFieldProps<T> = {
-  control: Control<T, any>
-  name: Path<T>
-  rules?: Omit<
-    RegisterOptions<T, any>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
-  >
-  options?: any[]
-  label?: string
-  type?: 'text' | 'number' | 'password'
-  disabled?: boolean
-  className?: string
-  InputProps?: any
-}
+type Props<T> = UseControllerProps<T> &
+  Omit<TextFieldProps, 'name' | 'defaultValue' | 'variant'>
 
 export function CustomTextField<T>({
   control,
@@ -35,7 +26,7 @@ export function CustomTextField<T>({
   disabled = false,
   className = '',
   ...props
-}: TextFieldProps<T>) {
+}: Props<T>) {
   const {
     field: { ref, ...field },
     fieldState: { error, invalid },
@@ -43,7 +34,7 @@ export function CustomTextField<T>({
     name,
     control,
     rules,
-    defaultValue: '' as PathValue<T, Path<T>>,
+    defaultValue: null,
   })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -70,11 +61,7 @@ export function CustomTextField<T>({
   )
 }
 
-export function DomainField<T>({
-  control,
-  name,
-  className = '',
-}: TextFieldProps<T>) {
+export function DomainField<T>({ control, name, className = '' }: Props<T>) {
   const { trigger } = useFormContext()
 
   const { field } = useController<T>({
@@ -128,7 +115,7 @@ export function FileNumberField<T>({
   name,
   className = '',
   label,
-}: TextFieldProps<T>) {
+}: Props<T>) {
   return (
     <CustomTextField
       className={className}

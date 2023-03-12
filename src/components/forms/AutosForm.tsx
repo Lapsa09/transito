@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { nuevoOperativoAuto } from '../../services/operativosService'
+import { nuevoOperativoAuto } from '../../services'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import {
@@ -16,16 +16,15 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormInputProps, FormProps, Roles, User } from '../../types'
+import { FormInputProps, FormProps, IMotivos, Roles, User } from '../../types'
 
 interface AutosForm extends FormInputProps {
-  motivo?: { id_motivo: number; motivo: string }
+  motivo?: IMotivos
   graduacion_alcoholica?: number
 }
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<AutosForm>({
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
@@ -133,9 +132,9 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             <CustomDatePicker
               control={control}
               name="fecha"
-              disabled={!handleRol()}
+              disabled={!user.isAdmin()}
               label="Fecha"
-              defaultValue={!handleRol() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate() : null}
             />
           </Grid>
           <Grid item xs={8}>
@@ -161,9 +160,9 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="turno"
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
-              disabled={!handleRol()}
+              disabled={!user.isAdmin()}
               options={turnos}
-              defaultValue={!handleRol() ? user.turno : null}
+              defaultValue={!user.isAdmin() ? user.turno : null}
             />
           </Grid>
           <Grid item xs={8}>

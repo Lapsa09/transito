@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { getOperativosMotos } from '../../services/operativosService'
-import MotosForm from '../../components/forms/MotosForm'
+import { getOperativosMotos } from '../../services'
+import { MotosForm } from '../../components'
 import Layout from '../../layouts/OperativosLayout'
 import { dateFormat, dateTimeFormat, history, timeFormat } from '../../utils'
 import { useData } from '../../hooks'
@@ -14,10 +14,9 @@ function MotosPage() {
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoMotos>(getOperativosMotos)
 
-  const columns: GridColumns<OperativoMotos[]> = [
+  const columns: GridColumns<OperativoMotos> = [
     {
       field: 'id',
       headerName: 'ID',
@@ -79,7 +78,7 @@ function MotosPage() {
     >
       <MotosForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

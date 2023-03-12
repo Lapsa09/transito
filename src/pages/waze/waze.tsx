@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import React, { useEffect, useState } from 'react'
 import { history } from '../../utils'
 import { Table } from '../../components'
-import { mainWazeGetter } from '../../services/wazeService'
+import { mainWazeGetter } from '../../services'
 import style from '../../styles/Waze.module.css'
 import { WazePromedio, WazeRes, Horario, Waze } from '../../types'
 

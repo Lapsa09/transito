@@ -1,4 +1,4 @@
-import { getter } from './index'
+import { getter } from '.'
 
 export const provincias = async () => await getter('/provincias')
 

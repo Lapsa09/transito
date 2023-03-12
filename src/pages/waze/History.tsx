@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DateTime } from 'luxon'
 import { Table } from '../../components'
-import { getDates, getOneDate } from '../../services/wazeService'
+import { getDates, getOneDate } from '../../services'
 import {
   Collapse,
   Drawer,

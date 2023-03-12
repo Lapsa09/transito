@@ -1,5 +1,5 @@
 import { User } from '../types'
-import { setter } from './index'
+import { setter } from '.'
 
 export const register = async (body) =>
   await setter<User>('/auth/register', body)

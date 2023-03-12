@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { nuevoOperativoMoto } from '../../services/operativosService'
+import { nuevoOperativoMoto } from '../../services'
 import {
   CustomDatePicker,
   CustomTimePicker,
@@ -17,15 +17,14 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormProps, User, FormInputProps, Roles } from '../../types'
+import { FormProps, User, FormInputProps, Roles, IMotivos } from '../../types'
 
 interface IMotosForm extends FormInputProps {
-  motivos?: { id_motivo: number; motivo: string }[]
+  motivos?: IMotivos[]
 }
 
 function MotosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<IMotosForm>({
     mode: 'all',
     defaultValues: {
@@ -159,8 +158,8 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="fecha"
               label="Fecha"
-              disabled={!handleRol()}
-              defaultValue={!handleRol() ? currentDate() : ''}
+              disabled={!user.isAdmin()}
+              defaultValue={!user.isAdmin() ? currentDate() : ''}
             />
           </Grid>
           <Grid item xs={8}>
@@ -204,8 +203,8 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               name="turno"
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
-              disabled={!handleRol()}
-              defaultValue={!handleRol() ? user.turno : ''}
+              disabled={!user.isAdmin()}
+              defaultValue={!user.isAdmin() ? user.turno : ''}
               options={turnos}
             />
           </Grid>

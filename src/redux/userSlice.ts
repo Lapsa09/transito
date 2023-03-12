@@ -2,12 +2,11 @@ import {
   ActionReducerMapBuilder,
   createAsyncThunk,
   createSlice,
-  PayloadAction,
   SerializedError,
 } from '@reduxjs/toolkit'
 import jwt_decode from 'jwt-decode'
-import { loginCall, register, verifyAuth } from '../services/userService'
-import { User } from '../types'
+import { loginCall, register, verifyAuth } from '../services'
+import { Roles, User } from '../types'
 import { history } from '../utils'
 
 const emptyUser: User = {
@@ -18,6 +17,9 @@ const emptyUser: User = {
   telefono: 0,
   rol: null,
   turno: '',
+  isAdmin() {
+    return this.rol === Roles.ADMIN
+  },
 }
 
 const emptyError: SerializedError = {
@@ -116,13 +118,14 @@ function createExtraReducers() {
       const user = action.payload
 
       localStorage.setItem('token', user)
-      state.user = { ...jwt_decode(user) }
+      state.user = { ...state.user, ...jwt_decode(user) }
 
       const { pathname } = history.location || { pathname: '/' }
       history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
+      state.user = emptyUser
       state.error = { ...action.error }
     },
   }
@@ -132,15 +135,16 @@ function createExtraReducers() {
       state.error = emptyError
     },
     fulfilled: (state) => {
-      state.user = { ...jwt_decode(localStorage.getItem('token')) }
+      const token = localStorage.getItem('token')
+      state.user = { ...state.user, ...jwt_decode(token) }
       const { pathname } = history.location || { pathname: '/' }
       history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
+      state.user = emptyUser
       state.error = { ...action.error }
-      const { pathname } = history.location || { pathname: '/login' }
-      history.navigate(pathname)
+      history.navigate('/login')
     },
   }
   return (builder: ActionReducerMapBuilder<IRootUser>) => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import OperativosForm from '../../components/forms/CamionesForm'
-import { getOperativosCamiones } from '../../services/operativosService'
+import { CamionesForm } from '../../components'
+import { getOperativosCamiones } from '../../services'
 import Layout from '../../layouts/OperativosLayout'
 import { dateFormat, history, timeFormat } from '../../utils'
 import { useData } from '../../hooks'
@@ -14,12 +14,11 @@ function CamionesPage() {
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoCamiones>(
     getOperativosCamiones
   )
 
-  const columns: GridColumns<OperativoCamiones[]> = [
+  const columns: GridColumns<OperativoCamiones> = [
     {
       field: 'id',
       headerName: 'ID',
@@ -77,9 +76,9 @@ function CamionesPage() {
       loading={loading}
       path="Camiones"
     >
-      <OperativosForm
+      <CamionesForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

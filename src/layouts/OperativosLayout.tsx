@@ -4,15 +4,15 @@ import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
 import { history } from '../utils'
 import styles from '../styles/Operativos.page.module.css'
-import { geocoding } from '../services/operativosService'
+import { geocoding } from '../services'
 import { CustomSnackbar, Loader } from '../components'
 import { useSnackBar } from '../hooks'
 import { IRootState } from '../redux'
-import { Operativo, Roles, User } from '../types'
+import { Roles, User } from '../types'
 
-interface OperativosLayoutProps {
-  columns: GridColumns
-  operativos: Operativo[]
+interface Props<T> {
+  columns: GridColumns<T>
+  operativos: T[]
   children: JSX.Element
   loading: boolean
   open: boolean
@@ -21,7 +21,7 @@ interface OperativosLayoutProps {
   path: string
 }
 
-function OperativosLayout({
+function OperativosLayout<T>({
   columns,
   operativos,
   children,
@@ -30,7 +30,7 @@ function OperativosLayout({
   handleOpen,
   handleClose,
   path,
-}: OperativosLayoutProps) {
+}: Props<T>) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
   const { openSB, closeSnackbar, response, setError, setSuccess } =
     useSnackBar()

@@ -12,11 +12,9 @@ import {
   getSeguridad,
   getTurnos,
   getZonasVL,
-} from '../services'
-import {
   getMotivosPaseo,
   getZonasPaseo,
-} from '../services/controlDiarioService'
+} from '../services'
 import {
   IBarrio,
   ILicencias,
@@ -38,6 +36,7 @@ export interface SelectData {
   seguridad: ISeguridad[]
   motivos_paseo: IMotivosPaseo[]
   zonas_paseo: { id_zona: number; zona: string }[]
+  isEmpty: () => boolean
 }
 
 export interface ISelectRouter {
@@ -55,6 +54,9 @@ const emptySelectors: SelectData = {
   turnos: [],
   vicente_lopez: [],
   zonas_paseo: [],
+  isEmpty() {
+    return Object.values(this).every((v: any[]) => v.length === 0)
+  },
 }
 
 const emptyError: SerializedError = {
@@ -125,7 +127,7 @@ function createExtraReducers() {
         state.error = emptyError
       })
       .addCase(extraActions.fetchSelects.fulfilled, (state, action) => {
-        state.selects = action.payload
+        state.selects = { ...state.selects, ...action.payload }
       })
       .addCase(extraActions.fetchSelects.rejected, (state, action) => {
         state.error = action.error

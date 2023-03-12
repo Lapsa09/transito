@@ -1,5 +1,5 @@
 import { OperativoDiario, OperativoPaseo } from '../types'
-import { getEnums, getter, setter } from './index'
+import { getEnums, getter, setter } from '.'
 
 export const nuevoControl = async (body) =>
   await setter('/control/diario', body)

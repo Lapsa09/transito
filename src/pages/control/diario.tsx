@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import ControlDiarioForm from '../../components/forms/ControlDiarioForm'
-import { getControles } from '../../services/controlDiarioService'
+import { ControlDiarioForm } from '../../components'
+import { getControles } from '../../services'
 import { useSelector } from 'react-redux'
 import Layout from '../../layouts/OperativosLayout'
 import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
@@ -14,10 +14,9 @@ function ControlDiarioPage() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const { data, loading, refresh } = useData<OperativoDiario>(getControles)
 
-  const columns: GridColumns<OperativoDiario[]> = [
+  const columns: GridColumns<OperativoDiario> = [
     {
       field: 'fecha',
       headerName: 'Fecha',
@@ -60,7 +59,7 @@ function ControlDiarioPage() {
     >
       <ControlDiarioForm
         afterCreate={refresh}
-        handleClose={handleRol() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>
   )

@@ -1,15 +1,10 @@
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, TextField, UseAutocompleteProps } from '@mui/material'
 import React from 'react'
-import { Control, Path, RegisterOptions, useController } from 'react-hook-form'
+import { useController, UseControllerProps } from 'react-hook-form'
 
-type IAutoComplete<T, K> = {
-  control: Control<T>
-  name: Path<T>
-  rules?: Omit<
-    RegisterOptions<T>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
-  >
-  options: K[]
+interface Props<T, K>
+  extends UseControllerProps<T>,
+    Omit<UseAutocompleteProps<K, false, false, false>, 'defaultValue'> {
   label: string
   labelOption: string
 }
@@ -17,11 +12,11 @@ type IAutoComplete<T, K> = {
 function CustomAutocomplete<T, K>({
   control,
   name,
-  rules = null,
+  rules,
   label,
   options,
   labelOption,
-}: IAutoComplete<T, K>) {
+}: Props<T, K>) {
   const {
     field,
     fieldState: { error, invalid },
@@ -31,7 +26,7 @@ function CustomAutocomplete<T, K>({
     rules,
     defaultValue: null,
   })
-  const optionLabel = (option: any): string => {
+  const optionLabel = (option): string => {
     return option[labelOption]
   }
   return (

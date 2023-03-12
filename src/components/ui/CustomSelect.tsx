@@ -1,34 +1,22 @@
-import { MenuItem, TextField } from '@mui/material'
-import React, { ReactNode } from 'react'
-import {
-  Control,
-  FieldValues,
-  RegisterOptions,
-  useController,
-} from 'react-hook-form'
+import React from 'react'
+import { MenuItem, TextField, BaseTextFieldProps } from '@mui/material'
+import { useController, UseControllerProps } from 'react-hook-form'
+import { Enums } from '../../types'
 
-type ISelect = {
-  control: Control<any, any>
-  name: string
-  rules?: Omit<
-    RegisterOptions<FieldValues, any>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
-  >
-  options?: any[]
-  label: string
-  defaultValue?: string
-  disabled?: boolean
-}
+type Props<T, K> = UseControllerProps<T> &
+  BaseTextFieldProps & {
+    options?: Enums[] | K[]
+  }
 
-function CustomSelect({
+function CustomSelect<T, K>({
   control,
   name,
   rules,
   label,
   options,
-  defaultValue = undefined,
+  defaultValue = null,
   disabled,
-}: ISelect) {
+}: Props<T, K>) {
   const {
     field,
     fieldState: { error, invalid },
@@ -36,7 +24,7 @@ function CustomSelect({
     name,
     control,
     rules,
-    defaultValue: '',
+    defaultValue,
   })
   return (
     <TextField
@@ -46,21 +34,21 @@ function CustomSelect({
       error={invalid}
       label={label}
       disabled={disabled}
-      required={rules !== undefined}
+      required={rules?.required != null}
       helperText={error?.message}
     >
       <MenuItem value="">ELIJA UNA OPCION</MenuItem>
       {options?.map((option) =>
-        option.enumlabel ? (
+        'enumlabel' in option ? (
           <MenuItem key={option.enumlabel} value={option.enumlabel}>
             {option.enumlabel}
           </MenuItem>
         ) : (
           <MenuItem
-            key={Object.values(option)[0] as any}
-            value={Object.values(option)[0] as any}
+            key={Object.values(option)[0] as number}
+            value={Object.values(option)[0] as number}
           >
-            {Object.values(option)[1] as ReactNode}
+            {Object.values(option)[1] as string}
           </MenuItem>
         )
       )}

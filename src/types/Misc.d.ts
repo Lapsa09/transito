@@ -18,16 +18,21 @@ export type User = {
   turno?: string
   rol?: Roles
   iat: number
+  isAdmin: () => boolean
 }
 
-export interface ITurnos {
+export interface Enums {
+  enumlabel: string
+}
+
+export interface ITurnos extends Enums {
   enumlabel: 'MAÑANA' | 'TARDE' | 'NOCHE'
 }
 
-export interface IResolucion {
+export interface IResolucion extends Enums {
   enumlabel: 'PREVENCION' | 'ACTA' | 'REMITIDO'
 }
 
-export interface ISeguridad {
+export interface ISeguridad extends Enums {
   enumlabel: 'NO' | 'POLICIA' | 'PREFECTURA' | 'SECRETARIA DE SEGURIDAD'
 }

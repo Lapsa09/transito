@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { nuevoControl } from '../../services/controlDiarioService'
+import { nuevoControl } from '../../services'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import {
@@ -16,23 +16,22 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormProps, User, FormInputProps, Roles } from '../../types'
+import { FormProps, User, FormInputProps, Roles, IMotivos } from '../../types'
 
 interface DiarioForm extends FormInputProps {
   lp: number
   localidad: string
-  motivo: { id_motivo: number; motivo: string }
+  motivo: IMotivos
   otroMotivo?: string
 }
 
 function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const handleRol = () => user.rol === Roles.ADMIN
   const methods = useForm<DiarioForm>({
     mode: 'all',
     defaultValues: {
       lpcarga: user.legajo,
-      lp: !handleRol() ? user.legajo : null,
+      lp: !user.isAdmin() ? user.legajo : null,
     },
   })
   const { control, reset, getValues, watch } = methods
@@ -97,7 +96,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
       },
       { keepDefaultValues: true }
     )
-    if (handleRol()) {
+    if (user.isAdmin()) {
       afterCreate(res)
     } else {
       setTimeout(handleClose, 2000)
@@ -121,8 +120,8 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               label="Fecha"
               name="fecha"
-              defaultValue={!handleRol() ? currentDate() : null}
-              disabled={!handleRol()}
+              defaultValue={!user.isAdmin() ? currentDate() : null}
+              disabled={!user.isAdmin()}
             />
           </Grid>
           <Grid item xs={8}>
@@ -131,8 +130,8 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               name="turno"
               rules={{ required: 'Elija una opcion' }}
               label="Turno"
-              defaultValue={!handleRol() ? user.turno : ''}
-              disabled={!handleRol()}
+              defaultValue={!user.isAdmin() ? user.turno : ''}
+              disabled={!user.isAdmin()}
               options={turnos}
             />
           </Grid>
@@ -150,8 +149,8 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="hora"
               label="Hora"
-              defaultValue={!handleRol() ? currentDate() : null}
-              disabled={!handleRol()}
+              defaultValue={!user.isAdmin() ? currentDate() : null}
+              disabled={!user.isAdmin()}
             />
           </Grid>
           <Grid item xs={8}>

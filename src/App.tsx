@@ -7,6 +7,7 @@ import { AppDispatch, IRootState, authActions } from './redux'
 import { Roles, User } from './types'
 import './styles/globals.css'
 import { AuthGuard, RoleGuard } from './guards'
+import { abortFetch } from './services'
 
 const Login = lazy(() => import('./pages/login'))
 const Register = lazy(() => import('./pages/register'))
@@ -25,6 +26,7 @@ function App() {
 
   useEffect(() => {
     dispatch(authActions.verify())
+    return () => abortFetch()
   }, [])
 
   return (

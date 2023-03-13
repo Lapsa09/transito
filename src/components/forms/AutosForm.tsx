@@ -16,7 +16,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormInputProps, FormProps, IMotivos, Roles, User } from '../../types'
+import { FormInputProps, FormProps, IMotivos, User } from '../../types'
 
 interface AutosForm extends FormInputProps {
   motivo?: IMotivos

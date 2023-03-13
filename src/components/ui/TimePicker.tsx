@@ -2,21 +2,26 @@ import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
 import React from 'react'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
-import { useController, UseControllerProps } from 'react-hook-form'
+import {
+  Path,
+  PathValue,
+  useController,
+  UseControllerProps,
+} from 'react-hook-form'
 import { DateTime } from 'luxon'
 
-type Props = UseControllerProps<DateTime> & {
+type Props<T> = UseControllerProps<T> & {
   label: string
-  disabled: boolean
+  disabled?: boolean
 }
 
-function CustomTimePicker({
+function CustomTimePicker<T>({
   label,
   name,
   control,
   disabled = false,
   defaultValue = null,
-}: Props) {
+}: Props<T>) {
   const {
     field,
     fieldState: { error, invalid },
@@ -26,7 +31,8 @@ function CustomTimePicker({
     rules: {
       required: 'Ingrese una hora',
       validate: {
-        validDate: (_, v) => v.isValid || 'Ingrese una hora valida',
+        validDate: (v: PathValue<T, Path<T>> & DateTime) =>
+          v.isValid || 'Ingrese una hora valida',
       },
     },
     defaultValue,

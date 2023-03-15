@@ -70,7 +70,7 @@ const emptyError: SerializedError = {
   stack: '',
 }
 
-function createInitialState() {
+function createInitialState(): ISelectRouter {
   const selects = emptySelectors
   const error = emptyError
 

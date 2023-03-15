@@ -7,8 +7,14 @@ export type IRootState = {
   selects: ISelectRouter
 }
 
-export const store = configureStore<IRootState>({
+export const store = configureStore({
   reducer: { user: authReducer, selects: selectReducer },
+  middleware(getDefaultMiddleware) {
+    return getDefaultMiddleware({
+      ...getDefaultMiddleware(),
+      serializableCheck: false,
+    })
+  },
 })
 
 export type AppDispatch = typeof store.dispatch

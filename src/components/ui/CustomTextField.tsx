@@ -34,7 +34,7 @@ export function CustomTextField<T>({
     name,
     control,
     rules,
-    defaultValue: null,
+    defaultValue: '' as PathValue<T, Path<T>>,
   })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

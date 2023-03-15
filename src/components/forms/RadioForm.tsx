@@ -68,7 +68,13 @@ const Create = ({
 
   return (
     <Fragment>
-      <Button onClick={handleClickOpen}>Nuevo</Button>
+      <Button
+        variant="contained"
+        sx={{ marginInline: 'auto' }}
+        onClick={handleClickOpen}
+      >
+        Nuevo
+      </Button>
       <Dialog open={open} maxWidth="xl" onClose={handleClose}>
         <Box component="form" onSubmit={submitEvent}>
           <DialogContent

@@ -18,7 +18,7 @@ export type User = {
   turno?: string
   rol?: Roles
   iat: number
-  isAdmin: () => boolean
+  isAdmin?(): boolean
 }
 
 export interface Enums {

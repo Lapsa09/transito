@@ -46,7 +46,8 @@ function createInitialState(): IRootUser {
   let error = emptyError
 
   try {
-    user = jwt_decode(localStorage.getItem('token'))
+    user = { ...jwt_decode(localStorage.getItem('token')) }
+    user.isAdmin = () => user.rol === Roles.ADMIN
   } catch (err) {
     error = err
   }
@@ -84,7 +85,7 @@ function createExtraActions() {
       try {
         return await loginCall(body)
       } catch (error) {
-        throw new Error(error.response.data)
+        throw new Error(error.response?.data)
       }
     })
   }
@@ -93,7 +94,7 @@ function createExtraActions() {
       try {
         return await register(body)
       } catch (error) {
-        throw new Error(error.response.data)
+        throw new Error(error.response?.data)
       }
     })
   }
@@ -103,7 +104,7 @@ function createExtraActions() {
       try {
         return await verifyAuth()
       } catch (error) {
-        throw new Error(error.response.data)
+        throw new Error(error.response?.data || error.message)
       }
     })
   }

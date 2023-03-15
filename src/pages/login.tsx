@@ -4,7 +4,7 @@ import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
-import { CustomTextField, MainLogoOVT } from '../components'
+import { CustomTextField, MainLogoOVT, PasswordField } from '../components'
 import { basicWidth, history } from '../utils'
 import { LoginUserProps } from '../types'
 import '../styles/login.css'
@@ -35,18 +35,12 @@ function Login() {
         <CustomTextField
           type="number"
           control={control}
+          rules={{ required: 'Campo requerido' }}
           name="legajo"
           label="Legajo"
-          className="MuiTextField-root"
         />
-        <CustomTextField
-          type="password"
-          control={control}
-          name="password"
-          label="Contraseña"
-          className="MuiTextField-root"
-        />
-        {error?.code && <FormHelperText error>{error.message}</FormHelperText>}
+        <PasswordField control={control} name="password" label="Contraseña" />
+        {error?.name && <FormHelperText error>{error.message}</FormHelperText>}
         <Box className="buttons" sx={{ ...basicWidth }}>
           <Button type="submit" variant="contained">
             Iniciar sesion

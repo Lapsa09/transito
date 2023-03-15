@@ -5,6 +5,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Box,
 } from '@mui/material'
 import React, { useState } from 'react'
 import {
@@ -25,11 +26,26 @@ function Radio() {
     useData<RadioMovilForm>(getMovilesRadio)
 
   return (
-    <div>
-      <Button onClick={() => setTable('operarios')}>Operarios</Button>
-      <Button onClick={() => setTable('moviles')}>Moviles</Button>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: 2,
+      }}
+    >
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', width: '25%' }}
+      >
+        <Button variant="outlined" onClick={() => setTable('operarios')}>
+          Operarios
+        </Button>
+        <Button variant="outlined" onClick={() => setTable('moviles')}>
+          Moviles
+        </Button>
+      </Box>
       {table === 'operarios' ? (
-        <div>
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
           <OperativosCreateForm refresh={refreshOperarios} />
           <Table>
             <TableHead>
@@ -67,9 +83,9 @@ function Radio() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </Box>
       ) : (
-        <div>
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
           <MovilCreateForm refresh={refreshMoviles} />
           <Table>
             <TableHead>
@@ -92,9 +108,9 @@ function Radio() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   )
 }
 

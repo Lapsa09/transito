@@ -37,10 +37,11 @@ const operativos = [
 ]
 
 const pages = [
-  { name: 'Control', links: controles, permission: 'INSPECTOR' },
-  { name: 'Operativos', links: operativos, permission: 'INSPECTOR' },
-  { name: 'Sueldos', permission: 'ADMINISTRATIVO', link: '/sueldos' },
-  { name: 'Waze', permission: 'TRAFICO', link: '/waze' },
+  { name: 'Control', links: controles, permission: Roles.INSPECTOR },
+  { name: 'Operativos', links: operativos, permission: Roles.INSPECTOR },
+  { name: 'Sueldos', permission: Roles.ADMINISTRATIVO, link: '/sueldos' },
+  { name: 'Waze', permission: Roles.WAZE, link: '/waze' },
+  { name: 'Radio', permission: Roles.INSPECTOR, link: '/radio' },
 ]
 
 function Header() {
@@ -107,7 +108,7 @@ function Header() {
             onClose={handleCloseNavMenu}
           >
             <List>
-              {user.rol !== Roles.ADMIN ? (
+              {!user.isAdmin() ? (
                 <h3>Legajo: {user.legajo}</h3>
               ) : (
                 pages.map((page) =>
@@ -172,9 +173,7 @@ function Header() {
           }}
         >
           {pages
-            .filter(
-              (page) => user.rol === Roles.ADMIN || user.rol === page.permission
-            )
+            .filter((page) => user.isAdmin() || user.rol === page.permission)
             .map((page) => (
               <div
                 onMouseEnter={() => onMouseEnter(page.name)}

@@ -9,14 +9,9 @@ import {
   IZona,
 } from '../types'
 
-const abortController = new AbortController()
-
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
-  signal: abortController.signal,
 })
-
-export const abortFetch = () => abortController.abort()
 
 export const getter = async <T = any>(route: string) => {
   const { data }: AxiosResponse<T> = await axios.get<T>(route)

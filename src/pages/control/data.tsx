@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { abortFetch, getDatosPaseo } from '../../services'
+import { getDatosPaseo } from '../../services'
 import {
   CustomRadioGroup,
   CustomSelect,
@@ -20,7 +20,6 @@ function Datacharts() {
 
   useEffect(() => {
     getFechas()
-    return () => abortFetch()
   }, [])
 
   const getFechas = async () => {

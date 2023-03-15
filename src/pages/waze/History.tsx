@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DateTime } from 'luxon'
 import { Table } from '../../components'
-import { abortFetch, getDates, getOneDate } from '../../services'
+import { getDates, getOneDate } from '../../services'
 import {
   Collapse,
   Drawer,
@@ -43,7 +43,6 @@ function History() {
 
   useEffect(() => {
     fetch()
-    return () => abortFetch()
   }, [])
 
   return (

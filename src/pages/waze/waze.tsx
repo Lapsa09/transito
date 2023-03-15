@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import React, { useEffect, useState } from 'react'
 import { Table } from '../../components'
-import { abortFetch, mainWazeGetter } from '../../services'
+import { mainWazeGetter } from '../../services'
 import style from '../../styles/Waze.module.css'
 import { WazePromedio, WazeRes, Horario, Waze } from '../../types'
 import { history } from '../../utils'
@@ -23,7 +23,6 @@ function App() {
 
   useEffect(() => {
     fetch()
-    return () => abortFetch()
   }, [])
   return (
     <div className={style.home}>

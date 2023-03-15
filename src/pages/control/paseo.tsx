@@ -7,7 +7,7 @@ import { useData } from '../../hooks'
 import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoPaseo, Roles, User } from '../../types'
+import { OperativoPaseo, User } from '../../types'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)

@@ -133,3 +133,32 @@ export function FileNumberField<T>({
     />
   )
 }
+
+export function PasswordField<T>({ control, name, label }: Props<T>) {
+  return (
+    <CustomTextField
+      type="password"
+      control={control}
+      name={name}
+      rules={{ required: 'Campo requerido' }}
+      label={label}
+    />
+  )
+}
+
+export function ConfirmPasswordField<T>({ name, control, label }: Props<T>) {
+  const { getValues } = useFormContext()
+  return (
+    <CustomTextField
+      type="password"
+      control={control}
+      name={name}
+      rules={{
+        validate: {
+          confirmPassword: (value) => value === getValues('password'),
+        },
+      }}
+      label={label}
+    />
+  )
+}

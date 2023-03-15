@@ -37,12 +37,12 @@ function TableWaze({ data }) {
       <Table>
         <TableHead>
           <TableRow>
-            <th className="MuiTableCell-head">Calles</th>
-            <th className="MuiTableCell-head">Nivel de Trafico</th>
-            <th className="MuiTableCell-head">Tiempo</th>
-            <th className="MuiTableCell-head">Tiempo Historico</th>
-            <th className="MuiTableCell-head">Velocidad</th>
-            <th className="MuiTableCell-head">Velocidad Historica</th>
+            <TableCell>Calles</TableCell>
+            <TableCell>Nivel de Trafico</TableCell>
+            <TableCell>Tiempo</TableCell>
+            <TableCell>Tiempo Historico</TableCell>
+            <TableCell>Velocidad</TableCell>
+            <TableCell>Velocidad Historica</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

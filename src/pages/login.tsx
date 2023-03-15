@@ -1,42 +1,31 @@
 import React from 'react'
+import { Navigate } from 'react-router-dom'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
-import { CustomTextField } from '../components'
+import { CustomTextField, MainLogoOVT } from '../components'
 import { basicWidth, history } from '../utils'
-import LogoOVT from '../assets/imgs/OVT_LETRAS_NEGRAS.png'
+import { LoginUserProps } from '../types'
 import '../styles/login.css'
 
 function Login() {
-  const { control, handleSubmit } = useForm()
+  const { control, handleSubmit } = useForm<LoginUserProps>()
   const dispatch = useDispatch<AppDispatch>()
   const { user, error } = useSelector<IRootState, IRootUser>((x) => x.user)
 
-  // redirect to home if already logged in
-  if (user.legajo) history.navigate('/')
-
-  const submitEvent = (data: any) => {
+  const submitEvent = (data: LoginUserProps) => {
     dispatch(authActions.login(data))
   }
 
   const register = () => {
     history.navigate('/register')
   }
+  if (user.legajo) return <Navigate to="/" replace />
+
   return (
     <div className="login">
-      <Box
-        sx={{
-          ...basicWidth,
-          textAlign: 'center',
-        }}
-      >
-        <img
-          style={{ width: 'inherit' }}
-          src={LogoOVT}
-          alt="Logo Observatorio Vial"
-        />
-      </Box>
+      <MainLogoOVT />
       <Box
         component="form"
         sx={{ ...basicWidth }}

@@ -7,7 +7,7 @@ import { dateFormat, dateTimeFormat, timeFormat, history } from '../../utils'
 import { useData } from '../../hooks'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoAutos, Roles, User } from '../../types'
+import { OperativoAutos, User } from '../../types'
 
 function AutosPage() {
   const [open, setOpen] = useState(false)

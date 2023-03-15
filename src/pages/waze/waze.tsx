@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon'
 import React, { useEffect, useState } from 'react'
-import { history } from '../../utils'
 import { Table } from '../../components'
 import { abortFetch, mainWazeGetter } from '../../services'
 import style from '../../styles/Waze.module.css'
 import { WazePromedio, WazeRes, Horario, Waze } from '../../types'
+import { history } from '../../utils'
 
 function App() {
   const [data, setData] = useState<WazeRes>()

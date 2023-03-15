@@ -7,7 +7,7 @@ import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
 import { useData } from '../../hooks'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
-import { OperativoDiario, Roles, User } from '../../types'
+import { OperativoDiario, User } from '../../types'
 
 function ControlDiarioPage() {
   const [open, setOpen] = useState(false)

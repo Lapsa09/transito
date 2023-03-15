@@ -5,9 +5,9 @@ import { Header } from './components'
 import { history } from './utils'
 import { AppDispatch, IRootState, authActions } from './redux'
 import { Roles, User } from './types'
-import './styles/globals.css'
 import { AuthGuard, RoleGuard } from './guards'
 import { abortFetch } from './services'
+import './styles/globals.css'
 
 const Login = lazy(() => import('./pages/login'))
 const Register = lazy(() => import('./pages/register'))
@@ -16,6 +16,7 @@ const Controles = lazy(() => import('./pages/control/Controles'))
 const Operativos = lazy(() => import('./pages/operativos/Operativos'))
 const Sueldos = lazy(() => import('./pages/sueldos/sueldos'))
 const Waze = lazy(() => import('./pages/waze/Main'))
+const Radio = lazy(() => import('./pages/radio/Radio'))
 
 function App() {
   const user = useSelector<IRootState, User>((x) => x.user.user)
@@ -41,6 +42,7 @@ function App() {
         <Route element={<RoleGuard rol={Roles.INSPECTOR} />}>
           <Route path="/control/*" element={<Controles />} />
           <Route path="/operativos/*" element={<Operativos />} />
+          <Route path="/radio" element={<Radio />} />
         </Route>
         <Route element={<RoleGuard rol={Roles.ADMINISTRATIVO} />}>
           <Route path="/sueldos/*" element={<Sueldos />} />

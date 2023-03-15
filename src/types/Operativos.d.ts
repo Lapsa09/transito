@@ -5,6 +5,7 @@ export interface Operativo {
   legajo_planilla: number
   acta?: number
   resolucion?: string
+  dominio: string
   turno: string
   fechacarga?: string
   lpcarga?: number
@@ -17,7 +18,6 @@ export interface OperativoAutos extends Operativo {
   cp: string
   legajo_a_cargo: number
   seguridad: string
-  dominio: string
   licencia?: number
   tipo_licencia?: string
   tipo_vehiculo?: string
@@ -36,7 +36,6 @@ export interface OperativoMotos extends Operativo {
   cp: string
   legajo_a_cargo?: number
   seguridad: string
-  dominio: string
   licencia?: number
   tipo_licencia?: string
   motivos?: string[]
@@ -47,7 +46,6 @@ export interface OperativoCamiones extends Operativo {
   direccion: string
   localidad?: string
   cp?: string
-  dominio: string
   origen?: string
   localidad_origen: string
   destino: string
@@ -55,8 +53,6 @@ export interface OperativoCamiones extends Operativo {
   licencia?: number
   remito: boolean
   carga: boolean
-  acta?: number
-  motivo?: string
   hora_carga: string
   legajo_carga: string
 }
@@ -64,17 +60,13 @@ export interface OperativoCamiones extends Operativo {
 export interface OperativoPaseo extends Operativo {
   zona: string
   barrio?: string
-  dominio: string
   lp?: number
-  acta?: number
-  motivo: string
   mes: number
 }
 
 export interface OperativoDiario extends Operativo {
   direccion: string
   barrio?: string
-  dominio?: string
   otro_motivo?: string
 }
 
@@ -98,8 +90,4 @@ export interface IBarrio {
 export interface IMotivos {
   id_motivo: number
   motivo: string
-}
-
-export interface IMotivosPaseo {
-  enumlabel: 'ESTACIONAMIENTO' | 'VELOCIDAD'
 }

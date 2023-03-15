@@ -16,9 +16,10 @@ import { dateFormat, mesName, history } from '../../utils'
 
 function History() {
   const [meses, setMeses] = useState([])
-  const [data, setData] = useState([])
+  const [data, setData] = useState(null)
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState('')
+
   const fetch = async () => {
     const data = await getDates()
     setMeses(data)

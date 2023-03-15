@@ -36,3 +36,12 @@ export interface IResolucion extends Enums {
 export interface ISeguridad extends Enums {
   enumlabel: 'NO' | 'POLICIA' | 'PREFECTURA' | 'SECRETARIA DE SEGURIDAD'
 }
+
+export interface IMotivosPaseo extends Enums {
+  enumlabel: 'VELOCIDAD' | 'ESTACIONAMIENTO'
+}
+
+export interface IZonasPaseo {
+  id_zona: number
+  zona: string
+}

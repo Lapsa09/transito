@@ -277,7 +277,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
                 label="Motivo"
                 options={motivos}
                 rules={{ required: 'Inserte un motivo valido' }}
-                labelOption="barrio"
+                labelOption="motivo"
               />
             </Grid>
           )}

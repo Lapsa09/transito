@@ -1,4 +1,5 @@
 export * from './forms'
+export * from './radio'
 export * from './sueldos'
 export * from './ui'
 export * from './waze'

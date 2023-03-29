@@ -1,4 +1,9 @@
-import { RadioMovilForm, RadioOPForm } from '../types'
+import {
+  EstadoMovil,
+  EstadoOperario,
+  RadioMovilForm,
+  RadioOPForm,
+} from '../types'
 import { getter, setter, updater } from './mains'
 
 export const getOperariosRadio = async () =>
@@ -18,3 +23,15 @@ export const editOperarioRadio = async (body) =>
 
 export const editMovilRadio = async (body) =>
   await updater<RadioMovilForm>('/radio/moviles', body)
+
+export const getEstadoMovil = async () =>
+  await getter<EstadoMovil[]>('/radio/moviles/estado')
+
+export const getEstadoOperario = async () =>
+  await getter<EstadoOperario[]>('/radio/operarios/estado')
+
+export const getSingleMovil = async (id) =>
+  await getter<RadioMovilForm>('/radio/moviles/' + id)
+
+export const getSingleOperario = async (id) =>
+  await getter<RadioOPForm>('/radio/operarios/' + id)

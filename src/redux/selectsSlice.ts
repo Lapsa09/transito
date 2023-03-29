@@ -15,6 +15,8 @@ import {
   getMotivosPaseo,
   getZonasPaseo,
   getMovilesRadio,
+  getEstadoMovil,
+  getEstadoOperario,
 } from '../services'
 import {
   IBarrio,
@@ -26,6 +28,8 @@ import {
   ITurnos,
   IZona,
   RadioMovilForm,
+  EstadoMovil,
+  EstadoOperario,
 } from '../types'
 
 export interface SelectData {
@@ -39,6 +43,8 @@ export interface SelectData {
   motivos_paseo: IMotivosPaseo[]
   zonas_paseo: { id_zona: number; zona: string }[]
   moviles_radio: RadioMovilForm[]
+  estado_movil: EstadoMovil[]
+  estado_operario: EstadoOperario[]
   isEmpty: () => boolean
 }
 
@@ -58,6 +64,8 @@ const emptySelectors: SelectData = {
   vicente_lopez: [],
   zonas_paseo: [],
   moviles_radio: [],
+  estado_movil: [],
+  estado_operario: [],
   isEmpty() {
     return Object.values(this).every((v: any[]) => v.length === 0)
   },
@@ -96,6 +104,8 @@ function createExtraActions() {
           motivos_paseo,
           zonas_paseo,
           moviles_radio,
+          estado_movil,
+          estado_operario,
         ] = await Promise.all([
           getResolucion(),
           getTurnos(),
@@ -107,6 +117,8 @@ function createExtraActions() {
           getMotivosPaseo(),
           getZonasPaseo(),
           getMovilesRadio(),
+          getEstadoMovil(),
+          getEstadoOperario(),
         ])
         return {
           resolucion,
@@ -119,6 +131,8 @@ function createExtraActions() {
           motivos_paseo,
           zonas_paseo,
           moviles_radio,
+          estado_movil,
+          estado_operario,
         }
       } catch (error) {
         throw new Error(error.response.data)

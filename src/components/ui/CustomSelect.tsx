@@ -6,6 +6,8 @@ import { Enums } from '../../types'
 type Props<T, K> = UseControllerProps<T> &
   BaseTextFieldProps & {
     options?: Enums[] | K[]
+    optionId?: string
+    optionLabel?: string
   }
 
 function CustomSelect<T, K>({
@@ -16,6 +18,8 @@ function CustomSelect<T, K>({
   options,
   defaultValue = null,
   disabled,
+  optionId = 'id',
+  optionLabel = 'label',
 }: Props<T, K>) {
   const {
     field,
@@ -44,11 +48,8 @@ function CustomSelect<T, K>({
             {option.enumlabel}
           </MenuItem>
         ) : (
-          <MenuItem
-            key={Object.values(option)[0] as number}
-            value={Object.values(option)[0] as number}
-          >
-            {Object.values(option)[1] as string}
+          <MenuItem key={option[optionId]} value={option[optionId]}>
+            {option[optionLabel]}
           </MenuItem>
         )
       )}

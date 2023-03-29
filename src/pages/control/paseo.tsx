@@ -14,7 +14,8 @@ function ControlPaseoPage() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const { data, loading, refresh } = useData<OperativoPaseo>(getControlesPaseo)
+  const { data, loading, refreshPost } =
+    useData<OperativoPaseo>(getControlesPaseo)
 
   const columns: GridColumns<OperativoPaseo> = [
     {
@@ -57,7 +58,7 @@ function ControlPaseoPage() {
       path="Paseo del rio"
     >
       <ControlPaseoForm
-        afterCreate={refresh}
+        afterCreate={refreshPost}
         handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>

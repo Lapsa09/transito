@@ -141,6 +141,8 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               rules={{ required: 'Elija una opcion' }}
               label="Direccion"
               options={zonas_paseo}
+              optionId="id_zona"
+              optionLabel="zona"
             />
           </Grid>
           <Grid item xs={8}>

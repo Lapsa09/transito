@@ -51,3 +51,13 @@ export type RadioMovilForm = {
   estado: string
   novedades?: string
 }
+
+export type EstadoMovil = {
+  id_estado: number
+  estado: string
+}
+
+export type EstadoOperario = {
+  id_estado: number
+  estado: string
+}

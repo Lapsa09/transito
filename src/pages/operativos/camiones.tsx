@@ -14,7 +14,7 @@ function CamionesPage() {
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const { data, loading, refresh } = useData<OperativoCamiones>(
+  const { data, loading, refreshPost } = useData<OperativoCamiones>(
     getOperativosCamiones
   )
 
@@ -77,7 +77,7 @@ function CamionesPage() {
       path="Camiones"
     >
       <CamionesForm
-        afterCreate={refresh}
+        afterCreate={refreshPost}
         handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>

@@ -1,29 +1,10 @@
-import {
-  Button,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Box,
-} from '@mui/material'
-import React, { useState } from 'react'
-import {
-  MovilCreateForm,
-  MovilEditForm,
-  OperativosCreateForm,
-  OperativosEditForm,
-} from '../../components'
-import { useData } from '../../hooks'
-import { getMovilesRadio, getOperariosRadio } from '../../services'
-import { RadioMovilForm, RadioOPForm } from '../../types'
+import { Button, Box } from '@mui/material'
+import React from 'react'
+import { MovilesTable, OperariosTable } from '../../components'
+import { useLocalStorage } from '../../hooks'
 
 function Radio() {
-  const [table, setTable] = useState('operarios')
-  const { data: operarios, refresh: refreshOperarios } =
-    useData<RadioOPForm>(getOperariosRadio)
-  const { data: moviles, refresh: refreshMoviles } =
-    useData<RadioMovilForm>(getMovilesRadio)
+  const [table, setTable] = useLocalStorage('tabla')
 
   return (
     <Box
@@ -45,70 +26,9 @@ function Radio() {
         </Button>
       </Box>
       {table === 'operarios' ? (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-          <OperativosCreateForm refresh={refreshOperarios} />
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Legajo</TableCell>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Movil</TableCell>
-                <TableCell>HT</TableCell>
-                <TableCell>Puntaje</TableCell>
-                <TableCell>Asistencia</TableCell>
-                <TableCell>QTH</TableCell>
-                <TableCell>Novedades</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {operarios.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.legajo}</TableCell>
-                  <TableCell>{row.nombre}</TableCell>
-                  <TableCell>{row.estado}</TableCell>
-                  <TableCell>{row.movil}</TableCell>
-                  <TableCell>{row.ht}</TableCell>
-                  <TableCell>{row.puntaje}</TableCell>
-                  <TableCell>{row.asistencia}</TableCell>
-                  <TableCell>{row.qth}</TableCell>
-                  <TableCell>{row.novedades}</TableCell>
-                  <TableCell>
-                    <OperativosEditForm
-                      values={row}
-                      refresh={refreshOperarios}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
+        <OperariosTable table={table} />
       ) : (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-          <MovilCreateForm refresh={refreshMoviles} />
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Movil</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Novedades</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {moviles.map((row) => (
-                <TableRow>
-                  <TableCell>{row.movil}</TableCell>
-                  <TableCell>{row.estado}</TableCell>
-                  <TableCell>{row.novedades}</TableCell>
-                  <TableCell>
-                    <MovilEditForm values={row} refresh={refreshMoviles} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
+        <MovilesTable table={table} />
       )}
     </Box>
   )

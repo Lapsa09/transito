@@ -206,6 +206,8 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               rules={{ required: 'Elija una opcion' }}
               label="Motivo"
               options={motivos}
+              optionId="id_motivo"
+              optionLabel="motivo"
             />
           </Grid>
           {motivos?.length > 0 && getValues('motivo').motivo === 'OTRO' && (

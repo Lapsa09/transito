@@ -12,7 +12,10 @@ export default function useData<T>(input: () => Promise<T[]>) {
       .finally(() => setLoading(false))
   }, [])
 
-  const refresh = (_data: T) => setData((data) => [...data, _data])
+  const refreshPost = (_data: T) => setData((data) => [...data, _data])
 
-  return { loading, data, error, refresh }
+  const refreshPut = (_data: T, key) =>
+    setData((data) => data.map((d) => (d[key] === _data[key] ? _data : key)))
+
+  return { loading, data, error, refreshPost, refreshPut }
 }

@@ -14,7 +14,8 @@ function MotosPage() {
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const { data, loading, refresh } = useData<OperativoMotos>(getOperativosMotos)
+  const { data, loading, refreshPost } =
+    useData<OperativoMotos>(getOperativosMotos)
 
   const columns: GridColumns<OperativoMotos> = [
     {
@@ -77,7 +78,7 @@ function MotosPage() {
       path="Motos"
     >
       <MotosForm
-        afterCreate={refresh}
+        afterCreate={refreshPost}
         handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>

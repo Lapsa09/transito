@@ -14,7 +14,8 @@ function AutosPage() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const { data, loading, refresh } = useData<OperativoAutos>(getOperativosAutos)
+  const { data, loading, refreshPost } =
+    useData<OperativoAutos>(getOperativosAutos)
 
   const columns: GridColumns<OperativoAutos> = [
     {
@@ -82,7 +83,7 @@ function AutosPage() {
       path="Autos"
     >
       <AutosForm
-        afterCreate={refresh}
+        afterCreate={refreshPost}
         handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>

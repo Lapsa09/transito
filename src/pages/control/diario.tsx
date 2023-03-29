@@ -14,7 +14,7 @@ function ControlDiarioPage() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const { data, loading, refresh } = useData<OperativoDiario>(getControles)
+  const { data, loading, refreshPost } = useData<OperativoDiario>(getControles)
 
   const columns: GridColumns<OperativoDiario> = [
     {
@@ -58,7 +58,7 @@ function ControlDiarioPage() {
       path="Diario"
     >
       <ControlDiarioForm
-        afterCreate={refresh}
+        afterCreate={refreshPost}
         handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
       />
     </Layout>

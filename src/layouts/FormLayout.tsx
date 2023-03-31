@@ -8,7 +8,6 @@ import {
 } from '@mui/material'
 import { currentDate, adminStyle, sxStyles } from '../utils'
 import {
-  CustomSnackbar,
   CustomStepForm,
   CustomStepper,
   LogoOVT,
@@ -47,8 +46,7 @@ function FormLayout<T>({
 }: Props<T>) {
   const [open, setOpen] = useState(false)
   const [operativo, setOperativo] = useLocalStorage<Operativo<T>>(path)
-  const { openSB, closeSnackbar, response, setError, setSuccess } =
-    useSnackBar()
+  const { handleError, handleSuccess } = useSnackBar()
   const {
     setValue,
     reset,
@@ -85,7 +83,7 @@ function FormLayout<T>({
 
   useEffect(() => {
     if (error.code) {
-      setError(error.message)
+      handleError(error)
     }
     cargarOperativo()
   }, [])
@@ -108,9 +106,9 @@ function FormLayout<T>({
   const submiting = async (data: T) => {
     try {
       await submitEvent(data)
-      setSuccess('Cargado con exito')
+      handleSuccess('Cargado con exito')
     } catch (error) {
-      setError(error.response?.data)
+      handleError(error)
     }
   }
 
@@ -198,12 +196,6 @@ function FormLayout<T>({
         open={open}
         reset={nuevoOperativo}
         close={() => setOpen(false)}
-      />
-
-      <CustomSnackbar
-        res={response}
-        open={openSB}
-        handleClose={closeSnackbar}
       />
     </Box>
   )

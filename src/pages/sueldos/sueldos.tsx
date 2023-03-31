@@ -1,11 +1,5 @@
 import React, { lazy } from 'react'
-import {
-  Admin,
-  Layout,
-  memoryStore,
-  resolveBrowserLocale,
-  Resource,
-} from 'react-admin'
+import { Admin, memoryStore, resolveBrowserLocale, Resource } from 'react-admin'
 import jsonServerProvider from 'ra-data-json-server'
 import polyglotI18nProvider from 'ra-i18n-polyglot'
 // @ts-ignore
@@ -19,6 +13,7 @@ const Servicios = lazy(() => import('./Servicios'))
 const EditServicio = lazy(() => import('./EditServicio'))
 const Liqui = lazy(() => import('./Liqui'))
 const EditPrecio = lazy(() => import('./EditPrecio'))
+const Layout = lazy(() => import('../../components/sueldos/MyLayout'))
 
 const Sueldos = () => {
   const restProvider = jsonServerProvider(
@@ -49,7 +44,7 @@ const Sueldos = () => {
   return (
     <Admin
       i18nProvider={i18nProvider}
-      layout={lazyLayout}
+      layout={Layout}
       dashboard={DashBoard}
       dataProvider={restProvider}
       store={memoryStore()}
@@ -73,11 +68,5 @@ const Sueldos = () => {
     </Admin>
   )
 }
-
-const CustomLayout = (props) => {
-  return <Layout {...props} appBar={'span'} />
-}
-
-const lazyLayout = lazy(async () => await { default: CustomLayout })
 
 export default Sueldos

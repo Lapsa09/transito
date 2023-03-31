@@ -1,7 +1,7 @@
 import React, { lazy, useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Header } from './components'
+import { CustomSnackbar, Header } from './components'
 import { history } from './utils'
 import { AppDispatch, IRootState, authActions } from './redux'
 import { Roles, User } from './types'
@@ -30,7 +30,7 @@ function App() {
 
   return (
     <>
-      {user?.legajo ? <Header /> : null}
+      {user.legajo ? <Header /> : null}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -49,6 +49,7 @@ function App() {
           <Route path="/waze/*" element={<Waze />} />
         </Route>
       </Routes>
+      <CustomSnackbar />
     </>
   )
 }

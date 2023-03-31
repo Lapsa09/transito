@@ -1,29 +1,16 @@
-import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { AppDispatch, setError, setSuccess } from '../redux'
 
 export default function useSnackBar() {
-  const [openSB, setOpenSB] = useState(false)
-  const [response, setResponse] = useState<{
-    severity: 'error' | 'success'
-    message: string
-  }>({ severity: null, message: '' })
+  const dispatch = useDispatch<AppDispatch>()
 
-  const setError = (message: string) => {
-    setResponse({ severity: 'error', message })
-    setOpenSB(true)
+  const handleError = (error: any) => {
+    dispatch(setError(error.response?.data || error.message))
   }
 
-  const closeSnackbar = (_, reason: string) => {
-    if (reason === 'clickaway') {
-      return
-    }
-
-    setOpenSB(false)
+  const handleSuccess = (message: string) => {
+    dispatch(setSuccess(message))
   }
 
-  const setSuccess = (message: string) => {
-    setResponse({ severity: 'success', message })
-    setOpenSB(true)
-  }
-
-  return { openSB, response, setError, setSuccess, closeSnackbar }
+  return { handleSuccess, handleError }
 }

@@ -20,11 +20,9 @@ type Props<T> = UseControllerProps<T> &
 function CustomTextField<T>({
   control,
   name,
-  rules = null,
+  rules,
   label,
   type = 'text',
-  disabled = false,
-  className = '',
   ...props
 }: Props<T>) {
   const {
@@ -34,7 +32,7 @@ function CustomTextField<T>({
     name,
     control,
     rules,
-    defaultValue: '' as PathValue<T, Path<T>>,
+    defaultValue: null,
   })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -47,14 +45,12 @@ function CustomTextField<T>({
     <TextField
       {...field}
       onChange={handleChange}
-      type={type}
       helperText={error?.message}
       required={rules?.required != null}
-      disabled={disabled}
-      className={className}
       error={invalid}
       label={label}
       fullWidth
+      type={type}
       inputRef={ref}
       {...props}
     />

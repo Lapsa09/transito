@@ -1,10 +1,13 @@
-import { Autocomplete, TextField, UseAutocompleteProps } from '@mui/material'
+import { Autocomplete, AutocompleteProps, TextField } from '@mui/material'
 import React from 'react'
 import { useController, UseControllerProps } from 'react-hook-form'
 
 interface Props<T, K>
   extends UseControllerProps<T>,
-    Omit<UseAutocompleteProps<K, false, false, false>, 'defaultValue'> {
+    Omit<
+      AutocompleteProps<K, false, false, false>,
+      'defaultValue' | 'renderInput'
+    > {
   label: string
   labelOption: string
 }
@@ -16,6 +19,7 @@ function CustomAutocomplete<T, K>({
   label,
   options,
   labelOption,
+  ...props
 }: Props<T, K>) {
   const {
     field,
@@ -41,11 +45,12 @@ function CustomAutocomplete<T, K>({
         <TextField
           {...params}
           label={label}
-          required={rules?.required != null}
+          required={Boolean(rules?.required)}
           error={invalid}
           helperText={error?.message}
         />
       )}
+      {...props}
     />
   )
 }

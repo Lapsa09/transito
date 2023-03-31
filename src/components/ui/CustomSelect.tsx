@@ -2,12 +2,14 @@ import React from 'react'
 import { MenuItem, TextField, BaseTextFieldProps } from '@mui/material'
 import { useController, UseControllerProps } from 'react-hook-form'
 import { Enums } from '../../types'
+import { sxStyles } from '../../utils'
 
-type Props<T, K> = UseControllerProps<T> &
+type Props<T, K> = Omit<UseControllerProps<T>, 'defaultValue'> &
   BaseTextFieldProps & {
     options?: Enums[] | K[]
     optionId?: string
     optionLabel?: string
+    defaultValue?: any
   }
 
 function CustomSelect<T, K>({
@@ -16,7 +18,7 @@ function CustomSelect<T, K>({
   rules,
   label,
   options,
-  defaultValue = null,
+  defaultValue = '',
   disabled,
   optionId = 'id',
   optionLabel = 'label',
@@ -34,7 +36,7 @@ function CustomSelect<T, K>({
     <TextField
       {...field}
       select
-      sx={{ width: '100%' }}
+      sx={sxStyles.fullWidth}
       error={invalid}
       label={label}
       disabled={disabled}

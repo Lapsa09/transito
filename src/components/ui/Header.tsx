@@ -24,6 +24,7 @@ import {
 import { AppDispatch, IRootState } from '../../redux'
 import { Roles, User } from '../../types'
 import { LogoOVT, LogoVL } from './Logos'
+import { sxStyles } from '../../utils'
 
 const controles = [
   { link: '/control/diario', title: 'Diario' },
@@ -78,17 +79,9 @@ function Header() {
 
   return (
     <AppBar position="sticky" color="default">
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Toolbar sx={[sxStyles.spaceBetween]}>
         <LogoVL link />
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: { xs: 'flex', lg: 'none' },
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: '245px',
-          }}
-        >
+        <Box sx={[sxStyles.flexSmall, { flexGrow: 1, maxWidth: '245px' }]}>
           <IconButton
             size="large"
             aria-label="account of current user"
@@ -114,12 +107,10 @@ function Header() {
                 pages.map((page) =>
                   page.links ? (
                     <ListItem
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        padding: 0,
-                      }}
+                      sx={[
+                        sxStyles.flexColumn,
+                        { alignItems: 'flex-start', padding: 0 },
+                      ]}
                       key={page.name}
                     >
                       <ListItemButton
@@ -163,15 +154,7 @@ function Header() {
           </Drawer>
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: { xs: 'none', lg: 'flex' },
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginInline: '60px',
-          }}
-        >
+        <Box sx={[sxStyles.flexLarge, { flexGrow: 1, marginInline: '60px' }]}>
           {pages
             .filter((page) => user.isAdmin() || user.rol === page.permission)
             .map((page) => (

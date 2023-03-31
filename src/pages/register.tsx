@@ -3,13 +3,8 @@ import { Navigate } from 'react-router-dom'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm, FormProvider } from 'react-hook-form'
-import {
-  ConfirmPasswordField,
-  CustomTextField,
-  MainLogoOVT,
-  PasswordField,
-} from '../components'
-import { basicWidth, history } from '../utils'
+import { CustomTextField, MainLogoOVT } from '../components'
+import { history, styles } from '../utils'
 import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
 import '../styles/register.css'
 import { RegisterUserProps } from '../types'
@@ -19,14 +14,21 @@ function Register() {
   const dispatch = useDispatch<AppDispatch>()
   const { user, error } = useSelector<IRootState, IRootUser>((x) => x.user)
 
-  const { control, handleSubmit } = methods
+  const { control, handleSubmit, setError } = methods
 
   const loginNav = () => {
     history.navigate('/login')
   }
 
   const submitEvent = async (data: RegisterUserProps) => {
-    dispatch(authActions.register(data))
+    if (data.password !== data.confirmPassword)
+      setError('confirmPassword', {
+        type: 'validate',
+        message: 'Las contraseñas no coinciden',
+      })
+    else {
+      dispatch(authActions.register(data))
+    }
   }
 
   if (user.legajo) return <Navigate to="/" replace />
@@ -36,15 +38,13 @@ function Register() {
       <div className="register">
         <MainLogoOVT />
         <Box
-          sx={{ ...basicWidth }}
+          sx={styles.basicWidth}
           component="form"
           className="form"
           onSubmit={handleSubmit(submitEvent)}
         >
-          <CustomTextField
-            type="number"
+          <CustomTextField.LEGAJO
             control={control}
-            rules={{ required: 'Campo requerido' }}
             name="legajo"
             label="Legajo"
           />
@@ -67,8 +67,12 @@ function Register() {
             rules={{ required: 'Campo requerido' }}
             label="Telefono"
           />
-          <PasswordField control={control} name="password" label="Contraseña" />
-          <ConfirmPasswordField
+          <CustomTextField.PASSWORD
+            control={control}
+            name="password"
+            label="Contraseña"
+          />
+          <CustomTextField.PASSWORD
             control={control}
             name="confirmPassword"
             label="Confirmar contraseña"
@@ -76,7 +80,7 @@ function Register() {
           {error?.code && (
             <FormHelperText error>{error.message}</FormHelperText>
           )}
-          <Box sx={{ ...basicWidth }} className="buttons">
+          <Box sx={styles.basicWidth} className="buttons">
             <Button onClick={loginNav}>
               Ya te registraste? ir a iniciar Sesion
             </Button>

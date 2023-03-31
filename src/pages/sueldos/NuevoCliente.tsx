@@ -24,6 +24,7 @@ import {
   Acopio,
 } from '../../components'
 import styles from '../../styles/Sueldos.module.css'
+import { sxStyles } from '../../utils'
 
 function NuevoCliente() {
   const [create] = useCreate()
@@ -101,7 +102,7 @@ function NuevoCliente() {
                 <FormDataConsumer>
                   {({ getSource }) => (
                     <>
-                      <Grid item xs={8} sx={{ display: 'flex' }}>
+                      <Grid item xs={8} sx={sxStyles.flex}>
                         <ReferenceInput
                           source={getSource('legajo')}
                           reference="operarios/list"

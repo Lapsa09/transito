@@ -1,13 +1,6 @@
 import React, { useState } from 'react'
 import { nuevoControlPaseo } from '../../services'
-import {
-  CustomDatePicker,
-  CustomTimePicker,
-  CustomTextField,
-  CustomSelect,
-  FileNumberField,
-  DomainField,
-} from '../ui'
+import { DatePicker, TimePicker, CustomTextField, CustomSelect } from '../ui'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import { currentDate } from '../../utils'
@@ -88,7 +81,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
       >
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomDatePicker
+            <DatePicker
               control={control}
               label="Fecha"
               name="fecha"
@@ -108,7 +101,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <FileNumberField
+            <CustomTextField.LEGAJO
               control={control}
               name="lp"
               label="Legajo Planilla"
@@ -126,7 +119,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
         </Grid>
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomTimePicker
+            <TimePicker
               control={control}
               name="hora"
               label="Hora"
@@ -146,7 +139,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <DomainField control={control} name="dominio" />
+            <CustomTextField.DOMINIO control={control} name="dominio" />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect

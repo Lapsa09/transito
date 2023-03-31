@@ -40,7 +40,7 @@ function App() {
         <Route element={<RoleGuard rol={Roles.INSPECTOR} />}>
           <Route path="/control/*" element={<Controles />} />
           <Route path="/operativos/*" element={<Operativos />} />
-          <Route path="/radio" element={<Radio />} />
+          <Route path="/radio/*" element={<Radio />} />
         </Route>
         <Route element={<RoleGuard rol={Roles.ADMINISTRATIVO} />}>
           <Route path="/sueldos/*" element={<Sueldos />} />

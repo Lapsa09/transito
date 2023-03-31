@@ -3,13 +3,11 @@ import { nuevoControl } from '../../services'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import {
-  CustomDatePicker,
-  CustomTimePicker,
+  DatePicker,
+  TimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-  FileNumberField,
-  DomainField,
 } from '../ui'
 import { currentDate } from '../../utils'
 import Layout from '../../layouts/FormLayout'
@@ -116,7 +114,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
       >
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomDatePicker
+            <DatePicker
               control={control}
               label="Fecha"
               name="fecha"
@@ -136,7 +134,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <FileNumberField
+            <CustomTextField.LEGAJO
               control={control}
               name="legajo_planilla"
               label="Legajo Planilla"
@@ -145,7 +143,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
         </Grid>
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomTimePicker
+            <TimePicker
               control={control}
               name="hora"
               label="Hora"
@@ -172,7 +170,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <DomainField control={control} name="dominio" />
+            <CustomTextField.DOMINIO control={control} name="dominio" />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect

@@ -1,348 +1,215 @@
-import React, { Fragment, useEffect, useState } from 'react'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import EditIcon from '@mui/icons-material/Edit'
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogActions,
-} from '@mui/material'
-import { RadioOPForm, RadioMovilForm } from '../../types'
-import { useSelects, useSnackBar } from '../../hooks'
-import {
-  CustomAutocomplete,
-  CustomSelect,
-  CustomSnackbar,
-  CustomSwitch,
-  CustomTextField,
-  FileNumberField,
-} from '../ui'
-import {
-  postMovilRadio,
-  postOperarioRadio,
-  editOperarioRadio,
-  editMovilRadio,
-  getSingleMovil,
-  getSingleOperario,
-} from '../../services'
+import React from 'react'
+import { Button } from '@mui/material'
+import { useCreate, useGetList, useGetOne, useUpdate } from 'react-admin'
+import { useForm } from 'react-hook-form'
+import { useNavigate, useParams } from 'react-router-dom'
+import { CustomSelect, CustomSwitch, CustomTextField } from '../ui'
 
-type FormProps<T> = {
-  children: JSX.Element[]
-  submitEvent: (data: T) => Promise<void>
-  handleClose?: () => void
-}
+export const OperativosCreateForm = () => {
+  const navigate = useNavigate()
+  const goBack = () => navigate('/radio/operarios')
+  const { control, handleSubmit } = useForm()
+  const [create, { isLoading: isSubmitting }] = useCreate()
+  const { data: moviles } = useGetList('/moviles')
+  const { data: estados } = useGetList('/operarios/estado')
 
-type CreateProps<T> = {
-  refresh: (data: T) => void
-}
-
-type EditProps<T> = {
-  id: number
-  refresh: (data: T, key: string) => void
-  handleClose: () => void
-}
-
-function Create<T>({ children, submitEvent }: FormProps<T>) {
-  const [open, setOpen] = useState(false)
-  const { handleSubmit } = useFormContext<T>()
-  const { setError, setSuccess, closeSnackbar, openSB, response } =
-    useSnackBar()
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-
-  const submitting = async (data: T) => {
-    try {
-      await submitEvent(data)
-      setSuccess('Cargado con exito')
-    } catch (error) {
-      setError(error.response?.data)
-    } finally {
-      handleClose()
-    }
+  const onSubmit = (data) => {
+    create(
+      'operarios',
+      { data },
+      {
+        onSuccess: () => {
+          goBack()
+        },
+      }
+    )
   }
 
   return (
-    <Fragment>
-      <Button
-        variant="contained"
-        sx={{ marginInline: 'auto' }}
-        onClick={handleClickOpen}
-      >
-        Nuevo
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <CustomTextField.LEGAJO label="Legajo" control={control} name="legajo" />
+      <CustomTextField label="Nombre" control={control} name="nombre" />
+      <CustomTextField label="QTH" control={control} name="qth" />
+      <CustomTextField label="HT" control={control} name="ht" />
+      <CustomSelect
+        label="Movil"
+        control={control}
+        name="movil"
+        options={moviles}
+        optionId="movil"
+        optionLabel="movil"
+      />
+      <CustomSelect
+        label="Estado"
+        control={control}
+        name="estado"
+        options={estados}
+        optionLabel="estado"
+      />
+      <CustomSwitch label="Asistencia" control={control} name="asistencia" />
+      <CustomTextField
+        label="Puntaje"
+        control={control}
+        name="puntaje"
+        type="number"
+      />
+      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <Button onClick={goBack}>Cancelar</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        Guardar
       </Button>
-      <Dialog open={open} maxWidth="xl" onClose={handleClose}>
-        <Box component="form" onSubmit={handleSubmit(submitting)}>
-          <DialogContent
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: '20px',
-            }}
-          >
-            {children}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancelar</Button>
-            <Button type="submit">Guardar</Button>
-          </DialogActions>
-        </Box>
-      </Dialog>
-      <CustomSnackbar
-        res={response}
-        handleClose={closeSnackbar}
-        open={openSB}
+    </form>
+  )
+}
+
+export const MovilCreateForm = () => {
+  const navigate = useNavigate()
+  const goBack = () => navigate('/radio/moviles')
+  const { control, handleSubmit } = useForm()
+  const [create, { isLoading: isSubmitting }] = useCreate()
+  const { data: estados } = useGetList('/moviles/estado')
+
+  const onSubmit = (data) => {
+    create(
+      'moviles',
+      { data },
+      {
+        onSuccess: () => {
+          goBack()
+        },
+      }
+    )
+  }
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <CustomTextField
+        label="Movil"
+        control={control}
+        name="movil"
+        type="number"
       />
-    </Fragment>
-  )
-}
-
-function Edit<T>({ children, submitEvent, handleClose }: FormProps<T>) {
-  const { handleSubmit } = useFormContext<T>()
-  const { setError, setSuccess, response, closeSnackbar, openSB } =
-    useSnackBar()
-
-  const submitting = async (data: T) => {
-    try {
-      await submitEvent(data)
-      setSuccess('Cargado con exito')
-    } catch (error) {
-      setError(error.response?.data)
-    }
-  }
-
-  return (
-    <Fragment>
-      <Dialog open={true} maxWidth="xl" onClose={handleClose}>
-        <Box component="form" onSubmit={handleSubmit(submitting)}>
-          <DialogContent
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: '20px',
-            }}
-          >
-            {children}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancelar</Button>
-            <Button type="submit">Guardar</Button>
-          </DialogActions>
-        </Box>
-      </Dialog>
-      <CustomSnackbar
-        res={response}
-        handleClose={closeSnackbar}
-        open={openSB}
+      <CustomSelect
+        label="Estado"
+        control={control}
+        name="estado"
+        options={estados}
+        optionLabel="estado"
       />
-    </Fragment>
+      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <Button onClick={goBack}>Cancelar</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        Guardar
+      </Button>
+    </form>
   )
 }
 
-export const OperativosCreateForm = ({ refresh }: CreateProps<RadioOPForm>) => {
-  const methods = useForm<RadioOPForm>()
-
-  const { control } = methods
-  const {
-    selects: { moviles_radio, estado_operario },
-  } = useSelects()
-
-  const submitEvent = async (data) => {
-    const res = await postOperarioRadio(data)
-    refresh(res)
+export const OperativosEditForm = () => {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const goBack = () => navigate('/radio/operarios')
+  const { control, handleSubmit, reset } = useForm()
+  const [update, { isLoading: isSubmitting }] = useUpdate()
+  const { data: moviles } = useGetList('/moviles')
+  const { data: estados } = useGetList('/operarios/estado')
+  const onSubmit = (data) => {
+    update(
+      'operarios',
+      { data, id },
+      {
+        onSuccess: () => {
+          goBack()
+        },
+      }
+    )
   }
+  const { isLoading } = useGetOne(
+    'operarios',
+    { id },
+    { onSuccess: (data) => reset(data) }
+  )
 
+  if (isLoading) return null
   return (
-    <FormProvider {...methods}>
-      <Create submitEvent={submitEvent}>
-        <FileNumberField name="legajo" label="Legajo" control={control} />
-        <CustomTextField
-          control={control}
-          name="nombre"
-          label="Nombre"
-          rules={{ required: 'Este campo es obligatorio' }}
-        />
-        <CustomAutocomplete
-          name="estado"
-          label="Estado"
-          control={control}
-          options={estado_operario}
-          labelOption="estado"
-        />
-        <CustomSelect
-          control={control}
-          name="movil"
-          label="Movil"
-          options={moviles_radio}
-          optionId="movil"
-          optionLabel="movil"
-        />
-        <CustomTextField control={control} name="ht" label="HT" />
-        <CustomTextField
-          control={control}
-          name="puntaje"
-          type="number"
-          label="Puntaje"
-        />
-        <CustomSwitch control={control} name="asistencia" label="Asistencia" />
-        <CustomTextField name="qth" label="QTH" control={control} />
-        <CustomTextField name="novedades" label="Novedades" control={control} />
-      </Create>
-    </FormProvider>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <CustomTextField.LEGAJO label="Legajo" control={control} name="legajo" />
+      <CustomTextField label="Nombre" control={control} name="nombre" />
+      <CustomTextField label="QTH" control={control} name="qth" />
+      <CustomTextField label="HT" control={control} name="ht" />
+      <CustomSelect
+        label="Movil"
+        control={control}
+        name="movil"
+        options={moviles}
+        optionId="movil"
+        optionLabel="movil"
+      />
+      <CustomSelect
+        label="Estado"
+        control={control}
+        name="estado"
+        options={estados}
+        optionLabel="estado"
+      />
+      <CustomSwitch label="Asistencia" control={control} name="asistencia" />
+      <CustomTextField
+        label="Puntaje"
+        control={control}
+        name="puntaje"
+        type="number"
+      />
+      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <Button onClick={goBack}>Cancelar</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        Guardar
+      </Button>
+    </form>
   )
 }
 
-export const MovilCreateForm = ({ refresh }: CreateProps<RadioMovilForm>) => {
-  const methods = useForm<RadioMovilForm>()
-  const { control } = methods
-  const {
-    selects: { estado_movil },
-  } = useSelects()
-
-  const submitEvent = async (data) => {
-    const res = await postMovilRadio(data)
-    refresh(res)
+export const MovilEditForm = () => {
+  const { id } = useParams()
+  const [update, { isLoading: isSubmitting }] = useUpdate()
+  const { control, handleSubmit, reset } = useForm()
+  const { data: estados } = useGetList('/moviles/estado')
+  const navigate = useNavigate()
+  const onSubmit = (data) => {
+    update(
+      'moviles',
+      { data, id },
+      {
+        onSuccess: () => {
+          navigate('/radio/operarios')
+        },
+      }
+    )
   }
-
-  return (
-    <FormProvider {...methods}>
-      <Create submitEvent={submitEvent}>
-        <CustomTextField
-          name="movil"
-          label="Movil"
-          type="number"
-          control={control}
-        />
-        <CustomSelect
-          name="estado"
-          label="Estado"
-          control={control}
-          options={estado_movil}
-          optionId="id_estado"
-          optionLabel="estado"
-        />
-        <CustomTextField label="Novedades" name="novedades" control={control} />
-      </Create>
-    </FormProvider>
+  const { isLoading } = useGetOne(
+    'moviles',
+    { id },
+    { onSuccess: (data) => reset(data) }
   )
-}
-
-export const OperativosEditForm = ({
-  id,
-  refresh,
-  handleClose,
-}: EditProps<RadioOPForm>) => {
-  const methods = useForm<RadioOPForm>()
-  const { control, setValue } = methods
-  const {
-    selects: { moviles_radio, estado_operario },
-  } = useSelects()
-
-  useEffect(() => {
-    getSingleOperario(id).then((data) => {
-      setValue('id', data.id)
-      setValue('legajo', data.legajo)
-      setValue('movil', data.movil)
-      setValue('nombre', data.nombre)
-      setValue('asistencia', data.asistencia)
-      setValue('estado', data.estado)
-      setValue('ht', data.ht)
-      setValue('qth', data.qth)
-      setValue('novedades', data.novedades)
-    })
-  }, [])
-
-  const submitEvent = async (data) => {
-    const res = await editOperarioRadio(data)
-    refresh(res, 'legajo')
-  }
-
+  if (isLoading) return null
   return (
-    <FormProvider {...methods}>
-      <Edit submitEvent={submitEvent} handleClose={handleClose}>
-        <FileNumberField name="legajo" label="Legajo" control={control} />
-        <CustomTextField name="nombre" label="Nombre" control={control} />
-        <CustomSelect
-          name="estado"
-          label="Estado"
-          control={control}
-          options={estado_operario}
-          optionId="id_estado"
-          optionLabel="estado"
-        />
-        <CustomSelect
-          name="movil"
-          label="Movil"
-          control={control}
-          options={moviles_radio}
-          optionId="movil"
-          optionLabel="movil"
-        />
-        <CustomTextField control={control} name="ht" label="HT" />
-        <CustomTextField
-          control={control}
-          name="puntaje"
-          type="number"
-          label="Puntaje"
-        />
-        <CustomSwitch control={control} name="asistencia" label="Asistencia" />
-        <CustomTextField name="qth" label="QTH" control={control} />
-        <CustomTextField name="novedades" label="Novedades" control={control} />
-      </Edit>
-    </FormProvider>
-  )
-}
-
-export const MovilEditForm = ({
-  id,
-  refresh,
-  handleClose,
-}: EditProps<RadioMovilForm>) => {
-  const methods = useForm<RadioMovilForm>()
-
-  const { control, setValue } = methods
-  const {
-    selects: { estado_movil },
-  } = useSelects()
-
-  useEffect(() => {
-    getSingleMovil(id).then((data) => {
-      setValue('movil', data.movil)
-      setValue('estado', data.estado)
-      setValue('novedades', data.novedades)
-    })
-  }, [])
-
-  const submitEvent = async (data) => {
-    const res = await editMovilRadio(data)
-    refresh(res, 'movil')
-  }
-
-  return (
-    <FormProvider {...methods}>
-      <Edit submitEvent={submitEvent} handleClose={handleClose}>
-        <CustomTextField
-          name="movil"
-          label="Movil"
-          type="number"
-          control={control}
-        />
-        <CustomSelect
-          label="Estado"
-          name="estado"
-          control={control}
-          options={estado_movil}
-          optionId="id_estado"
-          optionLabel="estado"
-        />
-        <CustomTextField label="Novedades" name="novedades" control={control} />
-      </Edit>
-    </FormProvider>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <CustomTextField
+        label="Movil"
+        control={control}
+        name="movil"
+        type="number"
+      />
+      <CustomSelect
+        label="Estado"
+        control={control}
+        name="estado"
+        options={estados}
+        optionLabel="estado"
+      />
+      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <Button onClick={() => navigate('/radio/moviles')}>Cancelar</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        Guardar
+      </Button>
+    </form>
   )
 }

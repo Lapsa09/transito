@@ -1,10 +1,11 @@
 import { Step, StepButton, Stepper } from '@mui/material'
 import React from 'react'
+import { sxStyles } from '../../utils'
 
 function CustomStepper({ steps, isCompleted, handleStep, activeStep }) {
   return (
     <Stepper
-      sx={{ width: '100%', my: '10px' }}
+      sx={[sxStyles.fullWidth, { my: '10px' }]}
       nonLinear
       activeStep={activeStep}
     >

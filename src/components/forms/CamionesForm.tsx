@@ -4,14 +4,12 @@ import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
 import {
-  CustomDatePicker,
-  CustomTimePicker,
+  DatePicker,
+  TimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
   CustomSwitch,
-  DomainField,
-  FileNumberField,
 } from '../ui'
 import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
@@ -146,7 +144,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
       >
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomDatePicker
+            <DatePicker
               control={control}
               name="fecha"
               label="Fecha"
@@ -173,7 +171,11 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <FileNumberField control={control} name="legajo" label="Legajo" />
+            <CustomTextField.LEGAJO
+              control={control}
+              name="legajo"
+              label="Legajo"
+            />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
@@ -189,7 +191,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         </Grid>
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomTimePicker
+            <TimePicker
               control={control}
               name="hora"
               label="Hora"
@@ -198,7 +200,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <DomainField control={control} name="dominio" />
+            <CustomTextField.DOMINIO control={control} name="dominio" />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField control={control} name="origen" label="Origen" />

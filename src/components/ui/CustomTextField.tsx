@@ -17,7 +17,7 @@ import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '../../utils'
 type Props<T> = UseControllerProps<T> &
   Omit<TextFieldProps, 'name' | 'defaultValue' | 'variant'>
 
-export function CustomTextField<T>({
+function CustomTextField<T>({
   control,
   name,
   rules = null,
@@ -61,7 +61,7 @@ export function CustomTextField<T>({
   )
 }
 
-export function DomainField<T>({ control, name, className = '' }: Props<T>) {
+function DomainField<T>({ control, name, className = '' }: Props<T>) {
   const { trigger } = useFormContext()
 
   const { field } = useController<T>({
@@ -110,7 +110,7 @@ export function DomainField<T>({ control, name, className = '' }: Props<T>) {
   )
 }
 
-export function FileNumberField<T>({
+function FileNumberField<T>({
   control,
   name,
   className = '',
@@ -134,7 +134,7 @@ export function FileNumberField<T>({
   )
 }
 
-export function PasswordField<T>({ control, name, label }: Props<T>) {
+function PasswordField<T>({ control, name, label }: Props<T>) {
   return (
     <CustomTextField
       type="password"
@@ -146,19 +146,8 @@ export function PasswordField<T>({ control, name, label }: Props<T>) {
   )
 }
 
-export function ConfirmPasswordField<T>({ name, control, label }: Props<T>) {
-  const { getValues } = useFormContext()
-  return (
-    <CustomTextField
-      type="password"
-      control={control}
-      name={name}
-      rules={{
-        validate: {
-          confirmPassword: (value) => value === getValues('password'),
-        },
-      }}
-      label={label}
-    />
-  )
-}
+CustomTextField.DOMINIO = DomainField
+CustomTextField.LEGAJO = FileNumberField
+CustomTextField.PASSWORD = PasswordField
+
+export default CustomTextField

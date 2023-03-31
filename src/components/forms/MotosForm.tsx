@@ -1,13 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { nuevoOperativoMoto } from '../../services'
 import {
-  CustomDatePicker,
-  CustomTimePicker,
+  DatePicker,
+  TimePicker,
   CustomTextField,
   CustomSelect,
   CustomAutocomplete,
-  DomainField,
-  FileNumberField,
 } from '../ui'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
@@ -154,7 +152,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
       >
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomDatePicker
+            <DatePicker
               control={control}
               name="fecha"
               label="Fecha"
@@ -163,7 +161,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <CustomTimePicker control={control} name="hora" label="Hora" />
+            <TimePicker control={control} name="hora" label="Hora" />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField
@@ -184,14 +182,14 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <FileNumberField
+            <CustomTextField.LEGAJO
               control={control}
               name="legajo_a_cargo"
               label="Legajo a Cargo"
             />
           </Grid>
           <Grid item xs={8}>
-            <FileNumberField
+            <CustomTextField.LEGAJO
               control={control}
               name="legajo_planilla"
               label="Legajo Planilla"
@@ -227,7 +225,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             </Grid>
           )}
           <Grid item xs={8}>
-            <DomainField control={control} name="dominio" />
+            <CustomTextField.DOMINIO control={control} name="dominio" />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField

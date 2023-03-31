@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
 } from '@mui/material'
-import { currentDate, adminStyle } from '../utils'
+import { currentDate, adminStyle, sxStyles } from '../utils'
 import {
   CustomSnackbar,
   CustomStepForm,
@@ -161,14 +161,14 @@ function FormLayout<T>({
           className={styles.form__box}
           autoComplete="off"
         >
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={sxStyles.flex}>
             {children?.map((child, index) => (
               <CustomStepForm key={index} activeStep={activeStep} step={index}>
                 {child}
               </CustomStepForm>
             ))}
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+          <Box sx={[sxStyles.flexRow, { pt: 2 }]}>
             <Button
               disabled={isFirstStep()}
               onClick={handleBack}
@@ -217,7 +217,7 @@ const WarningModal = ({ close, reset, open }) => {
           Seguro que desea reiniciar el operativo? Se borraran todos los datos
           ingresados
         </p>
-        <DialogActions sx={{ display: 'flex' }}>
+        <DialogActions sx={sxStyles.flex}>
           <Button onClick={close}>No</Button>
           <Box sx={{ flex: '1 1 auto' }} />
           <Button

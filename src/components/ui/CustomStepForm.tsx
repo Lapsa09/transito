@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { sxStyles } from '../../utils'
 
 function CustomStepForm({ children, activeStep, step }) {
   const variant = {
@@ -15,7 +16,7 @@ function CustomStepForm({ children, activeStep, step }) {
   }
   return (
     <motion.div
-      style={{ width: '100%' }}
+      style={sxStyles.fullWidth}
       variants={variant}
       animate={
         activeStep === step ? 'open' : activeStep > step ? 'left' : 'right'

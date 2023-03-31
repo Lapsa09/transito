@@ -61,7 +61,7 @@ const cardStyle = {
   cursor: 'pointer',
 }
 
-export default function CustomizedMenus({ children, id, label }) {
+export function CustomizedMenus({ children, id, label }) {
   const [anchor, setAnchor] = useState({ id: null, anchorEl: null })
   const open = Boolean(anchor.id === id)
 

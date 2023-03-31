@@ -1,36 +1,49 @@
-import { Button, Box } from '@mui/material'
 import React from 'react'
-import { MovilesTable, OperariosTable } from '../../components'
-import { useLocalStorage } from '../../hooks'
+import { Admin, memoryStore, resolveBrowserLocale, Resource } from 'react-admin'
+import jsonServerProvider from 'ra-data-json-server'
+import {
+  MovilCreateForm,
+  MovilEditForm,
+  MovilesTable,
+  MyLayout,
+  OperariosTable,
+  OperativosCreateForm,
+  OperativosEditForm,
+} from '../../components'
+import polyglotI18nProvider from 'ra-i18n-polyglot'
+// @ts-ignore
+import spanishMessages from '@blackbox-vision/ra-language-spanish'
 
 function Radio() {
-  const [table, setTable] = useLocalStorage('tabla')
+  const restProvider = jsonServerProvider(
+    import.meta.env.VITE_BASE_URL + '/radio'
+  )
+  const i18nProvider = polyglotI18nProvider(
+    () => spanishMessages,
+    resolveBrowserLocale()
+  )
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginTop: 2,
-      }}
+    <Admin
+      dataProvider={restProvider}
+      layout={MyLayout}
+      store={memoryStore()}
+      i18nProvider={i18nProvider}
+      basename="/radio"
     >
-      <Box
-        sx={{ display: 'flex', justifyContent: 'space-between', width: '25%' }}
-      >
-        <Button variant="outlined" onClick={() => setTable('operarios')}>
-          Operarios
-        </Button>
-        <Button variant="outlined" onClick={() => setTable('moviles')}>
-          Moviles
-        </Button>
-      </Box>
-      {table === 'operarios' ? (
-        <OperariosTable table={table} />
-      ) : (
-        <MovilesTable table={table} />
-      )}
-    </Box>
+      <Resource
+        name="operarios"
+        list={OperariosTable}
+        create={OperativosCreateForm}
+        edit={OperativosEditForm}
+      />
+      <Resource
+        name="moviles"
+        list={MovilesTable}
+        create={MovilCreateForm}
+        edit={MovilEditForm}
+      />
+    </Admin>
   )
 }
 

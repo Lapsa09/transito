@@ -100,11 +100,11 @@ const EditServicio = (props) => {
 function ToolBar() {
   const navigate = useRedirect()
   return (
-    <Toolbar sx={{ gap: '10px' }}>
+    <Toolbar sx={style.toolbar}>
       <Button
         size="medium"
         variant="contained"
-        sx={{ backgroundColor: 'red' }}
+        sx={style.toolbarButton}
         onClick={() => navigate('-1')}
         startIcon={<CancelIcon />}
         label="Cancelar"
@@ -112,6 +112,15 @@ function ToolBar() {
       <SaveButton>Guardar</SaveButton>
     </Toolbar>
   )
+}
+
+const style = {
+  toolbar: {
+    gap: '10px',
+  },
+  toolbarButton: {
+    backgroundColor: 'red',
+  },
 }
 
 export default EditServicio

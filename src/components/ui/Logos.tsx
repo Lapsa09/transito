@@ -28,7 +28,7 @@ export const LogoOVT = () => {
 
 export const MainLogoOVT = () => {
   return (
-    <Box sx={[sxStyles.basicMaxHeight, { textAlign: 'center' }]}>
+    <Box sx={[sxStyles.basicMaxHeight, style.text]}>
       <img
         style={{ width: 'inherit' }}
         src={logoOVT}
@@ -36,4 +36,8 @@ export const MainLogoOVT = () => {
       />
     </Box>
   )
+}
+
+const style = {
+  text: { textAlign: 'center' },
 }

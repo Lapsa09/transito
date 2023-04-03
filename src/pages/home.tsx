@@ -33,7 +33,7 @@ export default function Home() {
           allowFullScreen={true}
         ></iframe>
       ) : (
-        <Grid container sx={{ display: { xs: 'flex', lg: 'none' } }}>
+        <Grid container sx={style.container}>
           <CustomizedMenus id={1} label="Operativos">
             <CustomMenuItem onClick={() => navigate('/operativos/autos')}>
               Autos
@@ -68,4 +68,8 @@ export default function Home() {
       )}
     </div>
   )
+}
+
+const style = {
+  container: { display: { xs: 'flex', lg: 'none' } },
 }

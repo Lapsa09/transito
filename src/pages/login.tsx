@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
 import { CustomTextField, MainLogoOVT } from '../components'
-import { history, styles } from '../utils'
+import { history, sxStyles } from '../utils'
 import { LoginUserProps } from '../types'
 import '../styles/login.css'
 
@@ -28,7 +28,7 @@ function Login() {
       <MainLogoOVT />
       <Box
         component="form"
-        sx={styles.basicWidth}
+        sx={sxStyles.basicWidth}
         className="form"
         onSubmit={handleSubmit(submitEvent)}
       >
@@ -43,7 +43,7 @@ function Login() {
           label="Contraseña"
         />
         {error?.name && <FormHelperText error>{error.message}</FormHelperText>}
-        <Box className="buttons" sx={styles.basicWidth}>
+        <Box className="buttons" sx={sxStyles.basicWidth}>
           <Button type="submit" variant="contained">
             Iniciar sesion
           </Button>

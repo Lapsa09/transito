@@ -4,7 +4,7 @@ import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm, FormProvider } from 'react-hook-form'
 import { CustomTextField, MainLogoOVT } from '../components'
-import { history, styles } from '../utils'
+import { history, sxStyles } from '../utils'
 import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
 import '../styles/register.css'
 import { RegisterUserProps } from '../types'
@@ -38,7 +38,7 @@ function Register() {
       <div className="register">
         <MainLogoOVT />
         <Box
-          sx={styles.basicWidth}
+          sx={sxStyles.basicWidth}
           component="form"
           className="form"
           onSubmit={handleSubmit(submitEvent)}
@@ -80,7 +80,7 @@ function Register() {
           {error?.code && (
             <FormHelperText error>{error.message}</FormHelperText>
           )}
-          <Box sx={styles.basicWidth} className="buttons">
+          <Box sx={sxStyles.basicWidth} className="buttons">
             <Button onClick={loginNav}>
               Ya te registraste? ir a iniciar Sesion
             </Button>

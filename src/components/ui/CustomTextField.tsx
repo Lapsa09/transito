@@ -32,7 +32,7 @@ function CustomTextField<T>({
     name,
     control,
     rules,
-    defaultValue: null,
+    defaultValue: '' as any,
   })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +111,7 @@ function FileNumberField<T>({
   name,
   className = '',
   label,
+  ...props
 }: Props<T>) {
   return (
     <CustomTextField
@@ -119,6 +120,7 @@ function FileNumberField<T>({
       name={name}
       control={control}
       type="number"
+      {...props}
       rules={{
         required: 'Ingrese un legajo',
         pattern: {

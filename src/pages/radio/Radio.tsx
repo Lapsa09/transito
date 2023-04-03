@@ -5,7 +5,6 @@ import {
   MovilCreateForm,
   MovilEditForm,
   MovilesTable,
-  MyLayout,
   OperariosTable,
   OperativosCreateForm,
   OperativosEditForm,
@@ -13,6 +12,7 @@ import {
 import polyglotI18nProvider from 'ra-i18n-polyglot'
 // @ts-ignore
 import spanishMessages from '@blackbox-vision/ra-language-spanish'
+import { LayoutWithoutSidebar } from '../../layouts'
 
 function Radio() {
   const restProvider = jsonServerProvider(
@@ -26,7 +26,7 @@ function Radio() {
   return (
     <Admin
       dataProvider={restProvider}
-      layout={MyLayout}
+      layout={LayoutWithoutSidebar}
       store={memoryStore()}
       i18nProvider={i18nProvider}
       basename="/radio"

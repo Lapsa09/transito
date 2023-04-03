@@ -3,7 +3,7 @@ import { Datagrid, EditButton, List, TextField } from 'react-admin'
 
 function MovilesTable() {
   return (
-    <List empty={false} sx={{ width: '80%', marginInline: 'auto' }}>
+    <List empty={false} sx={styles.table}>
       <Datagrid bulkActionButtons={false}>
         <TextField source="movil" />
         <TextField source="estado" />
@@ -12,6 +12,13 @@ function MovilesTable() {
       </Datagrid>
     </List>
   )
+}
+
+const styles = {
+  table: {
+    width: '80%',
+    marginInline: 'auto',
+  },
 }
 
 export default MovilesTable

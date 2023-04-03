@@ -48,17 +48,14 @@ function History() {
   return (
     <div className={style.historial}>
       <Drawer variant="permanent" anchor="left" className={style.sidebar}>
-        <List sx={{ overflowY: 'auto' }}>
+        <List sx={styles.list}>
           {meses.map((mes) => (
-            <ListItem
-              key={mes.mes}
-              sx={{ display: 'block', overflowY: 'auto' }}
-            >
+            <ListItem key={mes.mes} sx={styles.listItem}>
               <ListItemButton onClick={() => setCollapseOpen(mes.mes)}>
                 <ListItemText primary={mesName[mes.mes]} />
                 {open === mes.mes ? <ExpandMore /> : <ChevronRight />}
               </ListItemButton>
-              <Collapse in={open === mes.mes} sx={{ marginLeft: '20px' }}>
+              <Collapse in={open === mes.mes} sx={styles.collapsible}>
                 {mes.fechas.map((dia) => (
                   <ListItemButton
                     key={dia.id}
@@ -96,6 +93,12 @@ function History() {
       </div>
     </div>
   )
+}
+
+const styles = {
+  list: { overflowY: 'auto' },
+  listItem: { display: 'block', overflowY: 'auto' },
+  collapsible: { marginLeft: '20px' },
 }
 
 export default History

@@ -38,11 +38,11 @@ function EditPrecio(props) {
 function ToolBar() {
   const navigate = useRedirect()
   return (
-    <Toolbar sx={{ gap: '10px' }}>
+    <Toolbar sx={style.toolbar}>
       <Button
         size="medium"
         variant="contained"
-        sx={{ backgroundColor: 'red' }}
+        sx={style.toolbarButton}
         onClick={() => navigate('/sueldos')}
         startIcon={<CancelIcon />}
         label="Cancelar"
@@ -51,4 +51,14 @@ function ToolBar() {
     </Toolbar>
   )
 }
+
+const style = {
+  toolbar: {
+    gap: '10px',
+  },
+  toolbarButton: {
+    backgroundColor: 'red',
+  },
+}
+
 export default EditPrecio

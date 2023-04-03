@@ -4,6 +4,7 @@ import jsonServerProvider from 'ra-data-json-server'
 import polyglotI18nProvider from 'ra-i18n-polyglot'
 // @ts-ignore
 import spanishMessages from '@blackbox-vision/ra-language-spanish'
+import { LayoutWithoutAppbar } from '../../layouts'
 
 const DashBoard = lazy(() => import('./DashBoard'))
 const Operarios = lazy(() => import('./Operarios'))
@@ -13,7 +14,6 @@ const Servicios = lazy(() => import('./Servicios'))
 const EditServicio = lazy(() => import('./EditServicio'))
 const Liqui = lazy(() => import('./Liqui'))
 const EditPrecio = lazy(() => import('./EditPrecio'))
-const Layout = lazy(() => import('../../components/sueldos/MyLayout'))
 
 const Sueldos = () => {
   const restProvider = jsonServerProvider(
@@ -44,7 +44,7 @@ const Sueldos = () => {
   return (
     <Admin
       i18nProvider={i18nProvider}
-      layout={Layout}
+      layout={LayoutWithoutAppbar}
       dashboard={DashBoard}
       dataProvider={restProvider}
       store={memoryStore()}

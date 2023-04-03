@@ -81,7 +81,7 @@ function Header() {
     <AppBar position="sticky" color="default">
       <Toolbar sx={[sxStyles.spaceBetween]}>
         <LogoVL link />
-        <Box sx={[sxStyles.flexSmall, { flexGrow: 1, maxWidth: '245px' }]}>
+        <Box sx={[sxStyles.flexSmall, style.smallHeader]}>
           <IconButton
             size="large"
             aria-label="account of current user"
@@ -95,9 +95,7 @@ function Header() {
           <Drawer
             anchor="left"
             open={Boolean(anchorElNav)}
-            sx={{
-              display: { xs: 'block', lg: 'none' },
-            }}
+            sx={style.smallDrawer}
             onClose={handleCloseNavMenu}
           >
             <List>
@@ -107,10 +105,7 @@ function Header() {
                 pages.map((page) =>
                   page.links ? (
                     <ListItem
-                      sx={[
-                        sxStyles.flexColumn,
-                        { alignItems: 'flex-start', padding: 0 },
-                      ]}
+                      sx={[sxStyles.flexColumn, style.navLinks]}
                       key={page.name}
                     >
                       <ListItemButton
@@ -125,7 +120,7 @@ function Header() {
                         )}
                       </ListItemButton>
                       <Collapse
-                        sx={{ marginLeft: '20px' }}
+                        sx={style.collapsible}
                         in={dropdown === page.name}
                       >
                         {page.links.map((link) => (
@@ -154,7 +149,7 @@ function Header() {
           </Drawer>
           <Logout className={styles.logout} onClick={handleLogout} />
         </Box>
-        <Box sx={[sxStyles.flexLarge, { flexGrow: 1, marginInline: '60px' }]}>
+        <Box sx={[sxStyles.flexLarge, style.largeHeader]}>
           {pages
             .filter((page) => user.isAdmin() || user.rol === page.permission)
             .map((page) => (
@@ -186,6 +181,14 @@ function Header() {
       </Toolbar>
     </AppBar>
   )
+}
+
+const style = {
+  smallHeader: { flexGrow: 1, maxWidth: '245px' },
+  largeHeader: { flexGrow: 1, marginInline: '60px' },
+  smallDrawer: { display: { xs: 'block', lg: 'none' } },
+  navLinks: { alignItems: 'flex-start', padding: 0 },
+  collapsible: { marginLeft: '20px' },
 }
 
 export default Header

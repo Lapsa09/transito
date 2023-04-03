@@ -5,7 +5,7 @@ import { sxStyles } from '../../utils'
 function CustomStepper({ steps, isCompleted, handleStep, activeStep }) {
   return (
     <Stepper
-      sx={[sxStyles.fullWidth, { my: '10px' }]}
+      sx={[sxStyles.fullWidth, styles.stepper]}
       nonLinear
       activeStep={activeStep}
     >
@@ -18,6 +18,12 @@ function CustomStepper({ steps, isCompleted, handleStep, activeStep }) {
       ))}
     </Stepper>
   )
+}
+
+const styles = {
+  stepper: {
+    my: '10px',
+  },
 }
 
 export default CustomStepper

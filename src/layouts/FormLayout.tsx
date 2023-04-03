@@ -141,7 +141,7 @@ function FormLayout<T>({
       <div className={styles.header}>
         <LogoVL />
         <Button onClick={handleClose}>Cerrar</Button>
-        <Button color="error" onClick={() => setOpen(true)} sx={{ mr: 1 }}>
+        <Button color="error" onClick={() => setOpen(true)} sx={style.button}>
           Nuevo Operativo
         </Button>
         <LogoOVT />
@@ -166,20 +166,20 @@ function FormLayout<T>({
               </CustomStepForm>
             ))}
           </Box>
-          <Box sx={[sxStyles.flexRow, { pt: 2 }]}>
+          <Box sx={[sxStyles.flexRow, style.actions]}>
             <Button
               disabled={isFirstStep()}
               onClick={handleBack}
-              sx={{ mr: 1 }}
+              sx={style.button}
             >
               Anterior
             </Button>
-            <Box sx={{ flex: '0.45 1 auto' }} />
+            <Box sx={style.splitter} />
             {activeStep === 0 ? (
               <Button
                 onClick={handleNext}
                 disabled={isLastStep()}
-                sx={{ mr: 1 }}
+                sx={style.button}
               >
                 Siguiente
               </Button>
@@ -211,7 +211,7 @@ const WarningModal = ({ close, reset, open }) => {
         </p>
         <DialogActions sx={sxStyles.flex}>
           <Button onClick={close}>No</Button>
-          <Box sx={{ flex: '1 1 auto' }} />
+          <Box sx={style.dialogSplitter} />
           <Button
             onClick={() => {
               reset()
@@ -224,6 +224,13 @@ const WarningModal = ({ close, reset, open }) => {
       </DialogContent>
     </Dialog>
   )
+}
+
+const style = {
+  button: { mr: 1 },
+  actions: { pt: 2 },
+  splitter: { flex: '0.45 1 auto' },
+  dialogSplitter: { flex: '1 1 auto' },
 }
 
 export default FormLayout

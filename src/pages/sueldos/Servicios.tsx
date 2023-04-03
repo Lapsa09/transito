@@ -60,7 +60,7 @@ function Servicios() {
       source="no_memo"
       label="Buscar los sin memos"
       defaultValue="true"
-      sx={{ marginBottom: 1.5 }}
+      sx={style.chip}
     />,
   ]
 
@@ -143,6 +143,10 @@ function Servicios() {
       </div>
     </ListContextProvider>
   )
+}
+
+const style = {
+  chip: { marginBottom: 1.5 },
 }
 
 export default Servicios

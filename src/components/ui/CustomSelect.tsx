@@ -17,7 +17,7 @@ function CustomSelect<T, K>({
   name,
   rules,
   options,
-  defaultValue,
+  defaultValue = '',
   optionId = 'id',
   optionLabel = 'label',
   ...props

@@ -1,7 +1,6 @@
 export { default as ClientesMes } from './ClientesMes'
 export { default as ClientesServicios } from './ClientesServicios'
 export * from './FormComponents'
-export { default as MyLayout } from './MyLayout'
 export * from './OperariosServicios'
 export * from './QuickCreate'
 export * from './ServiciosMemo'

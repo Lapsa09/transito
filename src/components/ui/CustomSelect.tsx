@@ -17,7 +17,7 @@ function CustomSelect<T, K>({
   name,
   rules,
   options,
-  defaultValue = '',
+  defaultValue = null,
   optionId = 'id',
   optionLabel = 'label',
   ...props
@@ -43,7 +43,7 @@ function CustomSelect<T, K>({
     >
       <MenuItem value="">ELIJA UNA OPCION</MenuItem>
       {options?.map((option: Enums & K) =>
-        option.enumlabel ? (
+        'enumlabel' in option ? (
           <MenuItem key={option.enumlabel} value={option.enumlabel}>
             {option.enumlabel}
           </MenuItem>

@@ -28,7 +28,7 @@ function CustomAutocomplete<T, K>({
     name,
     control,
     rules,
-    defaultValue: '' as any,
+    defaultValue: null as any,
   })
   const optionLabel = (option): string => {
     return option[labelOption]

@@ -131,8 +131,8 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
         ...data,
         dominio: '',
         licencia: undefined,
-        tipo_licencia: null,
-        zona_infractor: null,
+        tipo_licencia: undefined,
+        zona_infractor: undefined,
         acta: undefined,
       },
       { keepDefaultValues: true }

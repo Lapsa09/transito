@@ -29,7 +29,7 @@ function App() {
   }, [])
 
   return (
-    <CustomSnackbar>
+    <>
       {user.legajo ? <Header /> : null}
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -49,7 +49,8 @@ function App() {
           <Route path="/waze/*" element={<Waze />} />
         </Route>
       </Routes>
-    </CustomSnackbar>
+      <CustomSnackbar />
+    </>
   )
 }
 

@@ -102,7 +102,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const submitEvent = async (data: CamionesForm) => {
     const res = await nuevoOperativoCamiones(data)
     afterCreate(res)
-    setFocus('dominio')
+    setFocus('hora')
     reset(
       {
         ...data,
@@ -126,7 +126,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
 
   useEffect(() => {
     if (!esSancionable) {
-      setValue('acta', null)
+      setValue('acta', undefined)
       setValue('motivo', null)
     }
   }, [esSancionable])
@@ -149,7 +149,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="fecha"
               label="Fecha"
               disabled={!user.isAdmin()}
-              defaultValue={!user.isAdmin() ? currentDate() : ''}
+              defaultValue={!user.isAdmin() ? currentDate : ''}
             />
           </Grid>
           <Grid item xs={8}>
@@ -196,7 +196,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="hora"
               label="Hora"
               disabled={!user.isAdmin()}
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate : null}
             />
           </Grid>
           <Grid item xs={8}>

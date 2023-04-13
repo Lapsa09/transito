@@ -77,7 +77,7 @@ function FormLayout<T>({
     const expirationTime = operativo?.expiresAt
     setOperativo({
       ...steps[0].values,
-      expiresAt: expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
+      expiresAt: expirationTime || currentDate.plus({ hours: 8 }).toMillis(),
     })
   }
 
@@ -90,7 +90,7 @@ function FormLayout<T>({
 
   const cargarOperativo = () => {
     try {
-      if (currentDate().toMillis() < operativo.expiresAt) {
+      if (currentDate.toMillis() < operativo.expiresAt) {
         Object.entries(operativo).forEach(([key, value]: [Path<T>, any]) => {
           key === 'fecha' || key === 'hora'
             ? setValue(key, DateTime.fromISO(value) as PathValue<T, Path<T>>)

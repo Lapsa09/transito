@@ -15,7 +15,7 @@ export const dateTimeFormat = (datetime) =>
     zone: 'America/Argentina/Buenos_Aires',
   }).toFormat('dd/MM/yyyy HH:mm')
 
-export const currentDate = () => DateTime.now().setLocale('es-AR')
+export const currentDate = DateTime.now().setLocale('es-AR')
 
 export const dateTimeSQLFormat = (datetime) =>
   DateTime.fromSQL(datetime, {

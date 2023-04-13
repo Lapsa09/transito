@@ -34,9 +34,9 @@ function CustomDatePicker<T>({
       validate: {
         validDate: (v: PathValue<T, Path<T>> & DateTime) => v.isValid,
         minDate: (v: PathValue<T, Path<T>> & DateTime) =>
-          v.toMillis() > currentDate().minus({ months: 6 }).toMillis(),
+          v.toMillis() > currentDate.minus({ months: 6 }).toMillis(),
         maxDate: (v: PathValue<T, Path<T>> & DateTime) =>
-          v.toMillis() < currentDate().toMillis(),
+          v.toMillis() < currentDate.toMillis(),
       },
     },
     defaultValue,
@@ -60,7 +60,7 @@ function CustomDatePicker<T>({
             error={invalid}
           />
         )}
-        minDate={currentDate().minus({ month: 6 })}
+        minDate={currentDate.minus({ month: 6 })}
         disableFuture
       />
     </LocalizationProvider>

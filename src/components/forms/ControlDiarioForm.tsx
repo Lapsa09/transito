@@ -118,7 +118,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               label="Fecha"
               name="fecha"
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate : null}
               disabled={!user.isAdmin()}
             />
           </Grid>
@@ -147,7 +147,7 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="hora"
               label="Hora"
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate : null}
               disabled={!user.isAdmin()}
             />
           </Grid>

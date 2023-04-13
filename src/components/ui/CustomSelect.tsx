@@ -6,7 +6,7 @@ import { sxStyles } from '../../utils'
 
 type Props<T, K> = Omit<UseControllerProps<T>, 'defaultValue'> &
   Omit<TextFieldProps, 'name' | 'defaultValue' | 'variant'> & {
-    options?: Enums[] & K[]
+    options?: Enums[] | K[]
     optionId?: string
     optionLabel?: string
     defaultValue?: any
@@ -42,7 +42,7 @@ function CustomSelect<T, K>({
       {...props}
     >
       <MenuItem value="">ELIJA UNA OPCION</MenuItem>
-      {options?.map((option: Enums & K) =>
+      {options?.map((option) =>
         'enumlabel' in option ? (
           <MenuItem key={option.enumlabel} value={option.enumlabel}>
             {option.enumlabel}

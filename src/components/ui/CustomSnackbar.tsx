@@ -9,7 +9,7 @@ import {
   closeSnackbar,
 } from '../../redux'
 
-function SnackBarProvider({ children }) {
+function SnackBarProvider() {
   const dispatch = useDispatch<AppDispatch>()
   const { open, response } = useSelector<IRootState, SnackbarState>(
     (state) => state.snackbar
@@ -18,18 +18,15 @@ function SnackBarProvider({ children }) {
     dispatch(closeSnackbar())
   }
   return (
-    <>
-      {children}
-      <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-        <Alert
-          onClose={handleClose}
-          severity={response.severity}
-          sx={sxStyles.fullWidth}
-        >
-          {response.message}
-        </Alert>
-      </Snackbar>
-    </>
+    <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+      <Alert
+        onClose={handleClose}
+        severity={response.severity}
+        sx={sxStyles.fullWidth}
+      >
+        {response.message}
+      </Alert>
+    </Snackbar>
   )
 }
 

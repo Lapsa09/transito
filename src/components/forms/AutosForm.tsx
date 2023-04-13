@@ -109,7 +109,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
 
   useEffect(() => {
     if (!esSancionable) {
-      setValue('acta', null)
+      setValue('acta', undefined)
       setValue('motivo', null)
     }
   }, [esSancionable])
@@ -132,7 +132,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="fecha"
               disabled={!user.isAdmin()}
               label="Fecha"
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate : null}
             />
           </Grid>
           <Grid item xs={8}>

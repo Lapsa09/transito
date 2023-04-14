@@ -64,7 +64,7 @@ const Sueldos = () => {
         list={Liqui}
         options={{ label: 'Liquidacion x Mes' }}
       />
-      <Resource name="precios" edit={EditPrecio} />
+      <Resource name="precios" list={EditPrecio} />
     </Admin>
   )
 }

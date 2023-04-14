@@ -15,7 +15,7 @@ import {
 import { LEGAJO_PATTERN, DOMINIO_PATTERN } from '../../utils'
 
 type Props<T> = UseControllerProps<T> &
-  Omit<TextFieldProps, 'name' | 'defaultValue' | 'variant'>
+  Omit<TextFieldProps, 'name' | 'defaultValue'>
 
 function CustomTextField<T>({
   control,
@@ -23,6 +23,7 @@ function CustomTextField<T>({
   rules,
   label,
   type = 'text',
+  variant = 'outlined',
   ...props
 }: Props<T>) {
   const {
@@ -52,6 +53,7 @@ function CustomTextField<T>({
       fullWidth
       type={type}
       inputRef={ref}
+      variant={variant}
       {...props}
     />
   )

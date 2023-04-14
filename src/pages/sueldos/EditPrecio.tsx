@@ -1,54 +1,59 @@
 import React from 'react'
-import {
-  Button,
-  Edit,
-  NumberInput,
-  SaveButton,
-  SimpleForm,
-  Toolbar,
-  useRedirect,
-} from 'react-admin'
-import CancelIcon from '@mui/icons-material/Cancel'
-import styles from '../../styles/Sueldos.module.css'
+import { useDataProvider, useNotify, useRedirect, useUpdate } from 'react-admin'
+import { CustomTextField } from '../../components'
+import { useForm } from 'react-hook-form'
+import { Button } from '@mui/material'
 
-function EditPrecio(props) {
-  const redirect = useRedirect()
-  return (
-    <Edit
-      mutationOptions={{ onSuccess: () => redirect('/sueldos') }}
-      {...props}
-    >
-      <SimpleForm toolbar={<ToolBar />}>
-        <NumberInput
-          className={styles.inputs}
-          source="precio_normal"
-          label="Precio Normal"
-          isRequired
-        />
-        <NumberInput
-          className={styles.inputs}
-          source="precio_pico"
-          label="Precio Pico"
-        />
-      </SimpleForm>
-    </Edit>
-  )
-}
+function EditPrecio() {
+  const router = useRedirect()
 
-function ToolBar() {
-  const navigate = useRedirect()
   return (
-    <Toolbar sx={style.toolbar}>
+    <div>
+      <PrecioField name="precio_normal" label="Precio Normal" />
+      <PrecioField name="precio_pico" label="Precio Pico" />
       <Button
         size="medium"
         variant="contained"
         sx={style.toolbarButton}
-        onClick={() => navigate('/sueldos')}
-        startIcon={<CancelIcon />}
-        label="Cancelar"
+        onClick={() => router('/sueldos')}
+      >
+        Volver
+      </Button>
+    </div>
+  )
+}
+
+function PrecioField({ name, label }) {
+  const provider = useDataProvider()
+  const { control, handleSubmit } = useForm({
+    defaultValues: async () => {
+      const { data } = await provider.getOne('precios', { id: name })
+      return data
+    },
+  })
+  const [update] = useUpdate()
+  const notify = useNotify()
+
+  const onSubmit = async (data) => {
+    await update(
+      'precios',
+      { id: name, data },
+      { onSuccess: () => notify(`${label} actualizado`) }
+    )
+  }
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} style={style.inputRow}>
+      <CustomTextField
+        type="number"
+        control={control}
+        name="precio"
+        label={label}
+        rules={{ required: true }}
       />
-      <SaveButton>Guardar</SaveButton>
-    </Toolbar>
+      <Button variant="contained" color="success" type="submit">
+        Guardar
+      </Button>
+    </form>
   )
 }
 
@@ -58,6 +63,12 @@ const style = {
   },
   toolbarButton: {
     backgroundColor: 'red',
+  },
+  inputRow: {
+    display: 'flex',
+    maxWidth: '300px',
+    gap: '10px',
+    marginTop: '10px',
   },
 }
 

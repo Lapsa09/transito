@@ -133,7 +133,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="fecha"
               disabled={!user.isAdmin()}
               label="Fecha"
-              defaultValue={!user.isAdmin() ? currentDate : null}
+              defaultValue={!user.isAdmin() ? currentDate() : null}
             />
           </Grid>
           <Grid item xs={8}>

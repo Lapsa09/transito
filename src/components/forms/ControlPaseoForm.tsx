@@ -60,7 +60,10 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   const submitting = async (data: PaseoForm) => {
     const res = await nuevoControlPaseo(data)
     setFocus('dominio')
-    reset({ ...data, dominio: '' }, { keepDefaultValues: true })
+    reset(
+      { ...data, dominio: '', extranjero: false },
+      { keepDefaultValues: true }
+    )
     if (user.isAdmin()) {
       afterCreate(res)
     } else {

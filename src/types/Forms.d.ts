@@ -31,6 +31,7 @@ export interface FormInputProps {
   tipo_licencia?: ILicencias
   resolucion?: string
   acta?: number
+  extranjero?: boolean
 }
 
 export type RadioOPForm = {

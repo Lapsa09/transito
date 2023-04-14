@@ -116,6 +116,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         carga: false,
         motivo: null,
         acta: undefined,
+        extranjero: false,
       },
       { keepDefaultValues: true }
     )

@@ -102,6 +102,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         tipo_licencia: null,
         graduacion_alcoholica: undefined,
         acta: undefined,
+        extranjero: false,
       },
       { keepDefaultValues: true }
     )

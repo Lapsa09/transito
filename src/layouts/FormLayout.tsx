@@ -16,12 +16,20 @@ import {
 import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
-import { Path, PathValue, useFormContext } from 'react-hook-form'
+import {
+  DeepPartial,
+  FormProvider,
+  Path,
+  PathValue,
+  useForm,
+} from 'react-hook-form'
 import { SerializedError } from '@reduxjs/toolkit'
+import { useSelector } from 'react-redux'
+import { IRootState, IRootUser } from '../redux'
 
 interface Props<T> {
   children: JSX.Element[]
-  steps: { label: string; values: any }[]
+  steps: Record<string, any>[]
   activeStep: number
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
   handleClose: () => void
@@ -44,15 +52,21 @@ function FormLayout<T>({
   error,
   submitEvent,
 }: Props<T>) {
+  const { user } = useSelector<IRootState, IRootUser>((state) => state.user)
   const [open, setOpen] = useState(false)
   const [operativo, setOperativo] = useLocalStorage<Operativo<T>>(path)
   const { handleError, handleSuccess } = useSnackBar()
+  const methods = useForm<T>({
+    defaultValues: { lpcarga: user.legajo } as unknown as DeepPartial<T>,
+    mode: 'all',
+  })
+
   const {
     setValue,
     reset,
     handleSubmit,
     formState: { isValid },
-  } = useFormContext<T>()
+  } = methods
 
   const totalSteps = () => {
     return steps.length
@@ -159,13 +173,19 @@ function FormLayout<T>({
           className={styles.form__box}
           autoComplete="off"
         >
-          <Box sx={sxStyles.flex}>
-            {children?.map((child, index) => (
-              <CustomStepForm key={index} activeStep={activeStep} step={index}>
-                {child}
-              </CustomStepForm>
-            ))}
-          </Box>
+          <FormProvider {...methods}>
+            <Box sx={sxStyles.flex}>
+              {children?.map((child, index) => (
+                <CustomStepForm
+                  key={index}
+                  activeStep={activeStep}
+                  step={index}
+                >
+                  {child}
+                </CustomStepForm>
+              ))}
+            </Box>
+          </FormProvider>
           <Box sx={[sxStyles.flexRow, style.actions]}>
             <Button
               disabled={isFirstStep()}

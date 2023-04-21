@@ -13,7 +13,7 @@ import { DateTime } from 'luxon'
 
 type Props<T> = UseControllerProps<T> & {
   label: string
-  disabled: boolean
+  disabled?: boolean
 }
 
 function CustomDatePicker<T>({

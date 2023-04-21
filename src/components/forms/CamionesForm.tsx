@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { nuevoOperativoCamiones } from '../../services'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import {
   DatePicker,
   TimePicker,
@@ -37,11 +37,8 @@ interface CamionesForm extends FormInputProps {
 
 function OperativosForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const methods = useForm<CamionesForm>({
-    mode: 'all',
-    defaultValues: { lpcarga: user.legajo },
-  })
-  const { control, reset, getValues, watch, setValue, setFocus } = methods
+  const { control, reset, getValues, watch, setValue, setFocus } =
+    useFormContext<CamionesForm>()
   const {
     selects: { vicente_lopez, barrios, turnos, resolucion, motivos },
     error,
@@ -133,160 +130,154 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   }, [esSancionable])
 
   return (
-    <FormProvider {...methods}>
-      <Layout
-        error={error}
-        steps={steps()}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
-        handleClose={handleClose}
-        submitEvent={submitEvent}
-        path="camiones"
-      >
-        <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
-          <Grid item xs={8}>
-            <DatePicker
-              control={control}
-              name="fecha"
-              label="Fecha"
-              disabled={!user.isAdmin()}
-              defaultValue={!user.isAdmin() ? currentDate() : ''}
-            />
+    <Layout
+      error={error}
+      steps={steps()}
+      activeStep={activeStep}
+      setActiveStep={setActiveStep}
+      handleClose={handleClose}
+      submitEvent={submitEvent}
+      path="camiones"
+    >
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <DatePicker
+            control={control}
+            name="fecha"
+            label="Fecha"
+            disabled={!user.isAdmin()}
+            defaultValue={!user.isAdmin() ? currentDate() : ''}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField
+            control={control}
+            name="direccion"
+            label="Direccion"
+            rules={{ required: 'Inserte una direccion valida' }}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomAutocomplete
+            control={control}
+            name="zona"
+            label="Zona"
+            rules={{ required: 'Inserte una localidad' }}
+            options={vicente_lopez}
+            labelOption="barrio"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField.LEGAJO
+            control={control}
+            name="legajo"
+            label="Legajo"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="turno"
+            label="Turno"
+            rules={{ required: 'Elija una opcion' }}
+            options={turnos}
+            disabled={!user.isAdmin()}
+            defaultValue={!user.isAdmin() ? user.turno : ''}
+          />
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <TimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            disabled={!user.isAdmin()}
+            defaultValue={!user.isAdmin() ? currentDate() : null}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField.DOMINIO control={control} name="dominio" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="origen" label="Origen" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomAutocomplete
+            control={control}
+            name="localidad_origen"
+            label="Localidad de origen"
+            rules={{ required: 'Elija una opcion' }}
+            options={barrios}
+            labelOption="barrio"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="destino" label="Destino" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomAutocomplete
+            control={control}
+            name="localidad_destino"
+            label="Localidad de destino"
+            rules={{ required: 'Elija una opcion' }}
+            options={barrios}
+            labelOption="barrio"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField control={control} name="licencia" label="Licencia" />
+        </Grid>
+        <Grid
+          item
+          container
+          md={6}
+          sm={12}
+          justifyContent="center"
+          columnGap={2}
+        >
+          <Grid item xs={4}>
+            <CustomSwitch control={control} name="remito" label="Remito" />
           </Grid>
-          <Grid item xs={8}>
-            <CustomTextField
-              control={control}
-              name="direccion"
-              label="Direccion"
-              rules={{ required: 'Inserte una direccion valida' }}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomAutocomplete
-              control={control}
-              name="zona"
-              label="Zona"
-              rules={{ required: 'Inserte una localidad' }}
-              options={vicente_lopez}
-              labelOption="barrio"
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomTextField.LEGAJO
-              control={control}
-              name="legajo"
-              label="Legajo"
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomSelect
-              control={control}
-              name="turno"
-              label="Turno"
-              rules={{ required: 'Elija una opcion' }}
-              options={turnos}
-              disabled={!user.isAdmin()}
-              defaultValue={!user.isAdmin() ? user.turno : ''}
-            />
+          <Grid item xs={4}>
+            <CustomSwitch control={control} name="carga" label="Carga" />
           </Grid>
         </Grid>
-        <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
-          <Grid item xs={8}>
-            <TimePicker
-              control={control}
-              name="hora"
-              label="Hora"
-              disabled={!user.isAdmin()}
-              defaultValue={!user.isAdmin() ? currentDate() : null}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomTextField.DOMINIO control={control} name="dominio" />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomTextField control={control} name="origen" label="Origen" />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomAutocomplete
-              control={control}
-              name="localidad_origen"
-              label="Localidad de origen"
-              rules={{ required: 'Elija una opcion' }}
-              options={barrios}
-              labelOption="barrio"
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomTextField control={control} name="destino" label="Destino" />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomAutocomplete
-              control={control}
-              name="localidad_destino"
-              label="Localidad de destino"
-              rules={{ required: 'Elija una opcion' }}
-              options={barrios}
-              labelOption="barrio"
-            />
-          </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="resolucion"
+            label="Resolucion"
+            options={resolucion}
+          />
+        </Grid>
+        {esSancionable && (
           <Grid item xs={8}>
             <CustomTextField
+              type="number"
               control={control}
-              name="licencia"
-              label="Licencia"
+              name="acta"
+              label="Acta"
+              rules={{
+                required: 'Ingrese un nro de acta',
+              }}
             />
           </Grid>
-          <Grid
-            item
-            container
-            md={6}
-            sm={12}
-            justifyContent="center"
-            columnGap={2}
-          >
-            <Grid item xs={4}>
-              <CustomSwitch control={control} name="remito" label="Remito" />
-            </Grid>
-            <Grid item xs={4}>
-              <CustomSwitch control={control} name="carga" label="Carga" />
-            </Grid>
-          </Grid>
+        )}
+        {esSancionable && (
           <Grid item xs={8}>
-            <CustomSelect
+            <CustomAutocomplete
               control={control}
-              name="resolucion"
-              label="Resolucion"
-              options={resolucion}
+              name="motivo"
+              label="Motivo"
+              options={motivos}
+              rules={{ required: 'Inserte un motivo valido' }}
+              labelOption="motivo"
             />
           </Grid>
-          {esSancionable && (
-            <Grid item xs={8}>
-              <CustomTextField
-                type="number"
-                control={control}
-                name="acta"
-                label="Acta"
-                rules={{
-                  required: 'Ingrese un nro de acta',
-                }}
-              />
-            </Grid>
-          )}
-          {esSancionable && (
-            <Grid item xs={8}>
-              <CustomAutocomplete
-                control={control}
-                name="motivo"
-                label="Motivo"
-                options={motivos}
-                rules={{ required: 'Inserte un motivo valido' }}
-                labelOption="motivo"
-              />
-            </Grid>
-          )}
-        </Grid>
-      </Layout>
-    </FormProvider>
+        )}
+      </Grid>
+    </Layout>
   )
 }
 

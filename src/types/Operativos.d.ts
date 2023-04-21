@@ -91,3 +91,14 @@ export interface IMotivos {
   id_motivo: number
   motivo: string
 }
+
+export interface Logistica {
+  id: number
+  fecha: string
+  no_orden: number
+  area: string
+  tipo: string
+  cantidad: number
+  stock: number
+  taller: string
+}

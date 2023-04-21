@@ -116,12 +116,16 @@ function createExtraReducers() {
       state.error = emptyError
     },
     fulfilled: (state, action) => {
-      const user = action.payload
+      const token = action.payload
 
-      localStorage.setItem('token', user)
-      state.user = { ...state.user, ...jwt_decode(user) }
+      localStorage.setItem('token', token)
 
-      const { pathname } = history.location || { pathname: '/' }
+      const user: User = jwt_decode(token)
+      state.user = { ...state.user, ...user }
+
+      const { pathname } = history.location || {
+        pathname: user.rol === Roles.ADMINISTRATIVO ? '/sueldos' : '/',
+      }
       history.navigate(pathname)
     },
     rejected: (state, action) => {

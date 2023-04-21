@@ -1,6 +1,7 @@
 export * from './accidentesService'
 export * from './controlDiarioService'
 export * from './index'
+export * from './logistica.service'
 export * from './mains'
 export * from './operativosService'
 export * from './radioService'

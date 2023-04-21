@@ -28,16 +28,13 @@ export const LogoOVT = () => {
 
 export const MainLogoOVT = () => {
   return (
-    <Box sx={[sxStyles.basicMaxHeight, style.text]}>
-      <img
-        style={{ width: 'inherit' }}
-        src={logoOVT}
-        alt="Logo Observatorio Vial"
-      />
+    <Box sx={[style.maxHeight, style.text]}>
+      <img height={100} src={logoOVT} alt="Logo Observatorio Vial" />
     </Box>
   )
 }
 
 const style = {
   text: { textAlign: 'center' },
+  maxHeight: { maxHeight: '350px' },
 }

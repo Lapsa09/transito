@@ -9,7 +9,7 @@ interface Props<T, K>
       'defaultValue' | 'renderInput'
     > {
   label: string
-  labelOption: string
+  labelOption?: string
 }
 
 function CustomAutocomplete<T, K>({

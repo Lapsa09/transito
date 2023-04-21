@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import { nuevoControlPaseo } from '../../services'
 import { DatePicker, TimePicker, CustomTextField, CustomSelect } from '../ui'
 import { useSelector } from 'react-redux'
-import { FormProvider, useForm } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import { currentDate } from '../../utils'
 import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormProps, User, FormInputProps, Roles } from '../../types'
+import { FormProps, User, FormInputProps } from '../../types'
 
 interface PaseoForm extends FormInputProps {
   lp: number
@@ -18,14 +18,8 @@ interface PaseoForm extends FormInputProps {
 
 function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
-  const methods = useForm<PaseoForm>({
-    mode: 'all',
-    defaultValues: {
-      lpcarga: user.legajo,
-      lp: !user.isAdmin() ? user.legajo : null,
-    },
-  })
-  const { control, reset, getValues, watch, setFocus } = methods
+  const { control, reset, getValues, watch, setFocus } =
+    useFormContext<PaseoForm>()
   const {
     selects: { motivos_paseo, turnos, resolucion, zonas_paseo },
     error,
@@ -72,106 +66,104 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   }
 
   return (
-    <FormProvider {...methods}>
-      <Layout
-        steps={steps()}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
-        handleClose={handleClose}
-        submitEvent={submitting}
-        error={error}
-        path="paseo"
-      >
-        <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
-          <Grid item xs={8}>
-            <DatePicker
-              control={control}
-              label="Fecha"
-              name="fecha"
-              defaultValue={!user.isAdmin() ? currentDate() : ''}
-              disabled={!user.isAdmin()}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomSelect
-              control={control}
-              name="turno"
-              rules={{ required: 'Elija una opcion' }}
-              label="Turno"
-              defaultValue={!user.isAdmin() ? user.turno : ''}
-              disabled={!user.isAdmin()}
-              options={turnos}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomTextField.LEGAJO
-              control={control}
-              name="lp"
-              label="Legajo Planilla"
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomSelect
-              control={control}
-              name="motivo"
-              rules={{ required: 'Elija una opcion' }}
-              label="Motivo"
-              options={motivos_paseo}
-            />
-          </Grid>
+    <Layout
+      steps={steps()}
+      activeStep={activeStep}
+      setActiveStep={setActiveStep}
+      handleClose={handleClose}
+      submitEvent={submitting}
+      error={error}
+      path="paseo"
+    >
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <DatePicker
+            control={control}
+            label="Fecha"
+            name="fecha"
+            defaultValue={!user.isAdmin() ? currentDate() : ''}
+            disabled={!user.isAdmin()}
+          />
         </Grid>
-        <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
-          <Grid item xs={8}>
-            <TimePicker
-              control={control}
-              name="hora"
-              label="Hora"
-              defaultValue={!user.isAdmin() ? currentDate() : null}
-              disabled={!user.isAdmin()}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomSelect
-              control={control}
-              name="direccion"
-              rules={{ required: 'Elija una opcion' }}
-              label="Direccion"
-              options={zonas_paseo}
-              optionId="id_zona"
-              optionLabel="zona"
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomTextField.DOMINIO control={control} name="dominio" />
-          </Grid>
-          <Grid item xs={8}>
-            <CustomSelect
-              control={control}
-              name="resolucion"
-              rules={{ required: 'Elija una opcion valida' }}
-              label="Resolucion"
-              options={resolucion}
-            />
-          </Grid>
-          {getValues('resolucion') === 'ACTA' && (
-            <Grid item xs={8}>
-              <CustomTextField
-                type="number"
-                control={control}
-                name="acta"
-                rules={{
-                  required: {
-                    value: getValues('resolucion') === 'ACTA',
-                    message: 'Ingrese un Nro de Acta valido',
-                  },
-                }}
-                label="Acta"
-              />
-            </Grid>
-          )}
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="turno"
+            rules={{ required: 'Elija una opcion' }}
+            label="Turno"
+            defaultValue={!user.isAdmin() ? user.turno : ''}
+            disabled={!user.isAdmin()}
+            options={turnos}
+          />
         </Grid>
-      </Layout>
-    </FormProvider>
+        <Grid item xs={8}>
+          <CustomTextField.LEGAJO
+            control={control}
+            name="lp"
+            label="Legajo Planilla"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="motivo"
+            rules={{ required: 'Elija una opcion' }}
+            label="Motivo"
+            options={motivos_paseo}
+          />
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
+        <Grid item xs={8}>
+          <TimePicker
+            control={control}
+            name="hora"
+            label="Hora"
+            defaultValue={!user.isAdmin() ? currentDate() : null}
+            disabled={!user.isAdmin()}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="direccion"
+            rules={{ required: 'Elija una opcion' }}
+            label="Direccion"
+            options={zonas_paseo}
+            optionId="id_zona"
+            optionLabel="zona"
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomTextField.DOMINIO control={control} name="dominio" />
+        </Grid>
+        <Grid item xs={8}>
+          <CustomSelect
+            control={control}
+            name="resolucion"
+            rules={{ required: 'Elija una opcion valida' }}
+            label="Resolucion"
+            options={resolucion}
+          />
+        </Grid>
+        {getValues('resolucion') === 'ACTA' && (
+          <Grid item xs={8}>
+            <CustomTextField
+              type="number"
+              control={control}
+              name="acta"
+              rules={{
+                required: {
+                  value: getValues('resolucion') === 'ACTA',
+                  message: 'Ingrese un Nro de Acta valido',
+                },
+              }}
+              label="Acta"
+            />
+          </Grid>
+        )}
+      </Grid>
+    </Layout>
   )
 }
 

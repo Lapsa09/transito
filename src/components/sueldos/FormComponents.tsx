@@ -28,7 +28,7 @@ const getImporteOperario = (
   const inicio = DateTime.fromISO(_inicio)
   const fin = DateTime.fromISO(_fin)
 
-  const diff = fin?.diff(inicio, 'hours').hours
+  const diff = Math.floor(fin?.diff(inicio, 'hours').hours)
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio?.hour >= 8 && fin?.hour <= 20) {
       return precio_normal * diff
@@ -41,11 +41,17 @@ export const OpInput = ({ source }) => {
   const index = source.split('.')[1]
   const { fecha_servicio, feriado } = useWatch()
   const operario = useWatch({ name: 'operarios.' + index })
-  const { data: precios } = useGetOne('precios', { id: 0 })
+  const { data: precio_normal } = useGetOne('precios', { id: 'precio_normal' })
+  const { data: precio_pico } = useGetOne('precios', { id: 'precio_pico' })
+
+  const precios = {
+    precio_normal: precio_normal.precio,
+    precio_pico: precio_pico.precio,
+  }
 
   const { field } = useInput({
     source,
-    defaultValue: operario.a_cobrar,
+    defaultValue: 0,
   })
 
   useEffect(() => {

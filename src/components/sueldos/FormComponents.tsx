@@ -1,5 +1,5 @@
 import { Grid, InputAdornment, TextField } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { NumberInput, useGetOne, useInput } from 'react-admin'
 import { DatePickerComponent } from './TimePicker'
 import styles from '../../styles/Sueldos.module.css'
@@ -45,8 +45,8 @@ export const OpInput = ({ source }) => {
   const { data: precio_pico } = useGetOne('precios', { id: 'precio_pico' })
 
   const precios = {
-    precio_normal: precio_normal.precio,
-    precio_pico: precio_pico.precio,
+    precio_normal: precio_normal?.precio,
+    precio_pico: precio_pico?.precio,
   }
 
   const { field } = useInput({
@@ -54,19 +54,29 @@ export const OpInput = ({ source }) => {
     defaultValue: 0,
   })
 
-  useEffect(() => {
-    const cuenta = getImporteOperario(
+  const cuenta = useMemo(
+    () =>
+      getImporteOperario(
+        fecha_servicio,
+        operario.hora_inicio,
+        operario.hora_fin,
+        feriado,
+        field.value,
+        precios
+      ),
+    [
       fecha_servicio,
       operario.hora_inicio,
       operario.hora_fin,
       feriado,
       field.value,
-      precios
-    )
-    field.onChange(cuenta)
+      precios,
+    ]
+  )
 
-    // eslint-disable-next-line
-  }, [operario.hora_inicio, operario.hora_fin, fecha_servicio, feriado])
+  useEffect(() => {
+    field.onChange(cuenta)
+  }, [cuenta])
 
   return (
     <TextField
@@ -89,12 +99,15 @@ export const TotalInput = () => {
     source: 'importe_servicio',
     defaultValue: ops.importe_servicio,
   })
-  const cuenta = ops?.operarios?.reduce((a, b) => a + b?.a_cobrar, 0)
+  const cuenta = ops?.operarios?.reduce((a, b) => a + b?.a_cobrar || 0, 0)
+
+  const handleFieldChange = useCallback(() => {
+    field.onChange(cuenta)
+  }, [cuenta])
 
   useEffect(() => {
-    field.onChange(cuenta)
-    // eslint-disable-next-line
-  }, [cuenta])
+    handleFieldChange()
+  }, [handleFieldChange])
 
   return (
     <TextField

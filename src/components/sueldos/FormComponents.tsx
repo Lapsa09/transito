@@ -7,28 +7,25 @@ import { DateTime } from 'luxon'
 import { useWatch } from 'react-hook-form'
 
 const getImporteOperario = (
-  _dia,
-  _inicio,
-  _fin,
-  isFeriado,
-  importe,
-  precios
+  dia: DateTime,
+  inicio: DateTime,
+  fin: DateTime,
+  isFeriado: boolean,
+  importe: number,
+  precios: Record<string, number>
 ) => {
   if (
-    ![_dia, _inicio, _fin, isFeriado].every((e) => e != null) ||
-    _inicio.invalid != null ||
-    _inicio._fin != null ||
+    ![dia, inicio, fin, isFeriado].every((e) => e != null) ||
+    !inicio.isValid ||
+    !fin.isValid ||
     !precios
   ) {
     return importe
   }
 
   const { precio_normal, precio_pico } = precios
-  const dia = DateTime.fromISO(_dia)
-  const inicio = DateTime.fromISO(_inicio)
-  const fin = DateTime.fromISO(_fin)
 
-  const diff = Math.floor(fin?.diff(inicio, 'hours').hours)
+  const diff = Math.round(fin?.diff(inicio, 'hours').hours)
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio?.hour >= 8 && fin?.hour <= 20) {
       return precio_normal * diff
@@ -56,14 +53,16 @@ export const OpInput = ({ source }) => {
 
   const cuenta = useMemo(
     () =>
-      getImporteOperario(
-        fecha_servicio,
-        operario.hora_inicio,
-        operario.hora_fin,
-        feriado,
-        field.value,
-        precios
-      ),
+      operario.legajo
+        ? getImporteOperario(
+            fecha_servicio,
+            operario.hora_inicio,
+            operario.hora_fin,
+            feriado,
+            field.value,
+            precios
+          )
+        : 0,
     [
       fecha_servicio,
       operario.hora_inicio,

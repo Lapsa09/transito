@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material'
-import React, { useCallback } from 'react'
+import React from 'react'
 import {
   ArrayInput,
   AutocompleteInput,
@@ -10,7 +10,7 @@ import {
   ReferenceInput,
   SimpleForm,
   SimpleFormIterator,
-  useCreate,
+  useNotify,
   useRedirect,
 } from 'react-admin'
 import {
@@ -27,27 +27,27 @@ import styles from '../../styles/Sueldos.module.css'
 import { sxStyles } from '../../utils'
 
 function NuevoCliente() {
-  const [create] = useCreate()
   const history = useRedirect()
-  const save = useCallback(
-    (values) => {
-      create(
-        'clientes',
-        { data: values },
-        {
-          returnPromise: true,
-          onError: (error) => console.log(error),
-          onSuccess: () => {
-            history('-1')
-          },
-        }
-      )
-    },
-    [create]
-  )
+  const notify = useNotify()
+
+  const onSuccess = () => {
+    history('/sueldos')
+  }
+
+  const onError = () => {
+    console.log('error')
+    notify('No se pudo crear el servicio', { type: 'error' })
+  }
+
   return (
-    <Create title="Nuevo servicio">
-      <SimpleForm onSubmit={save}>
+    <Create
+      mutationOptions={{
+        onSuccess,
+        onError,
+      }}
+      title="Nuevo servicio"
+    >
+      <SimpleForm>
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <ReferenceInput source="id_cliente" reference="clientes/list">

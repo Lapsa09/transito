@@ -6,7 +6,7 @@ import { sxStyles } from '../../utils'
 
 type Props<T, K> = Omit<UseControllerProps<T>, 'defaultValue'> &
   Omit<TextFieldProps, 'name' | 'defaultValue' | 'variant'> & {
-    options?: Enums[] | K[]
+    options?: Enums[] & K[]
     optionId?: string
     optionLabel?: string
     defaultValue?: any
@@ -31,6 +31,24 @@ function CustomSelect<T, K>({
     rules,
     defaultValue,
   })
+
+  function generateOptionItem(option: Enums): JSX.Element
+  function generateOptionItem(option: K): JSX.Element
+  function generateOptionItem(option: any): JSX.Element {
+    if (option.enumlabel) {
+      return (
+        <MenuItem key={option.enumlabel} value={option.enumlabel}>
+          {option.enumlabel}
+        </MenuItem>
+      )
+    }
+    return (
+      <MenuItem key={option[optionId]} value={option[optionId]}>
+        {option[optionLabel]}
+      </MenuItem>
+    )
+  }
+
   return (
     <TextField
       {...field}
@@ -42,17 +60,7 @@ function CustomSelect<T, K>({
       {...props}
     >
       <MenuItem value="">ELIJA UNA OPCION</MenuItem>
-      {options?.map((option) =>
-        'enumlabel' in option ? (
-          <MenuItem key={option.enumlabel} value={option.enumlabel}>
-            {option.enumlabel}
-          </MenuItem>
-        ) : (
-          <MenuItem key={option[optionId]} value={option[optionId]}>
-            {option[optionLabel]}
-          </MenuItem>
-        )
-      )}
+      {options?.map((option) => generateOptionItem(option))}
     </TextField>
   )
 }

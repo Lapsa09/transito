@@ -1,4 +1,5 @@
 export * from './index'
+export * from './recordSlice'
 export * from './selectsSlice'
 export * from './snackbarSlice'
 export * from './store'

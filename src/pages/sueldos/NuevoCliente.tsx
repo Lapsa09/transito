@@ -32,13 +32,12 @@ function NuevoCliente() {
   const save = useCallback(
     (values) => {
       create(
-        'clientes',
+        'servicios',
         { data: values },
         {
-          returnPromise: true,
           onError: (error) => console.log(error),
           onSuccess: () => {
-            history('-1')
+            history('/sueldos')
           },
         }
       )

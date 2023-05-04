@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { nuevoControlPaseo } from '../../services'
 import { DatePicker, TimePicker, CustomTextField, CustomSelect } from '../ui'
 import { useSelector } from 'react-redux'
@@ -8,7 +8,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormProps, User, FormInputProps, Roles } from '../../types'
+import { FormProps, User, FormInputProps } from '../../types'
 
 interface PaseoForm extends FormInputProps {
   lp: number
@@ -22,40 +22,30 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
     mode: 'all',
     defaultValues: {
       lpcarga: user.legajo,
-      lp: !user.isAdmin() ? user.legajo : null,
+      lp: !user.isAdmin() ? user.legajo : undefined,
     },
   })
   const { control, reset, getValues, watch, setFocus } = methods
-  const {
-    selects: { motivos_paseo, turnos, resolucion, zonas_paseo },
-    error,
-  } = useSelects()
-  const [activeStep, setActiveStep] = useState(0)
+  const { selects, error } = useSelects()
 
-  const steps = () => {
-    const { fecha, turno, lp, motivo, hora, direccion, dominio, resolucion } =
-      watch()
-    return [
-      {
-        label: 'Operativo',
-        values: {
-          fecha,
-          turno,
-          lp,
-          motivo,
-        },
-      },
-      {
-        label: 'Vehiculo',
-        values: {
-          hora,
-          direccion,
-          dominio,
-          resolucion,
-        },
-      },
-    ]
+  const { fecha, turno, lp, motivo, hora, direccion, dominio, resolucion } =
+    watch()
+
+  const firstStep = {
+    fecha,
+    turno,
+    lp,
+    motivo,
   }
+
+  const secondStep = {
+    hora,
+    direccion,
+    dominio,
+    resolucion,
+  }
+
+  const steps = [firstStep, secondStep]
 
   const submitting = async (data: PaseoForm) => {
     const res = await nuevoControlPaseo(data)
@@ -74,9 +64,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
   return (
     <FormProvider {...methods}>
       <Layout
-        steps={steps()}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
+        steps={steps}
         handleClose={handleClose}
         submitEvent={submitting}
         error={error}
@@ -100,7 +88,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               label="Turno"
               defaultValue={!user.isAdmin() ? user.turno : ''}
               disabled={!user.isAdmin()}
-              options={turnos}
+              options={selects.turnos}
             />
           </Grid>
           <Grid item xs={8}>
@@ -116,7 +104,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               name="motivo"
               rules={{ required: 'Elija una opcion' }}
               label="Motivo"
-              options={motivos_paseo}
+              options={selects.motivos_paseo}
             />
           </Grid>
         </Grid>
@@ -126,7 +114,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="hora"
               label="Hora"
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate() : undefined}
               disabled={!user.isAdmin()}
             />
           </Grid>
@@ -136,7 +124,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               name="direccion"
               rules={{ required: 'Elija una opcion' }}
               label="Direccion"
-              options={zonas_paseo}
+              options={selects.zonas_paseo}
               optionId="id_zona"
               optionLabel="zona"
             />
@@ -150,7 +138,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
               name="resolucion"
               rules={{ required: 'Elija una opcion valida' }}
               label="Resolucion"
-              options={resolucion}
+              options={selects.resolucion}
             />
           </Grid>
           {getValues('resolucion') === 'ACTA' && (

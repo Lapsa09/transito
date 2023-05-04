@@ -3,12 +3,12 @@ import { Button, Dialog } from '@mui/material'
 import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
 import { history } from '../utils'
-import styles from '../styles/Operativos.page.module.css'
 import { geocoding } from '../services'
 import { Loader } from '../components'
 import { useSnackBar } from '../hooks'
 import { IRootState } from '../redux'
-import { Roles, User } from '../types'
+import { User } from '../types'
+import styles from '../styles/Operativos.page.module.css'
 
 interface Props<T> {
   columns: GridColumns<T>
@@ -42,7 +42,7 @@ function OperativosLayout<T>({
       handleError(error)
     }
   }
-  return user.rol === Roles.ADMIN ? (
+  return user.isAdmin() ? (
     <div className={styles.Operativos}>
       <h1 style={{ textAlign: 'center' }}>{path}</h1>
       <div className="control_buttons">

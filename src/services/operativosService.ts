@@ -48,6 +48,6 @@ export const geocoding = async (type: string) => {
     Motos: geocodingMotos,
     Camiones: geocodingCamiones,
   }
-
-  await types[type]()
+  const chosen: () => Promise<void> = types[type]
+  await chosen()
 }

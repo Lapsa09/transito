@@ -13,39 +13,36 @@ import {
   LogoOVT,
   LogoVL,
 } from '../components/ui'
-import { DateTime } from 'luxon'
 import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
-import { Path, PathValue, useFormContext } from 'react-hook-form'
+import { Path, useFormContext } from 'react-hook-form'
 import { SerializedError } from '@reduxjs/toolkit'
 
 interface Props<T> {
   children: JSX.Element[]
-  steps: { label: string; values: any }[]
-  activeStep: number
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>
+  steps: Record<string, any>[]
   handleClose: () => void
   path: string
   error: SerializedError
   submitEvent: (data: T) => Promise<void>
 }
 
-type Operativo<T> = T & {
+type Operativo = {
   expiresAt: number
+  [key: string]: any
 }
 
 function FormLayout<T>({
   children,
   steps,
-  activeStep,
-  setActiveStep,
   handleClose,
   path,
   error,
   submitEvent,
 }: Props<T>) {
   const [open, setOpen] = useState(false)
-  const [operativo, setOperativo] = useLocalStorage<Operativo<T>>(path)
+  const [activeStep, setActiveStep] = useState(0)
+  const [operativo, setOperativo] = useLocalStorage<Operativo>(path)
   const { handleError, handleSuccess } = useSnackBar()
   const {
     setValue,
@@ -54,49 +51,35 @@ function FormLayout<T>({
     formState: { isValid },
   } = useFormContext<T>()
 
-  const totalSteps = () => {
-    return steps.length
-  }
+  const titles = ['Operativo', 'Vehiculo']
 
-  const isFirstStep = () => {
-    return activeStep === 0
-  }
+  const totalSteps = steps.length
 
-  const isLastStep = () => {
-    return activeStep === totalSteps() - 1
-  }
+  const isFirstStep = activeStep === 0
 
-  const handleNext = () => {
-    if (isCompleted(steps[activeStep]?.values)) saveOp()
-    setTimeout(() => {
-      setActiveStep(activeStep + 1)
-    }, 250)
-  }
+  const isLastStep = activeStep === totalSteps - 1
 
   const saveOp = () => {
     const expirationTime = operativo?.expiresAt
     setOperativo({
-      ...steps[0].values,
+      ...steps[0],
       expiresAt: expirationTime || currentDate().plus({ hours: 8 }).toMillis(),
     })
   }
 
-  useEffect(() => {
-    if (error.code) {
-      handleError(error)
-    }
-    cargarOperativo()
-  }, [])
+  const nuevoOperativo = () => {
+    setOperativo(null)
+    reset(null, { keepDefaultValues: true })
+    setActiveStep(0)
+  }
 
   const cargarOperativo = () => {
     try {
       if (currentDate().toMillis() < operativo.expiresAt) {
-        Object.entries(operativo).forEach(([key, value]: [Path<T>, any]) => {
-          key === 'fecha' || key === 'hora'
-            ? setValue(key, DateTime.fromISO(value) as PathValue<T, Path<T>>)
-            : setValue(key, value)
+        Object.entries(operativo).forEach(([key, value]) => {
+          setValue(key as Path<T>, value)
         })
-        isCompleted(operativo) && setActiveStep(1)
+        if (isCompleted(operativo)) setActiveStep(1)
       } else nuevoOperativo()
     } catch (error) {
       nuevoOperativo()
@@ -112,11 +95,12 @@ function FormLayout<T>({
     }
   }
 
-  const nuevoOperativo = () => {
-    setOperativo(null)
-    reset(null, { keepDefaultValues: true })
-    setActiveStep(0)
-  }
+  useEffect(() => {
+    if (error.code) {
+      handleError(error)
+    }
+    cargarOperativo()
+  }, [])
 
   const isCompleted = (values) => {
     try {
@@ -131,9 +115,19 @@ function FormLayout<T>({
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
-  const handleStep = (step) => () => {
-    if (isCompleted(steps[activeStep]?.values)) saveOp()
-    setActiveStep(step)
+  const handleStep = (step) => {
+    if (isCompleted(steps[activeStep])) saveOp()
+    setTimeout(() => {
+      setActiveStep(step)
+    }, 250)
+  }
+
+  const handleNext = () => {
+    handleStep(activeStep + 1)
+  }
+
+  const isStepCompleted = (step) => {
+    return isCompleted(steps[step])
   }
 
   return (
@@ -148,10 +142,10 @@ function FormLayout<T>({
       </div>
       <div className={styles.form__form}>
         <CustomStepper
-          steps={steps}
-          isCompleted={isCompleted}
+          isCompleted={isStepCompleted}
           handleStep={handleStep}
           activeStep={activeStep}
+          stepsTitles={titles}
         />
         <Box
           onSubmit={handleSubmit(submiting)}
@@ -168,7 +162,7 @@ function FormLayout<T>({
           </Box>
           <Box sx={[sxStyles.flexRow, style.actions]}>
             <Button
-              disabled={isFirstStep()}
+              disabled={isFirstStep}
               onClick={handleBack}
               sx={style.button}
             >
@@ -178,13 +172,13 @@ function FormLayout<T>({
             {activeStep === 0 ? (
               <Button
                 onClick={handleNext}
-                disabled={isLastStep()}
+                disabled={isLastStep}
                 sx={style.button}
               >
                 Siguiente
               </Button>
             ) : (
-              <Button type="submit" disabled={!isValid || activeStep === 0}>
+              <Button type="submit" disabled={!isValid}>
                 Guardar
               </Button>
             )}
@@ -202,24 +196,21 @@ function FormLayout<T>({
 }
 
 const WarningModal = ({ close, reset, open }) => {
+  const handleReset = () => {
+    reset()
+    close()
+  }
   return (
     <Dialog fullWidth maxWidth="md" onClose={close} open={open}>
       <DialogContent sx={adminStyle}>
         <p>
-          Seguro que desea reiniciar el operativo? Se borraran todos los datos
+          Seguro que desea reiniciar el formulario? Se borraran todos los datos
           ingresados
         </p>
         <DialogActions sx={sxStyles.flex}>
           <Button onClick={close}>No</Button>
           <Box sx={style.dialogSplitter} />
-          <Button
-            onClick={() => {
-              reset()
-              close()
-            }}
-          >
-            Si
-          </Button>
+          <Button onClick={handleReset}>Si</Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

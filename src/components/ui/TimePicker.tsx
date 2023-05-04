@@ -31,8 +31,8 @@ function CustomTimePicker<T>({
     rules: {
       required: 'Ingrese una hora',
       validate: {
-        validDate: (v: PathValue<T, Path<T>> & DateTime) =>
-          v.isValid || 'Ingrese una hora valida',
+        validDate: (v) =>
+          DateTime.fromISO(v as string).isValid || 'Ingrese una hora valida',
       },
     },
     defaultValue,

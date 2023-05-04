@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { nuevoOperativoAuto } from '../../services'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
@@ -28,62 +28,52 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     defaultValues: { lpcarga: user.legajo },
   })
   const { control, reset, getValues, watch, setValue, setFocus } = methods
-  const [activeStep, setActiveStep] = useState(0)
-  const {
-    selects: {
-      turnos,
-      seguridad,
-      vicente_lopez,
-      licencias,
-      resolucion,
-      motivos,
-      barrios,
-    },
-    error,
-  } = useSelects()
+  const { selects, error } = useSelects()
 
-  const steps = () => {
-    const {
-      legajo_a_cargo,
-      legajo_planilla,
-      seguridad,
-      fecha,
-      turno,
-      direccion,
-      zona,
-      hora,
-      dominio,
-      zona_infractor,
-      resolucion,
-      motivo,
-      acta,
-    } = watch()
-    return [
-      {
-        label: 'Operativo',
-        values: {
-          legajo_a_cargo,
-          legajo_planilla,
-          seguridad,
-          fecha,
-          turno,
-          direccion,
-          zona,
-          hora,
-        },
-      },
-      {
-        label: 'Vehiculo',
-        values: {
-          dominio,
-          zona_infractor,
-          resolucion,
-          motivo,
-          acta,
-        },
-      },
-    ]
+  const {
+    legajo_a_cargo,
+    legajo_planilla,
+    seguridad,
+    fecha,
+    turno,
+    direccion,
+    zona,
+    hora,
+    dominio,
+    zona_infractor,
+    resolucion,
+    motivo,
+    licencia,
+    tipo_licencia,
+    graduacion_alcoholica,
+    acta,
+    extranjero,
+  } = watch()
+
+  const firstStep = {
+    legajo_a_cargo,
+    legajo_planilla,
+    seguridad,
+    fecha,
+    turno,
+    direccion,
+    zona,
+    hora,
   }
+
+  const secondStep = {
+    dominio,
+    zona_infractor,
+    resolucion,
+    motivo,
+    licencia,
+    tipo_licencia,
+    graduacion_alcoholica,
+    acta,
+    extranjero,
+  }
+
+  const steps = [firstStep, secondStep]
 
   const esSancionable =
     getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
@@ -118,9 +108,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
   return (
     <FormProvider {...methods}>
       <Layout
-        steps={steps()}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
+        steps={steps}
         handleClose={handleClose}
         submitEvent={submitEvent}
         error={error}
@@ -133,7 +121,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="fecha"
               disabled={!user.isAdmin()}
               label="Fecha"
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate() : ''}
             />
           </Grid>
           <Grid item xs={8}>
@@ -160,8 +148,8 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
               disabled={!user.isAdmin()}
-              options={turnos}
-              defaultValue={!user.isAdmin() ? user.turno : null}
+              options={selects.turnos}
+              defaultValue={!user.isAdmin() ? user.turno : ''}
             />
           </Grid>
           <Grid item xs={8}>
@@ -169,7 +157,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="seguridad"
               label="Seguridad"
-              options={seguridad}
+              options={selects.seguridad}
               rules={{ required: 'Elija una opcion' }}
             />
           </Grid>
@@ -187,7 +175,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="zona"
               label="Zona"
               rules={{ required: 'Elija una localidad' }}
-              options={vicente_lopez}
+              options={selects.vicente_lopez}
               labelOption="barrio"
             />
           </Grid>
@@ -209,7 +197,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="tipo_licencia"
               label="Tipo de licencia"
-              options={licencias}
+              options={selects.licencias}
               labelOption="tipo"
             />
           </Grid>
@@ -219,7 +207,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="zona_infractor"
               rules={{ required: 'Elija una opcion' }}
               label="Localidad del infractor"
-              options={barrios}
+              options={selects.barrios}
               labelOption="barrio"
             />
           </Grid>
@@ -236,7 +224,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="resolucion"
               label="Resolucion"
-              options={resolucion}
+              options={selects.resolucion}
             />
           </Grid>
           {esSancionable && (
@@ -246,7 +234,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
                   control={control}
                   name="motivo"
                   label="Motivo"
-                  options={motivos}
+                  options={selects.motivos}
                   labelOption="motivo"
                 />
               </Grid>

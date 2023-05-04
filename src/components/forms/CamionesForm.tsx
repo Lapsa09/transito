@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { nuevoOperativoCamiones } from '../../services'
 import { currentDate } from '../../utils'
 import { useSelector } from 'react-redux'
@@ -15,14 +15,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux/store'
-import {
-  FormInputProps,
-  FormProps,
-  IBarrio,
-  IMotivos,
-  Roles,
-  User,
-} from '../../types'
+import { FormInputProps, FormProps, IBarrio, IMotivos, User } from '../../types'
 
 interface CamionesForm extends FormInputProps {
   localidad_destino: IBarrio
@@ -42,62 +35,52 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     defaultValues: { lpcarga: user.legajo },
   })
   const { control, reset, getValues, watch, setValue, setFocus } = methods
-  const {
-    selects: { vicente_lopez, barrios, turnos, resolucion, motivos },
-    error,
-  } = useSelects()
-  const [activeStep, setActiveStep] = useState(0)
+  const { selects, error } = useSelects()
 
-  const steps = () => {
-    const {
-      fecha,
-      legajo,
-      direccion,
-      zona,
-      turno,
-      hora,
-      dominio,
-      licencia,
-      origen,
-      localidad_origen,
-      destino,
-      localidad_destino,
-      remito,
-      carga,
-      acta,
-      motivo,
-      resolucion,
-    } = watch()
-    return [
-      {
-        label: 'Operativo',
-        values: {
-          fecha,
-          legajo,
-          direccion,
-          zona,
-          turno,
-        },
-      },
-      {
-        label: 'Vehiculo',
-        values: {
-          hora,
-          dominio,
-          licencia,
-          origen,
-          localidad_origen,
-          destino,
-          localidad_destino,
-          remito,
-          carga,
-          acta,
-          motivo,
-          resolucion,
-        },
-      },
-    ]
+  const {
+    fecha,
+    legajo,
+    direccion,
+    zona,
+    turno,
+    hora,
+    dominio,
+    licencia,
+    origen,
+    localidad_origen,
+    destino,
+    localidad_destino,
+    remito,
+    carga,
+    acta,
+    motivo,
+    resolucion,
+  } = watch()
+
+  const firstStep = {
+    fecha,
+    legajo,
+    direccion,
+    zona,
+    turno,
   }
+
+  const secondStep = {
+    hora,
+    dominio,
+    licencia,
+    origen,
+    localidad_origen,
+    destino,
+    localidad_destino,
+    remito,
+    carga,
+    acta,
+    motivo,
+    resolucion,
+  }
+
+  const steps = [firstStep, secondStep]
 
   const submitEvent = async (data: CamionesForm) => {
     const res = await nuevoOperativoCamiones(data)
@@ -136,9 +119,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     <FormProvider {...methods}>
       <Layout
         error={error}
-        steps={steps()}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
+        steps={steps}
         handleClose={handleClose}
         submitEvent={submitEvent}
         path="camiones"
@@ -167,7 +148,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="zona"
               label="Zona"
               rules={{ required: 'Inserte una localidad' }}
-              options={vicente_lopez}
+              options={selects.vicente_lopez}
               labelOption="barrio"
             />
           </Grid>
@@ -184,7 +165,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="turno"
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
-              options={turnos}
+              options={selects.turnos}
               disabled={!user.isAdmin()}
               defaultValue={!user.isAdmin() ? user.turno : ''}
             />
@@ -197,7 +178,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="hora"
               label="Hora"
               disabled={!user.isAdmin()}
-              defaultValue={!user.isAdmin() ? currentDate() : null}
+              defaultValue={!user.isAdmin() ? currentDate() : ''}
             />
           </Grid>
           <Grid item xs={8}>
@@ -212,7 +193,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="localidad_origen"
               label="Localidad de origen"
               rules={{ required: 'Elija una opcion' }}
-              options={barrios}
+              options={selects.barrios}
               labelOption="barrio"
             />
           </Grid>
@@ -225,7 +206,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               name="localidad_destino"
               label="Localidad de destino"
               rules={{ required: 'Elija una opcion' }}
-              options={barrios}
+              options={selects.barrios}
               labelOption="barrio"
             />
           </Grid>
@@ -256,7 +237,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="resolucion"
               label="Resolucion"
-              options={resolucion}
+              options={selects.resolucion}
             />
           </Grid>
           {esSancionable && (
@@ -278,7 +259,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
                 control={control}
                 name="motivo"
                 label="Motivo"
-                options={motivos}
+                options={selects.motivos}
                 rules={{ required: 'Inserte un motivo valido' }}
                 labelOption="motivo"
               />

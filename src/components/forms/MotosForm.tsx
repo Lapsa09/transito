@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { nuevoOperativoMoto } from '../../services'
 import {
   DatePicker,
@@ -15,7 +15,7 @@ import Layout from '../../layouts/FormLayout'
 import { useSelects } from '../../hooks'
 import { Grid } from '@mui/material'
 import { IRootState } from '../../redux'
-import { FormProps, User, FormInputProps, Roles, IMotivos } from '../../types'
+import { FormProps, User, FormInputProps, IMotivos } from '../../types'
 
 interface IMotosForm extends FormInputProps {
   motivos?: IMotivos[]
@@ -35,66 +35,48 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     control,
     name: 'motivos',
   })
-  const {
-    selects: {
-      licencias,
-      vicente_lopez,
-      barrios,
-      turnos,
-      seguridad,
-      resolucion,
-      motivos,
-    },
-    error,
-  } = useSelects()
-  const [activeStep, setActiveStep] = useState(0)
+  const { selects, error } = useSelects()
 
-  const steps = () => {
-    const {
-      fecha,
-      hora,
-      direccion,
-      zona,
-      legajo_a_cargo,
-      legajo_planilla,
-      turno,
-      seguridad,
-      dominio,
-      licencia,
-      tipo_licencia,
-      zona_infractor,
-      resolucion,
-      acta,
-      motivos,
-    } = watch()
-    return [
-      {
-        label: 'Operativo',
-        values: {
-          fecha,
-          hora,
-          direccion,
-          zona,
-          legajo_a_cargo,
-          legajo_planilla,
-          turno,
-          seguridad,
-        },
-      },
-      {
-        label: 'Vehiculo',
-        values: {
-          dominio,
-          licencia,
-          tipo_licencia,
-          zona_infractor,
-          resolucion,
-          acta,
-          motivos,
-        },
-      },
-    ]
+  const {
+    fecha,
+    hora,
+    direccion,
+    zona,
+    legajo_a_cargo,
+    legajo_planilla,
+    turno,
+    seguridad,
+    dominio,
+    licencia,
+    tipo_licencia,
+    zona_infractor,
+    resolucion,
+    acta,
+    motivos,
+  } = watch()
+
+  const firstStep = {
+    fecha,
+    hora,
+    direccion,
+    zona,
+    legajo_a_cargo,
+    legajo_planilla,
+    turno,
+    seguridad,
   }
+
+  const secondStep = {
+    dominio,
+    licencia,
+    tipo_licencia,
+    zona_infractor,
+    resolucion,
+    acta,
+    motivos,
+  }
+
+  const steps = [firstStep, secondStep]
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
@@ -144,11 +126,9 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
     <FormProvider {...methods}>
       <Layout
         error={error}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
         submitEvent={submitEvent}
         path="motos"
-        steps={steps()}
+        steps={steps}
         handleClose={handleClose}
       >
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
@@ -178,7 +158,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               name="zona"
               label="Zona"
               rules={{ required: 'Elija una localidad' }}
-              options={vicente_lopez}
+              options={selects.vicente_lopez}
               labelOption="barrio"
             />
           </Grid>
@@ -204,7 +184,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               rules={{ required: 'Elija una opcion' }}
               disabled={!user.isAdmin()}
               defaultValue={!user.isAdmin() ? user.turno : ''}
-              options={turnos}
+              options={selects.turnos}
             />
           </Grid>
           <Grid item xs={8}>
@@ -212,7 +192,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="seguridad"
               label="Seguridad"
-              options={seguridad}
+              options={selects.seguridad}
               rules={{ required: 'Elija una opcion' }}
             />
           </Grid>
@@ -241,7 +221,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="tipo_licencia"
               label="Tipo de licencia"
-              options={licencias}
+              options={selects.licencias}
               labelOption="tipo"
             />
           </Grid>
@@ -251,7 +231,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               name="zona_infractor"
               label="Localidad del infractor"
               rules={{ required: 'Elija una opcion' }}
-              options={barrios}
+              options={selects.barrios}
               labelOption="barrio"
             />
           </Grid>
@@ -260,7 +240,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               control={control}
               name="resolucion"
               label="Resolucion"
-              options={resolucion}
+              options={selects.resolucion}
             />
           </Grid>
           {esSancionable && (
@@ -286,7 +266,7 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
                     key={item.id}
                     name={`motivos.${index}`}
                     label={`Motivo ${index + 1}`}
-                    options={motivos}
+                    options={selects.motivos}
                     labelOption="motivo"
                   />
                 </Grid>

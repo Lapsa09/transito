@@ -32,16 +32,19 @@ function CustomDatePicker<T>({
     rules: {
       required: 'Ingrese una fecha',
       validate: {
-        validDate: (v: PathValue<T, Path<T>> & DateTime) => v.isValid,
-        minDate: (v: PathValue<T, Path<T>> & DateTime) =>
-          v.toMillis() > currentDate().minus({ months: 6 }).toMillis(),
-        maxDate: (v: PathValue<T, Path<T>> & DateTime) =>
-          v.toMillis() < currentDate().toMillis(),
+        validDate: (v) =>
+          DateTime.fromISO(v as string).isValid || 'Fecha inválida',
+        minDate: (v) =>
+          DateTime.fromISO(v as string).toMillis() >
+            currentDate().minus({ months: 6 }).toMillis() ||
+          'La fecha no puede ser menor a 6 meses',
+        maxDate: (v) =>
+          DateTime.fromISO(v as string).toMillis() < currentDate().toMillis() ||
+          'La fecha no puede ser mayor a la actual',
       },
     },
     defaultValue,
   })
-
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <DatePicker

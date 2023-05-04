@@ -5,7 +5,7 @@ import styles from '../styles/Home.module.css'
 import { history } from '../utils'
 import React from 'react'
 import { IRootState } from '../redux'
-import { Roles, User } from '../types'
+import { User } from '../types'
 
 const cardStyle = {
   backgroundColor: '#b7e912',
@@ -23,7 +23,7 @@ export default function Home() {
       <h1>
         BIENVENIDO {user.nombre} {user.apellido} LP {user.legajo}
       </h1>
-      {user.rol === Roles.ADMIN ? (
+      {user.isAdmin() ? (
         <iframe
           title="Tablero de Control OVT"
           width="100%"

@@ -6,7 +6,7 @@ import { sxStyles } from '../../utils'
 
 type Props<T, K> = Omit<UseControllerProps<T>, 'defaultValue'> &
   Omit<TextFieldProps, 'name' | 'defaultValue' | 'variant'> & {
-    options?: Enums[] & K[]
+    options?: Enums[] | K[]
     optionId?: string
     optionLabel?: string
     defaultValue?: any
@@ -17,7 +17,7 @@ function CustomSelect<T, K>({
   name,
   rules,
   options,
-  defaultValue = null,
+  defaultValue = '',
   optionId = 'id',
   optionLabel = 'label',
   ...props

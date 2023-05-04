@@ -38,6 +38,9 @@ function CustomAutocomplete<T, K>({
       {...field}
       options={options}
       getOptionLabel={optionLabel}
+      isOptionEqualToValue={(option, value) =>
+        optionLabel(option) === optionLabel(value)
+      }
       onChange={(_, value, reason) =>
         field.onChange(reason === 'clear' ? null : value)
       }

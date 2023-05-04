@@ -1,5 +1,5 @@
 import { Grid, InputAdornment, TextField } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { NumberInput, useGetOne, useInput } from 'react-admin'
 import { DatePickerComponent } from './TimePicker'
 import styles from '../../styles/Sueldos.module.css'
@@ -7,28 +7,25 @@ import { DateTime } from 'luxon'
 import { useWatch } from 'react-hook-form'
 
 const getImporteOperario = (
-  _dia,
-  _inicio,
-  _fin,
-  isFeriado,
-  importe,
-  precios
+  dia: DateTime,
+  inicio: DateTime,
+  fin: DateTime,
+  isFeriado: boolean,
+  importe: number,
+  precios: Record<string, number>
 ) => {
   if (
-    ![_dia, _inicio, _fin, isFeriado].every((e) => e != null) ||
-    _inicio.invalid != null ||
-    _inicio._fin != null ||
+    ![dia, inicio, fin, isFeriado].every((e) => e != null) ||
+    !inicio.isValid ||
+    !fin.isValid ||
     !precios
   ) {
     return importe
   }
 
   const { precio_normal, precio_pico } = precios
-  const dia = DateTime.fromISO(_dia)
-  const inicio = DateTime.fromISO(_inicio)
-  const fin = DateTime.fromISO(_fin)
 
-  const diff = fin?.diff(inicio, 'hours').hours
+  const diff = Math.round(fin?.diff(inicio, 'hours').hours)
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio?.hour >= 8 && fin?.hour <= 20) {
       return precio_normal * diff
@@ -41,26 +38,44 @@ export const OpInput = ({ source }) => {
   const index = source.split('.')[1]
   const { fecha_servicio, feriado } = useWatch()
   const operario = useWatch({ name: 'operarios.' + index })
-  const { data: precios } = useGetOne('precios', { id: 0 })
+  const { data: precio_normal } = useGetOne('precios', { id: 'precio_normal' })
+  const { data: precio_pico } = useGetOne('precios', { id: 'precio_pico' })
+
+  const precios = {
+    precio_normal: precio_normal?.precio,
+    precio_pico: precio_pico?.precio,
+  }
 
   const { field } = useInput({
     source,
-    defaultValue: operario.a_cobrar,
+    defaultValue: 0,
   })
 
-  useEffect(() => {
-    const cuenta = getImporteOperario(
+  const cuenta = useMemo(
+    () =>
+      operario.legajo
+        ? getImporteOperario(
+            fecha_servicio,
+            operario.hora_inicio,
+            operario.hora_fin,
+            feriado,
+            field.value,
+            precios
+          )
+        : 0,
+    [
       fecha_servicio,
       operario.hora_inicio,
       operario.hora_fin,
       feriado,
       field.value,
-      precios
-    )
-    field.onChange(cuenta)
+      precios,
+    ]
+  )
 
-    // eslint-disable-next-line
-  }, [operario.hora_inicio, operario.hora_fin, fecha_servicio, feriado])
+  useEffect(() => {
+    field.onChange(cuenta)
+  }, [cuenta])
 
   return (
     <TextField
@@ -83,12 +98,15 @@ export const TotalInput = () => {
     source: 'importe_servicio',
     defaultValue: ops.importe_servicio,
   })
-  const cuenta = ops?.operarios?.reduce((a, b) => a + b?.a_cobrar, 0)
+  const cuenta = ops?.operarios?.reduce((a, b) => a + b?.a_cobrar || 0, 0)
+
+  const handleFieldChange = useCallback(() => {
+    field.onChange(cuenta)
+  }, [cuenta])
 
   useEffect(() => {
-    field.onChange(cuenta)
-    // eslint-disable-next-line
-  }, [cuenta])
+    handleFieldChange()
+  }, [handleFieldChange])
 
   return (
     <TextField

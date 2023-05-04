@@ -68,8 +68,6 @@ function LogisticaForm({ handleClose, afterCreate }: FormProps) {
     <FormLayout
       handleClose={handleClose}
       path="Logistica"
-      activeStep={activeStep}
-      setActiveStep={setActiveStep}
       submitEvent={submitEvent}
       steps={steps()}
       error={error}

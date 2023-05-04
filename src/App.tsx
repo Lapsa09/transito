@@ -1,4 +1,4 @@
-import React, { lazy, useEffect } from 'react'
+import React, { Fragment, lazy, useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { CustomSnackbar, Header } from './components'
@@ -29,28 +29,28 @@ function App() {
   }, [])
 
   return (
-    <>
+    <Fragment>
       {user.legajo ? <Header /> : null}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<AuthGuard />}>
           <Route index path="/" element={<Home />} />
-        </Route>
-        <Route element={<RoleGuard rol={Roles.INSPECTOR} />}>
-          <Route path="/control/*" element={<Controles />} />
-          <Route path="/operativos/*" element={<Operativos />} />
-          <Route path="/radio/*" element={<Radio />} />
-        </Route>
-        <Route element={<RoleGuard rol={Roles.ADMINISTRATIVO} />}>
-          <Route path="/sueldos/*" element={<Sueldos />} />
-        </Route>
-        <Route element={<RoleGuard rol={Roles.WAZE} />}>
-          <Route path="/waze/*" element={<Waze />} />
+          <Route element={<RoleGuard rol={Roles.INSPECTOR} />}>
+            <Route path="/control/*" element={<Controles />} />
+            <Route path="/operativos/*" element={<Operativos />} />
+            <Route path="/radio/*" element={<Radio />} />
+          </Route>
+          <Route element={<RoleGuard rol={Roles.ADMINISTRATIVO} />}>
+            <Route path="/sueldos/*" element={<Sueldos />} />
+          </Route>
+          <Route element={<RoleGuard rol={Roles.WAZE} />}>
+            <Route path="/waze/*" element={<Waze />} />
+          </Route>
         </Route>
       </Routes>
       <CustomSnackbar />
-    </>
+    </Fragment>
   )
 }
 

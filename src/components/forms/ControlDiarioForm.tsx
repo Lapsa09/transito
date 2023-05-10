@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { nuevoControl } from '../../services'
 import { useSelector } from 'react-redux'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -32,12 +32,11 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
       lp: !user.isAdmin() ? user.legajo : null,
     },
   })
-  const { control, reset, getValues, watch } = methods
+  const { reset, getValues, watch } = methods
   const {
     selects: { barrios, motivos, turnos, resolucion },
     error,
   } = useSelects()
-  const [activeStep, setActiveStep] = useState(0)
 
   const steps = () => {
     const {
@@ -105,8 +104,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
     <FormProvider {...methods}>
       <Layout
         steps={steps()}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
         handleClose={handleClose}
         submitEvent={submitting}
         error={error}
@@ -115,7 +112,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <DatePicker
-              control={control}
               label="Fecha"
               name="fecha"
               defaultValue={!user.isAdmin() ? currentDate() : null}
@@ -124,7 +120,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="turno"
               rules={{ required: 'Elija una opcion' }}
               label="Turno"
@@ -135,7 +130,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomTextField.LEGAJO
-              control={control}
               name="legajo_planilla"
               label="Legajo Planilla"
             />
@@ -144,7 +138,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <TimePicker
-              control={control}
               name="hora"
               label="Hora"
               defaultValue={!user.isAdmin() ? currentDate() : null}
@@ -153,7 +146,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomTextField
-              control={control}
               name="direccion"
               rules={{ required: 'Ingrese una direccion valida' }}
               label="Direccion"
@@ -161,7 +153,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="localidad"
               rules={{ required: 'Elija una opcion' }}
               label="Localidad"
@@ -170,11 +161,10 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <CustomTextField.DOMINIO control={control} name="dominio" />
+            <CustomTextField.DOMINIO name="dominio" />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="resolucion"
               rules={{ required: 'Elija una opcion valida' }}
               label="Resolucion"
@@ -185,7 +175,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
             <Grid item xs={8}>
               <CustomTextField
                 type="number"
-                control={control}
                 name="acta"
                 rules={{
                   required: {
@@ -199,7 +188,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
           )}
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="motivo"
               rules={{ required: 'Elija una opcion' }}
               label="Motivo"
@@ -211,7 +199,6 @@ function ControlDiarioForm({ handleClose, afterCreate }: FormProps) {
           {motivos?.length > 0 && getValues('motivo').motivo === 'OTRO' && (
             <Grid item xs={8}>
               <CustomTextField
-                control={control}
                 name="otroMotivo"
                 rules={{
                   required: {

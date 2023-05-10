@@ -1,6 +1,10 @@
 import { Autocomplete, AutocompleteProps, TextField } from '@mui/material'
 import React from 'react'
-import { useController, UseControllerProps } from 'react-hook-form'
+import {
+  useController,
+  UseControllerProps,
+  useFormContext,
+} from 'react-hook-form'
 
 interface Props<T, K>
   extends UseControllerProps<T>,
@@ -13,7 +17,6 @@ interface Props<T, K>
 }
 
 function CustomAutocomplete<T, K>({
-  control,
   name,
   rules,
   label,
@@ -21,6 +24,7 @@ function CustomAutocomplete<T, K>({
   labelOption,
   ...props
 }: Props<T, K>) {
+  const { control } = useFormContext<T>()
   const {
     field,
     fieldState: { error, invalid },

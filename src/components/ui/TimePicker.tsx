@@ -3,10 +3,9 @@ import React from 'react'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import {
-  Path,
-  PathValue,
   useController,
   UseControllerProps,
+  useFormContext,
 } from 'react-hook-form'
 import { DateTime } from 'luxon'
 
@@ -18,10 +17,10 @@ type Props<T> = UseControllerProps<T> & {
 function CustomTimePicker<T>({
   label,
   name,
-  control,
   disabled = false,
   defaultValue = null,
 }: Props<T>) {
+  const { control } = useFormContext<T>()
   const {
     field,
     fieldState: { error, invalid },

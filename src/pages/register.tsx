@@ -14,7 +14,7 @@ function Register() {
   const dispatch = useDispatch<AppDispatch>()
   const { user, error } = useSelector<IRootState, IRootUser>((x) => x.user)
 
-  const { control, handleSubmit, setError } = methods
+  const { handleSubmit, setError } = methods
 
   const loginNav = () => {
     history.navigate('/login')
@@ -43,37 +43,25 @@ function Register() {
           className="form"
           onSubmit={handleSubmit(submitEvent)}
         >
-          <CustomTextField.LEGAJO
-            control={control}
-            name="legajo"
-            label="Legajo"
-          />
+          <CustomTextField.LEGAJO name="legajo" label="Legajo" />
           <CustomTextField
-            control={control}
             name="nombre"
             rules={{ required: 'Campo requerido' }}
             label="Nombre"
           />
           <CustomTextField
-            control={control}
             name="apellido"
             rules={{ required: 'Campo requerido' }}
             label="Apellido"
           />
           <CustomTextField
             type="number"
-            control={control}
             name="telefono"
             rules={{ required: 'Campo requerido' }}
             label="Telefono"
           />
+          <CustomTextField.PASSWORD name="password" label="Contraseña" />
           <CustomTextField.PASSWORD
-            control={control}
-            name="password"
-            label="Contraseña"
-          />
-          <CustomTextField.PASSWORD
-            control={control}
             name="confirmPassword"
             label="Confirmar contraseña"
           />

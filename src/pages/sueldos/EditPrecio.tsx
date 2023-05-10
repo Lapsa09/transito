@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDataProvider, useNotify, useRedirect, useUpdate } from 'react-admin'
 import { CustomTextField } from '../../components'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from '@mui/material'
 
 function EditPrecio() {
@@ -25,12 +25,13 @@ function EditPrecio() {
 
 function PrecioField({ name, label }) {
   const provider = useDataProvider()
-  const { control, handleSubmit } = useForm({
+  const methods = useForm({
     defaultValues: async () => {
       const { data } = await provider.getOne('precios', { id: name })
       return data
     },
   })
+  const { handleSubmit } = methods
   const [update] = useUpdate()
   const notify = useNotify()
 
@@ -42,18 +43,19 @@ function PrecioField({ name, label }) {
     )
   }
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={style.inputRow}>
-      <CustomTextField
-        type="number"
-        control={control}
-        name="precio"
-        label={label}
-        rules={{ required: true }}
-      />
-      <Button variant="contained" color="success" type="submit">
-        Guardar
-      </Button>
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)} style={style.inputRow}>
+        <CustomTextField
+          type="number"
+          name="precio"
+          label={label}
+          rules={{ required: true }}
+        />
+        <Button variant="contained" color="success" type="submit">
+          Guardar
+        </Button>
+      </form>
+    </FormProvider>
   )
 }
 

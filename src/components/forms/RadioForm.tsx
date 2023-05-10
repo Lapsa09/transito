@@ -1,17 +1,19 @@
 import React from 'react'
 import { Button } from '@mui/material'
 import { useCreate, useGetList, useGetOne, useUpdate } from 'react-admin'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CustomSelect, CustomSwitch, CustomTextField } from '../ui'
 
 export const OperativosCreateForm = () => {
   const navigate = useNavigate()
   const goBack = () => navigate('/radio/operarios')
-  const { control, handleSubmit } = useForm()
+  const methods = useForm()
   const [create, { isLoading: isSubmitting }] = useCreate()
   const { data: moviles } = useGetList('/moviles')
   const { data: estados } = useGetList('/operarios/estado')
+
+  const { handleSubmit } = methods
 
   const onSubmit = (data) => {
     create(
@@ -26,39 +28,34 @@ export const OperativosCreateForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <CustomTextField.LEGAJO label="Legajo" control={control} name="legajo" />
-      <CustomTextField label="Nombre" control={control} name="nombre" />
-      <CustomTextField label="QTH" control={control} name="qth" />
-      <CustomTextField label="HT" control={control} name="ht" />
-      <CustomSelect
-        label="Movil"
-        control={control}
-        name="movil"
-        options={moviles}
-        optionId="movil"
-        optionLabel="movil"
-      />
-      <CustomSelect
-        label="Estado"
-        control={control}
-        name="estado"
-        options={estados}
-        optionLabel="estado"
-      />
-      <CustomSwitch label="Asistencia" control={control} name="asistencia" />
-      <CustomTextField
-        label="Puntaje"
-        control={control}
-        name="puntaje"
-        type="number"
-      />
-      <CustomTextField label="Novedades" control={control} name="novedades" />
-      <Button onClick={goBack}>Cancelar</Button>
-      <Button type="submit" disabled={isSubmitting}>
-        Guardar
-      </Button>
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CustomTextField.LEGAJO label="Legajo" name="legajo" />
+        <CustomTextField label="Nombre" name="nombre" />
+        <CustomTextField label="QTH" name="qth" />
+        <CustomTextField label="HT" name="ht" />
+        <CustomSelect
+          label="Movil"
+          name="movil"
+          options={moviles}
+          optionId="movil"
+          optionLabel="movil"
+        />
+        <CustomSelect
+          label="Estado"
+          name="estado"
+          options={estados}
+          optionLabel="estado"
+        />
+        <CustomSwitch label="Asistencia" name="asistencia" />
+        <CustomTextField label="Puntaje" name="puntaje" type="number" />
+        <CustomTextField label="Novedades" name="novedades" />
+        <Button onClick={goBack}>Cancelar</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          Guardar
+        </Button>
+      </form>
+    </FormProvider>
   )
 }
 
@@ -82,20 +79,14 @@ export const MovilCreateForm = () => {
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <CustomTextField
-        label="Movil"
-        control={control}
-        name="movil"
-        type="number"
-      />
+      <CustomTextField label="Movil" name="movil" type="number" />
       <CustomSelect
         label="Estado"
-        control={control}
         name="estado"
         options={estados}
         optionLabel="estado"
       />
-      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <CustomTextField label="Novedades" name="novedades" />
       <Button onClick={goBack}>Cancelar</Button>
       <Button type="submit" disabled={isSubmitting}>
         Guardar
@@ -132,13 +123,12 @@ export const OperativosEditForm = () => {
   if (isLoading) return null
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <CustomTextField.LEGAJO label="Legajo" control={control} name="legajo" />
-      <CustomTextField label="Nombre" control={control} name="nombre" />
-      <CustomTextField label="QTH" control={control} name="qth" />
-      <CustomTextField label="HT" control={control} name="ht" />
+      <CustomTextField.LEGAJO label="Legajo" name="legajo" />
+      <CustomTextField label="Nombre" name="nombre" />
+      <CustomTextField label="QTH" name="qth" />
+      <CustomTextField label="HT" name="ht" />
       <CustomSelect
         label="Movil"
-        control={control}
         name="movil"
         options={moviles}
         optionId="movil"
@@ -146,19 +136,13 @@ export const OperativosEditForm = () => {
       />
       <CustomSelect
         label="Estado"
-        control={control}
         name="estado"
         options={estados}
         optionLabel="estado"
       />
-      <CustomSwitch label="Asistencia" control={control} name="asistencia" />
-      <CustomTextField
-        label="Puntaje"
-        control={control}
-        name="puntaje"
-        type="number"
-      />
-      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <CustomSwitch label="Asistencia" name="asistencia" />
+      <CustomTextField label="Puntaje" name="puntaje" type="number" />
+      <CustomTextField label="Novedades" name="novedades" />
       <Button onClick={goBack}>Cancelar</Button>
       <Button type="submit" disabled={isSubmitting}>
         Guardar
@@ -192,20 +176,14 @@ export const MovilEditForm = () => {
   if (isLoading) return null
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <CustomTextField
-        label="Movil"
-        control={control}
-        name="movil"
-        type="number"
-      />
+      <CustomTextField label="Movil" name="movil" type="number" />
       <CustomSelect
         label="Estado"
-        control={control}
         name="estado"
         options={estados}
         optionLabel="estado"
       />
-      <CustomTextField label="Novedades" control={control} name="novedades" />
+      <CustomTextField label="Novedades" name="novedades" />
       <Button onClick={() => navigate('/radio/moviles')}>Cancelar</Button>
       <Button type="submit" disabled={isSubmitting}>
         Guardar

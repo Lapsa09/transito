@@ -1,17 +1,21 @@
 import { FormControlLabel, Switch } from '@mui/material'
 import React from 'react'
-import { useController } from 'react-hook-form'
+import { UseControllerProps, useController } from 'react-hook-form'
 
-function CustomSwitch({ control, name, label, rules = null }) {
-  const { field } = useController({
+interface Props<T> extends UseControllerProps<T> {
+  label: string
+}
+
+function CustomSwitch<T>({ control, name, label, rules }: Props<T>) {
+  const { field } = useController<T>({
     name,
     control,
-    defaultValue: false,
+    defaultValue: false as any,
     rules,
   })
   return (
     <FormControlLabel
-      control={<Switch {...field} checked={field.value} />}
+      control={<Switch {...field} checked={field.value as boolean} />}
       label={label}
     />
   )

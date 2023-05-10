@@ -134,7 +134,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <DatePicker
-              control={control}
               name="fecha"
               label="Fecha"
               disabled={!user.isAdmin()}
@@ -142,11 +141,10 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <TimePicker control={control} name="hora" label="Hora" />
+            <TimePicker name="hora" label="Hora" />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField
-              control={control}
               name="direccion"
               label="Direccion"
               rules={{ required: 'Ingrese una direccion valida' }}
@@ -154,7 +152,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="zona"
               label="Zona"
               rules={{ required: 'Elija una localidad' }}
@@ -164,21 +161,18 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomTextField.LEGAJO
-              control={control}
               name="legajo_a_cargo"
               label="Legajo a Cargo"
             />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField.LEGAJO
-              control={control}
               name="legajo_planilla"
               label="Legajo Planilla"
             />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="turno"
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
@@ -189,7 +183,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="seguridad"
               label="Seguridad"
               options={selects.seguridad}
@@ -206,19 +199,13 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
             </Grid>
           )}
           <Grid item xs={8}>
-            <CustomTextField.DOMINIO control={control} name="dominio" />
+            <CustomTextField.DOMINIO name="dominio" />
           </Grid>
           <Grid item xs={8}>
-            <CustomTextField
-              control={control}
-              type="number"
-              name="licencia"
-              label="Licencia"
-            />
+            <CustomTextField type="number" name="licencia" label="Licencia" />
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="tipo_licencia"
               label="Tipo de licencia"
               options={selects.licencias}
@@ -227,7 +214,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="zona_infractor"
               label="Localidad del infractor"
               rules={{ required: 'Elija una opcion' }}
@@ -237,7 +223,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="resolucion"
               label="Resolucion"
               options={selects.resolucion}
@@ -248,7 +233,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               <Grid item xs={8}>
                 <CustomTextField
                   type="number"
-                  control={control}
                   name="acta"
                   label="Acta"
                   rules={{
@@ -262,7 +246,6 @@ function MotosForm({ handleClose, afterCreate }: FormProps) {
               {fields.map((item, index) => (
                 <Grid key={index} item xs={8}>
                   <CustomAutocomplete
-                    control={control}
                     key={item.id}
                     name={`motivos.${index}`}
                     label={`Motivo ${index + 1}`}

@@ -11,6 +11,7 @@ specifiers:
   '@mui/x-data-grid': ^5.12.3
   '@mui/x-date-pickers': ^5.0.0-alpha.7
   '@reduxjs/toolkit': ^1.8.2
+  '@tanstack/react-query': ^4.29.5
   '@testing-library/jest-dom': ^5.16.4
   '@testing-library/react': ^13.3.0
   '@testing-library/user-event': ^13.5.0
@@ -35,6 +36,7 @@ specifiers:
   framer-motion: ^6.3.14
   jwt-decode: ^3.1.2
   luxon: ^2.4.0
+  material-ui-popup-state: ^5.0.8
   prettier: ^2.7.1
   ra-data-json-server: ^4.2.0
   ra-i18n-polyglot: ^4.2.0
@@ -73,6 +75,7 @@ dependencies:
   '@mui/x-data-grid': 5.17.26_k6epeoptwl5xiv2c76rtmxgsvm
   '@mui/x-date-pickers': 5.0.20_bqdajmu7morq6lq2myyi2tlopy
   '@reduxjs/toolkit': 1.9.3_k4ae6lp43ej6mezo3ztvx6pykq
+  '@tanstack/react-query': 4.29.5_biqbaboplfbrettd7655fr4n2y
   '@testing-library/jest-dom': 5.16.5
   '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
   '@testing-library/user-event': 13.5.0
@@ -85,6 +88,7 @@ dependencies:
   framer-motion: 6.5.1_biqbaboplfbrettd7655fr4n2y
   jwt-decode: 3.1.2
   luxon: 2.5.2
+  material-ui-popup-state: 5.0.8_xqeqsl5kvjjtyxwyi3jhw3yuli
   ra-data-json-server: 4.8.2_23oifcemnfpofe4kdeypuivzny
   ra-i18n-polyglot: 4.8.2_23oifcemnfpofe4kdeypuivzny
   react: 18.2.0
@@ -1063,6 +1067,28 @@ packages:
 
   /@sinclair/typebox/0.25.24:
     resolution: {integrity: sha512-XJfwUVUKDHF5ugKwIcxEgc9k8b7HbznCp6eUfWgu710hMPNIO4aw4/zB5RogDQz8nd6gyCDpU9O/m6qYEWY6yQ==}
+    dev: false
+
+  /@tanstack/query-core/4.29.5:
+    resolution: {integrity: sha512-xXIiyQ/4r9KfaJ3k6kejqcaqFXXBTzN2aOJ5H1J6aTJE9hl/nbgAdfF6oiIu0CD5xowejJEJ6bBg8TO7BN4NuQ==}
+    dev: false
+
+  /@tanstack/react-query/4.29.5_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-F87cibC3s3eG0Q90g2O+hqntpCrudKFnR8P24qkH9uccEhXErnJxBC/AAI4cJRV2bfMO8IeGZQYf3WyYgmSg0w==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.29.5
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /@testing-library/dom/8.20.0:
@@ -3142,6 +3168,23 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       remove-accents: 0.4.2
+    dev: false
+
+  /material-ui-popup-state/5.0.8_xqeqsl5kvjjtyxwyi3jhw3yuli:
+    resolution: {integrity: sha512-5ptEBQVd68QJpm0PCIYBatpX/F5QIFS+EH0lPpGqjl6HPD6uIHPt7laHbiqWDEm/6Wy5YvWF69ny+3jHXmHizQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@mui/material': 5.11.12_xqeqsl5kvjjtyxwyi3jhw3yuli
+      classnames: 2.3.2
+      prop-types: 15.8.1
+      react: 18.2.0
+    transitivePeerDependencies:
+      - '@emotion/react'
+      - '@emotion/styled'
+      - '@types/react'
+      - react-dom
     dev: false
 
   /micromatch/4.0.5:

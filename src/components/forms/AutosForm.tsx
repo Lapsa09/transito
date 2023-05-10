@@ -27,7 +27,7 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
     mode: 'all',
     defaultValues: { lpcarga: user.legajo },
   })
-  const { control, reset, getValues, watch, setValue, setFocus } = methods
+  const { reset, getValues, watch, setValue, setFocus } = methods
   const { selects, error } = useSelects()
 
   const {
@@ -117,7 +117,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <DatePicker
-              control={control}
               name="fecha"
               disabled={!user.isAdmin()}
               label="Fecha"
@@ -125,25 +124,22 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <TimePicker control={control} name="hora" label="Hora" />
+            <TimePicker name="hora" label="Hora" />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField.LEGAJO
-              control={control}
               name="legajo_a_cargo"
               label="Legajo a Cargo"
             />
           </Grid>
           <Grid item xs={8}>
             <CustomTextField.LEGAJO
-              control={control}
               name="legajo_planilla"
               label="Legajo Planilla"
             />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="turno"
               label="Turno"
               rules={{ required: 'Elija una opcion' }}
@@ -154,7 +150,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="seguridad"
               label="Seguridad"
               options={selects.seguridad}
@@ -163,7 +158,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomTextField
-              control={control}
               name="direccion"
               label="Direccion"
               rules={{ required: 'Inserte una direccion valida' }}
@@ -171,7 +165,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="zona"
               label="Zona"
               rules={{ required: 'Elija una localidad' }}
@@ -182,19 +175,13 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
         </Grid>
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
-            <CustomTextField.DOMINIO control={control} name="dominio" />
+            <CustomTextField.DOMINIO name="dominio" />
           </Grid>
           <Grid item xs={8}>
-            <CustomTextField
-              type="number"
-              control={control}
-              name="licencia"
-              label="Licencia"
-            />
+            <CustomTextField type="number" name="licencia" label="Licencia" />
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="tipo_licencia"
               label="Tipo de licencia"
               options={selects.licencias}
@@ -203,7 +190,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomAutocomplete
-              control={control}
               name="zona_infractor"
               rules={{ required: 'Elija una opcion' }}
               label="Localidad del infractor"
@@ -214,14 +200,12 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
           <Grid item xs={8}>
             <CustomTextField
               type="number"
-              control={control}
               name="graduacion_alcoholica"
               label="Graduacion alcoholica"
             />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="resolucion"
               label="Resolucion"
               options={selects.resolucion}
@@ -231,7 +215,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
             <>
               <Grid item xs={8}>
                 <CustomAutocomplete
-                  control={control}
                   name="motivo"
                   label="Motivo"
                   options={selects.motivos}
@@ -241,7 +224,6 @@ function OperativosForm({ handleClose, afterCreate }: FormProps) {
               <Grid item xs={8}>
                 <CustomTextField
                   type="number"
-                  control={control}
                   name="acta"
                   label="Acta"
                   rules={{

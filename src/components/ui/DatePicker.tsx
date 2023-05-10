@@ -7,6 +7,7 @@ import {
   PathValue,
   useController,
   UseControllerProps,
+  useFormContext,
 } from 'react-hook-form'
 import { currentDate } from '../../utils'
 import { DateTime } from 'luxon'
@@ -19,10 +20,10 @@ type Props<T> = UseControllerProps<T> & {
 function CustomDatePicker<T>({
   label,
   name,
-  control,
   disabled = false,
   defaultValue = null,
 }: Props<T>) {
+  const { control } = useFormContext<T>()
   const {
     field,
     fieldState: { error, invalid },

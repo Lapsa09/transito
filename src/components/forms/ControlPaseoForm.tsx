@@ -25,7 +25,7 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
       lp: !user.isAdmin() ? user.legajo : undefined,
     },
   })
-  const { control, reset, getValues, watch, setFocus } = methods
+  const { reset, getValues, watch, setFocus } = methods
   const { selects, error } = useSelects()
 
   const { fecha, turno, lp, motivo, hora, direccion, dominio, resolucion } =
@@ -73,7 +73,6 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <DatePicker
-              control={control}
               label="Fecha"
               name="fecha"
               defaultValue={!user.isAdmin() ? currentDate() : ''}
@@ -82,7 +81,6 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="turno"
               rules={{ required: 'Elija una opcion' }}
               label="Turno"
@@ -92,15 +90,10 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <CustomTextField.LEGAJO
-              control={control}
-              name="lp"
-              label="Legajo Planilla"
-            />
+            <CustomTextField.LEGAJO name="lp" label="Legajo Planilla" />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="motivo"
               rules={{ required: 'Elija una opcion' }}
               label="Motivo"
@@ -111,7 +104,6 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
         <Grid container spacing={2} columns={{ xs: 8, md: 16 }}>
           <Grid item xs={8}>
             <TimePicker
-              control={control}
               name="hora"
               label="Hora"
               defaultValue={!user.isAdmin() ? currentDate() : undefined}
@@ -120,7 +112,6 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="direccion"
               rules={{ required: 'Elija una opcion' }}
               label="Direccion"
@@ -130,11 +121,10 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             />
           </Grid>
           <Grid item xs={8}>
-            <CustomTextField.DOMINIO control={control} name="dominio" />
+            <CustomTextField.DOMINIO name="dominio" />
           </Grid>
           <Grid item xs={8}>
             <CustomSelect
-              control={control}
               name="resolucion"
               rules={{ required: 'Elija una opcion valida' }}
               label="Resolucion"
@@ -145,7 +135,6 @@ function ControlPaseoForm({ handleClose, afterCreate }: FormProps) {
             <Grid item xs={8}>
               <CustomTextField
                 type="number"
-                control={control}
                 name="acta"
                 rules={{
                   required: {

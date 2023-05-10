@@ -18,7 +18,6 @@ type Props<T> = UseControllerProps<T> &
   Omit<TextFieldProps, 'name' | 'defaultValue'>
 
 function CustomTextField<T>({
-  control,
   name,
   rules,
   label,
@@ -26,6 +25,7 @@ function CustomTextField<T>({
   variant = 'outlined',
   ...props
 }: Props<T>) {
+  const { control } = useFormContext<T>()
   const {
     field: { ref, ...field },
     fieldState: { error, invalid },

@@ -1,5 +1,6 @@
 export { default as CustomAutocomplete } from './CustomAutocomplete'
 export { default as CustomBarchart } from './CustomBarchart'
+export { default as CustomDrawer } from './CustomDrawer'
 export * from './CustomMenuButton'
 export { default as CustomRadioGroup } from './CustomRadioGroup'
 export { default as CustomSelect } from './CustomSelect'

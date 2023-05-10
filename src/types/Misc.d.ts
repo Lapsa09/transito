@@ -45,3 +45,10 @@ export interface IZonasPaseo {
   id_zona: number
   zona: string
 }
+
+export interface Links {
+  link?: string
+  name: string
+  permission?: Roles
+  links?: Links[]
+}

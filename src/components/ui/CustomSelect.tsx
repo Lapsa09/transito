@@ -1,6 +1,10 @@
 import React from 'react'
 import { MenuItem, TextField, TextFieldProps } from '@mui/material'
-import { useController, UseControllerProps } from 'react-hook-form'
+import {
+  useController,
+  UseControllerProps,
+  useFormContext,
+} from 'react-hook-form'
 import { Enums } from '../../types'
 import { sxStyles } from '../../utils'
 
@@ -13,7 +17,6 @@ type Props<T, K> = Omit<UseControllerProps<T>, 'defaultValue'> &
   }
 
 function CustomSelect<T, K>({
-  control,
   name,
   rules,
   options,
@@ -22,6 +25,7 @@ function CustomSelect<T, K>({
   optionLabel = 'label',
   ...props
 }: Props<T, K>) {
+  const { control } = useFormContext<T>()
   const {
     field,
     fieldState: { error, invalid },

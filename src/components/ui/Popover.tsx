@@ -21,7 +21,11 @@ function CustomPopover({ links, name }: Props) {
           <HoverMenu {...bindMenu(popupState)}>
             {links.map((link) => (
               <MenuItem onClick={popupState.close} key={link.name}>
-                <Link style={styles.subLink} to={link.link}>
+                <Link
+                  onClick={popupState.close}
+                  style={styles.subLink}
+                  to={link.link}
+                >
                   {link.name}
                 </Link>
               </MenuItem>

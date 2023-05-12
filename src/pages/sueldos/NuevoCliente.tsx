@@ -82,11 +82,8 @@ function NuevoCliente() {
           </FormDataConsumer>
           <FormDataConsumer>
             {({ formData }) =>
-              formData.id_cliente && formData.medio_pago === 'recibo' ? (
-                <Recibo />
-              ) : (
-                <Acopio />
-              )
+              formData.id_cliente &&
+              (formData.medio_pago === 'recibo' ? <Recibo /> : <Acopio />)
             }
           </FormDataConsumer>
           <Grid item xs={6}>

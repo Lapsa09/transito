@@ -1,10 +1,10 @@
 import React from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { Box, Button, FormHelperText } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm, FormProvider } from 'react-hook-form'
 import { CustomTextField, MainLogoOVT } from '../components'
-import { history, sxStyles } from '../utils'
+import { sxStyles } from '../utils'
 import { AppDispatch, IRootState, authActions, IRootUser } from '../redux'
 import '../styles/register.css'
 import { RegisterUserProps } from '../types'
@@ -13,11 +13,12 @@ function Register() {
   const methods = useForm<RegisterUserProps>()
   const dispatch = useDispatch<AppDispatch>()
   const { user, error } = useSelector<IRootState, IRootUser>((x) => x.user)
+  const navigate = useNavigate()
 
   const { handleSubmit, setError } = methods
 
   const loginNav = () => {
-    history.navigate('/login')
+    navigate('/login')
   }
 
   const submitEvent = async (data: RegisterUserProps) => {

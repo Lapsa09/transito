@@ -7,7 +7,6 @@ import {
 import jwt_decode from 'jwt-decode'
 import { loginCall, register, verifyAuth } from '../services'
 import { Roles, User } from '../types'
-import { history } from '../utils'
 
 const emptyUser: User = {
   apellido: '',
@@ -69,7 +68,6 @@ function createReducers() {
   function logout(state) {
     state.user = emptyUser
     localStorage.removeItem('token')
-    history.navigate('/login')
   }
 }
 
@@ -120,9 +118,6 @@ function createExtraReducers() {
 
       localStorage.setItem('token', user)
       state.user = { ...state.user, ...jwt_decode(user) }
-
-      const { pathname } = history.location || { pathname: '/' }
-      history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
@@ -138,14 +133,11 @@ function createExtraReducers() {
     fulfilled: (state) => {
       const token = localStorage.getItem('token')
       state.user = { ...state.user, ...jwt_decode(token) }
-      const { pathname } = history.location || { pathname: '/' }
-      history.navigate(pathname)
     },
     rejected: (state, action) => {
       localStorage.removeItem('token')
       state.user = emptyUser
       state.error = { ...action.error }
-      history.navigate('/login')
     },
   }
   return (builder: ActionReducerMapBuilder<IRootUser>) => {

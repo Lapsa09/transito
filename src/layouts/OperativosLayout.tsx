@@ -2,13 +2,13 @@ import React from 'react'
 import { Button, Dialog } from '@mui/material'
 import { DataGrid, GridColumns } from '@mui/x-data-grid'
 import { useSelector } from 'react-redux'
-import { history } from '../utils'
 import { geocoding } from '../services'
 import { Loader } from '../components'
 import { useSnackBar } from '../hooks'
 import { IRootState } from '../redux'
 import { User } from '../types'
 import styles from '../styles/Operativos.page.module.css'
+import { useNavigate } from 'react-router-dom'
 
 interface Props<T> {
   columns: GridColumns<T>
@@ -33,6 +33,7 @@ function OperativosLayout<T>({
 }: Props<T>) {
   const user = useSelector<IRootState, User>((x) => x.user.user)
   const { handleError, handleSuccess } = useSnackBar()
+  const navigate = useNavigate()
 
   const handleGeocode = async () => {
     try {
@@ -49,7 +50,7 @@ function OperativosLayout<T>({
         <Button
           color="error"
           variant="contained"
-          onClick={() => history.navigate('/', { replace: true })}
+          onClick={() => navigate('/', { replace: true })}
         >
           Atras
         </Button>

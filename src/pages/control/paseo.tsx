@@ -4,16 +4,18 @@ import { getControlesPaseo } from '../../services'
 import { useSelector } from 'react-redux'
 import Layout from '../../layouts/OperativosLayout'
 import { useData } from '../../hooks'
-import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
+import { dateFormat, dateTimeSQLFormat, timeFormat } from '../../utils'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
 import { OperativoPaseo, User } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 function ControlPaseoPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
+  const navigate = useNavigate()
   const { data, loading, refreshPost } =
     useData<OperativoPaseo>(getControlesPaseo)
 
@@ -59,7 +61,7 @@ function ControlPaseoPage() {
     >
       <ControlPaseoForm
         afterCreate={refreshPost}
-        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => navigate('/')}
       />
     </Layout>
   )

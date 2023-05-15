@@ -1,7 +1,8 @@
 import React from 'react'
 import { Box, styled, Button } from '@mui/material'
 import { Menu, Sidebar } from 'react-admin'
-import { history, sxStyles } from '../utils'
+import { sxStyles } from '../utils'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Root = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -42,7 +43,8 @@ const LayoutWithoutSidebar = ({ children }) => (
 )
 
 function AppBar() {
-  const { pathname } = history.location
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const [, , location, subroute] = pathname.split('/')
 
   return (
@@ -52,7 +54,7 @@ function AppBar() {
           {location === 'moviles' ? (
             <Button
               variant="outlined"
-              onClick={() => history.navigate('/radio/operarios')}
+              onClick={() => navigate('/radio/operarios')}
             >
               Operarios
             </Button>
@@ -62,7 +64,7 @@ function AppBar() {
           {location === 'operarios' ? (
             <Button
               variant="outlined"
-              onClick={() => history.navigate('/radio/moviles')}
+              onClick={() => navigate('/radio/moviles')}
             >
               Moviles
             </Button>

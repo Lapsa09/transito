@@ -3,17 +3,19 @@ import { AutosForm } from '../../components'
 import { getOperativosAutos } from '../../services'
 import Layout from '../../layouts/OperativosLayout'
 import { useSelector } from 'react-redux'
-import { dateFormat, dateTimeFormat, timeFormat, history } from '../../utils'
+import { dateFormat, dateTimeFormat, timeFormat } from '../../utils'
 import { useData } from '../../hooks'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
 import { OperativoAutos, User } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 function AutosPage() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
+  const navigate = useNavigate()
   const { data, loading, refreshPost } =
     useData<OperativoAutos>(getOperativosAutos)
 
@@ -84,7 +86,7 @@ function AutosPage() {
     >
       <AutosForm
         afterCreate={refreshPost}
-        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => navigate('/')}
       />
     </Layout>
   )

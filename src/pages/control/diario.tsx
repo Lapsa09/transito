@@ -3,11 +3,12 @@ import { ControlDiarioForm } from '../../components'
 import { getControles } from '../../services'
 import { useSelector } from 'react-redux'
 import Layout from '../../layouts/OperativosLayout'
-import { dateFormat, dateTimeSQLFormat, timeFormat, history } from '../../utils'
+import { dateFormat, dateTimeSQLFormat, timeFormat } from '../../utils'
 import { useData } from '../../hooks'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
 import { OperativoDiario, User } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 function ControlDiarioPage() {
   const [open, setOpen] = useState(false)
@@ -15,6 +16,7 @@ function ControlDiarioPage() {
   const handleClose = () => setOpen(false)
   const user = useSelector<IRootState, User>((x) => x.user.user)
   const { data, loading, refreshPost } = useData<OperativoDiario>(getControles)
+  const navigate = useNavigate()
 
   const columns: GridColumns<OperativoDiario> = [
     {
@@ -59,7 +61,7 @@ function ControlDiarioPage() {
     >
       <ControlDiarioForm
         afterCreate={refreshPost}
-        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => navigate('/')}
       />
     </Layout>
   )

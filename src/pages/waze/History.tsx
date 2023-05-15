@@ -12,13 +12,15 @@ import {
 } from '@mui/material'
 import { ChevronRight, ExpandMore } from '@mui/icons-material'
 import style from '../../styles/Waze.module.css'
-import { dateFormat, mesName, history } from '../../utils'
+import { dateFormat, mesName } from '../../utils'
+import { useNavigate } from 'react-router-dom'
 
 function History() {
   const [meses, setMeses] = useState([])
   const [data, setData] = useState(null)
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState('')
+  const navigate = useNavigate()
 
   const fetch = async () => {
     const data = await getDates()
@@ -74,7 +76,7 @@ function History() {
           <h3>{selected}</h3>
           <button
             className={style.button}
-            onClick={() => history.navigate('/waze', { replace: true })}
+            onClick={() => navigate('/waze', { replace: true })}
           >
             Atras
           </button>

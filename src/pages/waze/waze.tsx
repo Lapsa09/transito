@@ -4,11 +4,12 @@ import { Table } from '../../components'
 import { mainWazeGetter } from '../../services'
 import style from '../../styles/Waze.module.css'
 import { WazePromedio, WazeRes, Horario, Waze } from '../../types'
-import { history } from '../../utils'
+import { useNavigate } from 'react-router-dom'
 
 function App() {
   const [data, setData] = useState<WazeRes>()
   const [prom, setProm] = useState<WazePromedio>()
+  const navigate = useNavigate()
 
   const horarios = (data: WazeRes): [string, Horario][] => {
     const arr = Object.entries(data)
@@ -32,7 +33,7 @@ function App() {
         </button>
         <button
           className={style.button}
-          onClick={() => history.navigate('/waze/historial')}
+          onClick={() => navigate('/waze/historial')}
         >
           Historial
         </button>

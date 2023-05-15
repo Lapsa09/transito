@@ -2,18 +2,20 @@ import React, { useState } from 'react'
 import { CamionesForm } from '../../components'
 import { getOperativosCamiones } from '../../services'
 import Layout from '../../layouts/OperativosLayout'
-import { dateFormat, timeFormat, history } from '../../utils'
+import { dateFormat, timeFormat } from '../../utils'
 import { useData } from '../../hooks'
 import { useSelector } from 'react-redux'
 import { IRootState } from '../../redux'
 import { GridColumns } from '@mui/x-data-grid'
 import { OperativoCamiones, User } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 function CamionesPage() {
   const [open, setOpen] = useState(false)
   const handleClose = () => setOpen(false)
   const handleOpen = () => setOpen(true)
   const user = useSelector<IRootState, User>((x) => x.user.user)
+  const navigate = useNavigate()
   const { data, loading, refreshPost } = useData<OperativoCamiones>(
     getOperativosCamiones
   )
@@ -78,7 +80,7 @@ function CamionesPage() {
     >
       <CamionesForm
         afterCreate={refreshPost}
-        handleClose={user.isAdmin() ? handleClose : () => history.navigate('/')}
+        handleClose={user.isAdmin() ? handleClose : () => navigate('/')}
       />
     </Layout>
   )

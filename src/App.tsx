@@ -1,8 +1,7 @@
 import React, { Fragment, lazy, useEffect } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { CustomSnackbar, Header } from './components'
-import { history } from './utils'
 import { AppDispatch, IRootState, authActions } from './redux'
 import { Roles, User } from './types'
 import { AuthGuard, RoleGuard } from './guards'
@@ -20,9 +19,6 @@ const Radio = lazy(() => import('./pages/radio/Radio'))
 function App() {
   const user = useSelector<IRootState, User>((x) => x.user.user)
   const dispatch = useDispatch<AppDispatch>()
-
-  history.navigate = useNavigate()
-  history.location = useLocation()
 
   useEffect(() => {
     dispatch(authActions.verify())

@@ -105,7 +105,7 @@ function DomainField<T>({ control, name, className = '' }: Props<T>) {
         ),
       }}
     />
-  )
+  );
 }
 
 function FileNumberField<T>({

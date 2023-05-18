@@ -28,7 +28,7 @@ export const TimePickerComponent = ({ className, source, label }) => {
       <TimePicker
         {...field}
         label={label}
-        inputFormat="HH:mm"
+        format="HH:mm"
         className={className}
         renderInput={(props) => (
           <TextField
@@ -58,7 +58,7 @@ export const DatePickerComponent = ({ className, label, source }) => {
         {...field}
         mask="__/__/____"
         label={label}
-        inputFormat="dd/MM/yyyy"
+        format="dd/MM/yyyy"
         className={className}
         renderInput={(props) => (
           <TextField

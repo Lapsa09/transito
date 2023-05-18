@@ -1,10 +1,7 @@
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
-import React from 'react'
+import { DateField, LocalizationProvider } from '@mui/x-date-pickers'
+import React, { useCallback, useMemo } from 'react'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
-import { TextField } from '@mui/material'
 import {
-  Path,
-  PathValue,
   useController,
   UseControllerProps,
   useFormContext,
@@ -21,11 +18,11 @@ function CustomDatePicker<T>({
   label,
   name,
   disabled = false,
-  defaultValue = null,
+  defaultValue,
 }: Props<T>) {
   const { control } = useFormContext<T>()
   const {
-    field,
+    field: { value, onChange, ...field },
     fieldState: { error, invalid },
   } = useController({
     name,
@@ -38,7 +35,7 @@ function CustomDatePicker<T>({
         minDate: (v) =>
           DateTime.fromISO(v as string).toMillis() >
             currentDate().minus({ months: 6 }).toMillis() ||
-          'La fecha no puede ser menor a 6 meses',
+          'La fecha no puede ser menor a 6 meses atras',
         maxDate: (v) =>
           DateTime.fromISO(v as string).toMillis() < currentDate().toMillis() ||
           'La fecha no puede ser mayor a la actual',
@@ -46,26 +43,26 @@ function CustomDatePicker<T>({
     },
     defaultValue,
   })
+
+  const _onChange = (value) => onChange(DateTime.fromISO(value))
+
+  const _value = DateTime.fromISO(value as any)
+
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <DatePicker
+      <DateField
+        value={_value}
+        onChange={_onChange}
         {...field}
         disabled={disabled}
+        inputRef={field.ref}
+        format="dd/MM/yyyy"
+        required
         label={label}
-        mask="__/__/____"
-        inputFormat="dd/MM/yyyy"
-        renderInput={(props) => (
-          <TextField
-            {...props}
-            required
-            placeholder="dd/MM/yyyy"
-            helperText={error?.message}
-            fullWidth
-            error={invalid}
-          />
-        )}
-        minDate={currentDate().minus({ month: 6 })}
-        disableFuture
+        slotProps={{
+          textField: { error: invalid, helperText: error?.message },
+        }}
+        fullWidth
       />
     </LocalizationProvider>
   )

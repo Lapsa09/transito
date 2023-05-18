@@ -41,6 +41,7 @@ function CustomTimePicker<T>({
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TimePicker
         {...field}
+        inputRef={field.ref}
         disabled={disabled}
         label={label}
         disableMaskedInput

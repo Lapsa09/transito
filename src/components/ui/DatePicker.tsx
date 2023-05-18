@@ -1,5 +1,5 @@
 import { DateField, LocalizationProvider } from '@mui/x-date-pickers'
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import {
   useController,
@@ -18,11 +18,11 @@ function CustomDatePicker<T>({
   label,
   name,
   disabled = false,
-  defaultValue = null,
+  defaultValue,
 }: Props<T>) {
   const { control } = useFormContext<T>()
   const {
-    field,
+    field: { value, onChange, ...field },
     fieldState: { error, invalid },
   } = useController({
     name,
@@ -43,18 +43,26 @@ function CustomDatePicker<T>({
     },
     defaultValue,
   })
+
+  const _onChange = (value) => onChange(DateTime.fromISO(value))
+
+  const _value = DateTime.fromISO(value as any)
+
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <DateField
+        value={_value}
+        onChange={_onChange}
         {...field}
         disabled={disabled}
         inputRef={field.ref}
-        format="dd-MM-yyyy"
+        format="dd/MM/yyyy"
         required
         label={label}
         slotProps={{
           textField: { error: invalid, helperText: error?.message },
         }}
+        fullWidth
       />
     </LocalizationProvider>
   )

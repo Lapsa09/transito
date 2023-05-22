@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react'
 import { useInput } from 'react-admin'
-import {
-  DatePicker,
-  TimePicker,
-  LocalizationProvider,
-} from '@mui/x-date-pickers'
+import { DateField, LocalizationProvider, TimeField } from '@mui/x-date-pickers'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { DateTime } from 'luxon'
@@ -25,51 +21,52 @@ export const TimePickerComponent = ({ className, source, label }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TimePicker
+      <TimeField
         {...field}
+        inputRef={field.ref}
         label={label}
         format="HH:mm"
         className={className}
-        renderInput={(props) => (
-          <TextField
-            {...props}
-            error={invalid}
-            helperText={error?.message}
-            required
-            variant="standard"
-          />
-        )}
+        slotProps={{
+          textField: {
+            error: invalid,
+            helperText: error?.message,
+            required: true,
+          },
+        }}
       />
     </LocalizationProvider>
   )
 }
 
-export const DatePickerComponent = ({ className, label, source }) => {
+export const DateFieldComponent = ({ className, label, source }) => {
   const {
-    field,
+    field: { value, onChange, ...field },
     fieldState: { error, invalid },
   } = useInput({
     source,
   })
 
+  const _onChange = (value) => onChange(DateTime.fromISO(value))
+
+  const _value = DateTime.fromISO(value as any)
+
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <DatePicker
+      <DateField
         {...field}
-        mask="__/__/____"
+        value={_value}
+        onChange={_onChange}
         label={label}
         format="dd/MM/yyyy"
         className={className}
-        renderInput={(props) => (
-          <TextField
-            {...props}
-            required
-            helperText={error?.message}
-            error={invalid}
-            variant="standard"
-            placeholder="dd/MM/yyyy"
-          />
-        )}
+        slotProps={{
+          textField: {
+            error: invalid,
+            helperText: error?.message,
+            required: true,
+          },
+        }}
       />
     </LocalizationProvider>
   )

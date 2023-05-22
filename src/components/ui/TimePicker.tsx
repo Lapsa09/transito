@@ -7,7 +7,6 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { DateTime } from 'luxon'
-import dayjs from 'dayjs'
 
 type Props<T> = UseControllerProps<T> & {
   label: string
@@ -31,7 +30,7 @@ function CustomTimePicker<T>({
       required: 'Ingrese una hora',
       validate: {
         validDate: (v) =>
-          dayjs(v as string).isValid() || 'Ingrese una hora valida',
+          DateTime.fromISO(v as string).isValid || 'Ingrese una hora valida',
       },
     },
     defaultValue,

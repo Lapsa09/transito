@@ -39,7 +39,7 @@ export const TimePickerComponent = ({ className, source, label }) => {
   )
 }
 
-export const DateFieldComponent = ({ className, label, source }) => {
+export const DatePickerComponent = ({ className, label, source }) => {
   const {
     field: { value, onChange, ...field },
     fieldState: { error, invalid },

@@ -1,5 +1,5 @@
-import { DateField, LocalizationProvider } from '@mui/x-date-pickers'
 import React from 'react'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import {
   useController,
@@ -8,6 +8,7 @@ import {
 } from 'react-hook-form'
 import { currentDate } from '../../utils'
 import { DateTime } from 'luxon'
+import { TextField } from '@mui/material'
 
 type Props<T> = UseControllerProps<T> & {
   label: string
@@ -22,7 +23,7 @@ function CustomDatePicker<T>({
 }: Props<T>) {
   const { control } = useFormContext<T>()
   const {
-    field: { value, onChange, ...field },
+    field,
     fieldState: { error, invalid },
   } = useController({
     name,
@@ -44,25 +45,23 @@ function CustomDatePicker<T>({
     defaultValue,
   })
 
-  const _onChange = (value) => onChange(DateTime.fromISO(value))
-
-  const _value = DateTime.fromISO(value as any)
-
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <DateField
-        value={_value}
-        onChange={_onChange}
+      <DatePicker
         {...field}
         disabled={disabled}
         inputRef={field.ref}
-        format="dd/MM/yyyy"
-        required
+        inputFormat="dd/MM/yyyy"
         label={label}
-        slotProps={{
-          textField: { error: invalid, helperText: error?.message },
-        }}
-        fullWidth
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            error={invalid}
+            helperText={error?.message}
+            required
+            fullWidth
+          />
+        )}
       />
     </LocalizationProvider>
   )

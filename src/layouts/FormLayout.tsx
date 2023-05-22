@@ -17,6 +17,7 @@ import { useLocalStorage, useSnackBar } from '../hooks'
 import styles from '../styles/FormLayout.module.css'
 import { Path, useFormContext } from 'react-hook-form'
 import { SerializedError } from '@reduxjs/toolkit'
+import { DateTime } from 'luxon'
 
 interface Props<T> {
   children: JSX.Element[]
@@ -77,7 +78,9 @@ function FormLayout<T>({
     try {
       if (currentDate().toMillis() < operativo.expiresAt) {
         Object.entries(operativo).forEach(([key, value]) => {
-          setValue(key as Path<T>, value)
+          if (key === 'fecha' || key === 'hora') {
+            setValue(key as Path<T>, DateTime.fromISO(value) as any)
+          } else setValue(key as Path<T>, value)
         })
         if (isCompleted(operativo)) setActiveStep(1)
       } else nuevoOperativo()

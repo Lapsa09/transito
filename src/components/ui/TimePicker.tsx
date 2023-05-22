@@ -1,5 +1,5 @@
 import React from 'react'
-import { LocalizationProvider, TimeField } from '@mui/x-date-pickers'
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import {
   useController,
@@ -7,6 +7,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { DateTime } from 'luxon'
+import { TextField } from '@mui/material'
 
 type Props<T> = UseControllerProps<T> & {
   label: string
@@ -38,17 +39,21 @@ function CustomTimePicker<T>({
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TimeField
+      <TimePicker
         {...field}
         inputRef={field.ref}
         disabled={disabled}
-        slotProps={{
-          textField: { error: invalid, helperText: error?.message },
-        }}
         label={label}
-        fullWidth
-        format="HH:mm"
-        required
+        inputFormat="HH:mm"
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            error={invalid}
+            helperText={error?.message}
+            required
+            fullWidth
+          />
+        )}
       />
     </LocalizationProvider>
   )

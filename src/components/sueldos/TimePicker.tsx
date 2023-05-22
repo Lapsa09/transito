@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react'
 import { useInput } from 'react-admin'
-import { DateField, LocalizationProvider, TimeField } from '@mui/x-date-pickers'
+import {
+  DatePicker,
+  LocalizationProvider,
+  TimePicker,
+} from '@mui/x-date-pickers'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import { TextField } from '@mui/material'
 import { DateTime } from 'luxon'
@@ -21,19 +25,21 @@ export const TimePickerComponent = ({ className, source, label }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TimeField
+      <TimePicker
         {...field}
         inputRef={field.ref}
         label={label}
-        format="HH:mm"
+        inputFormat="HH:mm"
         className={className}
-        slotProps={{
-          textField: {
-            error: invalid,
-            helperText: error?.message,
-            required: true,
-          },
-        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            error={invalid}
+            helperText={error?.message}
+            required
+            fullWidth
+          />
+        )}
       />
     </LocalizationProvider>
   )
@@ -53,20 +59,22 @@ export const DatePickerComponent = ({ className, label, source }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <DateField
+      <DatePicker
         {...field}
         value={_value}
         onChange={_onChange}
         label={label}
-        format="dd/MM/yyyy"
+        inputFormat="dd/MM/yyyy"
         className={className}
-        slotProps={{
-          textField: {
-            error: invalid,
-            helperText: error?.message,
-            required: true,
-          },
-        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            error={invalid}
+            helperText={error?.message}
+            required
+            fullWidth
+          />
+        )}
       />
     </LocalizationProvider>
   )

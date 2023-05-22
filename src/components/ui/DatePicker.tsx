@@ -1,13 +1,12 @@
 import { DateField, LocalizationProvider } from '@mui/x-date-pickers'
-import React, { useCallback, useMemo } from 'react'
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
+import React from 'react'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import {
   useController,
   UseControllerProps,
   useFormContext,
 } from 'react-hook-form'
-import { currentDate } from '../../utils'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 
 type Props<T> = UseControllerProps<T> & {
   label: string
@@ -30,26 +29,24 @@ function CustomDatePicker<T>({
     rules: {
       required: 'Ingrese una fecha',
       validate: {
-        validDate: (v) =>
-          DateTime.fromISO(v as string).isValid || 'Fecha inválida',
+        validDate: (v) => dayjs(v as string).isValid() || 'Fecha inválida',
         minDate: (v) =>
-          DateTime.fromISO(v as string).toMillis() >
-            currentDate().minus({ months: 6 }).toMillis() ||
+          dayjs(v as string).diff(dayjs(), 'month') > 6 ||
           'La fecha no puede ser menor a 6 meses atras',
         maxDate: (v) =>
-          DateTime.fromISO(v as string).toMillis() < currentDate().toMillis() ||
+          dayjs(v as string).diff(dayjs()) < 0 ||
           'La fecha no puede ser mayor a la actual',
       },
     },
     defaultValue,
   })
 
-  const _onChange = (value) => onChange(DateTime.fromISO(value))
+  const _onChange = (value) => onChange(dayjs(value))
 
-  const _value = DateTime.fromISO(value as any)
+  const _value = dayjs(value as any)
 
   return (
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateField
         value={_value}
         onChange={_onChange}

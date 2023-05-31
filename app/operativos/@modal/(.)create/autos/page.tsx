@@ -1,23 +1,36 @@
 'use client'
+import React from 'react'
+import { motion } from 'framer-motion'
 import { AutosForm } from '@/components'
 import { useStepForm } from '@/hooks'
-import React from 'react'
-import { twMerge } from 'tailwind-merge'
 
 function page() {
   const { activeStep } = useStepForm()
+
+  const variant = {
+    open: {
+      x: `-${activeStep * 100}%`,
+    },
+    left: {
+      x: '-120vw',
+    },
+    right: {
+      x: '120vw',
+    },
+  }
   return (
-    <div className="flex w-10/12 my-4">
+    <div className="flex w-[200%] mx-auto my-4">
       {AutosForm.map((child: React.ReactNode, i: number) => (
-        <div
+        <motion.div
+          variants={variant}
           key={i}
-          className={twMerge(
-            `w-full flex flex-col`,
-            i !== activeStep && 'hidden'
-          )}
+          className="w-full flex flex-col"
+          animate={
+            activeStep === i ? 'open' : activeStep > i ? 'left' : 'right'
+          }
         >
           {child}
-        </div>
+        </motion.div>
       ))}
     </div>
   )

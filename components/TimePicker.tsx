@@ -13,12 +13,12 @@ interface Props
   label: string
 }
 
-function TimePicker({ name, label, className }: Props) {
+function TimePicker({ name, label, className, rules }: Props) {
   const { control } = useFormContext()
   const {
     field,
     fieldState: { invalid, error },
-  } = useController({ name, control })
+  } = useController({ name, control, rules, defaultValue: '' })
   return (
     <div className={twMerge('mb-6', className)}>
       <label
@@ -26,7 +26,9 @@ function TimePicker({ name, label, className }: Props) {
         className="text-sm text-gray-900 dark:text-gray-300 font-medium block mb-2"
       >
         {label}
-        <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
+        {rules?.required && (
+          <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
+        )}
       </label>
       <input
         className={`w-full rounded-lg p-2.5 text-sm border bg-white/0 dark:bg-gray-700 outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${

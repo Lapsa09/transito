@@ -3,11 +3,14 @@ import { Button, Stepper } from '@/components'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import useSWR from 'swr'
+import { getSelects } from '@/services'
 
 function layout({ children }: { children: React.ReactNode[] }) {
   const methods = useForm()
   const [activeStep, setActiveStep] = useState(0)
   const router = useRouter()
+  const { isLoading } = useSWR('/api/selects', getSelects)
 
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === 1
@@ -26,7 +29,7 @@ function layout({ children }: { children: React.ReactNode[] }) {
           activeStep={activeStep}
           steps={['Operativo', 'Vehiculo']}
         />
-        {children}
+        {isLoading ? 'Cargando...' : children}
       </FormProvider>
       <div className="flex justify-between w-1/2">
         <Button disabled={isFirstStep} onClick={handlePrev}>

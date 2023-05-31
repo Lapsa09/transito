@@ -1,4 +1,5 @@
 'use client'
+import { DOMINIO_PATTERN, LEGAJO_PATTERN } from '@/utils'
 import React from 'react'
 import {
   UseControllerProps,
@@ -29,6 +30,7 @@ function Input({
     name,
     control,
     rules,
+    defaultValue: '',
   })
   return (
     <div className={twMerge('mb-6', className)}>
@@ -56,5 +58,40 @@ function Input({
     </div>
   )
 }
+
+function InputLegajo(props: Props) {
+  return (
+    <Input
+      {...props}
+      rules={{
+        ...props.rules,
+        pattern: {
+          value: LEGAJO_PATTERN,
+          message: 'Ingrese un legajo valido',
+        },
+        required: 'Este campo es requerido',
+      }}
+    />
+  )
+}
+
+function InputDominio(props: Props) {
+  return (
+    <Input
+      {...props}
+      rules={{
+        ...props.rules,
+        pattern: {
+          value: DOMINIO_PATTERN,
+          message: 'Ingrese un dominio valido',
+        },
+        required: 'Este campo es requerido',
+      }}
+    />
+  )
+}
+
+Input.Legajo = InputLegajo
+Input.Dominio = InputDominio
 
 export default Input

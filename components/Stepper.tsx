@@ -12,7 +12,10 @@ function CustomStepper({
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }) {
   return (
-    <Stepper className="w-full py-4 px-8" activeStep={activeStep}>
+    <Stepper
+      className="w-full py-4 px-8 cursor-pointer"
+      activeStep={activeStep}
+    >
       {steps.map((step, i) => (
         <Step key={i} onClick={() => setActiveStep(i)}>
           <Typography className="h-5 w-5 text-center">{i + 1}</Typography>

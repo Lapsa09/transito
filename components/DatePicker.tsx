@@ -15,17 +15,17 @@ interface Props
   label: string
 }
 
-function DatePicker({ name, label, className }: Props) {
+function DatePicker({ name, label, className, rules }: Props) {
   const [date, setDate] = useState<DateValueType>(null)
   const { control, trigger } = useFormContext()
   const {
-    field,
+    field: { ref, ...field },
     fieldState: { invalid, error },
   } = useController({
     name,
     control,
     rules: {
-      required: 'Este campo es requerido',
+      ...rules,
       validate: {
         validDate: (value) => {
           return !isNaN(Date.parse(value)) || 'Fecha inválida'
@@ -60,7 +60,9 @@ function DatePicker({ name, label, className }: Props) {
         className="text-sm text-gray-900 dark:text-gray-300 font-medium block mb-2"
       >
         {label}
-        <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
+        {rules?.required && (
+          <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
+        )}
       </label>
       <Datepicker
         asSingle

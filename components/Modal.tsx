@@ -2,13 +2,16 @@
 import { useCallback, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { MouseEventHandler } from 'react'
+import { useStepForm } from '@/hooks'
 
 export default function Modal({ children }: { children: React.ReactNode }) {
   const overlay = useRef(null)
   const wrapper = useRef(null)
   const router = useRouter()
+  const { setActiveStep } = useStepForm()
 
   const onDismiss = useCallback(() => {
+    setActiveStep(0)
     router.back()
   }, [router])
 

@@ -23,7 +23,7 @@ import {
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
-interface Props<T> extends UseControllerProps {
+interface Props extends UseControllerProps {
   options: any[]
   label: string
   inputLabel?: string
@@ -31,7 +31,7 @@ interface Props<T> extends UseControllerProps {
   className: string
 }
 
-export default function Autocomplete<T>({
+export default function Autocomplete({
   options,
   label,
   inputLabel = 'label',
@@ -39,22 +39,27 @@ export default function Autocomplete<T>({
   name,
   className,
   rules,
-}: Props<T>) {
+}: Props) {
   const { control } = useFormContext()
   const {
-    field,
+    field: { value, ...field },
     fieldState: { invalid, error },
-  } = useController({ control, name, rules })
+  } = useController({
+    control,
+    name,
+    rules,
+    defaultValue: {
+      [inputLabel]: '',
+      [inputId]: '',
+    },
+  })
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState('')
-
-  const getOption = options?.find((option) => option[inputLabel] === value)
 
   const handleChange = (currentValue: string) => {
-    setValue(
-      currentValue.toUpperCase() === value ? '' : currentValue.toUpperCase()
+    const selectedOption = options?.find(
+      (option) => option[inputLabel] === currentValue.toUpperCase()
     )
-    field.onChange(getOption)
+    field.onChange(selectedOption)
     setOpen(false)
   }
 
@@ -62,7 +67,7 @@ export default function Autocomplete<T>({
     <div className={twMerge('mb-6 flex flex-col', className)}>
       <label
         className="text-sm text-gray-900 dark:text-gray-300 font-medium block mb-2"
-        htmlFor={field.name}
+        htmlFor={name}
       >
         {label}
         {rules?.required && (
@@ -81,7 +86,7 @@ export default function Autocomplete<T>({
                 : 'border-gray-600'
             }`}
           >
-            {value ? getOption[inputLabel] : 'Selecciona una opcion...'}
+            {value[inputLabel] || 'Selecciona una opcion...'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -95,7 +100,9 @@ export default function Autocomplete<T>({
                   <Check
                     className={cn(
                       'mr-2 h-4 w-4',
-                      value === option[inputLabel] ? 'opacity-100' : 'opacity-0'
+                      value[inputLabel] === option[inputLabel]
+                        ? 'opacity-100'
+                        : 'opacity-0'
                     )}
                   />
                   {option[inputLabel]}

@@ -48,10 +48,7 @@ export default function Autocomplete({
     control,
     name,
     rules,
-    defaultValue: {
-      [inputLabel]: '',
-      [inputId]: '',
-    },
+    defaultValue: '',
   })
   const [open, setOpen] = useState(false)
 
@@ -86,7 +83,7 @@ export default function Autocomplete({
                 : 'border-gray-600'
             }`}
           >
-            {value[inputLabel] || 'Selecciona una opcion...'}
+            {value ? value[inputLabel] : 'Selecciona una opcion...'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

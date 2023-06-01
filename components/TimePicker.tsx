@@ -31,7 +31,7 @@ function TimePicker({ name, label, className, rules }: Props) {
         )}
       </label>
       <input
-        className={`w-full rounded-lg p-2.5 text-sm border bg-white/0 dark:bg-gray-700 outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+        className={`w-full rounded-lg p-2.5 text-sm border bg-white/0 dark:bg-gray-700 outline-none ${
           invalid
             ? 'border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400'
             : 'border-gray-600 text-gray-400'

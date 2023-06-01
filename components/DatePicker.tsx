@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import {
   UseControllerProps,
   useController,
@@ -16,7 +16,6 @@ interface Props
 }
 
 function DatePicker({ name, label, className, rules }: Props) {
-  const [date, setDate] = useState<DateValueType>(null)
   const { control, trigger } = useFormContext()
   const {
     field: { ref, ...field },
@@ -45,10 +44,10 @@ function DatePicker({ name, label, className, rules }: Props) {
         },
       },
     },
+    defaultValue: '',
   })
 
   const onChange = (value: DateValueType) => {
-    setDate(value)
     field.onChange(value!.startDate)
     trigger(name)
   }
@@ -66,17 +65,38 @@ function DatePicker({ name, label, className, rules }: Props) {
       </label>
       <Datepicker
         asSingle
-        containerClassName={`relative rounded-lg border bg-white/0 dark:bg-gray-700 text-sm outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-          invalid
-            ? 'border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400'
-            : 'border-gray-600'
-        } `}
+        containerClassName={(className) =>
+          twMerge(
+            className,
+            `border rounded-lg bg-white/0 dark:bg-gray-700 text-sm ${
+              invalid
+                ? 'border-red-500 dark:!border-red-400'
+                : 'border-gray-600'
+            }`
+          )
+        }
+        inputClassName={(className) =>
+          twMerge(
+            className,
+            `${
+              invalid &&
+              'text-red-500 placeholder:text-red-500 dark:!text-red-400 dark:placeholder:!text-red-400'
+            }`
+          )
+        }
+        toggleClassName={(className) =>
+          twMerge(
+            className,
+            `${invalid ? 'text-red-500 dark:text-red-400' : 'text-gray-600'}`
+          )
+        }
         primaryColor="blue"
         useRange={false}
         placeholder="DD/MM/YYYY"
+        inputName={field.name}
         displayFormat="DD/MM/YYYY"
         {...field}
-        value={date}
+        value={{ startDate: field.value, endDate: field.value }}
         onChange={onChange}
         i18n="es"
         showShortcuts={false}

@@ -1,6 +1,4 @@
 export { default as Button } from './Button'
-export { default as ClientOnly } from './ClientOnly'
-export { default as Container } from './Container'
 export { default as DatePicker } from './DatePicker'
 export { default as Input } from './Input'
 export * from './Logos'

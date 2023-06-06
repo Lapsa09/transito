@@ -7,17 +7,24 @@ import { getSelects } from '@/services'
 import useSWR from 'swr'
 import { useSelectedLayoutSegment } from 'next/navigation'
 import { useToast } from '@/hooks'
+import { FormInputProps } from '@/types'
 
 function AutosFormLayout({ children }: { children: React.ReactNode }) {
-  const methods = useForm()
+  const methods = useForm<FormInputProps>({
+    mode: 'all',
+  })
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
-  const { handleSubmit, reset } = methods
+  const {
+    handleSubmit,
+    reset,
+    formState: { isValid },
+  } = methods
   const { toast } = useToast()
 
   const layoutSegment = useSelectedLayoutSegment()
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: FormInputProps) => {
     console.log({ data, layoutSegment })
     // reset({}, { keepDefaultValues: true })
     toast({ title: 'Operativo creado con exito', variant: 'success' })
@@ -52,11 +59,13 @@ function AutosFormLayout({ children }: { children: React.ReactNode }) {
               Atras
             </Button>
             {isLastStep ? (
-              <Button disabled={!isLastStep} type="submit">
+              <Button disabled={!isValid} type="submit">
                 Guardar
               </Button>
             ) : (
-              <Button onClick={handleNext}>Siguiente</Button>
+              <Button disabled={isLastStep} onClick={handleNext}>
+                Siguiente
+              </Button>
             )}
           </div>
         </form>

@@ -52,3 +52,18 @@ export interface Links {
   permission?: Roles
   links?: Links[]
 }
+
+export enum Meses {
+  JANUARY = 'ENERO',
+  FEBRUARY = 'FEBRERO',
+  MARCH = 'MARZO',
+  APRIL = 'ABRIL',
+  MAY = 'MAYO',
+  JUNE = 'JUNIO',
+  JULY = 'JULIO',
+  AUGUST = 'AGOSTO',
+  SEPTEMBER = 'SEPTIEMBRE',
+  OCTOBER = 'OCTUBRE',
+  NOVEMBER = 'NOVIEMBRE',
+  DECEMBER = 'DICIEMBRE',
+}

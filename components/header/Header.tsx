@@ -1,7 +1,6 @@
 import React from 'react'
 import { LogoOVT, LogoVL } from '../Logos'
 import Menu from './Menu'
-import Container from '../Container'
 
 function Header() {
   return (

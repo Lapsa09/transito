@@ -5,6 +5,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getExpandedRowModel,
+  Row,
 } from '@tanstack/react-table'
 import {
   Table,
@@ -15,23 +17,32 @@ import {
   TableRow,
 } from '@/components/ui'
 import { DataTablePagination } from './DataTablePagination'
+import { Fragment } from 'react'
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
+  getRowCanExpand?: (row: Row<TData>) => boolean
+  expand?: ({ data }: { data: TData }) => React.ReactNode
 }
 
-export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  columns,
+  data,
+  getRowCanExpand,
+  expand,
+}: DataTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
+    getRowCanExpand,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     columnResizeMode: 'onChange',
   })
 
   return (
-    <div>
+    <div className="w-full">
       <div className="rounded-md border overflow-x-auto">
         <Table style={{ width: table.getCenterTotalSize() }}>
           <TableHeader>
@@ -71,22 +82,35 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
           <TableBody>
             {table.getRowModel()?.rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}
+                <Fragment key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{ width: cell.column.getSize() }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {expand && (
+                    <TableRow
+                      className={`${row.getIsExpanded() ? '' : 'hidden'}`}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                      <TableCell colSpan={row.getVisibleCells().length}>
+                        {expand({
+                          data: row.original,
+                        })}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
               ))
             ) : (
               <TableRow>

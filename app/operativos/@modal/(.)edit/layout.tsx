@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { Button, Stepper } from '@/components'
+import { Button, LogoOVT, LogoVL, Modal, Stepper } from '@/components'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
 import {
@@ -23,15 +23,15 @@ const chooseOperativo = {
 
 type operativo = keyof typeof chooseOperativo
 
-function layout({ children }: { children: React.ReactNode }) {
+function AutosEditLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const param = useParams()
-  const layoutSegment = useSelectedLayoutSegment()
   const methods = useForm<EditInputProps>({
     mode: 'all',
     defaultValues: async () =>
       await chooseOperativo[layoutSegment as operativo](+param.id),
   })
+
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
   const {
@@ -40,9 +40,11 @@ function layout({ children }: { children: React.ReactNode }) {
   } = methods
   const { toast } = useToast()
 
+  const layoutSegment = useSelectedLayoutSegment()
+
   const onSubmit = (data: EditInputProps) => {
     console.log({ data, layoutSegment })
-    toast({ title: 'Operativo creado con exito', variant: 'success' })
+    toast({ title: 'Operativo actualizado con exito', variant: 'success' })
     router.back()
   }
 
@@ -53,37 +55,41 @@ function layout({ children }: { children: React.ReactNode }) {
   const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div className="flex justify-between w-full">
-        <Button variant="text">Nuevo Operativo</Button>
-        <Button variant="text">Salir</Button>
-      </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormProvider {...methods}>
-          <Stepper
-            setActiveStep={setActiveStep}
-            activeStep={activeStep}
-            steps={['Operativo', 'Vehiculo']}
-          />
-          {isLoading ? 'Cargando...' : children}
-        </FormProvider>
+    <Modal>
+      <div className="flex flex-col justify-center items-center">
         <div className="flex justify-between w-full">
-          <Button disabled={isFirstStep} onClick={handlePrev}>
-            Atras
-          </Button>
-          {isLastStep ? (
-            <Button disabled={!isValid} type="submit">
-              Guardar
-            </Button>
-          ) : (
-            <Button disabled={isLastStep} onClick={handleNext}>
-              Siguiente
-            </Button>
-          )}
+          <LogoVL />
+          <Button variant="text">Nuevo Operativo</Button>
+          <Button variant="text">Salir</Button>
+          <LogoOVT />
         </div>
-      </form>
-    </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormProvider {...methods}>
+            <Stepper
+              setActiveStep={setActiveStep}
+              activeStep={activeStep}
+              steps={['Operativo', 'Vehiculo']}
+            />
+            {isLoading ? 'Cargando...' : children}
+          </FormProvider>
+          <div className="flex justify-between w-full">
+            <Button disabled={isFirstStep} onClick={handlePrev}>
+              Atras
+            </Button>
+            {isLastStep ? (
+              <Button disabled={!isValid} type="submit">
+                Guardar
+              </Button>
+            ) : (
+              <Button disabled={isLastStep} onClick={handleNext}>
+                Siguiente
+              </Button>
+            )}
+          </div>
+        </form>
+      </div>
+    </Modal>
   )
 }
 
-export default layout
+export default AutosEditLayout

@@ -34,6 +34,31 @@ export interface FormInputProps {
   extranjero?: boolean
 }
 
+export interface EditInputProps {
+  id: number
+  legajo_a_cargo: number
+  legajo_planilla: number
+  seguridad: string
+  direccion: string
+  zona: number
+  fecha: DateTime
+  turno: string
+  lpcarga: number
+  hora: DateTime
+  dominio: string
+  zona_infractor: number
+  licencia?: number
+  tipo_licencia?: number
+  resolucion?: string
+  acta?: number
+  extranjero?: boolean
+  motivo?: number
+}
+
+export interface EditAutosProps extends EditInputProps {
+  graduacion_alcoholica: number
+}
+
 export type RadioOPForm = {
   id: number
   legajo: number

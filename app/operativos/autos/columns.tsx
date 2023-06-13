@@ -1,86 +1,104 @@
-import { OperativoAutos } from '@/types/operativos'
+import { Registro } from '@/types/autos'
 import { ColumnDef } from '@tanstack/react-table'
+import Link from 'next/link'
 
-export const columns: ColumnDef<OperativoAutos>[] = [
+export const columns: ColumnDef<Registro>[] = [
   {
-    accessorKey: 'id',
-    header: 'ID',
-    size: 55,
+    id: 'actions',
+    cell: ({ row }) => (
+      <Link href={`/operativos/edit/autos/${row.getValue('id')}`}>Editar</Link>
+    ),
   },
   {
-    accessorKey: 'fecha',
-    header: 'Fecha',
-    cell: ({ row }) => new Date(row.getValue('fecha')).toLocaleDateString(),
+    accessorFn: (row) => row.id,
+    id: 'id',
   },
   {
-    accessorKey: 'hora',
-    header: 'Hora',
+    accessorFn: (row) => row.operativos?.fecha,
+    id: 'fecha',
+    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
   },
   {
-    accessorKey: 'legajo_a_cargo',
-    header: 'Legajo a cargo',
+    accessorFn: (row) => row.operativos?.hora,
+    id: 'hora',
+    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
-    accessorKey: 'legajo_planilla',
-    header: 'Legajo planilla',
+    accessorFn: (row) => row.operativos?.qth,
+    id: 'qth',
+    size: 450,
   },
   {
-    accessorKey: 'qth',
-    header: 'QTH',
-    size: 185,
+    accessorFn: (row) => row.operativos?.localidad?.barrio,
+    id: 'localidad',
   },
   {
-    accessorKey: 'barrio',
-    header: 'Barrio',
+    accessorFn: (row) => row.operativos?.localidad?.cp,
+    id: 'cp',
   },
   {
-    accessorKey: 'cp',
-    header: 'CP',
+    accessorFn: (row) => row.operativos?.turno,
+    id: 'turno',
   },
   {
-    accessorKey: 'turno',
-    header: 'Turno',
+    accessorFn: (row) => row.operativos?.seguridad,
+    id: 'seguridad',
   },
   {
-    accessorKey: 'seguridad',
-    header: 'Seguridad',
-    size: 230,
+    accessorFn: (row) => row.dominio,
+    id: 'dominio',
   },
   {
-    accessorKey: 'dominio',
-    header: 'Dominio',
+    accessorFn: (row) => row.licencia,
+    id: 'licencia',
   },
   {
-    accessorKey: 'licencia',
-    header: 'Licencia',
+    accessorFn: (row) => row.tipo_licencias?.tipo,
+    id: 'tipo_licencia',
   },
   {
-    accessorKey: 'tipo_licencia',
-    header: 'Tipo de licencia',
+    accessorFn: (row) => row.tipo_licencias?.vehiculo,
+    id: 'tipo_vehiculo',
   },
   {
-    accessorKey: 'tipo_vehiculo',
-    header: 'Tipo de vehículo',
+    accessorFn: (row) => row.graduacion_alcoholica,
+    id: 'graduacion_alcoholica',
   },
   {
-    accessorKey: 'graduacion_alcoholica',
-    header: 'Graduación alcohólica',
+    accessorFn: (row) => row.resultado,
+    id: 'resultado_alcoholemia',
   },
   {
-    accessorKey: 'zona_infractor',
-    header: 'Zona infractor',
+    accessorFn: (row) => row.zona_infractor?.barrio,
+    id: 'zona_infractor',
   },
   {
-    accessorKey: 'resolucion',
-    header: 'Resolución',
+    accessorFn: (row) => row.es_del,
+    id: 'es_del',
   },
   {
-    accessorKey: 'motivo',
-    header: 'Motivo',
-    size: 180,
+    accessorFn: (row) => row.resolucion,
+    id: 'resolucion',
   },
   {
-    accessorKey: 'acta',
-    header: 'Acta',
+    accessorFn: (row) => row.acta,
+    id: 'acta',
+  },
+  {
+    accessorFn: (row) => row.motivos?.motivo,
+    id: 'motivo',
+  },
+  {
+    accessorFn: (row) => row.operativos?.direccion_full,
+    id: 'direccion_full',
+    size: 800,
+  },
+  {
+    accessorFn: (row) => row.operativos?.latitud,
+    id: 'latitud',
+  },
+  {
+    accessorFn: (row) => row.operativos?.longitud,
+    id: 'longitud',
   },
 ]

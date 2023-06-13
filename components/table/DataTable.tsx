@@ -24,6 +24,7 @@ interface DataTableProps<TData> {
   data: TData[]
   getRowCanExpand?: (row: Row<TData>) => boolean
   expand?: ({ data }: { data: TData }) => React.ReactNode
+  onClick?: (row: Row<TData>) => void
 }
 
 export function DataTable<TData>({
@@ -31,6 +32,7 @@ export function DataTable<TData>({
   data,
   getRowCanExpand,
   expand,
+  onClick,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -91,6 +93,7 @@ export function DataTable<TData>({
                       <TableCell
                         key={cell.id}
                         style={{ width: cell.column.getSize() }}
+                        onClick={onClick && (() => onClick(row))}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

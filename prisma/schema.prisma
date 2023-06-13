@@ -1,0 +1,410 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["camiones", "motos", "nuevo_control", "operativos", "public"]
+}
+
+model camiones_operativos {
+  id_op          Int                  @id @default(autoincrement())
+  fecha          DateTime?            @db.Date
+  turno          turnos_old?
+  legajo         String?              @db.VarChar
+  direccion      String?              @db.VarChar
+  id_localidad   Int?
+  direccion_full String?              @db.VarChar
+  latitud        Float?
+  longitud       Float?
+  registros      camiones_registros[]
+  localidad      vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("operativos")
+  @@schema("camiones")
+}
+
+model camiones_registros {
+  id                   Int                  @id @default(autoincrement())
+  hora                 DateTime?            @db.Time(6)
+  dominio              String?              @db.VarChar
+  origen               String?              @db.VarChar
+  destino              String?              @db.VarChar
+  licencia             String?              @db.VarChar
+  remito               Boolean?
+  carga                Boolean?
+  resolucion           String?              @db.VarChar
+  acta                 String?              @db.VarChar
+  hora_carga           DateTime?            @db.Time(6)
+  legajo_carga         BigInt?
+  mes                  Int?
+  semana               Int?
+  direccion_full       String?              @db.VarChar
+  latitud              String?              @db.VarChar
+  longitud             String?              @db.VarChar
+  id_localidad_origen  Int?
+  id_localidad_destino Int?
+  id_motivo            Int?
+  id_operativo         Int?
+  localidad_destino    barrios?             @relation("registros_id_localidad_destinoTobarrios", fields: [id_localidad_destino], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+  localidad_origen     barrios?             @relation("registros_id_localidad_origenTobarrios", fields: [id_localidad_origen], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+  motivos              motivos?             @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  operativos           camiones_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("registros")
+  @@schema("camiones")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model moto_motivo {
+  id_registro Int
+  id_motivo   Int
+  motivo      motivos         @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  registros   motos_registros @relation(fields: [id_registro], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([id_registro, id_motivo], name: "pk_moto_motivo", map: "pk_moto_motivo")
+  @@schema("motos")
+}
+
+model motos_operativos {
+  id_op           Int               @id @default(autoincrement())
+  fecha           DateTime?         @db.Date
+  hora            DateTime?         @db.Time(6)
+  qth             String?           @db.VarChar
+  legajo_a_cargo  BigInt?
+  legajo_planilla BigInt?
+  turno           turnos_old?
+  seguridad       seguridad?
+  id_zona         Int?
+  direccion_full  String?           @db.VarChar
+  latitud         Float?
+  longitud        Float?
+  vicente_lopez   vicente_lopez?    @relation(fields: [id_zona], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+  registros       motos_registros[]
+
+  @@map("operativos")
+  @@schema("motos")
+}
+
+model motos_registros {
+  dominio           String?           @db.VarChar
+  licencia          BigInt?
+  acta              BigInt?
+  resolucion        resolucion?
+  fechacarga        DateTime?         @db.Timestamp(6)
+  lpcarga           BigInt?
+  mes               Int?
+  semana            Int?
+  id                Int               @id @default(autoincrement())
+  direccion_full    String?           @db.VarChar
+  latitud           String?           @db.VarChar
+  longitud          String?           @db.VarChar
+  id_licencia       Int?
+  id_zona_infractor Int?
+  id_operativo      Int?
+  motivos           moto_motivo[]
+  tipo_licencias    tipo_licencias?   @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
+  zona_infractor    barrios?          @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  operativos        motos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("registros")
+  @@schema("motos")
+}
+
+model nuevo_control_operativos {
+  id_op     Int                       @id @default(autoincrement())
+  fecha     DateTime?                 @db.Date
+  motivo    motivo?
+  lp        BigInt?
+  turno     turnos_old?
+  registros nuevo_control_registros[]
+
+  @@map("operativos")
+  @@schema("nuevo_control")
+}
+
+model nuevo_control_registros {
+  id           Int                       @id @default(autoincrement())
+  hora         DateTime?                 @db.Time(6)
+  dominio      String?                   @db.VarChar
+  acta         String?                   @db.VarChar
+  resolucion   resolucion?
+  fechacarga   String?                   @db.VarChar
+  lpcarga      BigInt?
+  mes          Int?
+  id_localidad Int?
+  id_operativo Int?
+  id_zona      Int?
+  barrio       barrios?                  @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_localidad")
+  operativos   nuevo_control_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  zonas        zonas?                    @relation(fields: [id_zona], references: [id_zona], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("registros")
+  @@schema("nuevo_control")
+}
+
+model zonas {
+  id_zona   Int                       @id @default(autoincrement())
+  zona      String?                   @db.VarChar
+  registros nuevo_control_registros[]
+
+  @@schema("nuevo_control")
+}
+
+model operativos_operativos {
+  id_op           Int                    @id @default(autoincrement())
+  fecha           DateTime?              @db.Date
+  qth             String?                @db.VarChar
+  turno           turnos?
+  legajo_a_cargo  BigInt?
+  legajo_planilla BigInt?
+  id_localidad    Int?
+  seguridad       seguridad?
+  hora            DateTime?              @db.Time(6)
+  direccion_full  String?                @db.VarChar
+  latitud         Float?
+  longitud        Float?
+  registros       operativos_registros[]
+  localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("operativos")
+  @@schema("operativos")
+}
+
+model operativos_registros {
+  dominio               String?                @db.VarChar
+  licencia              BigInt?
+  acta                  BigInt?
+  graduacion_alcoholica String?                @db.VarChar
+  resolucion            resolucion?
+  fechacarga            DateTime?              @db.Timestamp(6)
+  lpcarga               BigInt?
+  mes                   Int?
+  semana                Int?
+  es_del                del?
+  resultado             resultado?
+  id                    Int                    @id @default(autoincrement())
+  direccion_full        String?                @db.VarChar
+  latitud               String?                @db.VarChar
+  longitud              String?                @db.VarChar
+  id_licencia           Int?
+  id_zona_infractor     Int?
+  id_operativo          Int?
+  id_motivo             Int?
+  tipo_licencias        tipo_licencias?        @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
+  zona_infractor        barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  motivos               motivos?               @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  operativos            operativos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("registros")
+  @@schema("operativos")
+}
+
+model asd {
+  id      Int     @id @default(autoincrement())
+  zona    String? @db.VarChar
+  id_zona Int?
+
+  @@schema("public")
+}
+
+model barrios {
+  id_barrio        Int                       @id @default(autoincrement())
+  barrio           String?                   @db.VarChar
+  camiones_destino camiones_registros[]      @relation("registros_id_localidad_destinoTobarrios")
+  camiones_origen  camiones_registros[]      @relation("registros_id_localidad_origenTobarrios")
+  registros_motos  motos_registros[]
+  registros_paseo  nuevo_control_registros[]
+  registros_autos  operativos_registros[]
+
+  @@schema("public")
+}
+
+model legajos {
+  legajo   BigInt    @id
+  turno    turnos?
+  rol      roles?
+  id_rol   Int?
+  permisos permisos? @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+model mensual {
+  id       Int        @id @default(autoincrement())
+  mes      String?    @db.VarChar
+  a_o      Int?       @map("año")
+  monto    Int?
+  puntajes puntajes[]
+
+  @@schema("public")
+}
+
+model motivos {
+  id_motivo       Int                    @id @default(autoincrement())
+  motivo          String?                @db.VarChar
+  registros       camiones_registros[]
+  moto_motivo     moto_motivo[]
+  registros_autos operativos_registros[]
+
+  @@schema("public")
+}
+
+model operario {
+  legajo   Int        @id
+  nombre   String?    @db.VarChar
+  puntajes puntajes[]
+
+  @@schema("public")
+}
+
+model permisos {
+  id      Int       @id @default(autoincrement())
+  permiso String?   @db.VarChar
+  legajos legajos[]
+
+  @@schema("public")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model primeros {
+  count BigInt?
+
+  @@ignore
+  @@schema("public")
+}
+
+model puntajes {
+  id                  Int       @id @default(autoincrement())
+  interaccion_publico Int?
+  jerarquicos         Int?
+  errores_actas       Int?
+  destacado           Int?
+  llamados_atencion   Int?
+  asistencia          Int?
+  a_percibir          Float?
+  legajo              Int?
+  id_mes              Int?
+  mensual             mensual?  @relation(fields: [id_mes], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  operario            operario? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+model tipo_licencias {
+  id_tipo         Int                    @id @default(autoincrement())
+  tipo            String?                @db.VarChar
+  vehiculo        String?                @db.VarChar
+  registros_motos motos_registros[]
+  registros_autos operativos_registros[]
+
+  @@schema("public")
+}
+
+model users {
+  legajo        BigInt  @id
+  nombre        String  @db.VarChar
+  apellido      String  @db.VarChar
+  user_password String  @db.VarChar(255)
+  telefono      BigInt?
+
+  @@schema("public")
+}
+
+model vicente_lopez {
+  id_barrio  Int                @id @default(autoincrement())
+  barrio     String?            @db.VarChar
+  cp         String?            @db.VarChar
+  motos motos_operativos[]
+  autos operativos_operativos[]
+  camiones camiones_operativos[]
+
+  @@schema("public")
+}
+
+enum motivos_camion {
+  DISCAPACITADO
+  LICENCIA
+  CONTRAMANO
+  FALTA_DE_CHAPA_PATENTE             @map("FALTA DE CHAPA PATENTE")
+  FUERA_DE_LA_RED_DE_TRANSITO_PESADO @map("FUERA DE LA RED DE TRANSITO PESADO")
+  SIN_CATEGORIA_HABILITANTE          @map("SIN CATEGORIA HABILITANTE")
+  SE_DA_A_LA_FUGA                    @map("SE DA A LA FUGA")
+
+  @@schema("camiones")
+}
+
+enum motivo {
+  VELOCIDAD
+  ESTACIONAMIENTO
+
+  @@schema("nuevo_control")
+}
+
+enum del {
+  VILO
+  FUERA_DEL_MUNICIPIO @map("FUERA DEL MUNICIPIO")
+
+  @@schema("operativos")
+}
+
+enum resultado {
+  NEGATIVA
+  PUNITIVA
+  NO_PUNITIVA @map("NO PUNITIVA")
+
+  @@schema("operativos")
+}
+
+enum tipo_vehiculo {
+  Moto
+  Auto
+  Profesional
+
+  @@schema("operativos")
+}
+
+enum resolucion {
+  ACTA
+  PREVENCION
+  REMITIDO
+
+  @@schema("public")
+}
+
+enum roles {
+  INSPECTOR
+  ADMIN
+
+  @@schema("public")
+}
+
+enum seguridad {
+  POLICIA
+  PREFECTURA
+  SECRETARIA_DE_SEGURIDAD @map("SECRETARIA DE SEGURIDAD")
+  NO
+
+  @@schema("public")
+}
+
+enum turnos {
+  MA_ANA @map("MAÑANA")
+  TARDE
+  NOCHE
+
+  @@schema("public")
+}
+
+enum turnos_old {
+  MA_ANA       @map("MAÑANA")
+  TARDE
+  NOCHE
+  ADMIN
+  SE_ALAMIENTO @map("SEÑALAMIENTO")
+  OPERATIVO
+
+  @@schema("public")
+}

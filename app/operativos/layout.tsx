@@ -12,7 +12,9 @@ export default function OperativosLayout(props: OperativosLayoutProps) {
   return (
     <section>
       {createSegment !== 'create' && (
-        <Link href="/operativos/create/autos">Nuevo Operativo</Link>
+        <Link href={`/operativos/create/${createSegment}`}>
+          Nuevo Operativo
+        </Link>
       )}
       {props.children}
       {props.modal}

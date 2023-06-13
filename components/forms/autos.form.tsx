@@ -117,6 +117,12 @@ function SecondStep() {
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
       />
+      <Input
+        name="graduacion_alcoholica"
+        label="Graduacion Alcoholica"
+        className="w-full basis 5/12"
+        type="number"
+      />
       <Select
         name="resolucion"
         label="Resolucion"

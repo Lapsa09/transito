@@ -14,12 +14,9 @@ type Props = {
 }
 
 export const getter = async <T>({ route, tag }: Props) => {
-  const res = await fetch(
-    'https://transito.vicentelopez.gov.ar:3001/' + route,
-    {
-      next: { tags: [tag], revalidate: 60 },
-    }
-  )
+  const res = await fetch('/api/' + route, {
+    next: { tags: [tag], revalidate: 60 },
+  })
   const data: T = await res.json()
   return data
 }
@@ -34,7 +31,7 @@ export const getVicenteLopez = async () => {
 
 export const getTurnos = async () => {
   const data = await getter<ITurnos[]>({
-    route: 'api/turnos',
+    route: 'turnos',
     tag: 'turnos',
   })
   return data
@@ -42,7 +39,7 @@ export const getTurnos = async () => {
 
 export const getSeguridad = async () => {
   const data = await getter<ISeguridad[]>({
-    route: 'api/seguridad',
+    route: 'seguridad',
     tag: 'seguridad',
   })
   return data
@@ -58,7 +55,7 @@ export const getLicencias = async () => {
 
 export const getResolucion = async () => {
   const data = await getter<IResolucion[]>({
-    route: 'api/resolucion',
+    route: 'resolucion',
     tag: 'resolucion',
   })
   return data
@@ -66,7 +63,7 @@ export const getResolucion = async () => {
 
 export const getAllZonas = async () => {
   const data = await getter<IBarrio[]>({
-    route: '/zonas',
+    route: 'zonas',
     tag: 'zonas',
   })
   return data
@@ -74,7 +71,7 @@ export const getAllZonas = async () => {
 
 export const getMotivos = async () => {
   const data = await getter<IMotivos[]>({
-    route: '/motivos',
+    route: 'motivos',
     tag: 'motivos',
   })
   return data

@@ -25,7 +25,7 @@ const getImporteOperario = (
 
   const { precio_normal, precio_pico } = precios
 
-  const diff = fin?.diff(inicio, 'hours').hours
+  const diff = +fin?.diff(inicio, 'hours').hours.toFixed(1)
   if (dia.weekday >= 1 && dia.weekday <= 5 && !isFeriado) {
     if (inicio?.hour >= 8 && fin?.hour <= 20) {
       return precio_normal * diff

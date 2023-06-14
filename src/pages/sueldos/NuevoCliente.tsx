@@ -114,7 +114,6 @@ function NuevoCliente() {
                               `${choice.id} ${choice.name}`
                             }
                             className={styles.inputs}
-                            isRequired
                             create={<CreateOperario />}
                           />
                         </ReferenceInput>

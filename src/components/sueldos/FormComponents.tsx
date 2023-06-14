@@ -53,16 +53,14 @@ export const OpInput = ({ source }) => {
 
   const cuenta = useMemo(
     () =>
-      operario.legajo
-        ? getImporteOperario(
-            fecha_servicio,
-            operario.hora_inicio,
-            operario.hora_fin,
-            feriado,
-            field.value,
-            precios
-          )
-        : 0,
+      getImporteOperario(
+        fecha_servicio,
+        operario.hora_inicio,
+        operario.hora_fin,
+        feriado,
+        field.value,
+        precios
+      ),
     [
       fecha_servicio,
       operario.hora_inicio,
@@ -135,7 +133,7 @@ export const Acopio = () => {
 
   useEffect(() => {
     importe.onChange(data?.acopio)
-  }, [id_cliente])
+  }, [data])
 
   return (
     <Grid item xs={8}>
@@ -145,7 +143,6 @@ export const Acopio = () => {
         label="Acopio"
         variant="standard"
         className={styles.inputs}
-        required
         disabled
         InputProps={{
           startAdornment: <InputAdornment position="start">$</InputAdornment>,

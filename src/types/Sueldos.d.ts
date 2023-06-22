@@ -1,5 +1,6 @@
 export interface IOperario {
   id: number
+  id_servicio: number
   cliente: string
   memo?: string
   fecha_servicio: string

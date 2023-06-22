@@ -20,11 +20,11 @@ export const ServiciosMemo = ({ name }) => {
   const { refetch } = useListController({ resource: name })
   const [update] = useUpdate()
 
-  const cancelarOperario = (record: IOperario) => {
-    update(
+  const cancelarOperario = async (record: IOperario) => {
+    await update(
       'operarios/cliente',
       {
-        id: record.id,
+        id: record.id_servicio,
         data: { cancelado: !record.cancelado, legajo: record.legajo },
       },
       {

@@ -19,13 +19,13 @@ function Liqui() {
   const translate = useTranslate()
 
   const customExportFunction = (data) => {
-    const res = data.servicios.filter((servicio) => !servicio.cancelado)
+    const res = data.servicios
     if (listContext.exporter !== false)
       listContext.exporter(
         res,
         null,
         null,
-        `${translate(data.mes.name.trim())} ${data.año}`
+        `${translate(data.mes.name)} ${data.año}`
       )
   }
 
@@ -40,7 +40,7 @@ function Liqui() {
         variant="standard"
         translateChoice={false}
         label="Buscar por mes"
-        optionText={(row) => translate(row.name).trim()}
+        optionText={(row) => translate(row.name)}
       />
     </ReferenceInput>,
     <ReferenceInput

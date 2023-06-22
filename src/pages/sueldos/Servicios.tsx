@@ -84,7 +84,7 @@ function Servicios() {
         >
           <Button
             label="Borrar Filtros"
-            onClick={() => listContext.setFilters(null, null, null)}
+            onClick={() => listContext.setFilters({}, {}, false)}
           />
           <FilterForm style={{ width: '50%' }} filters={filters} />
           <FilterButton filters={filters} />

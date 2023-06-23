@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import React, { useEffect, useState } from 'react'
-import { Table } from '../../components'
+import { Loader, Table } from '../../components'
 import { mainWazeGetter } from '../../services'
 import style from '../../styles/Waze.module.css'
 import { WazePromedio, WazeRes, Horario, Waze } from '../../types'
@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 function App() {
   const [data, setData] = useState<WazeRes>()
   const [prom, setProm] = useState<WazePromedio>()
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   const horarios = (data: WazeRes): [string, Horario][] => {
@@ -17,14 +18,24 @@ function App() {
   }
 
   const fetch = async () => {
-    const { res, promedio }: Waze = await mainWazeGetter()
-    setData(res)
-    setProm(promedio)
+    mainWazeGetter()
+      .then(({ res, promedio }) => {
+        setData(res)
+        setProm(promedio)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   useEffect(() => {
     fetch()
   }, [])
+
+  if (loading) {
+    return <Loader />
+  }
+
   return (
     <div className={style.home}>
       <div className={style.header}>

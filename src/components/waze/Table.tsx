@@ -33,7 +33,7 @@ function TableWaze({ data }) {
     max: 4,
   }
   return (
-    <TableContainer>
+    <TableContainer sx={{ overflow: 'hidden' }}>
       <Table>
         <TableHead>
           <TableRow>

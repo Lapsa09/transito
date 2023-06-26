@@ -1,81 +1,98 @@
+'use client'
+
 import React from 'react'
-import { Button, Input } from '@/components'
+import { Button, Input, MainLogoOVT } from '@/components'
 import { FormProvider, useForm } from 'react-hook-form'
+import { signUp } from '@/services'
+import { useToast } from '@/hooks'
+import { useRouter } from 'next/navigation'
+import { RegisterUserProps } from '@/types'
+import Link from 'next/link'
 
 function page() {
-  const methods = useForm({
+  const methods = useForm<RegisterUserProps>({
     mode: 'all',
   })
+
+  const { toast } = useToast()
+
+  const { handleSubmit } = methods
+
+  const router = useRouter()
+
+  const onSubmit = async (data: RegisterUserProps) => {
+    if (data.password !== data.confirmPassword) {
+      toast({ title: 'Las contraseñas no coinciden', variant: 'destructive' })
+    } else {
+      signUp(data)
+        .then(() => {
+          toast({ title: 'Usuario creado con exito', variant: 'success' })
+          router.replace('/login')
+        })
+        .catch((error: any) => {
+          toast({ title: error.response.data, variant: 'destructive' })
+        })
+    }
+  }
+
   return (
-    <div className="max-w-2xl mx-auto bg-white p-16 dark:bg-black">
+    <div className="max-w-2xl mx-auto bg-white p-16 dark:bg-black flex flex-col items-center">
+      <MainLogoOVT />
       <FormProvider {...methods}>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <Input
-                label="First name"
+                label="Legajo"
+                placeholder="12345"
+                type="number"
+                name="legajo"
+                rules={{ required: 'Campo requerido' }}
+              />
+            </div>
+            <div>
+              <Input
+                label="Nombre"
                 placeholder="John"
-                name="first_name"
-                rules={{ required: 'First name is required' }}
+                name="nombre"
+                rules={{ required: 'Campo requerido' }}
               />
             </div>
             <div>
               <Input
-                label="Last name"
+                label="Apellido"
                 placeholder="Doe"
-                name="last_name"
-                rules={{ required: 'Last name is required' }}
+                name="apellido"
+                rules={{ required: 'Campo requerido' }}
               />
             </div>
             <div>
               <Input
-                label="Company name"
-                placeholder="Flowbite"
-                name="company_name"
-              />
-            </div>
-            <div>
-              <Input label="Job title" placeholder="CEO" name="job_name" />
-            </div>
-            <div>
-              <Input
-                label="Website"
-                placeholder="flowbite.com"
-                name="website"
-                type="url"
-              />
-            </div>
-            <div>
-              <Input
-                label="Phone"
-                placeholder="+1 (305) 1234-567"
-                name="phone"
+                label="Telefono"
+                placeholder="11-1234-5678"
+                name="telefono"
                 type="tel"
               />
             </div>
           </div>
           <Input
-            label="Email"
-            placeholder="email@domain.com"
-            name="email"
-            type="email"
-            rules={{ required: 'Email is required' }}
-          />
-          <Input
-            label="Password"
+            label="Contraseña"
             name="password"
             type="password"
-            rules={{ required: 'Password is required' }}
+            rules={{ required: 'Campo requerido' }}
           />
           <Input
-            label="Confirm Password"
-            name="confirm_password"
+            label="Confirmar Contraseña"
+            name="confirmPassword"
             type="password"
-            rules={{ required: 'Password is required' }}
+            rules={{ required: 'Campo requerido' }}
           />
-          <Button type="submit">Register</Button>
+          <Button type="submit">Registrarse</Button>
         </form>
       </FormProvider>
+      <p>
+        Ya estas registrado? <Link href="/login">Inicia sesion</Link>
+      </p>
     </div>
   )
 }

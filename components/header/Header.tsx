@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { LogoOVT, LogoVL } from '../Logos'
 import Menu from './Menu'

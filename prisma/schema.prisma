@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["camiones", "motos", "nuevo_control", "operativos", "public"]
+  schemas  = ["camiones", "motos", "nuevo_control", "operativos", "public", "sueldos"]
 }
 
 model camiones_operativos {
@@ -17,54 +17,53 @@ model camiones_operativos {
   direccion      String?              @db.VarChar
   id_localidad   Int?
   direccion_full String?              @db.VarChar
-  latitud        Float?
-  longitud       Float?
+  latitud        String?              @db.VarChar
+  longitud       String?              @db.VarChar
+  localidad  vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros      camiones_registros[]
-  localidad      vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("operativos")
   @@schema("camiones")
 }
 
 model camiones_registros {
-  id                   Int                  @id @default(autoincrement())
-  hora                 DateTime?            @db.Time(6)
-  dominio              String?              @db.VarChar
-  origen               String?              @db.VarChar
-  destino              String?              @db.VarChar
-  licencia             String?              @db.VarChar
-  remito               Boolean?
-  carga                Boolean?
-  resolucion           String?              @db.VarChar
-  acta                 String?              @db.VarChar
-  hora_carga           DateTime?            @db.Time(6)
-  legajo_carga         BigInt?
-  mes                  Int?
-  semana               Int?
-  direccion_full       String?              @db.VarChar
-  latitud              String?              @db.VarChar
-  longitud             String?              @db.VarChar
-  id_localidad_origen  Int?
-  id_localidad_destino Int?
-  id_motivo            Int?
-  id_operativo         Int?
-  localidad_destino    barrios?             @relation("registros_id_localidad_destinoTobarrios", fields: [id_localidad_destino], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
-  localidad_origen     barrios?             @relation("registros_id_localidad_origenTobarrios", fields: [id_localidad_origen], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
-  motivos              motivos?             @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
-  operativos           camiones_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  id                                              Int                  @id @default(autoincrement())
+  hora                                            DateTime?            @db.Time(6)
+  dominio                                         String?              @db.VarChar
+  origen                                          String?              @db.VarChar
+  destino                                         String?              @db.VarChar
+  licencia                                        String?              @db.VarChar
+  remito                                          Boolean?
+  carga                                           Boolean?
+  resolucion                                      String?              @db.VarChar
+  acta                                            String?              @db.VarChar
+  hora_carga                                      DateTime?            @db.Time(6)
+  legajo_carga                                    BigInt?
+  mes                                             Int?
+  semana                                          Int?
+  direccion_full                                  String?              @db.VarChar
+  latitud                                         String?              @db.VarChar
+  longitud                                        String?              @db.VarChar
+  id_localidad_origen                             Int?
+  id_localidad_destino                            Int?
+  id_motivo                                       Int?
+  id_operativo                                    Int?
+  localidad_destino barrios?             @relation("registros_id_localidad_destinoTobarrios", fields: [id_localidad_destino], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+  localidad_origen  barrios?             @relation("registros_id_localidad_origenTobarrios", fields: [id_localidad_origen], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+  motivo                                         motivos?             @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  operativo                                      camiones_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("camiones")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model moto_motivo {
   id_registro Int
   id_motivo   Int
-  motivo      motivos         @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
-  registros   motos_registros @relation(fields: [id_registro], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  motivo     motivos?         @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  registro   motos_registros? @relation(fields: [id_registro], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([id_registro, id_motivo], name: "pk_moto_motivo", map: "pk_moto_motivo")
+  @@id([id_registro, id_motivo])
   @@schema("motos")
 }
 
@@ -79,9 +78,9 @@ model motos_operativos {
   seguridad       seguridad?
   id_zona         Int?
   direccion_full  String?           @db.VarChar
-  latitud         Float?
-  longitud        Float?
-  vicente_lopez   vicente_lopez?    @relation(fields: [id_zona], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
+  latitud         String?           @db.VarChar
+  longitud        String?           @db.VarChar
+  localidad   vicente_lopez?    @relation(fields: [id_zona], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       motos_registros[]
 
   @@map("operativos")
@@ -104,10 +103,10 @@ model motos_registros {
   id_licencia       Int?
   id_zona_infractor Int?
   id_operativo      Int?
-  motivos           moto_motivo[]
+  motivos       moto_motivo[]
   tipo_licencias    tipo_licencias?   @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
-  zona_infractor    barrios?          @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
-  operativos        motos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  barrio           barrios?          @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  operativo        motos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("motos")
@@ -137,9 +136,9 @@ model nuevo_control_registros {
   id_localidad Int?
   id_operativo Int?
   id_zona      Int?
-  barrio       barrios?                  @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_localidad")
-  operativos   nuevo_control_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
-  zonas        zonas?                    @relation(fields: [id_zona], references: [id_zona], onDelete: NoAction, onUpdate: NoAction)
+  barrio     barrios?                  @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_localidad")
+  operativo   nuevo_control_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  zona        zonas?                    @relation(fields: [id_zona], references: [id_zona], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("nuevo_control")
@@ -148,6 +147,7 @@ model nuevo_control_registros {
 model zonas {
   id_zona   Int                       @id @default(autoincrement())
   zona      String?                   @db.VarChar
+
   registros nuevo_control_registros[]
 
   @@schema("nuevo_control")
@@ -164,10 +164,10 @@ model operativos_operativos {
   seguridad       seguridad?
   hora            DateTime?              @db.Time(6)
   direccion_full  String?                @db.VarChar
-  latitud         Float?
-  longitud        Float?
+  latitud         String?                @db.VarChar
+  longitud        String?                @db.VarChar
+  localidad   vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       operativos_registros[]
-  localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("operativos")
   @@schema("operativos")
@@ -193,10 +193,10 @@ model operativos_registros {
   id_zona_infractor     Int?
   id_operativo          Int?
   id_motivo             Int?
-  tipo_licencias        tipo_licencias?        @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
-  zona_infractor        barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
-  motivos               motivos?               @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
-  operativos            operativos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  tipo_licencia        tipo_licencias?        @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
+  barrio               barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  motivo               motivos?               @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  operativo            operativos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("operativos")
@@ -211,26 +211,18 @@ model asd {
 }
 
 model barrios {
-  id_barrio        Int                       @id @default(autoincrement())
-  barrio           String?                   @db.VarChar
-  camiones_destino camiones_registros[]      @relation("registros_id_localidad_destinoTobarrios")
-  camiones_origen  camiones_registros[]      @relation("registros_id_localidad_origenTobarrios")
-  registros_motos  motos_registros[]
-  registros_paseo  nuevo_control_registros[]
-  registros_autos  operativos_registros[]
+  id_barrio                                         Int                       @id @default(autoincrement())
+  barrio                                            String?                   @db.VarChar
+  autos                                             operativos_registros[]
+  motos                                             motos_registros[]
+  camiones_destino                                          camiones_registros[]     @relation("registros_id_localidad_destinoTobarrios")
+  camiones_origen                                           camiones_registros[]     @relation("registros_id_localidad_origenTobarrios")
+  paseo       nuevo_control_registros[]
 
   @@schema("public")
 }
 
-model legajos {
-  legajo   BigInt    @id
-  turno    turnos?
-  rol      roles?
-  id_rol   Int?
-  permisos permisos? @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@schema("public")
-}
 
 model mensual {
   id       Int        @id @default(autoincrement())
@@ -243,11 +235,11 @@ model mensual {
 }
 
 model motivos {
-  id_motivo       Int                    @id @default(autoincrement())
-  motivo          String?                @db.VarChar
-  registros       camiones_registros[]
-  moto_motivo     moto_motivo[]
-  registros_autos operativos_registros[]
+  id_motivo   Int                    @id @default(autoincrement())
+  motivo      String?                @db.VarChar
+  motos       moto_motivo[]
+  autos  operativos_registros[]
+  camiones    camiones_registros[]
 
   @@schema("public")
 }
@@ -294,46 +286,177 @@ model puntajes {
 }
 
 model tipo_licencias {
-  id_tipo         Int                    @id @default(autoincrement())
-  tipo            String?                @db.VarChar
-  vehiculo        String?                @db.VarChar
-  registros_motos motos_registros[]
-  registros_autos operativos_registros[]
+  id_tipo   Int                    @id @default(autoincrement())
+  tipo      String?                @db.VarChar
+  vehiculo  String?                @db.VarChar
+  motos     motos_registros[]
+  autos operativos_registros[]
 
   @@schema("public")
 }
 
-model users {
-  legajo        BigInt  @id
+// model User {
+//   legajo        BigInt  @id
+//   nombre        String  @db.VarChar
+//   apellido      String  @db.VarChar
+//   user_password String  @db.VarChar(255)
+//   telefono      BigInt?
+
+//   @@map("users")
+
+//   @@schema("public")
+// }
+model legajos {
+  legajo   BigInt    @id @db.BigInt
+  turno    turnos?
+  rol      roles?
+  id_rol   Int?
+  permisos permisos? @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario User?     
+
+  @@schema("public")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+  @@schema("public")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@schema("public")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  legajo        BigInt       @unique @db.BigInt
   nombre        String  @db.VarChar
   apellido      String  @db.VarChar
   user_password String  @db.VarChar(255)
   telefono      BigInt?
+  accounts      Account[]
+  sessions      Session[]
+  op            legajos? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
 
+
+  @@map("users")
+
+  @@schema("public")
+
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
   @@schema("public")
 }
 
 model vicente_lopez {
-  id_barrio  Int                @id @default(autoincrement())
-  barrio     String?            @db.VarChar
-  cp         String?            @db.VarChar
-  motos motos_operativos[]
+  id_barrio  Int                     @id @default(autoincrement())
+  barrio     String?                 @db.VarChar
+  cp         String?                 @db.VarChar
+
+  motos      motos_operativos[]
   autos operativos_operativos[]
-  camiones camiones_operativos[]
+  camiones   camiones_operativos[]
 
   @@schema("public")
 }
 
-enum motivos_camion {
-  DISCAPACITADO
-  LICENCIA
-  CONTRAMANO
-  FALTA_DE_CHAPA_PATENTE             @map("FALTA DE CHAPA PATENTE")
-  FUERA_DE_LA_RED_DE_TRANSITO_PESADO @map("FUERA DE LA RED DE TRANSITO PESADO")
-  SIN_CATEGORIA_HABILITANTE          @map("SIN CATEGORIA HABILITANTE")
-  SE_DA_A_LA_FUGA                    @map("SE DA A LA FUGA")
+model clientes {
+  id_cliente Int         @id @default(autoincrement())
+  cliente    String?     @db.VarChar
+  recibos    recibos[]
+  servicios  servicios[]
 
-  @@schema("camiones")
+  @@schema("sueldos")
+}
+
+model operarios {
+  legajo              Int                   @id
+  nombre              String?               @db.VarChar
+  servicios operarios_servicios[]
+
+  @@schema("sueldos")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model operarios_servicios {
+  legajo      Int
+  memo        String?    @db.VarChar
+  recibo      BigInt
+  id_servicio Int
+  a_cobrar    Int?
+  hora_inicio DateTime?  @db.Time(6)
+  hora_fin    DateTime?  @db.Time(6)
+  cancelado   Boolean?
+  servicios   servicios? @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+  operarios   operarios? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+  recibos     recibos   @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([legajo, id_servicio, recibo])
+  @@schema("sueldos")
+}
+
+model precios {
+  id     String @id @db.VarChar
+  precio Int?
+
+  @@schema("sueldos")
+}
+
+model recibos {
+  recibo              BigInt                   @id
+  fecha_recibo        DateTime?             @db.Date
+  importe_recibo      Int?
+  acopio              Int?
+  id_cliente          Int?
+  operarios_servicios operarios_servicios[]
+  clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
+  servicios           servicios[]
+
+  @@schema("sueldos")
+}
+
+model servicios {
+  id_servicio         Int                   @id @default(autoincrement())
+  recibo              BigInt?
+  fecha_servicio      DateTime?             @db.Date
+  importe_servicio    Int?
+  memo                String?               @db.VarChar
+  id_cliente          Int?
+  feriado             Boolean?
+  operarios_servicios operarios_servicios[]
+  clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
+  recibos             recibos?              @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("sueldos")
 }
 
 enum motivo {

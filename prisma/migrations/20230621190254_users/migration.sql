@@ -11,7 +11,7 @@ CREATE SCHEMA IF NOT EXISTS "nuevo_control";
 CREATE SCHEMA IF NOT EXISTS "operativos";
 
 -- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "public";
+CREATE SCHEMA IF NOT EXISTS "sueldos";
 
 -- CreateEnum
 CREATE TYPE "camiones"."motivos_camion" AS ENUM ('DISCAPACITADO', 'LICENCIA', 'CONTRAMANO', 'FALTA DE CHAPA PATENTE', 'FUERA DE LA RED DE TRANSITO PESADO', 'SIN CATEGORIA HABILITANTE', 'SE DA A LA FUGA');
@@ -52,8 +52,8 @@ CREATE TABLE "camiones"."operativos" (
     "direccion" VARCHAR,
     "id_localidad" INTEGER,
     "direccion_full" VARCHAR,
-    "latitud" DOUBLE PRECISION,
-    "longitud" DOUBLE PRECISION,
+    "latitud" VARCHAR,
+    "longitud" VARCHAR,
 
     CONSTRAINT "operativos_pkey" PRIMARY KEY ("id_op")
 );
@@ -105,8 +105,8 @@ CREATE TABLE "motos"."operativos" (
     "seguridad" "public"."seguridad",
     "id_zona" INTEGER,
     "direccion_full" VARCHAR,
-    "latitud" DOUBLE PRECISION,
-    "longitud" DOUBLE PRECISION,
+    "latitud" VARCHAR,
+    "longitud" VARCHAR,
 
     CONSTRAINT "operativos_pkey" PRIMARY KEY ("id_op")
 );
@@ -180,8 +180,8 @@ CREATE TABLE "operativos"."operativos" (
     "seguridad" "public"."seguridad",
     "hora" TIME(6),
     "direccion_full" VARCHAR,
-    "latitud" DOUBLE PRECISION,
-    "longitud" DOUBLE PRECISION,
+    "latitud" VARCHAR,
+    "longitud" VARCHAR,
 
     CONSTRAINT "operativos_pkey" PRIMARY KEY ("id_op")
 );
@@ -303,14 +303,54 @@ CREATE TABLE "public"."tipo_licencias" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."accounts" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "provider_account_id" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
+
+    CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."sessions" (
+    "id" TEXT NOT NULL,
+    "session_token" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."users" (
+    "id" TEXT NOT NULL,
     "legajo" BIGINT NOT NULL,
     "nombre" VARCHAR NOT NULL,
     "apellido" VARCHAR NOT NULL,
     "user_password" VARCHAR(255) NOT NULL,
     "telefono" BIGINT,
+    "name" TEXT,
+    "email" TEXT,
+    "email_verified" TIMESTAMP(3),
+    "image" TEXT,
 
-    CONSTRAINT "users_pkey" PRIMARY KEY ("legajo")
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."verificationtokens" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
@@ -321,6 +361,89 @@ CREATE TABLE "public"."vicente_lopez" (
 
     CONSTRAINT "vicente_lopez_pkey" PRIMARY KEY ("id_barrio")
 );
+
+-- CreateTable
+CREATE TABLE "sueldos"."clientes" (
+    "id_cliente" SERIAL NOT NULL,
+    "cliente" VARCHAR,
+
+    CONSTRAINT "clientes_pkey" PRIMARY KEY ("id_cliente")
+);
+
+-- CreateTable
+CREATE TABLE "sueldos"."operarios" (
+    "legajo" INTEGER NOT NULL,
+    "nombre" VARCHAR,
+
+    CONSTRAINT "operarios_pkey" PRIMARY KEY ("legajo")
+);
+
+-- CreateTable
+CREATE TABLE "sueldos"."operarios_servicios" (
+    "legajo" INTEGER NOT NULL,
+    "memo" VARCHAR,
+    "recibo" BIGINT NOT NULL,
+    "id_servicio" INTEGER NOT NULL,
+    "a_cobrar" INTEGER,
+    "hora_inicio" TIME(6),
+    "hora_fin" TIME(6),
+    "cancelado" BOOLEAN,
+
+    CONSTRAINT "operarios_servicios_pkey" PRIMARY KEY ("legajo","id_servicio","recibo")
+);
+
+-- CreateTable
+CREATE TABLE "sueldos"."precios" (
+    "id" VARCHAR NOT NULL,
+    "precio" INTEGER,
+
+    CONSTRAINT "precios_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "sueldos"."recibos" (
+    "recibo" BIGINT NOT NULL,
+    "fecha_recibo" DATE,
+    "importe_recibo" INTEGER,
+    "acopio" INTEGER,
+    "id_cliente" INTEGER,
+
+    CONSTRAINT "recibos_pkey" PRIMARY KEY ("recibo")
+);
+
+-- CreateTable
+CREATE TABLE "sueldos"."servicios" (
+    "id_servicio" SERIAL NOT NULL,
+    "recibo" BIGINT,
+    "fecha_servicio" DATE,
+    "importe_servicio" INTEGER,
+    "memo" VARCHAR,
+    "id_cliente" INTEGER,
+    "feriado" BOOLEAN,
+
+    CONSTRAINT "servicios_pkey" PRIMARY KEY ("id_servicio")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "public"."accounts"("provider", "provider_account_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sessions_session_token_key" ON "public"."sessions"("session_token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_legajo_key" ON "public"."users"("legajo");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "public"."users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "verificationtokens_token_key" ON "public"."verificationtokens"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "public"."verificationtokens"("identifier", "token");
+
+-- AddForeignKey
+ALTER TABLE "camiones"."operativos" ADD CONSTRAINT "operativos_id_localidad_fkey" FOREIGN KEY ("id_localidad") REFERENCES "public"."vicente_lopez"("id_barrio") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "camiones"."registros" ADD CONSTRAINT "registros_id_localidad_destino_fkey" FOREIGN KEY ("id_localidad_destino") REFERENCES "public"."barrios"("id_barrio") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -362,6 +485,9 @@ ALTER TABLE "nuevo_control"."registros" ADD CONSTRAINT "registros_id_operativo_f
 ALTER TABLE "nuevo_control"."registros" ADD CONSTRAINT "registros_id_zona_fkey" FOREIGN KEY ("id_zona") REFERENCES "nuevo_control"."zonas"("id_zona") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "operativos"."operativos" ADD CONSTRAINT "operativos_id_localidad_fkey" FOREIGN KEY ("id_localidad") REFERENCES "public"."vicente_lopez"("id_barrio") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "operativos"."registros" ADD CONSTRAINT "fk_licencia" FOREIGN KEY ("id_licencia") REFERENCES "public"."tipo_licencias"("id_tipo") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -382,3 +508,26 @@ ALTER TABLE "public"."puntajes" ADD CONSTRAINT "puntajes_id_mes_fkey" FOREIGN KE
 -- AddForeignKey
 ALTER TABLE "public"."puntajes" ADD CONSTRAINT "puntajes_legajo_fkey" FOREIGN KEY ("legajo") REFERENCES "public"."operario"("legajo") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+-- AddForeignKey
+ALTER TABLE "public"."accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sueldos"."operarios_servicios" ADD CONSTRAINT "operarios_servicios_id_servicio_fkey" FOREIGN KEY ("id_servicio") REFERENCES "sueldos"."servicios"("id_servicio") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "sueldos"."operarios_servicios" ADD CONSTRAINT "operarios_servicios_legajo_fkey" FOREIGN KEY ("legajo") REFERENCES "sueldos"."operarios"("legajo") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "sueldos"."operarios_servicios" ADD CONSTRAINT "operarios_servicios_recibo_fkey" FOREIGN KEY ("recibo") REFERENCES "sueldos"."recibos"("recibo") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "sueldos"."recibos" ADD CONSTRAINT "recibos_id_cliente_fkey" FOREIGN KEY ("id_cliente") REFERENCES "sueldos"."clientes"("id_cliente") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "sueldos"."servicios" ADD CONSTRAINT "servicios_id_cliente_fkey" FOREIGN KEY ("id_cliente") REFERENCES "sueldos"."clientes"("id_cliente") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "sueldos"."servicios" ADD CONSTRAINT "servicios_recibo_fkey" FOREIGN KEY ("recibo") REFERENCES "sueldos"."recibos"("recibo") ON DELETE NO ACTION ON UPDATE NO ACTION;

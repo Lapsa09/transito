@@ -11,14 +11,13 @@ export enum Roles {
 }
 
 export type User = {
-  legajo: number
+  legajo?: number | null | undefined
   nombre: string
   apellido: string
   telefono: number
   turno?: string
   rol?: Roles
   iat: number
-  isAdmin?(): boolean
 }
 
 export interface Enums {

@@ -7,24 +7,28 @@ import {
   ITurnos,
   IZona,
 } from '@/types'
+import axios from 'axios'
 
 type Props = {
   route: string
-  tag: string
+  body?: any
 }
 
-export const getter = async <T>({ route, tag }: Props) => {
-  const res = await fetch('/api/' + route, {
-    next: { tags: [tag], revalidate: 60 },
-  })
-  const data: T = await res.json()
+export const getter = async <T>({ route }: Props) => {
+  const { data } = await axios.get<T>('/api/' + route)
+
+  return data
+}
+
+export const setter = async <T>({ route, body }: Props) => {
+  const { data } = await axios.post<T>('/api/' + route, body)
+
   return data
 }
 
 export const getVicenteLopez = async () => {
   const data = await getter<IZona[]>({
     route: 'zonas/vl',
-    tag: 'vicente-lopez',
   })
   return data
 }
@@ -32,7 +36,6 @@ export const getVicenteLopez = async () => {
 export const getTurnos = async () => {
   const data = await getter<ITurnos[]>({
     route: 'turnos',
-    tag: 'turnos',
   })
   return data
 }
@@ -40,7 +43,6 @@ export const getTurnos = async () => {
 export const getSeguridad = async () => {
   const data = await getter<ISeguridad[]>({
     route: 'seguridad',
-    tag: 'seguridad',
   })
   return data
 }
@@ -48,7 +50,6 @@ export const getSeguridad = async () => {
 export const getLicencias = async () => {
   const data = await getter<ILicencias[]>({
     route: 'licencias',
-    tag: 'licencias',
   })
   return data
 }
@@ -56,7 +57,6 @@ export const getLicencias = async () => {
 export const getResolucion = async () => {
   const data = await getter<IResolucion[]>({
     route: 'resolucion',
-    tag: 'resolucion',
   })
   return data
 }
@@ -64,7 +64,6 @@ export const getResolucion = async () => {
 export const getAllZonas = async () => {
   const data = await getter<IBarrio[]>({
     route: 'zonas',
-    tag: 'zonas',
   })
   return data
 }
@@ -72,7 +71,6 @@ export const getAllZonas = async () => {
 export const getMotivos = async () => {
   const data = await getter<IMotivos[]>({
     route: 'motivos',
-    tag: 'motivos',
   })
   return data
 }

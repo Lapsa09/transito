@@ -4,7 +4,7 @@ import { Links, Roles } from '@/types'
 import Link from 'next/link'
 import MenuButton from './MenuButton'
 import Dropdown from './Dropdown'
-import { Logout } from '@mui/icons-material'
+import { FiLogOut } from 'react-icons/fi'
 
 const controles: Links[] = [
   { link: '/control/diario', name: 'Diario' },
@@ -47,7 +47,7 @@ function Menu() {
           )}
           <li>
             <button className="px-3 py-2 md:hidden">Cerrar sesion</button>
-            <Logout />
+            <FiLogOut />
           </li>
         </ul>
       </div>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import MenuButton from './MenuButton'
 import Dropdown from './Dropdown'
 import { FiLogOut } from 'react-icons/fi'
+import { signOut } from 'next-auth/react'
 
 const controles: Links[] = [
   { link: '/control/diario', name: 'Diario' },
@@ -26,6 +27,9 @@ const pages: Links[] = [
 ]
 
 function Menu() {
+  const logout = () => {
+    signOut({ callbackUrl: '/login' })
+  }
   return (
     <>
       <MenuButton />
@@ -47,7 +51,7 @@ function Menu() {
           )}
           <li>
             <button className="px-3 py-2 md:hidden">Cerrar sesion</button>
-            <FiLogOut />
+            <FiLogOut className="cursor-pointer" onClick={logout} />
           </li>
         </ul>
       </div>

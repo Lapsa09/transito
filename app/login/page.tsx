@@ -24,8 +24,9 @@ function page() {
       redirect: false,
     })
       .then((callback) => {
-        if (callback?.ok) router.replace('/')
-        else {
+        if (callback?.ok) {
+          router.refresh()
+        } else {
           toast({ title: callback?.error, variant: 'destructive' })
         }
       })

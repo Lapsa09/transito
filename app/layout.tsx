@@ -19,7 +19,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {session && <Header />}
+        {session?.legajo && <Header />}
 
         {children}
         <Toaster />

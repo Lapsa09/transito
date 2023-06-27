@@ -23,8 +23,9 @@ export const authOptions: NextAuthOptions = {
           },
           include: {
             op: {
-              include: {
+              select: {
                 permisos: true,
+                turno: true,
               },
             },
           },

@@ -1,5 +1,5 @@
 'use client'
-import { DOMINIO_PATTERN, LEGAJO_PATTERN } from '@/utils'
+import { DOMINIO_PATTERN, LEGAJO_PATTERN } from '@/utils/validations'
 import React from 'react'
 import {
   UseControllerProps,

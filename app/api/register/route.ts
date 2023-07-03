@@ -3,7 +3,7 @@ import { RegisterUserProps } from '@/types'
 import bcrypt from 'bcrypt'
 import { NextResponse } from 'next/server'
 
-const validLegajo = (legajo: string) => {
+const validLegajo = (legajo: any) => {
   return /^[0-9]{5}$/.test(legajo)
 }
 
@@ -55,10 +55,10 @@ export async function POST(req: Request) {
     })
 
     if (findLegajo) {
-      const legajoError = validLegajo(legajo.toString())
+      const isValidLegajo = validLegajo(legajo)
       const passwordError = checkPasswordValidation(password)
 
-      if (!legajoError) {
+      if (!isValidLegajo) {
         return NextResponse.json('Legajo Invalido', { status: 400 })
       }
 
@@ -74,6 +74,14 @@ export async function POST(req: Request) {
           apellido,
           telefono: +telefono,
           user_password: hashedPassword,
+        },
+        include: {
+          op: {
+            select: {
+              turno: true,
+              permisos: true,
+            },
+          },
         },
       })
       return NextResponse.json(user)

@@ -3,13 +3,14 @@ import prisma from '@/lib/prismadb'
 
 // Limit the middleware to paths starting with `/api/`
 export const config = {
-  matcher: '/api/operativos/autos',
+  matcher: '/api/operativos/motos',
 }
 
 export async function middleware(request: NextRequest) {
   if (request.method === 'POST') {
     const body = await request.json()
     body.id_operativo = await operativoMotos(body)
+    return NextResponse.next(body)
   }
   return NextResponse.next()
 }
@@ -38,9 +39,12 @@ const operativoMotos = async (body: any) => {
         hora,
         direccion_full: `${direccion}, ${zona.cp}, Vicente Lopez, Buenos Aires, Argentina`,
       },
+      select: {
+        id_op: true,
+      },
     })
 
-    if (op == null) {
+    if (!op) {
       const id_op = await prisma.motos_operativos.create({
         data: {
           fecha,

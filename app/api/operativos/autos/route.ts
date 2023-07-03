@@ -1,27 +1,20 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
-import { Registro } from '@/types/autos'
 
 export async function GET() {
-  const autos: Registro[] = await prisma.operativos_registros.findMany({
+  const autos = await prisma.operativos_registros.findMany({
     include: {
-      motivos: { select: { motivo: true } },
-      tipo_licencias: { select: { tipo: true, vehiculo: true } },
+      motivo: { select: { motivo: true } },
+      tipo_licencia: { select: { tipo: true, vehiculo: true } },
       zona_infractor: { select: { barrio: true } },
-      operativos: {
+      operativo: {
         include: { localidad: { select: { barrio: true, cp: true } } },
       },
     },
     orderBy: { id: 'desc' },
   })
 
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(autos, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    )
-  )
+  return NextResponse.json(autos)
 }
 
 export async function POST(req: Request) {
@@ -30,14 +23,14 @@ export async function POST(req: Request) {
   const repetido = await prisma.operativos_registros.findFirst({
     where: {
       dominio: body.dominio,
-      id_operativo: body.id_op,
+      id_operativo: body.id_operativo,
     },
   })
 
   if (repetido) {
-    return new NextResponse(
-      JSON.stringify({ error: 'El dominio ya fue ingresado el mismo dia' })
-    )
+    return NextResponse.json('El dominio ya fue ingresado el mismo dia', {
+      status: 401,
+    })
   }
 
   const auto = await prisma.operativos_registros.create({
@@ -54,20 +47,16 @@ export async function POST(req: Request) {
       resolucion: body.resolucion,
       es_del: body.es_del,
       resultado: body.resultado,
-      id_operativo: body.id_op,
+      id_operativo: body.id_operativo,
       mes: new Date(body.fecha).getMonth() + 1,
       semana: Math.ceil(new Date(body.fecha).getDate() / 7),
     },
     include: {
-      operativos: {
+      operativo: {
         include: { localidad: { select: { barrio: true, cp: true } } },
       },
     },
   })
 
-  return new NextResponse(
-    JSON.stringify(auto, (_, value) =>
-      typeof value === 'bigint' ? value.toString() : value
-    )
-  )
+  return NextResponse.json(auto)
 }

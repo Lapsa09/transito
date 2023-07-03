@@ -9,29 +9,30 @@ export const config = {
 export async function middleware(request: NextRequest) {
   if (request.method === 'POST') {
     const body = await request.json()
-    body.es_del = await es_del(body.id_zona_infractor)
+    body.es_del = await es_del(body.zona_infractor.barrio)
     body.resultado = alcoholemia(body.graduacion_alcoholica)
     body.id_operativo = await operativoAlcoholemia(body)
+    return NextResponse.next(body)
   }
   return NextResponse.next()
 }
 
-const es_del = async (id_zona_infractor: number) => {
+const es_del = async (zona_infractor: string) => {
   try {
     await prisma.vicente_lopez.findFirstOrThrow({
       select: { barrio: true },
-      where: { id_barrio: id_zona_infractor },
+      where: { barrio: zona_infractor },
     })
     return 'VILO'
   } catch (error) {
-    return 'FUERA DEL MUNICIPIO'
+    return 'FUERA_DEL_MUNICIPIO'
   }
 }
 
 const alcoholemia = (graduacion_alcoholica: number) => {
   if (graduacion_alcoholica == 0 || !graduacion_alcoholica) return 'NEGATIVA'
   else if (graduacion_alcoholica > 0.05 && graduacion_alcoholica < 0.5)
-    return 'NO PUNITIVA'
+    return 'NO_PUNITIVA'
   else return 'PUNITIVA'
 }
 
@@ -49,6 +50,7 @@ const operativoAlcoholemia = async (body: any) => {
 
   try {
     const op = await prisma.operativos_operativos.findFirst({
+      select: { id_op: true },
       where: {
         fecha,
         qth: direccion,
@@ -62,7 +64,7 @@ const operativoAlcoholemia = async (body: any) => {
       },
     })
 
-    if (op == null) {
+    if (!op) {
       const id_op = await prisma.operativos_operativos.create({
         data: {
           fecha,

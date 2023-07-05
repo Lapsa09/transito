@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useSelectedLayoutSegments } from 'next/navigation'
 
 interface OperativosLayoutProps {
   modal: React.ReactNode
@@ -8,10 +8,11 @@ interface OperativosLayoutProps {
 }
 
 export default function OperativosLayout(props: OperativosLayoutProps) {
-  const createSegment = useSelectedLayoutSegment()
+  const createSegment = useSelectedLayoutSegments()
+
   return (
     <section>
-      {createSegment !== 'create' && (
+      {!createSegment.includes('create') && (
         <Link href={`/operativos/create/${createSegment}`}>
           Nuevo Operativo
         </Link>

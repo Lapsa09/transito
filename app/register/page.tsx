@@ -1,7 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Button, Input, MainLogoOVT } from '@/components'
+import Button from '@/components/Button'
+import Input from '@/components/Input'
+import { MainLogoOVT } from '@/components/Logos'
 import { FormProvider, useForm } from 'react-hook-form'
 import { signUp } from '@/services'
 import { useToast } from '@/hooks'

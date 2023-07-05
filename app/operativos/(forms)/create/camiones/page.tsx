@@ -1,5 +1,5 @@
 'use client'
-import { CamionesForm } from '@/components'
+import { CamionesForm } from '@/components/forms'
 import { useStepForm } from '@/hooks'
 import React from 'react'
 import { twMerge } from 'tailwind-merge'

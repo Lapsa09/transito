@@ -175,7 +175,7 @@ model operativos_operativos {
 
 model operativos_registros {
   dominio               String?                @db.VarChar
-  licencia              Int?
+  licencia              BigInt?
   acta                  Int?
   graduacion_alcoholica String?                @db.VarChar
   resolucion            resolucion?

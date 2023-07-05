@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
-import { Button, Stepper } from '@/components'
+import Button from '@/components/Button'
+import Stepper from '@/components/Stepper'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
 import {
@@ -10,10 +11,9 @@ import {
   getSingleMoto,
 } from '@/services'
 import useSWR from 'swr'
-import { useParams, useSelectedLayoutSegment } from 'next/navigation'
+import { useParams, useSelectedLayoutSegment, useRouter } from 'next/navigation'
 import { useToast } from '@/hooks'
 import { EditInputProps } from '@/types'
-import { useRouter } from 'next/navigation'
 
 const chooseOperativo = {
   autos: getSingleAuto,

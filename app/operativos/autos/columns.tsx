@@ -14,34 +14,34 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'id',
   },
   {
-    accessorFn: (row) => row.operativos?.fecha,
+    accessorFn: (row) => row.operativo?.fecha,
     id: 'fecha',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
   },
   {
-    accessorFn: (row) => row.operativos?.hora,
+    accessorFn: (row) => row.operativo?.hora,
     id: 'hora',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
-    accessorFn: (row) => row.operativos?.qth,
+    accessorFn: (row) => row.operativo?.qth,
     id: 'qth',
     size: 450,
   },
   {
-    accessorFn: (row) => row.operativos?.localidad?.barrio,
+    accessorFn: (row) => row.operativo?.localidad?.barrio,
     id: 'localidad',
   },
   {
-    accessorFn: (row) => row.operativos?.localidad?.cp,
+    accessorFn: (row) => row.operativo?.localidad?.cp,
     id: 'cp',
   },
   {
-    accessorFn: (row) => row.operativos?.turno,
+    accessorFn: (row) => row.operativo?.turno,
     id: 'turno',
   },
   {
-    accessorFn: (row) => row.operativos?.seguridad,
+    accessorFn: (row) => row.operativo?.seguridad,
     id: 'seguridad',
   },
   {
@@ -53,11 +53,11 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'licencia',
   },
   {
-    accessorFn: (row) => row.tipo_licencias?.tipo,
+    accessorFn: (row) => row.tipo_licencia?.tipo,
     id: 'tipo_licencia',
   },
   {
-    accessorFn: (row) => row.tipo_licencias?.vehiculo,
+    accessorFn: (row) => row.tipo_licencia?.vehiculo,
     id: 'tipo_vehiculo',
   },
   {
@@ -89,16 +89,16 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'motivo',
   },
   {
-    accessorFn: (row) => row.operativos?.direccion_full,
+    accessorFn: (row) => row.operativo?.direccion_full,
     id: 'direccion_full',
     size: 800,
   },
   {
-    accessorFn: (row) => row.operativos?.latitud,
+    accessorFn: (row) => row.operativo?.latitud,
     id: 'latitud',
   },
   {
-    accessorFn: (row) => row.operativos?.longitud,
+    accessorFn: (row) => row.operativo?.longitud,
     id: 'longitud',
   },
 ]

@@ -1,16 +1,10 @@
 'use client'
+import { useStepForm } from '@/hooks'
 import { Stepper, Step, Typography } from '@material-tailwind/react'
 import React from 'react'
 
-function CustomStepper({
-  steps,
-  activeStep,
-  setActiveStep,
-}: {
-  steps: string[]
-  activeStep: number
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>
-}) {
+function CustomStepper({ steps }: { steps: string[] }) {
+  const { activeStep, setActiveStep } = useStepForm()
   return (
     <Stepper
       className="w-full py-4 px-8 cursor-pointer"

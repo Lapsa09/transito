@@ -1,5 +1,5 @@
 'use client'
-import { MotosForm } from '@/components'
+import { MotosForm } from '@/components/forms'
 import { useStepForm } from '@/hooks'
 import React from 'react'
 import { twMerge } from 'tailwind-merge'

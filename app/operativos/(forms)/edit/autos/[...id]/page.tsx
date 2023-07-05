@@ -1,5 +1,5 @@
 'use client'
-import { AutosForm } from '@/components'
+import { AutosForm } from '@/components/forms'
 import { useStepForm } from '@/hooks'
 import React from 'react'
 import { twMerge } from 'tailwind-merge'

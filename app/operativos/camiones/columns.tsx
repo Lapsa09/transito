@@ -1,7 +1,16 @@
 import { OperativoCamiones } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
+import Link from 'next/link'
 
 export const columns: ColumnDef<OperativoCamiones>[] = [
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+      <Link href={`/operativos/edit/camiones/${row.getValue('id')}`}>
+        Editar
+      </Link>
+    ),
+  },
   {
     accessorKey: 'id',
     header: 'ID',
@@ -9,7 +18,7 @@ export const columns: ColumnDef<OperativoCamiones>[] = [
   {
     accessorKey: 'fecha',
     header: 'Fecha',
-    cell: ({ row }) => new Date(row.getValue('fecha')).toLocaleDateString(),
+    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
   },
   {
     accessorKey: 'legajo_carga',
@@ -34,6 +43,7 @@ export const columns: ColumnDef<OperativoCamiones>[] = [
   {
     accessorKey: 'hora_carga',
     header: 'Hora',
+    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
     accessorKey: 'dominio',

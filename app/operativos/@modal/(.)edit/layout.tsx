@@ -1,33 +1,53 @@
 'use client'
 import React from 'react'
-import { Button, LogoOVT, LogoVL, Modal, Stepper } from '@/components'
+import Button from '@/components/Button'
+import { LogoOVT, LogoVL } from '@/components/Logos'
+import Modal from '@/components/Modal'
+import Stepper from '@/components/Stepper'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
-import { getSelects } from '@/services'
+import {
+  getSelects,
+  getSingleAuto,
+  getSingleCamion,
+  getSingleMoto,
+} from '@/services'
 import useSWR from 'swr'
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useParams, useSelectedLayoutSegment, useRouter } from 'next/navigation'
 import { useToast } from '@/hooks'
-import { FormInputProps } from '@/types'
+import { EditInputProps } from '@/types'
 
-function AutosFormLayout({ children }: { children: React.ReactNode }) {
-  const methods = useForm<FormInputProps>({
+const chooseOperativo = {
+  autos: getSingleAuto,
+  motos: getSingleMoto,
+  camiones: getSingleCamion,
+}
+
+type operativo = keyof typeof chooseOperativo
+
+function AutosEditLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+  const param = useParams()
+  const methods = useForm<EditInputProps>({
     mode: 'all',
+    defaultValues: async () =>
+      await chooseOperativo[layoutSegment as operativo](+param.id),
   })
+
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
   const {
     handleSubmit,
-    reset,
     formState: { isValid },
   } = methods
   const { toast } = useToast()
 
   const layoutSegment = useSelectedLayoutSegment()
 
-  const onSubmit = (data: FormInputProps) => {
+  const onSubmit = (data: EditInputProps) => {
     console.log({ data, layoutSegment })
-    // reset({}, { keepDefaultValues: true })
-    toast({ title: 'Operativo creado con exito', variant: 'success' })
+    toast({ title: 'Operativo actualizado con exito', variant: 'success' })
+    router.back()
   }
 
   const isFirstStep = activeStep === 0
@@ -74,4 +94,4 @@ function AutosFormLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default AutosFormLayout
+export default AutosEditLayout

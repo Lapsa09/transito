@@ -1,7 +1,8 @@
 'use client'
 import React from 'react'
 import useSWR from 'swr'
-import { DataTable, Loader } from '@/components'
+import { DataTable } from '@/components/table'
+import Loader from '@/components/Loader'
 import { getCamiones } from '@/services'
 import { columns } from './columns'
 

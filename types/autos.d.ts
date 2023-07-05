@@ -53,9 +53,9 @@ export interface Registro {
   resolucion: string | null
   resultado: string | null
   semana: number | null
-  tipo_licencias: { tipo: string | null; vehiculo: string | null } | null
+  tipo_licencia: { tipo: string | null; vehiculo: string | null } | null
   zona_infractor: ZonaInfractor | null
-  operativos: Operativos | null
+  operativo: Operativos | null
 }
 export interface Motivos {
   motivo: string | null

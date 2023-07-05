@@ -1,7 +1,14 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { OperativoMotos } from '@/types/operativos'
+import Link from 'next/link'
 
 export const columns: ColumnDef<OperativoMotos>[] = [
+  {
+    id: 'actions',
+    cell: ({ row }) => (
+      <Link href={`/operativos/edit/motos/${row.getValue('id')}`}>Editar</Link>
+    ),
+  },
   {
     accessorKey: 'id',
     header: 'ID',
@@ -14,6 +21,7 @@ export const columns: ColumnDef<OperativoMotos>[] = [
   {
     accessorKey: 'hora',
     header: 'Hora',
+    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
     accessorKey: 'legajo_a_cargo',

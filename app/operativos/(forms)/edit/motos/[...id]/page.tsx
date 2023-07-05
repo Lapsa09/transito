@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { motion } from 'framer-motion'
-import { MotosForm } from '@/components'
+import { MotosForm } from '@/components/forms'
 import { useStepForm } from '@/hooks'
 
 function page() {

@@ -1,5 +1,5 @@
 'use client'
-import { CamionesForm } from '@/components'
+import { MotosForm } from '@/components/forms'
 import { useStepForm } from '@/hooks'
 import React from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -8,7 +8,7 @@ function page() {
   const { activeStep } = useStepForm()
   return (
     <div className="flex w-10/12 my-4">
-      {CamionesForm.map((child: React.ReactNode, i: number) => (
+      {MotosForm.map((child: React.ReactNode, i: number) => (
         <div
           key={i}
           className={twMerge(

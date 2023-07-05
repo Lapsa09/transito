@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
-import { Button, Stepper } from '@/components'
+import Button from '@/components/Button'
+import Stepper from '@/components/Stepper'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
 import { getSelects } from '@/services'
@@ -44,11 +45,7 @@ function layout({ children }: { children: React.ReactNode[] }) {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormProvider {...methods}>
-          <Stepper
-            setActiveStep={setActiveStep}
-            activeStep={activeStep}
-            steps={['Operativo', 'Vehiculo']}
-          />
+          <Stepper steps={['Operativo', 'Vehiculo']} />
           {isLoading ? 'Cargando...' : children}
         </FormProvider>
         <div className="flex justify-between w-full">

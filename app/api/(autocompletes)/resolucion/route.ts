@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
-enum resolucion {
-  ACTA,
-  PREVENCION,
-  REMITIDO,
-}
+const resolucion = [
+  { resolucion: 'PREVENCION' },
+  { resolucion: 'ACTA' },
+  { resolucion: 'REMITIDO' },
+]
 
 export function GET() {
   return NextResponse.json(resolucion)

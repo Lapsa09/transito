@@ -14,7 +14,13 @@ export async function GET() {
     orderBy: { id: 'desc' },
   })
 
-  return NextResponse.json(autos)
+  return NextResponse.json(
+    JSON.parse(
+      JSON.stringify(autos, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value
+      )
+    )
+  )
 }
 
 export async function POST(req: Request) {

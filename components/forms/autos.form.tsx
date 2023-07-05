@@ -15,6 +15,7 @@ function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
 
   const { vicenteLopez, turnos, seguridad } = data!
+
   return (
     <div className="flex w-full justify-between flex-wrap">
       <DatePicker
@@ -44,12 +45,16 @@ function FirstStep() {
         label="Turno"
         className="w-full basis-5/12"
         options={turnos}
+        inputId="turno"
+        inputLabel="turno"
         rules={{ required: 'Este campo es requerido' }}
       />
       <Select
         name="seguridad"
         label="Seguridad"
         className="w-full basis-5/12"
+        inputId="seguridad"
+        inputLabel="seguridad"
         options={seguridad}
         rules={{ required: 'Este campo es requerido' }}
       />
@@ -126,6 +131,8 @@ function SecondStep() {
       <Select
         name="resolucion"
         label="Resolucion"
+        inputId="resolucion"
+        inputLabel="resolucion"
         options={resolucion}
         className="w-full basis-5/12"
       />

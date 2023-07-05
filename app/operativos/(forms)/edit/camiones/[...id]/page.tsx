@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { motion } from 'framer-motion'
-import { AutosForm } from '@/components'
+import { CamionesForm } from '@/components/forms'
 import { useStepForm } from '@/hooks'
 
 function page() {
@@ -20,7 +20,7 @@ function page() {
   }
   return (
     <div className="flex w-[200%] mx-auto my-4">
-      {AutosForm.map((child: React.ReactNode, i: number) => (
+      {CamionesForm.map((child: React.ReactNode, i: number) => (
         <motion.div
           variants={variant}
           key={i}

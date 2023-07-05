@@ -26,7 +26,7 @@ function CustomSelect({
   label,
   name,
   rules,
-  options,
+  options = [],
   inputId = 'enumlabel',
   inputLabel = 'enumlabel',
   className,
@@ -59,11 +59,12 @@ function CustomSelect({
           <SelectValue placeholder="Seleccione una opcion" />
         </SelectTrigger>
         <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option[inputId]} value={option[inputId]}>
-              {option[inputLabel]}
-            </SelectItem>
-          ))}
+          {options.length > 0 &&
+            options?.map((option) => (
+              <SelectItem key={option[inputId]} value={option[inputId]}>
+                {option[inputLabel]}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 

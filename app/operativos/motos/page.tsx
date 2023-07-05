@@ -1,6 +1,7 @@
 'use client'
 import useSWR from 'swr'
-import { DataTable, Loader } from '@/components'
+import { DataTable } from '@/components/table'
+import Loader from '@/components/Loader'
 import { getMotos } from '@/services'
 import { columns } from './columns'
 

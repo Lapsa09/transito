@@ -30,8 +30,10 @@ export interface Enums {
   enumlabel: string
 }
 
-export interface ITurnos extends Enums {
-  enumlabel: 'MAÑANA' | 'TARDE' | 'NOCHE'
+export enum ITurnos {
+  'MAÑANA',
+  'TARDE',
+  'NOCHE',
 }
 
 export interface IResolucion extends Enums {
@@ -44,6 +46,12 @@ export interface ISeguridad extends Enums {
 
 export interface IMotivosPaseo extends Enums {
   enumlabel: 'VELOCIDAD' | 'ESTACIONAMIENTO'
+}
+
+export enum IResultado {
+  'NO PUNITIVA',
+  'PUNITIVA',
+  'NEGATIVA',
 }
 
 export interface IZonasPaseo {

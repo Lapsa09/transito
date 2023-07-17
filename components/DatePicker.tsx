@@ -13,9 +13,10 @@ interface Props
   extends UseControllerProps,
     Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultValue' | 'name'> {
   label: string
+  persist?: (data: any) => void
 }
 
-function DatePicker({ name, label, className, rules }: Props) {
+function DatePicker({ name, label, className, rules, persist }: Props) {
   const { control, trigger } = useFormContext()
   const {
     field: { ref, ...field },
@@ -49,6 +50,7 @@ function DatePicker({ name, label, className, rules }: Props) {
 
   const onChange = (value: DateValueType) => {
     field.onChange(value!.startDate)
+    if (persist) persist({ [name]: value!.startDate })
     trigger(name)
   }
 

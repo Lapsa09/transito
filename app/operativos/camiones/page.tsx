@@ -7,7 +7,7 @@ import { getCamiones } from '@/services'
 import { columns } from './columns'
 
 function page() {
-  const { data, isLoading } = useSWR('Camiones', getCamiones)
+  const { data, isLoading } = useSWR('camiones', getCamiones)
 
   if (isLoading) return <Loader />
   return <DataTable columns={columns} data={data!} />

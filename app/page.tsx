@@ -1,6 +1,6 @@
 'use client'
-import { Roles } from '@/types'
 import { useSession } from 'next-auth/react'
+import { roles } from '@prisma/client'
 
 export default function Home() {
   const { data } = useSession()
@@ -14,7 +14,7 @@ export default function Home() {
       <h1>
         Bienvenido {fullName} Legajo {user?.legajo}
       </h1>
-      {user?.op.permisos.permiso === Roles.ADMIN && (
+      {user?.op.permisos.permiso === roles.ADMIN && (
         <iframe
           title="Tablero de Control OVT"
           width="100%"

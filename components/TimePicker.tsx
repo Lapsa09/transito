@@ -11,14 +11,21 @@ interface Props
   extends UseControllerProps,
     Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultValue' | 'name'> {
   label: string
+  persist?: (data: any) => void
 }
 
-function TimePicker({ name, label, className, rules }: Props) {
+function TimePicker({ name, label, className, rules, persist }: Props) {
   const { control } = useFormContext()
   const {
     field,
     fieldState: { invalid, error },
   } = useController({ name, control, rules, defaultValue: '' })
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    field.onChange(e.target.value)
+    if (persist) persist({ [name]: e.target.value })
+  }
+
   return (
     <div className={twMerge('mb-6', className)}>
       <label
@@ -38,6 +45,7 @@ function TimePicker({ name, label, className, rules }: Props) {
         }`}
         type="time"
         {...field}
+        onChange={onChange}
       />
       <p className="mt-2 text-xs text-red-400">{error?.message}</p>
     </div>

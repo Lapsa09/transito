@@ -9,11 +9,19 @@ import { getSelects } from '@/services'
 import Select from '../Select'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
+import { useLocalStorage } from 'usehooks-ts'
+import { resolucion as IResolucion } from '@prisma/client'
 
 const AutosForm = [<FirstStep />, <SecondStep />]
 
 function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
+
+  const [, edit] = useLocalStorage('motos', {})
+
+  const setOperativo = (value: any) => {
+    edit((state) => ({ ...state, ...value }))
+  }
 
   const { vicenteLopez, turnos, seguridad } = data!
   return (
@@ -23,22 +31,26 @@ function FirstStep() {
         label="Fecha"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <TimePicker
         name="hora"
         label="Hora"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <Input.Legajo
         name="legajo_a_cargo"
         label="Legajo a cargo"
         className="w-full basis-5/12"
+        persist={setOperativo}
       />
       <Input.Legajo
         name="legajo_planilla"
         label="Legajo planilla"
         className="w-full basis-5/12"
+        persist={setOperativo}
       />
       <Select
         name="turno"
@@ -46,6 +58,7 @@ function FirstStep() {
         className="w-full basis-5/12"
         options={turnos}
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <Select
         name="seguridad"
@@ -53,12 +66,14 @@ function FirstStep() {
         className="w-full basis-5/12"
         options={seguridad}
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <Input
         name="direccion"
         label="Direccion"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <Autocomplete
         name="zona"
@@ -68,6 +83,7 @@ function FirstStep() {
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
         options={vicenteLopez}
+        persist={setOperativo}
       />
     </div>
   )
@@ -79,7 +95,8 @@ function SecondStep() {
   const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
-    getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
+    getValues('resolucion') === IResolucion.ACTA ||
+    getValues('resolucion') === IResolucion.REMITIDO
 
   const sumarMotivos = () => {
     if (fields.length < 5) {

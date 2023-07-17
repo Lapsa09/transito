@@ -20,6 +20,7 @@ type Props = UseControllerProps &
     options: any[]
     inputLabel?: string
     inputId?: string
+    persist?: (data: any) => void
   }
 
 function CustomSelect({
@@ -27,15 +28,21 @@ function CustomSelect({
   name,
   rules,
   options = [],
-  inputId = 'enumlabel',
-  inputLabel = 'enumlabel',
+  inputId = name,
+  inputLabel = name,
   className,
+  persist,
 }: Props) {
   const { control } = useFormContext()
   const {
     field: { ref, ...field },
     fieldState: { invalid, error },
   } = useController({ name, control, rules, defaultValue: '' })
+
+  const onChange = (value: string) => {
+    field.onChange(value)
+    if (persist) persist({ [name]: value })
+  }
 
   return (
     <div className={twMerge('mb-6', className)}>
@@ -48,7 +55,7 @@ function CustomSelect({
           <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
         )}
       </label>
-      <Select {...field} onValueChange={field.onChange}>
+      <Select {...field} onValueChange={onChange}>
         <SelectTrigger
           className={`w-full justify-between border bg-white/0 dark:bg-gray-700 p-2.5 text-sm outline-none ${
             invalid

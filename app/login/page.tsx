@@ -58,7 +58,7 @@ function page() {
         </form>
       </FormProvider>
       <p>
-        Todavia no te registraste? <Link href="/register">Registrate aca</Link>{' '}
+        Todavia no te registraste? <Link href="/register">Registrate aca</Link>
       </p>
     </div>
   )

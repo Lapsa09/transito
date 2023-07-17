@@ -4,19 +4,25 @@ import Input from '../Input'
 import DatePicker from '../DatePicker'
 import TimePicker from '../TimePicker'
 import Autocomplete from '../Autocomplete'
+import Switch from '../Switch'
+import Select from '../Select'
 import useSWR from 'swr'
 import { getSelects } from '@/services'
-import Select from '../Select'
-import { useFieldArray, useFormContext } from 'react-hook-form'
-import { IoMdAdd, IoMdRemove } from 'react-icons/io'
-import Switch from '../Switch'
+import { useFormContext } from 'react-hook-form'
+import { useLocalStorage } from 'usehooks-ts'
+import { resolucion as IResolucion } from '@prisma/client'
 
 const CamionesForm = [<FirstStep />, <SecondStep />]
 
 function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
+  const [, edit] = useLocalStorage('camiones', {})
 
-  const { vicenteLopez, turnos, seguridad } = data!
+  const setOperativo = (value: any) => {
+    edit((state) => ({ ...state, ...value }))
+  }
+
+  const { vicenteLopez, turnos } = data!
   return (
     <div className="flex w-full justify-between flex-wrap">
       <DatePicker
@@ -24,12 +30,14 @@ function FirstStep() {
         label="Fecha"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <Input
         name="direccion"
         label="Direccion"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
       <Autocomplete
         name="zona"
@@ -39,11 +47,13 @@ function FirstStep() {
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
         options={vicenteLopez}
+        persist={setOperativo}
       />
       <Input.Legajo
         name="legajo"
         label="Legajo"
         className="w-full basis-5/12"
+        persist={setOperativo}
       />
       <Select
         name="turno"
@@ -51,6 +61,7 @@ function FirstStep() {
         className="w-full basis-5/12"
         options={turnos}
         rules={{ required: 'Este campo es requerido' }}
+        persist={setOperativo}
       />
     </div>
   )
@@ -61,7 +72,8 @@ function SecondStep() {
   const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
-    getValues('resolucion') === 'ACTA' || getValues('resolucion') === 'REMITIDO'
+    getValues('resolucion') === IResolucion.ACTA ||
+    getValues('resolucion') === IResolucion.REMITIDO
 
   const { motivos, resolucion, zonas } = data!
 

@@ -12,6 +12,7 @@ interface Props
   extends UseControllerProps,
     Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultValue' | 'name'> {
   label: string
+  persist?: (data: any) => void
 }
 
 function Input({
@@ -21,6 +22,7 @@ function Input({
   rules,
   type = 'text',
   className,
+  persist,
 }: Props) {
   const { control } = useFormContext()
   const {
@@ -32,6 +34,12 @@ function Input({
     rules,
     defaultValue: '',
   })
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    field.onChange(e.target.value)
+    if (persist) persist({ [name]: e.target.value })
+  }
+
   return (
     <div className={twMerge('mb-6', className)}>
       <label
@@ -45,10 +53,11 @@ function Input({
       </label>
       <input
         {...field}
+        onChange={onChange}
         type={type}
         id={name}
         placeholder={placeholder}
-        className={`flex w-full items-center justify-center rounded-lg border bg-white/0 dark:bg-gray-700 p-2.5 text-sm outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
+        className={`flex w-full uppercase items-center justify-center rounded-lg border bg-white/0 dark:bg-gray-700 p-2.5 text-sm outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
           invalid
             ? 'border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400'
             : 'border-gray-600'

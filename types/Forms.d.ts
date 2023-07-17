@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { IBarrio, ILicencias, IZona } from '.'
+import { IBarrio, ILicencias, IMotivos, IResolucion, ITurnos, IZona } from '.'
+import { seguridad, turnos } from '@prisma/client'
 
 export interface RegisterUserProps {
   legajo: number
@@ -16,20 +17,20 @@ export interface LoginUserProps {
 }
 
 export interface FormInputProps {
-  legajo_a_cargo: number
-  legajo_planilla: number
-  seguridad: string
+  legajo_a_cargo: string
+  legajo_planilla: string
+  seguridad: seguridad
   direccion: string
   zona: IZona
   fecha: DateTime
-  turno: string
+  turno: turnos
   lpcarga: number
-  hora: DateTime
+  hora: string
   dominio: string
   zona_infractor: IBarrio
   licencia?: number
   tipo_licencia?: ILicencias
-  resolucion?: string
+  resolucion?: IResolucion
   acta?: number
   extranjero?: boolean
 }
@@ -55,8 +56,14 @@ export interface EditInputProps {
   motivo?: number
 }
 
+export interface FormAutosProps extends FormInputProps {
+  graduacion_alcoholica: number
+  motivo: IMotivos
+}
+
 export interface EditAutosProps extends EditInputProps {
   graduacion_alcoholica: number
+  motivo: IMotivos
 }
 
 export type RadioOPForm = {

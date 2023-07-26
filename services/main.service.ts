@@ -15,13 +15,16 @@ type Props = {
 }
 
 export const getter = async <T = any>({ route }: Props) => {
-  const { data } = await axios.get<T>('/api/' + route)
+  const { data } = await axios.get<T>('http://localhost:3000/api/' + route)
 
   return data
 }
 
 export const setter = async <T = any>({ route, body }: Props) => {
-  const { data } = await axios.post<T>('/api/' + route, body)
+  const { data } = await axios.post<T>(
+    'http://localhost:3000/api/' + route,
+    body
+  )
 
   return data
 }

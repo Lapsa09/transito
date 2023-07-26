@@ -1,15 +1,4 @@
-export enum Seguridad {
-  No = 'NO',
-  Policia = 'POLICIA',
-  Prefectura = 'PREFECTURA',
-  SecretariaDeSeguridad = 'SECRETARIA DE SEGURIDAD',
-}
-
-export enum Turno {
-  MaAna = 'MAÑANA',
-  Noche = 'NOCHE',
-  Tarde = 'TARDE',
-}
+import { ILicencias, Localidad, Motivos, ZonaInfractor } from './operativos'
 
 export interface Operativos {
   direccion_full: string | null
@@ -25,11 +14,6 @@ export interface Operativos {
   qth: string | null
   seguridad: string | null
   turno: string | null
-}
-
-export interface Localidad {
-  barrio: string | null
-  cp: string | null
 }
 
 export interface Registro {
@@ -49,18 +33,11 @@ export interface Registro {
   longitud: null | string
   lpcarga: null | bigint
   mes: number | null
-  motivos: Motivos | null
+  motivo: Motivos | null
   resolucion: string | null
   resultado: string | null
   semana: number | null
-  tipo_licencia: { tipo: string | null; vehiculo: string | null } | null
+  tipo_licencia: ILicencias | null
   zona_infractor: ZonaInfractor | null
   operativo: Operativos | null
-}
-export interface Motivos {
-  motivo: string | null
-}
-
-export interface ZonaInfractor {
-  barrio: string | null
 }

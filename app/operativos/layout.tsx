@@ -1,6 +1,4 @@
-'use client'
-import Link from 'next/link'
-import { useSelectedLayoutSegments } from 'next/navigation'
+import { CustomOperativoLink } from '@/components/CustomLinks'
 
 interface OperativosLayoutProps {
   modal: React.ReactNode
@@ -8,17 +6,11 @@ interface OperativosLayoutProps {
 }
 
 export default function OperativosLayout(props: OperativosLayoutProps) {
-  const createSegment = useSelectedLayoutSegments()
-
   return (
-    <section>
-      {!createSegment.includes('create') && (
-        <Link href={`/operativos/create/${createSegment}`}>
-          Nuevo Operativo
-        </Link>
-      )}
+    <main className="flex flex-col items-center gap-3">
+      <CustomOperativoLink />
       {props.children}
       {props.modal}
-    </section>
+    </main>
   )
 }

@@ -12,7 +12,7 @@ import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
 
-const AutosForm = [<FirstStep />, <SecondStep />]
+export const steps = [<FirstStep />, <SecondStep />]
 
 function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
@@ -186,5 +186,3 @@ function SecondStep() {
     </div>
   )
 }
-
-export default AutosForm

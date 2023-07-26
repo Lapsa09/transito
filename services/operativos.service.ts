@@ -1,16 +1,17 @@
-import { OperativoCamiones, OperativoMotos } from '@/types/operativos'
 import { getter } from './main.service'
-import { EditAutosProps } from '@/types'
-import { Registro } from '@/types/autos'
+import { EditAutosProps, EditCamionesProps, EditMotosProps } from '@/types'
+import { Registro as Auto } from '@/types/autos'
+import { Registro as Camion } from '@/types/camiones'
+import { Registro as Moto } from '@/types/motos'
 
 export const getAutos = async () =>
-  await getter<Registro[]>({ route: 'operativos/autos' })
+  await getter<Auto[]>({ route: 'operativos/autos' })
 
 export const getMotos = async () =>
-  await getter<OperativoMotos[]>({ route: 'operativos/motos' })
+  await getter<Moto[]>({ route: 'operativos/motos' })
 
 export const getCamiones = async () =>
-  await getter<OperativoCamiones[]>({
+  await getter<Camion[]>({
     route: 'operativos/camiones',
   })
 
@@ -20,12 +21,12 @@ export const getSingleAuto = async (id: number) =>
   })
 
 export const getSingleMoto = async (id: number) =>
-  await getter<EditAutosProps>({
+  await getter<EditMotosProps>({
     route: `operativos/motos/${id}`,
   })
 
 export const getSingleCamion = async (id: number) => {
-  return await getter<EditAutosProps>({
+  return await getter<EditCamionesProps>({
     route: `operativos/camiones/${id}`,
   })
 }

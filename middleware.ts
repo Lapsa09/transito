@@ -21,7 +21,9 @@ export default async function middleware(
   const authMiddleware = await withAuth({
     callbacks: {
       authorized: ({ token, req }) => {
-        if (req.nextUrl.pathname.startsWith('/register')) {
+        if (req.nextUrl.pathname.startsWith('/api')) {
+          return true
+        } else if (req.nextUrl.pathname.startsWith('/register')) {
           return !token
         } else {
           return !!token

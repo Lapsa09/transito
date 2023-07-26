@@ -71,7 +71,6 @@ export interface OperativoDiario extends Operativo {
 }
 
 export interface ILicencias {
-  id_tipo: number
   tipo: string
   vehiculo?: string
 }
@@ -83,11 +82,35 @@ export interface IZona {
 }
 
 export interface IBarrio {
-  id_barrio: number
   barrio: string
 }
 
 export interface IMotivos {
-  id_motivo: number
   motivo: string
+}
+
+export enum Seguridad {
+  No = 'NO',
+  Policia = 'POLICIA',
+  Prefectura = 'PREFECTURA',
+  SecretariaDeSeguridad = 'SECRETARIA DE SEGURIDAD',
+}
+
+export enum Turno {
+  MaAna = 'MAÑANA',
+  Noche = 'NOCHE',
+  Tarde = 'TARDE',
+}
+
+export interface Localidad {
+  barrio: string | null
+  cp: string | null
+}
+
+export interface Motivos {
+  motivo: string | null
+}
+
+export interface ZonaInfractor {
+  barrio: string | null
 }

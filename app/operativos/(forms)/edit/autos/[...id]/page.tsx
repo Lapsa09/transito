@@ -1,26 +1,9 @@
-'use client'
-import { AutosForm } from '@/components/forms'
-import { useStepForm } from '@/hooks'
+import { steps } from '@/components/forms/autos.form'
+import MainForm from '@/components/forms/main.form'
 import React from 'react'
-import { twMerge } from 'tailwind-merge'
 
 function page() {
-  const { activeStep } = useStepForm()
-  return (
-    <div className="flex w-10/12 my-4">
-      {AutosForm.map((child: React.ReactNode, i: number) => (
-        <div
-          key={i}
-          className={twMerge(
-            `w-full flex flex-col`,
-            i !== activeStep && 'hidden'
-          )}
-        >
-          {child}
-        </div>
-      ))}
-    </div>
-  )
+  return <MainForm steps={steps} />
 }
 
 export default page

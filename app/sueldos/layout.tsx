@@ -1,5 +1,5 @@
 'use client'
-import { Drawer } from '@/components'
+import Drawer from '@/components/Drawer'
 import { useSelectedLayoutSegment } from 'next/navigation'
 import React from 'react'
 

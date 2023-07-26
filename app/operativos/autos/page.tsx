@@ -1,15 +1,10 @@
-'use client'
-import useSWR from 'swr'
-import { DataTable } from '@/components/table'
-import Loader from '@/components/Loader'
 import { getAutos } from '@/services'
-import { columns } from './columns'
+import ClientTable from './ClientTable'
 
-function page() {
-  const { data, isLoading } = useSWR('autos', getAutos)
+async function page() {
+  const data = await getAutos()
 
-  if (isLoading) return <Loader />
-  return <DataTable columns={columns} data={data!} />
+  return <ClientTable data={data} />
 }
 
 export default page

@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { OperativoMotos } from '@/types/operativos'
 import Link from 'next/link'
+import { Registro } from '@/types/motos'
 
-export const columns: ColumnDef<OperativoMotos>[] = [
+export const columns: ColumnDef<Registro>[] = [
   {
     id: 'actions',
     cell: ({ row }) => (

@@ -6,12 +6,17 @@ import Loader from '@/components/Loader'
 import { useStepForm, useToast } from '@/hooks'
 import { getSelects, setter } from '@/services'
 import { FormInputProps } from '@/types'
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR, { mutate } from 'swr'
 import { useSession } from 'next-auth/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { setExpiration } from '@/utils/misc'
+
+interface Operativo {
+  expiresAt: number
+  [key: string]: string | number
+}
 
 function layout({ children }: { children: React.ReactNode }) {
   const { data } = useSession()
@@ -19,7 +24,8 @@ function layout({ children }: { children: React.ReactNode }) {
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
   const { toast } = useToast()
-  const [operativo, setOperativo] = useLocalStorage(layoutSegment, {
+  const router = useRouter()
+  const [operativo, setOperativo] = useLocalStorage<Operativo>(layoutSegment, {
     expiresAt: setExpiration(),
   })
   const methods = useForm<FormInputProps>({
@@ -43,7 +49,10 @@ function layout({ children }: { children: React.ReactNode }) {
         route: `/operativos/${layoutSegment}`,
         body,
       })
-      await mutate(layoutSegment, registro, { optimisticData: registro })
+      await mutate(layoutSegment, registro, {
+        populateCache: (result, currentData) => [result, ...currentData],
+        revalidate: false,
+      })
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       const { expiresAt, ...rest } = operativo
       reset(rest)
@@ -53,7 +62,7 @@ function layout({ children }: { children: React.ReactNode }) {
   }
 
   const nuevoOperativo = () => {
-    setOperativo((state: any) => {
+    setOperativo((state) => {
       Object.keys(state).forEach((key) => (state[key] = ''))
       state.expiresAt = setExpiration()
       return state
@@ -80,12 +89,14 @@ function layout({ children }: { children: React.ReactNode }) {
   const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center px-6">
       <div className="flex justify-between w-full">
         <Button onClick={nuevoOperativo} variant="text">
           Nuevo Operativo
         </Button>
-        <Button variant="text">Salir</Button>
+        <Button onClick={router.back} variant="text">
+          Salir
+        </Button>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormProvider {...methods}>

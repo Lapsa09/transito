@@ -1,0 +1,12 @@
+'use client'
+
+import React from 'react'
+import { DataTable } from '@/components/table'
+import { columns } from './columns'
+import { Registro } from '@/types/camiones'
+
+function ClientTable({ data }: { data: Registro[] }) {
+  return <DataTable columns={columns} data={data} />
+}
+
+export default ClientTable

@@ -66,6 +66,36 @@ export interface EditAutosProps extends EditInputProps {
   motivo: IMotivos
 }
 
+export interface FormMotosProps extends FormInputProps {
+  motivos: IMotivos[]
+}
+
+export interface EditMotosProps extends EditInputProps {
+  motivos: IMotivos[]
+}
+
+export interface FormCamionesProps extends FormInputProps {
+  motivo: IMotivos
+  remito: boolean
+  carga: boolean
+  lp: number
+  origen?: string
+  destino?: string
+  localidad_origen: IBarrio
+  localidad_destino: IBarrio
+}
+
+export interface EditCamionesProps extends FormInputProps {
+  motivo: IMotivos
+  remito: boolean
+  carga: boolean
+  lp: number
+  origen?: string
+  destino?: string
+  localidad_origen: IBarrio
+  localidad_destino: IBarrio
+}
+
 export type RadioOPForm = {
   id: number
   legajo: number

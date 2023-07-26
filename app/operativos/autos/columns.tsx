@@ -85,7 +85,7 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'acta',
   },
   {
-    accessorFn: (row) => row.motivos?.motivo,
+    accessorFn: (row) => row.motivo?.motivo,
     id: 'motivo',
   },
   {

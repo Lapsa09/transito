@@ -9,7 +9,7 @@ import { useStepForm, useToast } from '@/hooks'
 import { getSelects, setter } from '@/services'
 import { FormInputProps } from '@/types'
 import { setExpiration } from '@/utils/misc'
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import useSWR, { mutate } from 'swr'
@@ -18,6 +18,7 @@ import { useLocalStorage } from 'usehooks-ts'
 function layout({ children }: { children: React.ReactNode }) {
   const { data } = useSession()
   const layoutSegment = useSelectedLayoutSegment() || ''
+  const router = useRouter()
   const [operativo, setOperativo] = useLocalStorage(layoutSegment, {
     expiresAt: setExpiration(),
   })
@@ -45,9 +46,7 @@ function layout({ children }: { children: React.ReactNode }) {
         body,
       })
       await mutate(layoutSegment, registro, {
-        populateCache(result, currentData) {
-          return [result, ...currentData]
-        },
+        populateCache: (result, currentData) => [result, ...currentData],
         revalidate: false,
       })
       toast({ title: 'Operativo creado con exito', variant: 'success' })
@@ -97,7 +96,9 @@ function layout({ children }: { children: React.ReactNode }) {
           <Button onClick={nuevoOperativo} variant="text">
             Nuevo Operativo
           </Button>
-          <Button variant="text">Salir</Button>
+          <Button onClick={router.back} variant="text">
+            Salir
+          </Button>
           <LogoOVT />
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -109,12 +110,14 @@ function layout({ children }: { children: React.ReactNode }) {
             <Button disabled={isFirstStep} onClick={handlePrev}>
               Atras
             </Button>
-            {isLastStep ? (
+            {!isLastStep ? (
+              <Button disabled={isLastStep} onClick={handleNext}>
+                Siguiente
+              </Button>
+            ) : (
               <Button disabled={!isValid} type="submit">
                 Guardar
               </Button>
-            ) : (
-              <Button onClick={handleNext}>Siguiente</Button>
             )}
           </div>
         </form>

@@ -15,24 +15,18 @@ export default async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith(page)
   )
 
-  if (isProtectedPath) {
-    const token = await getToken({ req })
-    if (!token) {
-      const url = new URL('/login', req.url)
-      url.searchParams.set('callbackUrl', encodeURI(req.url))
-      return NextResponse.redirect(url)
-    }
+  const token = await getToken({ req })
+
+  if (!token && isProtectedPath) {
+    const url = new URL('/login', req.url)
+    url.searchParams.set('callbackUrl', encodeURI(req.url))
+    return NextResponse.redirect(url)
+  }
+
+  if (token) {
     const { role } = token
     const rolePage = rolePages[role]
-    const url = new URL(rolePage, req.url)
-    if (!req.nextUrl.pathname.startsWith(rolePage)) {
-      return NextResponse.redirect(url)
-    }
-  } else {
-    const token = await getToken({ req })
-    if (token) {
-      const { role } = token
-      const rolePage = rolePages[role]
+    if (!isProtectedPath || !req.nextUrl.pathname.startsWith(rolePage)) {
       const url = new URL(rolePage, req.url)
       return NextResponse.redirect(url)
     }
@@ -42,14 +36,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

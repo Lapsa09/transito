@@ -7,13 +7,8 @@ import {
   TimeValue,
 } from 'react-aria'
 import { DateFieldState, DateSegment, useTimeFieldState } from 'react-stately'
-import {
-  CalendarDate,
-  CalendarDateTime,
-  Time,
-  ZonedDateTime,
-} from '@internationalized/date'
-import { useEffect, useRef } from 'react'
+import { Time, parseTime } from '@internationalized/date'
+import { useEffect, useRef, useState } from 'react'
 import {
   UseControllerProps,
   useController,
@@ -41,8 +36,9 @@ export function TimeField({
 }: TimeFieldProps) {
   const { locale } = useLocale()
   const { control, trigger } = useFormContext()
+  const [value, setValue] = useState<TimeValue>()
   const {
-    field: { value, ...field },
+    field,
     fieldState: { invalid, error },
   } = useController({
     control,
@@ -60,7 +56,7 @@ export function TimeField({
     },
   })
 
-  const onChange = (value: Time | CalendarDateTime | ZonedDateTime) => {
+  const onChange = (value: TimeValue) => {
     field.onChange(value)
     if (persist) persist({ [name]: value })
     trigger(name)
@@ -90,6 +86,15 @@ export function TimeField({
   const clear = () => {
     state.clearSegment('literal')
   }
+
+  useEffect(() => {
+    if (field.value) {
+      const date = parseTime(field.value.split(/[TZ]/)[1]).subtract({
+        hours: 3,
+      })
+      setValue(date)
+    }
+  }, [field.value])
 
   return (
     <div className={twMerge('flex flex-col items-start mb-6', className)}>

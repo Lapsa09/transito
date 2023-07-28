@@ -1,13 +1,12 @@
-import { Roles, User } from './Misc'
+import { Roles, User as IUser } from './Misc'
 
-// nextauth.d.ts
 declare module 'next-auth' {
+  interface User extends IUser {}
   interface Session extends DefaultSession {
-    user?: User
+    user?: IUser
   }
 }
 
-// nextauth.d.ts
 declare module 'next-auth/jwt' {
-  interface JWT extends User {}
+  interface JWT extends IUser {}
 }

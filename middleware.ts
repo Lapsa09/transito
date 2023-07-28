@@ -1,40 +1,55 @@
 import { getToken } from 'next-auth/jwt'
-import { withAuth } from 'next-auth/middleware'
-import { NextResponse, NextFetchEvent, NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export default async function middleware(
-  req: NextRequest,
-  event: NextFetchEvent
-) {
-  const token = await getToken({ req })
-  const isAuthenticated = !!token
+export default async function middleware(req: NextRequest) {
+  const rolePages = {
+    INSPECTOR: '/operativos',
+    TRAFICO: '/waze',
+    ADMINISTRATIVO: '/sueldos',
+    ADMIN: '/',
+  }
 
-  if (isAuthenticated) {
-    if (
-      req.nextUrl.pathname.startsWith('/login') ||
-      req.nextUrl.pathname.startsWith('/register')
-    ) {
-      return NextResponse.redirect(new URL('/', req.url))
+  const publicPages = ['/login', '/register']
+
+  const isProtectedPath = !publicPages.some((page) =>
+    req.nextUrl.pathname.startsWith(page)
+  )
+
+  if (isProtectedPath) {
+    const token = await getToken({ req })
+    if (!token) {
+      const url = new URL('/login', req.url)
+      url.searchParams.set('callbackUrl', encodeURI(req.url))
+      return NextResponse.redirect(url)
+    }
+    const { role } = token
+    const rolePage = rolePages[role]
+    const url = new URL(rolePage, req.url)
+    if (!req.nextUrl.pathname.startsWith(rolePage)) {
+      return NextResponse.redirect(url)
+    }
+  } else {
+    const token = await getToken({ req })
+    if (token) {
+      const { role } = token
+      const rolePage = rolePages[role]
+      const url = new URL(rolePage, req.url)
+      return NextResponse.redirect(url)
     }
   }
 
-  const authMiddleware = await withAuth({
-    callbacks: {
-      authorized: ({ token, req }) => {
-        if (req.nextUrl.pathname.startsWith('/api')) {
-          return true
-        } else if (req.nextUrl.pathname.startsWith('/register')) {
-          return !token
-        } else {
-          return !!token
-        }
-      },
-    },
-    pages: {
-      signIn: '/login',
-    },
-  })
+  return NextResponse.next()
+}
 
-  // @ts-expect-error
-  return authMiddleware(req, event)
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }

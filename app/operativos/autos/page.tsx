@@ -3,7 +3,6 @@ import ClientTable from './ClientTable'
 
 async function page() {
   const data = await getAutos()
-
   return <ClientTable data={data} />
 }
 

@@ -14,7 +14,7 @@ export default function Home() {
       <h1>
         Bienvenido {fullName} Legajo {user?.legajo}
       </h1>
-      {user?.op.permisos.permiso === roles.ADMIN && (
+      {user?.role === roles.ADMIN && (
         <iframe
           title="Tablero de Control OVT"
           width="100%"

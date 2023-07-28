@@ -11,19 +11,14 @@ export enum Roles {
 }
 
 export type User = {
-  id?: string | null | undefined
+  id: string
   legajo?: number
   nombre: string
   apellido: string
-  user_password?: string
+  user_password: string
   telefono: number
-  op: {
-    permisos: {
-      permiso: Roles
-      id_permiso: number
-    }
-    turno: ITurnos | null
-  }
+  role: Roles
+  turno: ITurnos | null
 }
 
 export interface Enums {

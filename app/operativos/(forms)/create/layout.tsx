@@ -42,22 +42,31 @@ function layout({ children }: { children: React.ReactNode }) {
     formState: { isValid },
   } = methods
 
+  const isFirstStep = activeStep === 0
+  const isLastStep = activeStep === 1
+
+  const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1)
+  const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
+
   const onSubmit = async (body: FormInputProps) => {
     // console.log({ body, layoutSegment })
-    try {
-      const registro = await setter({
-        route: `/operativos/${layoutSegment}`,
-        body,
-      })
-      await mutate(layoutSegment, registro, {
-        populateCache: (result, currentData) => [result, ...currentData],
-        revalidate: false,
-      })
-      toast({ title: 'Operativo creado con exito', variant: 'success' })
-      const { expiresAt, ...rest } = operativo
-      reset(rest)
-    } catch (error: any) {
-      toast({ title: error.response.data, variant: 'default' })
+    if (!isLastStep) handleNext()
+    else {
+      try {
+        const registro = await setter({
+          route: `/operativos/${layoutSegment}`,
+          body,
+        })
+        await mutate(layoutSegment, registro, {
+          populateCache: (result, currentData) => [result, ...currentData],
+          revalidate: false,
+        })
+        toast({ title: 'Operativo creado con exito', variant: 'success' })
+        const { expiresAt, ...rest } = operativo
+        reset(rest)
+      } catch (error: any) {
+        toast({ title: error.response.data, variant: 'default' })
+      }
     }
   }
 
@@ -82,12 +91,6 @@ function layout({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const isFirstStep = activeStep === 0
-  const isLastStep = activeStep === 1
-
-  const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1)
-  const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
-
   return (
     <div className="flex flex-col justify-center items-center px-6">
       <div className="flex justify-between w-full">
@@ -98,7 +101,7 @@ function layout({ children }: { children: React.ReactNode }) {
           Salir
         </Button>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form className="overflow-hidden" onSubmit={handleSubmit(onSubmit)}>
         <FormProvider {...methods}>
           <Stepper steps={['Operativo', 'Vehiculo']} />
           {isLoading ? <Loader /> : children}
@@ -107,15 +110,10 @@ function layout({ children }: { children: React.ReactNode }) {
           <Button disabled={isFirstStep} onClick={handlePrev}>
             Atras
           </Button>
-          {isLastStep ? (
-            <Button disabled={!isValid} type="submit">
-              Guardar
-            </Button>
-          ) : (
-            <Button disabled={isLastStep} onClick={handleNext}>
-              Siguiente
-            </Button>
-          )}
+
+          <Button disabled={!isValid && isLastStep} type="submit">
+            {isLastStep ? 'Guardar' : 'Siguiente'}
+          </Button>
         </div>
       </form>
     </div>

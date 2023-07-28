@@ -9,11 +9,10 @@ import {
 import { DateFieldState, DateSegment, useDateFieldState } from 'react-stately'
 import {
   CalendarDate,
-  CalendarDateTime,
   GregorianCalendar,
-  ZonedDateTime,
+  parseDate,
 } from '@internationalized/date'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   UseControllerProps,
   useController,
@@ -22,8 +21,8 @@ import {
 import { twMerge } from 'tailwind-merge'
 
 interface DateFieldProps
-  extends AriaDateFieldProps<DateValue>,
-    Omit<UseControllerProps, 'defaultValue'> {
+  extends UseControllerProps,
+    Omit<AriaDateFieldProps<DateValue>, 'defaultValue'> {
   className?: string
   persist?: (data: any) => void
 }
@@ -50,8 +49,9 @@ export function DateField({
 }: DateFieldProps) {
   const { locale } = useLocale()
   const { control, trigger } = useFormContext()
+  const [value, setValue] = useState<DateValue>()
   const {
-    field: { value, ...field },
+    field,
     fieldState: { invalid, error },
   } = useController({
     control,
@@ -69,13 +69,13 @@ export function DateField({
     },
   })
 
-  const onChange = (value: CalendarDate | CalendarDateTime | ZonedDateTime) => {
+  const onChange = (value: DateValue) => {
     field.onChange(value)
     if (persist) persist({ [name]: value })
     trigger(name)
   }
 
-  const state = useDateFieldState({
+  const state = useDateFieldState<DateValue>({
     ...props,
     minValue,
     maxValue,
@@ -88,7 +88,6 @@ export function DateField({
     label,
     locale,
     createCalendar,
-    defaultValue,
   })
 
   const myRef = useRef<HTMLDivElement | null>(null)
@@ -100,6 +99,13 @@ export function DateField({
   const clear = () => {
     state.clearSegment('literal')
   }
+
+  useEffect(() => {
+    if (field.value) {
+      const date = parseDate(field.value.split('T')[0]).subtract({ days: 1 })
+      setValue(date)
+    }
+  }, [field.value])
 
   return (
     <div className={twMerge('flex flex-col items-start mb-6', className)}>

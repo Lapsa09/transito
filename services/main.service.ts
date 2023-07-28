@@ -29,6 +29,14 @@ export const setter = async <T = any>({ route, body }: Props) => {
   return data
 }
 
+export const updater = async <T = any>({ route, body }: Props) => {
+  const { data } = await axios.put<T>(
+    'http://localhost:3000/api/' + route,
+    body
+  )
+  return data
+}
+
 export const getVicenteLopez = async () => {
   const data = await getter<IZona[]>({
     route: 'zonas/vl',

@@ -26,7 +26,8 @@ export default async function middleware(req: NextRequest) {
   if (token) {
     const { role } = token
     const rolePage = rolePages[role]
-    if (!isProtectedPath || !req.nextUrl.pathname.startsWith(rolePage)) {
+    const iAmAllowed = !req.nextUrl.pathname.startsWith(rolePage)
+    if (!isProtectedPath || iAmAllowed) {
       const url = new URL(rolePage, req.url)
       return NextResponse.redirect(url)
     }

@@ -4,15 +4,19 @@ import Button from '@/components/Button'
 import Stepper from '@/components/Stepper'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
-import { getSelects, getter } from '@/services'
-import useSWR from 'swr'
-import { useParams, useSelectedLayoutSegment, useRouter } from 'next/navigation'
+import { getSelects, getter, updater } from '@/services'
+import useSWR, { mutate } from 'swr'
+import {
+  usePathname,
+  useSelectedLayoutSegment,
+  useRouter,
+} from 'next/navigation'
 import { useToast } from '@/hooks'
 import { EditInputProps } from '@/types'
 
-function layout({ children }: { children: React.ReactNode }) {
+function layout({ children }: React.PropsWithChildren) {
   const router = useRouter()
-  const param = useParams()
+  const [, , , , id] = usePathname().split('/')
   const layoutSegment = useSelectedLayoutSegment()
   const methods = useForm<EditInputProps>({
     mode: 'all',
@@ -26,27 +30,44 @@ function layout({ children }: { children: React.ReactNode }) {
   } = methods
   const { toast } = useToast()
 
-  const onSubmit = (data: EditInputProps) => {
-    console.log({ data, layoutSegment })
-    toast({ title: 'Operativo creado con exito', variant: 'success' })
-    router.back()
-  }
-
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === 1
 
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1)
   const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
 
+  const onSubmit = async (body: EditInputProps) => {
+    if (!isLastStep) handleNext()
+    else {
+      try {
+        const registro = await updater({
+          route: `/operativos/${layoutSegment}/${id}`,
+          body,
+        })
+        await mutate<EditInputProps>(layoutSegment, registro, {
+          populateCache: (result, currentData) =>
+            currentData.map((item: any) =>
+              item.id === result.id ? result : item
+            ),
+          revalidate: false,
+        })
+        toast({ title: 'Operativo creado con exito', variant: 'success' })
+        router.back()
+      } catch (error: any) {
+        toast({ title: error.response.data, variant: 'destructive' })
+      }
+    }
+  }
+
   useEffect(() => {
     const fetchOperativo = async () => {
       const operativo = await getter<EditInputProps>({
-        route: `operativos/${layoutSegment}/${param.id}`,
+        route: `operativos/${layoutSegment}/${id}`,
       })
       reset(operativo)
     }
     fetchOperativo()
-  }, [layoutSegment, param.id])
+  }, [layoutSegment, id])
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -63,15 +84,9 @@ function layout({ children }: { children: React.ReactNode }) {
           <Button disabled={isFirstStep} onClick={handlePrev}>
             Atras
           </Button>
-          {isLastStep ? (
-            <Button disabled={!isValid} type="submit">
-              Guardar
-            </Button>
-          ) : (
-            <Button disabled={isLastStep} onClick={handleNext}>
-              Siguiente
-            </Button>
-          )}
+          <Button disabled={!isValid && isLastStep} type="submit">
+            {isLastStep ? 'Guardar' : 'Siguiente'}
+          </Button>
         </div>
       </form>
     </div>

@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 const withMT = require('@material-tailwind/react/utils/withMT')
 module.exports = withMT({
@@ -80,6 +81,9 @@ module.exports = withMT({
       inset: {
         '-2': '-2px',
       },
+    },
+    fontFamily: {
+      sans: defaultTheme.fontFamily.sans,
     },
   },
   plugins: [require('tailwindcss-animated')],

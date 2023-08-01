@@ -55,7 +55,7 @@ export interface IZonasPaseo {
 }
 
 export interface Links {
-  link?: string
+  link: string
   name: string
   permission?: Roles
   links?: Links[]

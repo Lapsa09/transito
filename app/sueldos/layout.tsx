@@ -3,7 +3,7 @@ import Drawer from '@/components/Drawer'
 import { useSelectedLayoutSegment } from 'next/navigation'
 import React from 'react'
 
-function layout({ children }: { children: React.ReactNode }) {
+function layout({ children }: React.PropsWithChildren) {
   const segment = useSelectedLayoutSegment()
   return (
     <div>

@@ -60,8 +60,8 @@ model camiones_registros {
 model moto_motivo {
   id_registro Int
   id_motivo   Int
-  motivo      motivos?         @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
-  registro    motos_registros? @relation(fields: [id_registro], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  motivo      motivos         @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  registro    motos_registros @relation(fields: [id_registro], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([id_registro, id_motivo])
   @@schema("motos")
@@ -145,9 +145,8 @@ model nuevo_control_registros {
 }
 
 model zonas {
-  id_zona Int     @id @default(autoincrement())
-  zona    String? @db.VarChar
-
+  id_zona   Int                       @id @default(autoincrement())
+  zona      String?                   @db.VarChar
   registros nuevo_control_registros[]
 
   @@schema("nuevo_control")
@@ -194,7 +193,7 @@ model operativos_registros {
   id_operativo          Int?
   id_motivo             Int?
   tipo_licencia         tipo_licencias?        @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
-  zona_infractor                barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  zona_infractor        barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
   motivo                motivos?               @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
   operativo             operativos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
 
@@ -213,11 +212,11 @@ model asd {
 model barrios {
   id_barrio        Int                       @id @default(autoincrement())
   barrio           String?                   @db.VarChar
-  autos            operativos_registros[]
-  motos            motos_registros[]
   camiones_destino camiones_registros[]      @relation("registros_id_localidad_destinoTobarrios")
   camiones_origen  camiones_registros[]      @relation("registros_id_localidad_origenTobarrios")
+  motos            motos_registros[]
   paseo            nuevo_control_registros[]
+  autos            operativos_registros[]
 
   @@schema("public")
 }
@@ -235,9 +234,9 @@ model mensual {
 model motivos {
   id_motivo Int                    @id @default(autoincrement())
   motivo    String?                @db.VarChar
+  camiones  camiones_registros[]
   motos     moto_motivo[]
   autos     operativos_registros[]
-  camiones  camiones_registros[]
 
   @@schema("public")
 }
@@ -253,6 +252,7 @@ model operario {
 model permisos {
   id      Int       @id @default(autoincrement())
   permiso String?   @db.VarChar
+  url     String?   @db.VarChar
   legajos legajos[]
 
   @@schema("public")
@@ -293,19 +293,8 @@ model tipo_licencias {
   @@schema("public")
 }
 
-// model User {
-//   legajo        BigInt  @id
-//   nombre        String  @db.VarChar
-//   apellido      String  @db.VarChar
-//   user_password String  @db.VarChar(255)
-//   telefono      BigInt?
-
-//   @@map("users")
-
-//   @@schema("public")
-// }
 model legajos {
-  legajo   Int    @id
+  legajo   Int       @id
   turno    turnos?
   rol      roles?
   id_rol   Int?
@@ -321,15 +310,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -349,14 +337,14 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  legajo        Int    @unique
+  legajo        Int       @unique
   nombre        String    @db.VarChar
   apellido      String    @db.VarChar
   user_password String    @db.VarChar(255)
   telefono      Int?
   accounts      Account[]
   sessions      Session[]
-  op            legajos?  @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+  op            legajos   @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("users")
   @@schema("public")
@@ -373,13 +361,12 @@ model VerificationToken {
 }
 
 model vicente_lopez {
-  id_barrio Int     @id @default(autoincrement())
-  barrio    String? @db.VarChar
-  cp        String? @db.VarChar
-
-  motos    motos_operativos[]
-  autos    operativos_operativos[]
-  camiones camiones_operativos[]
+  id_barrio Int                     @id @default(autoincrement())
+  barrio    String?                 @db.VarChar
+  cp        String?                 @db.VarChar
+  camiones  camiones_operativos[]
+  motos     motos_operativos[]
+  autos     operativos_operativos[]
 
   @@schema("public")
 }
@@ -404,16 +391,16 @@ model operarios {
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model operarios_servicios {
   legajo      Int
-  memo        String?    @db.VarChar
+  memo        String?   @db.VarChar
   recibo      Int
   id_servicio Int
   a_cobrar    Int?
-  hora_inicio DateTime?  @db.Time(6)
-  hora_fin    DateTime?  @db.Time(6)
+  hora_inicio DateTime? @db.Time(6)
+  hora_fin    DateTime? @db.Time(6)
   cancelado   Boolean?
-  servicios   servicios? @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
-  operarios   operarios? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
-  recibos     recibos    @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
+  servicios   servicios @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+  operarios   operarios @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+  recibos     recibos   @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([legajo, id_servicio, recibo])
   @@schema("sueldos")
@@ -427,7 +414,7 @@ model precios {
 }
 
 model recibos {
-  recibo              Int                @id
+  recibo              Int                   @id
   fecha_recibo        DateTime?             @db.Date
   importe_recibo      Int?
   acopio              Int?

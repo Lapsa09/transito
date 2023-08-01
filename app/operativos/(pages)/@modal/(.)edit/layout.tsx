@@ -16,13 +16,13 @@ import {
 import { useToast } from '@/hooks'
 import { EditInputProps } from '@/types'
 
-function AutosEditLayout({ children }: { children: React.ReactNode }) {
+function layout({ children }: React.PropsWithChildren) {
   const router = useRouter()
   const [, , , , id] = usePathname().split('/')
+  const layoutSegment = useSelectedLayoutSegment()
   const methods = useForm<EditInputProps>({
     mode: 'all',
   })
-
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
   const {
@@ -32,13 +32,11 @@ function AutosEditLayout({ children }: { children: React.ReactNode }) {
   } = methods
   const { toast } = useToast()
 
-  const layoutSegment = useSelectedLayoutSegment()
+  const isFirstStep = activeStep === 0
+  const isLastStep = activeStep === 1
 
   const handlePrev = () => setActiveStep((cur) => cur - 1)
   const handleNext = () => setActiveStep((cur) => cur + 1)
-
-  const isFirstStep = activeStep === 0
-  const isLastStep = activeStep === 1
 
   const onSubmit = async (body: EditInputProps) => {
     if (!isLastStep) handleNext()
@@ -101,4 +99,4 @@ function AutosEditLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default AutosEditLayout
+export default layout

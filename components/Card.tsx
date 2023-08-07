@@ -1,8 +1,16 @@
 'use client'
 import { Card, Typography } from '@material-tailwind/react'
 import { PropsWithChildren } from 'react'
-import { FaCarSide, FaParking, FaTruckMoving } from 'react-icons/fa'
+import {
+  FaCarSide,
+  FaParking,
+  FaTruckMoving,
+  FaShuttleVan,
+  FaUserNurse,
+} from 'react-icons/fa'
 import { RiMotorbikeFill } from 'react-icons/ri'
+import { BsFillPersonFill } from 'react-icons/bs'
+import { MdFiberNew } from 'react-icons/md'
 
 import Link from 'next/link'
 
@@ -51,6 +59,51 @@ export function PaseoRioLinkCard() {
     <CardWithLink link="/operativos/paseo">
       <FaParking className="text-6xl" />
       <Typography className="text-4xl">Paseo del Rio</Typography>
+    </CardWithLink>
+  )
+}
+
+export function ClientesLinkCard() {
+  return (
+    <CardWithLink link="/sueldos/clientes">
+      <BsFillPersonFill className="text-6xl" />
+      <Typography className="text-4xl">Clientes</Typography>
+    </CardWithLink>
+  )
+}
+
+export function ServiciosLinkCard() {
+  return (
+    <CardWithLink link="/sueldos/servicios">
+      <FaShuttleVan className="text-6xl" />
+      <Typography className="text-4xl">Servicios</Typography>
+    </CardWithLink>
+  )
+}
+
+export function OperariosLinkCard() {
+  return (
+    <CardWithLink link="/sueldos/operarios">
+      <FaUserNurse className="text-6xl" />
+      <Typography className="text-4xl">Operarios</Typography>
+    </CardWithLink>
+  )
+}
+
+export function LiquidacionesLinkCard() {
+  return (
+    <CardWithLink link="/sueldos/liqui">
+      <FaParking className="text-6xl" />
+      <Typography className="text-4xl">Liquidaciones</Typography>
+    </CardWithLink>
+  )
+}
+
+export function NewServicioLinkCard() {
+  return (
+    <CardWithLink link="/servicios/create">
+      <MdFiberNew className="text-6xl" />
+      <Typography className="text-4xl">Nuevo Servicio</Typography>
     </CardWithLink>
   )
 }

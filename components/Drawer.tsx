@@ -1,46 +1,49 @@
 import React from 'react'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+  Drawer,
+  Button,
+  Typography,
+  IconButton,
+  List,
+  ListItem,
+  ListItemPrefix,
+  ListItemSuffix,
+  Chip,
+} from '@material-tailwind/react'
+import { useBoolean } from 'usehooks-ts'
+import { AiOutlineClose } from 'react-icons/ai'
+import Link from 'next/link'
 
-type Props = {
-  position?: 'top' | 'bottom' | 'left' | 'right'
-  size?: 'sm' | 'lg' | 'xl' | 'full' | 'default' | 'content'
-}
+export default function DrawerWithNavigation() {
+  const { value, setTrue, setFalse } = useBoolean(false)
 
-function Drawer({ position = 'left', size = 'sm' }: Props) {
   return (
-    <Sheet>
-      <SheetTrigger>
-        <svg
-          className="w-6 h-6"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-            clipRule="evenodd"
-          ></path>
-        </svg>
-      </SheetTrigger>
-      <SheetContent position={position} size={size}>
-        <SheetHeader>
-          <SheetTitle>Are you sure absolutely sure?</SheetTitle>
-          <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </SheetDescription>
-        </SheetHeader>
-      </SheetContent>
-    </Sheet>
+    <React.Fragment>
+      <Button onClick={setTrue}>Open Drawer</Button>
+      <Drawer open={value} onClose={setFalse}>
+        <div className="mb-2 flex items-center justify-between p-4">
+          <Typography variant="h5" color="blue-gray">
+            Side Menu
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={setFalse}>
+            <AiOutlineClose />
+          </IconButton>
+        </div>
+        <List>
+          <Link href="/sueldos/clientes">
+            <ListItem>Clientes</ListItem>
+          </Link>
+          <Link href="/sueldos/servicios">
+            <ListItem>Servicios</ListItem>
+          </Link>
+          <Link href="/sueldos/operarios">
+            <ListItem>Operarios</ListItem>
+          </Link>
+          <Link href="/sueldos/liqui">
+            <ListItem>Liqui</ListItem>
+          </Link>
+        </List>
+      </Drawer>
+    </React.Fragment>
   )
 }
-
-export default Drawer

@@ -5,7 +5,7 @@ import { useSelectedLayoutSegments } from 'next/navigation'
 
 export function CustomOperativoLink() {
   const createSegment = useSelectedLayoutSegments()
-  return createSegment.includes('create') ? null : (
+  return (
     <Link href={`/operativos/create/${createSegment}`}>Nuevo Operativo</Link>
   )
 }

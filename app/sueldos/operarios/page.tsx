@@ -1,9 +1,9 @@
 import React from 'react'
-import { getClientes } from '@/services'
+import { getOperarios } from '@/services'
 import ClientTable from './ClientTable'
 
 async function page() {
-  const data = await getClientes()
+  const data = await getOperarios()
   return <ClientTable data={data} />
 }
 

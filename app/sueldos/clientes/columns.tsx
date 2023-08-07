@@ -1,4 +1,4 @@
-import { Cliente, Historial, IOperario, IServicio, Meses } from '@/types'
+import { Cliente, Historial, IOperario, Servicio, Meses } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
@@ -76,7 +76,7 @@ export const HistorialColumns: ColumnDef<Historial>[] = [
     },
   },
   {
-    accessorFn: (row) => Meses[row.mes.name as keyof typeof Meses],
+    accessorFn: (row) => Meses[row.mes as keyof typeof Meses],
     header: 'Mes',
     footer: (props) => props.column.id,
   },
@@ -103,7 +103,7 @@ export const HistorialColumns: ColumnDef<Historial>[] = [
   },
 ]
 
-export const ServicioColumns: ColumnDef<IServicio>[] = [
+export const ServicioColumns: ColumnDef<Servicio>[] = [
   {
     id: 'expander',
     header: () => null,

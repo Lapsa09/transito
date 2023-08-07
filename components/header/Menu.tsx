@@ -39,13 +39,15 @@ function Menu() {
             page.links ? (
               <Dropdown key={page.name} page={page} />
             ) : (
-              <Button
-                variant="text"
-                key={page.name}
-                className="text-gray-700 md:hover:text-green-400 capitalize text-base font-medium"
-              >
-                <Link href={page.link}>{page.name}</Link>
-              </Button>
+              <Link href={page.link}>
+                <Button
+                  variant="text"
+                  key={page.name}
+                  className="text-gray-700 md:hover:text-green-400 capitalize text-base font-medium"
+                >
+                  {page.name}
+                </Button>
+              </Link>
             )
           )}
 

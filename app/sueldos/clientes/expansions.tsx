@@ -1,6 +1,7 @@
+'use client'
 import React from 'react'
-import { DataTable } from '@/components'
-import { IServicio, Historial, Cliente } from '@/types'
+import { DataTable } from '@/components/table'
+import { Servicio, Historial, Cliente } from '@/types'
 import { OperarioColumns, HistorialColumns, ServicioColumns } from './columns'
 
 type MesProps = {
@@ -12,7 +13,7 @@ type ServicioProps = {
 }
 
 type OperariosProps = {
-  data: IServicio
+  data: Servicio
 }
 
 function Mes({ data }: MesProps) {
@@ -32,13 +33,13 @@ function Servicios({ data }: ServicioProps) {
       data={data.servicios}
       columns={ServicioColumns}
       expand={Operarios}
-      getRowCanExpand={(row) => row.original.operarios.length > 0}
+      getRowCanExpand={(row) => row.original.operarios_servicios.length > 0}
     />
   )
 }
 
 function Operarios({ data }: OperariosProps) {
-  return <DataTable data={data.operarios} columns={OperarioColumns} />
+  return <DataTable data={data.operarios_servicios} columns={OperarioColumns} />
 }
 
 export default Mes

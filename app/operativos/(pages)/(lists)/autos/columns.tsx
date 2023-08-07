@@ -24,7 +24,7 @@ export const columns: ColumnDef<Registro>[] = [
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
-    accessorFn: (row) => row.operativo?.qth,
+    accessorFn: (row) => row.operativo?.qth?.toLocaleUpperCase(),
     id: 'qth',
     size: 450,
   },
@@ -45,7 +45,7 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'seguridad',
   },
   {
-    accessorFn: (row) => row.dominio,
+    accessorFn: (row) => row.dominio?.toLocaleUpperCase(),
     id: 'dominio',
   },
   {
@@ -74,7 +74,8 @@ export const columns: ColumnDef<Registro>[] = [
   },
   {
     accessorFn: (row) => row.es_del,
-    id: 'es_del',
+    id: 'vecino',
+    cell: ({ getValue }) => (getValue() === 'VILO' ? 'SI' : 'NO'),
   },
   {
     accessorFn: (row) => row.resolucion,
@@ -89,7 +90,7 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'motivo',
   },
   {
-    accessorFn: (row) => row.operativo?.direccion_full,
+    accessorFn: (row) => row.operativo?.direccion_full?.toLocaleUpperCase(),
     id: 'direccion_full',
     size: 800,
   },

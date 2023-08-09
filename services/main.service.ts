@@ -1,12 +1,5 @@
-import {
-  IBarrio,
-  ILicencias,
-  IMotivos,
-  IResolucion,
-  ISeguridad,
-  ITurnos,
-  IZona,
-} from '@/types'
+import type { Resolucion, Seguridad, Turnos } from '@/types/autocompletes.api'
+import { barrios, motivos, tipo_licencias, vicente_lopez } from '@prisma/client'
 import axios from 'axios'
 
 type Props = {
@@ -38,49 +31,49 @@ export const updater = async <T = any>({ route, body }: Props) => {
 }
 
 export const getVicenteLopez = async () => {
-  const data = await getter<IZona[]>({
+  const data = await getter<vicente_lopez[]>({
     route: 'zonas/vl',
   })
   return data
 }
 
 export const getTurnos = async () => {
-  const data = await getter<ITurnos[]>({
+  const data = await getter<Turnos[]>({
     route: 'turnos',
   })
   return data
 }
 
 export const getSeguridad = async () => {
-  const data = await getter<ISeguridad[]>({
+  const data = await getter<Seguridad[]>({
     route: 'seguridad',
   })
   return data
 }
 
 export const getLicencias = async () => {
-  const data = await getter<ILicencias[]>({
+  const data = await getter<tipo_licencias[]>({
     route: 'licencias',
   })
   return data
 }
 
 export const getResolucion = async () => {
-  const data = await getter<IResolucion[]>({
+  const data = await getter<Resolucion[]>({
     route: 'resolucion',
   })
   return data
 }
 
 export const getAllZonas = async () => {
-  const data = await getter<IBarrio[]>({
+  const data = await getter<barrios[]>({
     route: 'zonas',
   })
   return data
 }
 
 export const getMotivos = async () => {
-  const data = await getter<IMotivos[]>({
+  const data = await getter<motivos[]>({
     route: 'motivos',
   })
   return data

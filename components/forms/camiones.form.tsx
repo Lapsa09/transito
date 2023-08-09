@@ -33,7 +33,7 @@ function FirstStep() {
         persist={setOperativo}
       />
       <Input
-        name="direccion"
+        name="qth"
         label="Direccion"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}

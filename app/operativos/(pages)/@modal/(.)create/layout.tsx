@@ -7,7 +7,7 @@ import Stepper from '@/components/Stepper'
 import { LogoOVT, LogoVL } from '@/components/Logos'
 import { useStepForm, useToast } from '@/hooks'
 import { getSelects, setter } from '@/services'
-import { FormInputProps } from '@/types'
+import { FormInputProps, Operativo } from '@/types'
 import { setExpiration } from '@/utils/misc'
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -15,13 +15,20 @@ import { useSession } from 'next-auth/react'
 import useSWR, { mutate } from 'swr'
 import { useLocalStorage } from 'usehooks-ts'
 
+interface LocalOperativo extends Partial<Operativo> {
+  expiresAt: number
+}
+
 function layout({ children }: { children: React.ReactNode }) {
   const { data } = useSession()
   const layoutSegment = useSelectedLayoutSegment() || ''
   const router = useRouter()
-  const [operativo, setOperativo] = useLocalStorage(layoutSegment, {
-    expiresAt: setExpiration(),
-  })
+  const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
+    layoutSegment,
+    {
+      expiresAt: setExpiration(),
+    }
+  )
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
   const { toast } = useToast()
@@ -46,43 +53,34 @@ function layout({ children }: { children: React.ReactNode }) {
   const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
 
   const onSubmit = async (body: FormInputProps) => {
-    if (!isLastStep) handleNext()
-    else {
-      try {
-        const registro = await setter({
-          route: `/operativos/${layoutSegment}`,
-          body,
-        })
-        await mutate(layoutSegment, registro, {
-          populateCache: (result, currentData) => [result, ...currentData],
-          revalidate: false,
-        })
-        toast({ title: 'Operativo creado con exito', variant: 'success' })
-        const { expiresAt, ...rest } = operativo
-        reset(rest)
-      } catch (error: any) {
-        toast({ title: error.response.data, variant: 'destructive' })
-      }
+    // if (!isLastStep) handleNext()
+    // else {
+    try {
+      const registro = await setter({
+        route: `/operativos/${layoutSegment}`,
+        body,
+      })
+      await mutate(layoutSegment, registro, {
+        populateCache: (result, currentData) => [result, ...currentData],
+        revalidate: false,
+      })
+      toast({ title: 'Operativo creado con exito', variant: 'success' })
+      const { expiresAt, ...rest } = operativo
+      reset(rest)
+    } catch (error: any) {
+      toast({ title: error.response.data, variant: 'destructive' })
     }
+    // }
   }
 
   const nuevoOperativo = () => {
-    setOperativo((state: any) => {
-      Object.keys(state).forEach((key) => (state[key] = ''))
-      state.expiresAt = setExpiration()
-      return state
-    })
-    const { expiresAt, ...rest } = operativo
-    reset(rest)
+    setOperativo({ expiresAt: setExpiration() })
+    reset()
     setActiveStep(0)
   }
 
   useEffect(() => {
-    if (
-      operativo.expiresAt < Date.now() ||
-      !Object.values(operativo).every(Boolean) ||
-      Object.values(operativo).length === 1
-    ) {
+    if (operativo.expiresAt < Date.now()) {
       nuevoOperativo()
     } else {
       const { expiresAt, ...rest } = operativo
@@ -104,7 +102,7 @@ function layout({ children }: { children: React.ReactNode }) {
           </Button>
           <LogoOVT />
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={!isLastStep ? handleNext : handleSubmit(onSubmit)}>
           <FormProvider {...methods}>
             <Stepper steps={['Operativo', 'Vehiculo']} />
             {isLoading ? <Loader /> : children}

@@ -1,19 +1,22 @@
 import { getToken } from 'next-auth/jwt'
 import { NextRequest, NextResponse } from 'next/server'
+import { permisos } from '@prisma/client'
+import prisma from '@/lib/prismadb'
+
+const roleObject = (res: permisos[]) =>
+  res.reduce<Record<permisos['permiso'], permisos['url']>>((acc, permiso) => {
+    acc[permiso.permiso] = permiso.url
+    return acc
+  }, {})
 
 export default async function middleware(req: NextRequest) {
-  const rolePages = {
-    INSPECTOR: '/operativos',
-    TRAFICO: '/waze',
-    ADMINISTRATIVO: '/sueldos',
-    ADMIN: '/',
-  }
+  const { pathname } = req.nextUrl
 
   const publicPages = ['/login', '/register']
 
-  const isProtectedPath = !publicPages.some((page) =>
-    req.nextUrl.pathname.startsWith(page)
-  )
+  const rolePages = await prisma.permisos.findMany().then(roleObject)
+
+  const isProtectedPath = !publicPages.some((page) => pathname.startsWith(page))
 
   const token = await getToken({ req })
 
@@ -26,7 +29,7 @@ export default async function middleware(req: NextRequest) {
   if (token) {
     const { role } = token
     const rolePage = rolePages[role]
-    const iAmAllowed = req.nextUrl.pathname.startsWith(rolePage)
+    const iAmAllowed = pathname.startsWith(rolePage)
     if (!isProtectedPath || !iAmAllowed) {
       const url = new URL(rolePage, req.url)
       return NextResponse.redirect(url)

@@ -1,5 +1,12 @@
-import { resolucion, turnos_old, seguridad } from '@prisma/client'
-import { IBarrio, ILicencias, IMotivos, Localidad } from './operativos'
+import {
+  resolucion,
+  turnos_old,
+  seguridad,
+  tipo_licencias,
+  barrios,
+  motivos,
+  vicente_lopez,
+} from '@prisma/client'
 
 export type Registro = {
   dominio: string | null
@@ -17,9 +24,9 @@ export type Registro = {
   id_licencia: number | null
   id_zona_infractor: number | null
   id_operativo: number | null
-  motivos: IMotivos[]
-  tipo_licencias: ILicencias | null
-  barrio: IBarrio | null
+  motivos: motivos[]
+  tipo_licencias: tipo_licencias | null
+  barrio: barrios | null
   operativo: Operativo | null
 }
 
@@ -36,5 +43,5 @@ export type Operativo = {
   direccion_full: string | null
   latitud: string | null
   longitud: string | null
-  localidad: Localidad | null
+  localidad: vicente_lopez | null
 }

@@ -211,7 +211,7 @@ model asd {
 
 model barrios {
   id_barrio        Int                       @id @default(autoincrement())
-  barrio           String?                   @db.VarChar
+  barrio           String                    @db.VarChar
   camiones_destino camiones_registros[]      @relation("registros_id_localidad_destinoTobarrios")
   camiones_origen  camiones_registros[]      @relation("registros_id_localidad_origenTobarrios")
   motos            motos_registros[]
@@ -233,7 +233,7 @@ model mensual {
 
 model motivos {
   id_motivo Int                    @id @default(autoincrement())
-  motivo    String?                @db.VarChar
+  motivo    String                 @db.VarChar
   camiones  camiones_registros[]
   motos     moto_motivo[]
   autos     operativos_registros[]
@@ -251,8 +251,8 @@ model operario {
 
 model permisos {
   id      Int       @id @default(autoincrement())
-  permiso String?   @db.VarChar
-  url     String?   @db.VarChar
+  permiso String    @db.VarChar
+  url     String    @db.VarChar
   legajos legajos[]
 
   @@schema("public")
@@ -362,8 +362,8 @@ model VerificationToken {
 
 model vicente_lopez {
   id_barrio Int                     @id @default(autoincrement())
-  barrio    String?                 @db.VarChar
-  cp        String?                 @db.VarChar
+  barrio    String                  @db.VarChar
+  cp        String                  @db.VarChar
   camiones  camiones_operativos[]
   motos     motos_operativos[]
   autos     operativos_operativos[]

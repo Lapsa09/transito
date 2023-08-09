@@ -1,18 +1,22 @@
-import { turnos_old } from '@prisma/client'
-import { Localidad } from './autos'
-import { IBarrio, IMotivos } from './operativos'
+import type {
+  barrios,
+  motivos,
+  resolucion,
+  turnos,
+  vicente_lopez,
+} from '@prisma/client'
 
 export type Operativo = {
   id_op: number
   fecha: Date | null
-  turno: turnos_old | null
+  turno: turnos | null
   legajo: string | null
   direccion: string | null
   id_localidad: number | null
   direccion_full: string | null
   latitud: string | null
   longitud: string | null
-  localidad: Localidad | null
+  localidad: vicente_lopez | null
 }
 
 export type Registro = {
@@ -24,7 +28,7 @@ export type Registro = {
   licencia: string | null
   remito: boolean | null
   carga: boolean | null
-  resolucion: string | null
+  resolucion: resolucion | null
   acta: string | null
   hora_carga: Date | null
   legajo_carga: number | null
@@ -37,8 +41,8 @@ export type Registro = {
   id_localidad_destino: number | null
   id_motivo: number | null
   id_operativo: number | null
-  localidad_destino: IBarrio | null
-  localidad_origen: IBarrio | null
-  motivo: IMotivos | null
+  localidad_destino: barrios | null
+  localidad_origen: barrios | null
+  motivo: motivos | null
   operativo: Operativo | null
 }

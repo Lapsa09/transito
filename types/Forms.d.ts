@@ -1,14 +1,12 @@
-import { DateTime } from 'luxon'
-import { seguridad, turnos } from '@prisma/client'
 import {
-  IBarrio,
-  ILicencias,
-  IMotivos,
-  IResolucion,
-  ISeguridad,
-  ITurnos,
-  IZona,
-} from '.'
+  barrios,
+  motivos,
+  resolucion,
+  seguridad,
+  tipo_licencias,
+  turnos,
+  vicente_lopez,
+} from '@prisma/client'
 
 export interface RegisterUserProps {
   legajo: number
@@ -29,16 +27,16 @@ export interface FormInputProps {
   legajo_planilla: string
   seguridad: seguridad
   direccion: string
-  zona: IZona
-  fecha: DateTime
+  zona: vicente_lopez
+  fecha: Date
   turno: turnos
   lpcarga: number
-  hora: string
+  hora: Date
   dominio: string
-  zona_infractor: IBarrio
+  zona_infractor: barrios
   licencia?: number
-  tipo_licencia?: ILicencias
-  resolucion?: IResolucion
+  tipo_licencia?: tipo_licencias
+  resolucion?: resolucion
   acta?: number
   extranjero?: boolean
 }
@@ -47,61 +45,61 @@ export interface EditInputProps {
   id: number
   legajo_a_cargo: number
   legajo_planilla: number
-  seguridad: ISeguridad
+  seguridad: seguridad
   qth: string
-  zona: IZona
-  fecha: DateTime
+  zona: vicente_lopez
+  fecha: Date
   turno: string
   lpcarga: number
-  hora: DateTime
+  hora: Date
   dominio: string
-  zona_infractor: IBarrio
+  zona_infractor: barrios
   licencia?: number
-  tipo_licencia?: ILicencias
-  resolucion?: IResolucion
+  tipo_licencia?: tipo_licencias
+  resolucion?: resolucion
   acta?: number
   extranjero?: boolean
-  motivo?: IMotivos
+  motivo?: motivos
 }
 
 export interface FormAutosProps extends FormInputProps {
   graduacion_alcoholica: number
-  motivo: IMotivos
+  motivo: motivos
 }
 
 export interface EditAutosProps extends EditInputProps {
   graduacion_alcoholica: number
-  motivo: IMotivos
+  motivo: motivos
 }
 
 export interface FormMotosProps extends FormInputProps {
-  motivos: IMotivos[]
+  motivos: motivos[]
 }
 
 export interface EditMotosProps extends EditInputProps {
-  motivos: IMotivos[]
+  motivos: motivos[]
 }
 
 export interface FormCamionesProps extends FormInputProps {
-  motivo: IMotivos
+  motivo: motivos
   remito: boolean
   carga: boolean
   lp: number
   origen?: string
   destino?: string
-  localidad_origen: IBarrio
-  localidad_destino: IBarrio
+  localidad_origen: barrios
+  localidad_destino: barrios
 }
 
 export interface EditCamionesProps extends FormInputProps {
-  motivo: IMotivos
+  motivo: motivos
   remito: boolean
   carga: boolean
   lp: number
   origen?: string
   destino?: string
-  localidad_origen: IBarrio
-  localidad_destino: IBarrio
+  localidad_origen: barrios
+  localidad_destino: barrios
 }
 
 export type RadioOPForm = {

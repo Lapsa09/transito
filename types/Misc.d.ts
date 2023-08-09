@@ -1,3 +1,5 @@
+import { turnos } from '@prisma/client'
+
 export interface FormProps {
   handleClose: () => void | ((to: To) => void)
   afterCreate: (_data: any) => void
@@ -18,40 +20,7 @@ export type User = {
   user_password: string
   telefono: number
   role: Roles
-  turno: ITurnos | null
-}
-
-export interface Enums {
-  enumlabel: string
-}
-
-export enum ITurnos {
-  'MAÑANA',
-  'TARDE',
-  'NOCHE',
-}
-
-export interface IResolucion extends Enums {
-  enumlabel: 'PREVENCION' | 'ACTA' | 'REMITIDO'
-}
-
-export interface ISeguridad extends Enums {
-  enumlabel: 'NO' | 'POLICIA' | 'PREFECTURA' | 'SECRETARIA DE SEGURIDAD'
-}
-
-export interface IMotivosPaseo extends Enums {
-  enumlabel: 'VELOCIDAD' | 'ESTACIONAMIENTO'
-}
-
-export enum IResultado {
-  'NO PUNITIVA',
-  'PUNITIVA',
-  'NEGATIVA',
-}
-
-export interface IZonasPaseo {
-  id_zona: number
-  zona: string
+  turno: turnos | null
 }
 
 export interface Links {

@@ -1,4 +1,10 @@
-import { ILicencias, Localidad, Motivos, ZonaInfractor } from './operativos'
+import {
+  barrios,
+  motivos,
+  resolucion,
+  tipo_licencias,
+  vicente_lopez,
+} from '@prisma/client'
 
 export interface Operativos {
   direccion_full: string | null
@@ -9,7 +15,7 @@ export interface Operativos {
   latitud: number | null
   legajo_a_cargo: bigint | null
   legajo_planilla: bigint | null
-  localidad: Localidad | null
+  localidad: vicente_lopez | null
   longitud: number | null
   qth: string | null
   seguridad: string | null
@@ -33,11 +39,11 @@ export interface Registro {
   longitud: null | string
   lpcarga: null | bigint
   mes: number | null
-  motivo: Motivos | null
-  resolucion: string | null
+  motivo: motivos | null
+  resolucion: resolucion | null
   resultado: string | null
   semana: number | null
-  tipo_licencia: ILicencias | null
-  zona_infractor: ZonaInfractor | null
+  tipo_licencia: tipo_licencias | null
+  zona_infractor: barrios | null
   operativo: Operativos | null
 }

@@ -1,4 +1,3 @@
-export * from './DatePickerProps.d'
 export * from './Forms.d'
 export * from './Misc.d'
 export * from './clientes.sueldos.d'

@@ -1,20 +1,17 @@
 import { getToken } from 'next-auth/jwt'
 import { NextRequest, NextResponse } from 'next/server'
-import { permisos } from '@prisma/client'
-import prisma from '@/lib/prismadb'
-
-const roleObject = (res: permisos[]) =>
-  res.reduce<Record<permisos['permiso'], permisos['url']>>((acc, permiso) => {
-    acc[permiso.permiso] = permiso.url
-    return acc
-  }, {})
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   const publicPages = ['/login', '/register']
 
-  const rolePages = await prisma.permisos.findMany().then(roleObject)
+  const rolePages = {
+    INSPECTOR: '/operativos',
+    TRAFICO: '/waze',
+    ADMINISTRATIVO: '/sueldos',
+    ADMIN: '/',
+  }
 
   const isProtectedPath = !publicPages.some((page) => pathname.startsWith(page))
 

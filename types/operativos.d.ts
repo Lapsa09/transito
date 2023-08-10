@@ -3,7 +3,7 @@ import { seguridad, turnos, vicente_lopez } from '@prisma/client'
 export interface Operativo {
   direccion_full: string
   fecha: Date
-  hora: Date
+  hora: string
   id_op?: number
   latitud: number
   legajo_a_cargo?: string

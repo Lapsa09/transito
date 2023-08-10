@@ -8,7 +8,7 @@ import {
   Button,
 } from '@material-tailwind/react'
 import { Links } from '@/types'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 function Dropdown({ page }: { page: Links }) {
   const router = useRouter()
@@ -25,7 +25,7 @@ function Dropdown({ page }: { page: Links }) {
       </MenuHandler>
       <MenuList>
         {page.links?.map((link) => (
-          <Link href={link.link}>
+          <Link key={link.name} href={link.link}>
             <MenuItem key={link.name} className="hover:text-green-400">
               {link.name}
             </MenuItem>

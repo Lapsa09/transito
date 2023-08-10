@@ -7,6 +7,11 @@ import {
   turnos,
   vicente_lopez,
 } from '@prisma/client'
+import { Operativo } from './operativos'
+
+export interface LocalOperativo extends Partial<Operativo> {
+  expiresAt: number
+}
 
 export interface RegisterUserProps {
   legajo: number
@@ -31,7 +36,7 @@ export interface FormInputProps {
   fecha: Date
   turno: turnos
   lpcarga: number
-  hora: Date
+  hora: string
   dominio: string
   zona_infractor: barrios
   licencia?: number

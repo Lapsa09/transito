@@ -11,16 +11,24 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
+import { setExpiration } from '@/utils/misc'
+import { LocalOperativo } from '@/types'
 
 export const steps = [<FirstStep />, <SecondStep />]
 
 function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
 
-  const [, edit] = useLocalStorage('motos', {})
+  const [, edit] = useLocalStorage<LocalOperativo>('motos', {
+    expiresAt: 0,
+  })
 
   const setOperativo = (value: any) => {
-    edit((state) => ({ ...state, ...value }))
+    edit((state) => ({
+      ...state,
+      ...value,
+      expiresAt: state.expiresAt || setExpiration(),
+    }))
   }
 
   const { vicenteLopez, turnos, seguridad } = data!

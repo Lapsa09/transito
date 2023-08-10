@@ -10,6 +10,8 @@ import { useFormContext } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
 import Autocomplete from '../Autocomplete'
+import { LocalOperativo } from '@/types'
+import { setExpiration } from '@/utils/misc'
 
 export const steps = [<FirstStep />, <SecondStep />]
 
@@ -17,10 +19,16 @@ function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
   const { vicenteLopez, turnos, seguridad } = data!
 
-  const [, edit] = useLocalStorage('autos', {})
+  const [, edit] = useLocalStorage<LocalOperativo>('autos', {
+    expiresAt: 0,
+  })
 
   const setOperativo = (value: any) => {
-    edit((state) => ({ ...state, ...value }))
+    edit((state) => ({
+      ...state,
+      ...value,
+      expiresAt: state.expiresAt || setExpiration(),
+    }))
   }
 
   return (

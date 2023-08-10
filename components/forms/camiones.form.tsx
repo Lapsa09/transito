@@ -11,15 +11,23 @@ import { getSelects } from '@/services'
 import { useFormContext } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
+import { LocalOperativo } from '@/types'
+import { setExpiration } from '@/utils/misc'
 
 export const steps = [<FirstStep />, <SecondStep />]
 
 function FirstStep() {
   const { data } = useSWR('/api/selects', getSelects)
-  const [, edit] = useLocalStorage('camiones', {})
+  const [, edit] = useLocalStorage<LocalOperativo>('camiones', {
+    expiresAt: 0,
+  })
 
   const setOperativo = (value: any) => {
-    edit((state) => ({ ...state, ...value }))
+    edit((state) => ({
+      ...state,
+      ...value,
+      expiresAt: state.expiresAt || setExpiration(),
+    }))
   }
 
   const { vicenteLopez, turnos } = data!

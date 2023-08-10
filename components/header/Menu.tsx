@@ -39,7 +39,7 @@ function Menu() {
             page.links ? (
               <Dropdown key={page.name} page={page} />
             ) : (
-              <Link href={page.link}>
+              <Link key={page.name} href={page.link}>
                 <Button
                   variant="text"
                   key={page.name}

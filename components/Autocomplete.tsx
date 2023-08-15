@@ -8,6 +8,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
+import { Input } from '@nextui-org/react'
 
 interface Props extends UseControllerProps {
   options: any[]
@@ -39,14 +40,12 @@ export default function MyCombobox({
     query === ''
       ? options
       : options.filter((option) =>
-          option[inputLabel]
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .includes(query.toLowerCase().replace(/\s+/g, ''))
+          option[inputLabel].toLowerCase().includes(query.toLowerCase())
         )
 
   const removeSelected = () => {
     field.onChange(null)
+    if (persist) persist({ [name]: null })
     setQuery('')
   }
 
@@ -57,93 +56,105 @@ export default function MyCombobox({
   }
 
   return (
-    <div className={twMerge('mb-6', className)}>
-      <label
-        className="text-sm text-gray-900 dark:text-gray-300 font-medium block"
-        htmlFor={field.name}
+    <Combobox
+      as="div"
+      className={twMerge(
+        'data-[has-helper=true]:pb-6 pb-6 relative',
+        className
+      )}
+      {...field}
+      onChange={handleChange}
+    >
+      <Combobox.Label
+        className={twMerge(
+          rules?.required
+            ? "after:content-['*'] after:text-danger after:ml-0.5"
+            : '',
+          'block text-[14px] font-medium text-foreground pb-1.5',
+          invalid ? 'text-danger' : 'text-foreground'
+        )}
       >
         {label}
-        {rules?.required && (
-          <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
-        )}
-      </label>
-      <Combobox {...field} onChange={handleChange}>
-        <div className="relative mt-2">
-          <div className="relative w-full cursor-default bg-white/0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
-            <Combobox.Input
-              className={`w-full justify-between rounded-lg border bg-white/0 dark:bg-gray-700 p-2.5 text-sm outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-                invalid
-                  ? 'border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400'
-                  : 'border-gray-600'
-              }`}
-              displayValue={(option: any) =>
-                option ? option[inputLabel] : undefined
-              }
-              onChange={(event) => setQuery(event.target.value)}
+      </Combobox.Label>
+
+      <Combobox.Input
+        required={!!rules?.required}
+        as={Input}
+        classNames={{
+          inputWrapper: 'border border-gray-600',
+          errorMessage: 'mt-2',
+        }}
+        radius="sm"
+        validationState={invalid ? 'invalid' : 'valid'}
+        errorMessage={error?.message}
+        variant="bordered"
+        displayValue={(option: any) =>
+          option ? option[inputLabel] : undefined
+        }
+        placeholder="Elija una opcion"
+        onChange={(event) => setQuery(event.target.value)}
+        endContent={
+          field.value ? (
+            <X
+              onClick={removeSelected}
+              className="h-10 w-6 text-gray-400 cursor-pointer"
+              aria-hidden="true"
             />
-            {field.value ? (
-              <X
-                onClick={removeSelected}
-                className="h-10 w-6 text-gray-400 absolute inset-y-0 right-0 pr-2 cursor-pointer"
+          ) : (
+            <Combobox.Button className="flex items-center">
+              <ChevronsUpDown
+                className="h-5 w-5 text-gray-400"
                 aria-hidden="true"
               />
-            ) : (
-              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-                <ChevronsUpDown
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </Combobox.Button>
-            )}
-          </div>
+            </Combobox.Button>
+          )
+        }
+      />
 
-          <Combobox.Options className="absolute mt-1 max-h-60 z-10 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {filteredOptions.length === 0 ? (
-              <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                Vacio
-              </div>
-            ) : (
-              filteredOptions.map((option) => (
-                <Combobox.Option
-                  key={option[inputId]}
-                  className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? 'bg-teal-600 text-white' : 'text-gray-900'
-                    }`
-                  }
-                  value={option}
-                >
-                  {({ selected, active }) => (
-                    <>
-                      <span
-                        className={`block truncate ${
-                          selected ? 'font-medium' : 'font-normal'
-                        }`}
-                      >
-                        {option[inputLabel]}
-                      </span>
-                      {selected ? (
-                        <span
-                          className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                            active ? 'text-white' : 'text-teal-600'
-                          }`}
-                        >
-                          <Check
-                            onClick={removeSelected}
-                            className="h-5 w-5"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      ) : null}
-                    </>
-                  )}
-                </Combobox.Option>
-              ))
-            )}
-          </Combobox.Options>
-        </div>
-      </Combobox>
-      <p className="mt-2 text-xs text-red-400">{error?.message}</p>
-    </div>
+      <Combobox.Options className="absolute z-50 max-h-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+        {filteredOptions.length === 0 ? (
+          <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
+            Vacio
+          </div>
+        ) : (
+          filteredOptions.map((option) => (
+            <Combobox.Option
+              key={option[inputId]}
+              className={({ active }) =>
+                `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                  active ? 'bg-teal-600 text-white' : 'text-gray-900'
+                }`
+              }
+              value={option}
+            >
+              {({ selected, active }) => (
+                <>
+                  <span
+                    className={`block truncate ${
+                      selected ? 'font-medium' : 'font-normal'
+                    }`}
+                  >
+                    {option[inputLabel]}
+                  </span>
+                  {selected ? (
+                    <span
+                      className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                        active ? 'text-white' : 'text-teal-600'
+                      }`}
+                    >
+                      <Check
+                        onClick={removeSelected}
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  ) : null}
+                </>
+              )}
+            </Combobox.Option>
+          ))
+        )}
+      </Combobox.Options>
+    </Combobox>
   )
 }

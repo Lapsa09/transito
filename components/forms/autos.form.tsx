@@ -80,6 +80,7 @@ function FirstStep() {
         label="Direccion"
         className="w-full basis-5/12"
         rules={{ required: 'Este campo es requerido' }}
+        placeholder='Ej: "Av. Maipu 1234"'
         persist={setOperativo}
       />
       <Autocomplete
@@ -124,6 +125,7 @@ function SecondStep() {
         label="Nº licencia"
         name="licencia"
         className="w-full basis-5/12"
+        placeholder='Ej: "12345678"'
       />
       <Autocomplete
         name="tipo_licencia"
@@ -147,6 +149,7 @@ function SecondStep() {
         label="Graduacion Alcoholica"
         className="w-full basis-5/12"
         type="number"
+        placeholder='Ej: "0.0"'
       />
       <Select
         name="resolucion"

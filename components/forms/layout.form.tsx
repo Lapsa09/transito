@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { FormEvent, useEffect } from 'react'
 import Button from '@/components/Button'
 import Stepper from '@/components/Stepper'
 import Loader from '@/components/Loader'
@@ -52,26 +52,35 @@ function layout({
   const isLastStep = activeStep === 1
 
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1)
-  const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1)
+  const handleNext = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    !isLastStep && setActiveStep((cur) => cur + 1)
+  }
 
   const onSubmit = async (body: FormInputProps) => {
-    // console.log({ body, layoutSegment })
-    // if (!isLastStep) handleNext()
-    // else {
     try {
-      const registro = await setter({
-        route: `/operativos/${layoutSegment}`,
-        body,
-      })
-      await mutate(layoutSegment, registro, {
-        populateCache: (result, currentData) => [result, ...currentData],
-        revalidate: false,
-      })
+      await mutate(
+        layoutSegment,
+        async (data: any) => {
+          const post = await setter({
+            route: `/operativos/${layoutSegment}`,
+            body,
+          })
+
+          return [post, ...data]
+        },
+        {
+          revalidate: false,
+        }
+      )
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       const { expiresAt, ...rest } = operativo
       reset(rest)
     } catch (error: any) {
-      toast({ title: error.response.data, variant: 'default' })
+      toast({
+        title: error.response.data || error.message,
+        variant: 'destructive',
+      })
     }
     // }
   }
@@ -105,7 +114,8 @@ function layout({
         </Button>
       </div>
       <form
-        className="overflow-hidden"
+        className="overflow-x-hidden"
+        noValidate
         onSubmit={!isLastStep ? handleNext : handleSubmit(onSubmit)}
       >
         <FormProvider {...methods}>

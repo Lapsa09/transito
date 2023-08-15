@@ -26,11 +26,11 @@ const alcoholemia = (graduacion_alcoholica: number): resultado => {
 const operativoAlcoholemia = async (body: FormAutosProps) => {
   const {
     fecha,
-    direccion,
+    qth,
     turno,
     legajo_a_cargo,
     legajo_planilla,
-    zona,
+    localidad,
     seguridad,
     hora,
   } = body
@@ -42,37 +42,37 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
   const op = await prisma.operativos_operativos.findFirst({
     select: { id_op: true },
     where: {
-      fecha: new Date(fecha),
-      qth: direccion.toUpperCase(),
+      fecha,
+      qth,
       turno,
-      legajo_a_cargo: parseInt(legajo_a_cargo),
-      legajo_planilla: parseInt(legajo_planilla),
-      id_localidad: zona.id_barrio,
+      legajo_a_cargo: +legajo_a_cargo,
+      legajo_planilla: +legajo_planilla,
+      id_localidad: localidad.id_barrio,
       seguridad,
       hora: _hora,
-      direccion_full: `${direccion}, ${zona.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+      direccion_full: `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
     },
   })
 
   if (!op) {
-    const id_op = await prisma.operativos_operativos.create({
+    const { id_op } = await prisma.operativos_operativos.create({
       data: {
-        fecha: new Date(fecha),
-        qth: direccion,
+        fecha,
+        qth,
         turno,
-        legajo_a_cargo: parseInt(legajo_a_cargo),
-        legajo_planilla: parseInt(legajo_planilla),
-        id_localidad: zona.id_barrio,
+        legajo_a_cargo: +legajo_a_cargo,
+        legajo_planilla: +legajo_planilla,
+        id_localidad: localidad.id_barrio,
         seguridad,
         hora: _hora,
-        direccion_full: `${direccion}, ${zona.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+        direccion_full: `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
       },
       select: {
         id_op: true,
       },
     })
 
-    return id_op.id_op
+    return id_op
   } else {
     return op.id_op
   }

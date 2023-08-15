@@ -7,6 +7,7 @@ import {
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 import { Input } from '@nextui-org/input'
+import { X } from 'lucide-react'
 
 interface TimeFieldProps extends UseControllerProps {
   className?: string
@@ -31,20 +32,10 @@ export function TimeField({
     control,
     name,
     defaultValue,
-    rules: {
-      ...rules,
-      validate: {
-        ...rules?.validate,
-        validTime: (value) => {
-          const date = new Date(value)
-          return date.toString() !== 'Invalid Date' || 'Fecha inválida'
-        },
-      },
-    },
+    rules,
   })
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
+  const onChange = (value: string) => {
     field.onChange(value)
     if (persist) persist({ [name]: value })
   }
@@ -57,26 +48,27 @@ export function TimeField({
     <Input
       {...props}
       {...field}
-      onChange={onChange}
+      onValueChange={onChange}
       variant="bordered"
       label={label}
       labelPlacement="outside"
+      required={!!rules?.required}
       size="md"
       radius="sm"
       type="time"
       placeholder="hh:mm"
       validationState={invalid ? 'invalid' : 'valid'}
-      className={twMerge(className, 'mb-6')}
+      className={twMerge(className, 'data-[has-helper=true]:pb-6 pb-6')}
       classNames={{
         inputWrapper: 'border border-gray-600',
       }}
       endContent={
-        <span
+        <X
           onClick={clear}
-          className="absolute right-4 cursor-pointer text-gray-300 hover:text-gray-800 dark:text-gray-800 dark:hover:text-gray-300"
+          className="h-10 w-6 text-gray-400 absolute inset-y-0 right-0 pr-2 cursor-pointer"
         >
           X
-        </span>
+        </X>
       }
       errorMessage={error?.message}
     />

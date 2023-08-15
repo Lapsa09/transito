@@ -1,5 +1,6 @@
 'use client'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from '@/utils/validations'
+import { Input, InputProps } from '@nextui-org/react'
 import React from 'react'
 import {
   UseControllerProps,
@@ -10,12 +11,12 @@ import { twMerge } from 'tailwind-merge'
 
 interface Props
   extends UseControllerProps,
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultValue' | 'name'> {
+    Omit<InputProps, 'defaultValue' | 'name'> {
   label: string
   persist?: (data: any) => void
 }
 
-function Input({
+function CustomInput({
   name,
   placeholder,
   label,
@@ -23,6 +24,7 @@ function Input({
   type = 'text',
   className,
   persist,
+  ...props
 }: Props) {
   const { control } = useFormContext()
   const {
@@ -41,36 +43,32 @@ function Input({
   }
 
   return (
-    <div className={twMerge('mb-6', className)}>
-      <label
-        htmlFor={name}
-        className="text-sm text-gray-900 dark:text-gray-300 font-medium block mb-2"
-      >
-        {label}
-        {rules?.required && (
-          <span className="text-gray-900 dark:text-gray-300 ml-1">*</span>
-        )}
-      </label>
-      <input
-        {...field}
-        onChange={onChange}
-        type={type}
-        id={name}
-        placeholder={placeholder}
-        className={`flex w-full uppercase items-center justify-center rounded-lg border bg-white/0 dark:bg-gray-700 p-2.5 text-sm outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-          invalid
-            ? 'border-red-500 text-red-500 placeholder:text-red-500 dark:!border-red-400 dark:!text-red-400 dark:placeholder:!text-red-400'
-            : 'border-gray-600'
-        }`}
-      />
-      <p className="mt-2 text-xs text-red-400">{error?.message}</p>
-    </div>
+    <Input
+      {...props}
+      {...field}
+      onChange={onChange}
+      type={type}
+      id={name}
+      placeholder={placeholder}
+      label={label}
+      className={twMerge('data-[has-helper=true]:pb-t pb-6', className)}
+      classNames={{
+        inputWrapper: 'border border-gray-600',
+      }}
+      validationState={invalid ? 'invalid' : 'valid'}
+      errorMessage={error?.message}
+      size="md"
+      radius="sm"
+      labelPlacement="outside"
+      isRequired={!!rules?.required}
+      variant="bordered"
+    />
   )
 }
 
 function InputLegajo(props: Props) {
   return (
-    <Input
+    <CustomInput
       {...props}
       rules={{
         ...props.rules,
@@ -80,13 +78,14 @@ function InputLegajo(props: Props) {
         },
         required: 'Este campo es requerido',
       }}
+      placeholder='Ej: "12345"'
     />
   )
 }
 
 function InputDominio(props: Props) {
   return (
-    <Input
+    <CustomInput
       {...props}
       rules={{
         ...props.rules,
@@ -96,11 +95,12 @@ function InputDominio(props: Props) {
         },
         required: 'Este campo es requerido',
       }}
+      placeholder='Ej: "ABC123"'
     />
   )
 }
 
-Input.Legajo = InputLegajo
-Input.Dominio = InputDominio
+CustomInput.Legajo = InputLegajo
+CustomInput.Dominio = InputDominio
 
-export default Input
+export default CustomInput

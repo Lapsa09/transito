@@ -31,8 +31,8 @@ export interface FormInputProps {
   legajo_a_cargo: string
   legajo_planilla: string
   seguridad: seguridad
-  direccion: string
-  zona: vicente_lopez
+  qth: string
+  localidad: vicente_lopez
   fecha: Date
   turno: turnos
   lpcarga: number

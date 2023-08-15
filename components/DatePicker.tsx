@@ -7,6 +7,7 @@ import {
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 import { Input } from '@nextui-org/input'
+import { X } from 'lucide-react'
 
 interface DateFieldProps extends UseControllerProps {
   className?: string
@@ -77,23 +78,22 @@ export function DateField({
       onChange={onChange}
       variant="bordered"
       label={label}
+      required={!!rules?.required}
       labelPlacement="outside"
       size="md"
       radius="sm"
       type="date"
       placeholder="dd/mm/yyyy"
       validationState={invalid ? 'invalid' : 'valid'}
-      className={twMerge(className, 'mb-6')}
+      className={twMerge(className, 'data-[has-helper=true]:pb-6 pb-6')}
       classNames={{
         inputWrapper: 'border border-gray-600',
       }}
       endContent={
-        <span
+        <X
           onClick={clear}
-          className="absolute right-4 cursor-pointer text-gray-300 hover:text-gray-800 dark:text-gray-800 dark:hover:text-gray-300"
-        >
-          X
-        </span>
+          className="h-10 w-6 text-gray-400 absolute inset-y-0 right-0 pr-2 cursor-pointer"
+        />
       }
       errorMessage={error?.message}
     />

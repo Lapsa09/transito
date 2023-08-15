@@ -2,6 +2,7 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 const withMT = require('@material-tailwind/react/utils/withMT')
+const { nextui } = require('@nextui-org/react')
 module.exports = withMT({
   darkMode: ['class'],
   content: [
@@ -10,6 +11,7 @@ module.exports = withMT({
     './app/**/*.{ts,tsx}',
     './node_modules/react-tailwindcss-datepicker/dist/index.esm.js',
     './node_modules/tailwind-datepicker-react/dist/**/*.js',
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     container: {
@@ -86,5 +88,5 @@ module.exports = withMT({
       sans: defaultTheme.fontFamily.sans,
     },
   },
-  plugins: [require('tailwindcss-animated')],
+  plugins: [require('tailwindcss-animated'), nextui()],
 })

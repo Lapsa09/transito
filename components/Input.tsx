@@ -54,6 +54,7 @@ function CustomInput({
       className={twMerge('data-[has-helper=true]:pb-t pb-6', className)}
       classNames={{
         inputWrapper: 'border border-gray-600',
+        input: 'uppercase',
       }}
       validationState={invalid ? 'invalid' : 'valid'}
       errorMessage={error?.message}

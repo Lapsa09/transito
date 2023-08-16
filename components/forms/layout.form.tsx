@@ -1,53 +1,36 @@
 'use client'
-import React, { FormEvent, useEffect } from 'react'
+import React, { FormEvent } from 'react'
 import Button from '@/components/Button'
 import Stepper from '@/components/Stepper'
 import Loader from '@/components/Loader'
-import { useStepForm, useToast } from '@/hooks'
-import { getSelects, setter } from '@/services'
-import { FormInputProps, LocalOperativo, Operativo } from '@/types'
-import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { FormProvider, useForm } from 'react-hook-form'
-import useSWR, { mutate } from 'swr'
-import { useSession } from 'next-auth/react'
-import { useLocalStorage } from 'usehooks-ts'
+import { useStepForm } from '@/hooks'
+import { getSelects } from '@/services'
+import { FormInputProps, EditInputProps } from '@/types'
+import { useRouter } from 'next/navigation'
+import {
+  FieldValues,
+  FormProvider,
+  SubmitHandler,
+  UseFormReturn,
+} from 'react-hook-form'
+import useSWR from 'swr'
 
 function layout({
   children,
   className,
+  onSubmit,
+  nuevoOperativo,
+  methods,
 }: {
   children: React.ReactNode
   className?: string
+  onSubmit: SubmitHandler<FormInputProps & EditInputProps>
+  nuevoOperativo: () => void
+  methods: UseFormReturn<any, any, undefined>
 }) {
-  const layoutSegment = useSelectedLayoutSegment() as
-    | 'autos'
-    | 'motos'
-    | 'camiones'
-  const { data } = useSession()
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
-  const { toast } = useToast()
   const router = useRouter()
-  const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
-    layoutSegment,
-    {
-      expiresAt: 0,
-    }
-  )
-  const methods = useForm<FormInputProps>({
-    mode: 'all',
-    resetOptions: { keepDefaultValues: true },
-    defaultValues: {
-      lpcarga: data?.user?.legajo,
-    },
-  })
-
-  const {
-    handleSubmit,
-    reset,
-    formState: { isValid },
-  } = methods
-
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === 1
 
@@ -57,51 +40,10 @@ function layout({
     !isLastStep && setActiveStep((cur) => cur + 1)
   }
 
-  const onSubmit = async (body: FormInputProps) => {
-    try {
-      await mutate(
-        layoutSegment,
-        async (data: any) => {
-          const post = await setter({
-            route: `/operativos/${layoutSegment}`,
-            body,
-          })
-
-          return [post, ...data]
-        },
-        {
-          revalidate: false,
-        }
-      )
-      toast({ title: 'Operativo creado con exito', variant: 'success' })
-      const { expiresAt, ...rest } = operativo
-      reset(rest)
-    } catch (error: any) {
-      toast({
-        title: error.response.data || error.message,
-        variant: 'destructive',
-      })
-    }
-    // }
-  }
-
-  const nuevoOperativo = () => {
-    setOperativo({
-      expiresAt: 0,
-    })
-    reset()
-    setActiveStep(0)
-  }
-
-  useEffect(() => {
-    if (operativo.expiresAt < Date.now()) {
-      nuevoOperativo()
-    } else {
-      const { expiresAt, ...rest } = operativo
-      reset(rest)
-      setActiveStep(1)
-    }
-  }, [])
+  const {
+    handleSubmit,
+    formState: { isValid },
+  } = methods
 
   return (
     <div className={className}>

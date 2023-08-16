@@ -1,16 +1,17 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { DataTable } from '@/components/table'
 import { columns } from './columns'
 import { Registro } from '@/types/autos'
-import { mutate } from 'swr'
+import useSWR from 'swr'
 
 function ClientTable({ data }: { data: Registro[] }) {
-  useEffect(() => {
-    mutate('autos', data)
-  }, [])
-  return <DataTable columns={columns} data={data} />
+  const { data: posts } = useSWR<Registro[]>('autos', () => data, {
+    fallbackData: data,
+  })
+
+  return <DataTable columns={columns} data={posts!} />
 }
 
 export default ClientTable

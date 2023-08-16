@@ -1,64 +1,68 @@
 'use client'
-import React, { useEffect } from 'react'
-import Button from '@/components/Button'
-import { LogoOVT, LogoVL } from '@/components/Logos'
 import Modal from '@/components/Modal'
-import Stepper from '@/components/Stepper'
-import { FormProvider, useForm } from 'react-hook-form'
+import React, { useEffect } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
-import { getSelects, getter, updater } from '@/services'
-import useSWR, { mutate } from 'swr'
-import {
-  usePathname,
-  useSelectedLayoutSegment,
-  useRouter,
-} from 'next/navigation'
+import { getter, updater } from '@/services'
+import { mutate } from 'swr'
+import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import { useToast } from '@/hooks'
-import { EditInputProps } from '@/types'
+import { EditInputProps, LocalOperativo, Registro } from '@/types'
+import FormLayout from '@/components/forms/layout.form'
+import { useLocalStorage } from 'usehooks-ts'
+import { useSession } from 'next-auth/react'
 
 function layout({ children }: React.PropsWithChildren) {
+  const { data } = useSession({ required: true })
   const router = useRouter()
-  const [, , , , id] = usePathname().split('/')
-  const layoutSegment = useSelectedLayoutSegment()
+  const [layoutSegment, id] = useSelectedLayoutSegments()
+
+  const [, setOperativo] = useLocalStorage<LocalOperativo>(layoutSegment, {
+    expiresAt: 0,
+  })
   const methods = useForm<EditInputProps>({
     mode: 'all',
+    defaultValues: {
+      lpcarga: data?.user?.legajo,
+    },
   })
-  const { activeStep, setActiveStep } = useStepForm()
-  const { isLoading } = useSWR('/api/selects', getSelects)
-  const {
-    handleSubmit,
-    formState: { isValid },
-    reset,
-  } = methods
+  const { setActiveStep } = useStepForm()
+  const { reset } = methods
   const { toast } = useToast()
 
-  const isFirstStep = activeStep === 0
-  const isLastStep = activeStep === 1
-
-  const handlePrev = () => setActiveStep((cur) => cur - 1)
-  const handleNext = () => setActiveStep((cur) => cur + 1)
-
-  const onSubmit = async (body: EditInputProps) => {
-    if (!isLastStep) handleNext()
-    else {
-      try {
-        const registro = await updater({
-          route: `/operativos/${layoutSegment}/${id}`,
-          body,
-        })
-        await mutate<EditInputProps>(layoutSegment, registro, {
-          populateCache: (result, currentData) =>
-            currentData.map((item: any) =>
-              item.id === result.id ? result : item
-            ),
+  const onSubmit: SubmitHandler<EditInputProps> = async (body) => {
+    try {
+      await mutate<Registro[]>(
+        layoutSegment,
+        async (data) => {
+          const registro = await updater<Registro>({
+            route: `/operativos/${layoutSegment}/${id}`,
+            body,
+          })
+          return data?.map((item) =>
+            item.id === registro.id ? registro : item
+          )
+        },
+        {
           revalidate: false,
-        })
-        toast({ title: 'Operativo actualizado con exito', variant: 'success' })
-        router.back()
-      } catch (error: any) {
-        toast({ title: error.response.data, variant: 'destructive' })
-      }
+        }
+      )
+      toast({ title: 'Operativo creado con exito', variant: 'success' })
+      router.back()
+    } catch (error: any) {
+      toast({
+        title: error.response.data || error.message,
+        variant: 'destructive',
+      })
     }
+  }
+
+  const nuevoOperativo = () => {
+    setOperativo({
+      expiresAt: 0,
+    })
+    reset()
+    setActiveStep(0)
   }
 
   useEffect(() => {
@@ -73,28 +77,14 @@ function layout({ children }: React.PropsWithChildren) {
 
   return (
     <Modal>
-      <div className="flex flex-col justify-center items-center">
-        <div className="flex justify-between w-full">
-          <LogoVL />
-          <Button variant="text">Nuevo Operativo</Button>
-          <Button variant="text">Salir</Button>
-          <LogoOVT />
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormProvider {...methods}>
-            <Stepper steps={['Operativo', 'Vehiculo']} />
-            {isLoading ? 'Cargando...' : children}
-          </FormProvider>
-          <div className="flex justify-between w-full">
-            <Button disabled={isFirstStep} onClick={handlePrev}>
-              Atras
-            </Button>
-            <Button disabled={!isValid && isLastStep} type="submit">
-              {isLastStep ? 'Guardar' : 'Siguiente'}
-            </Button>
-          </div>
-        </form>
-      </div>
+      <FormLayout
+        onSubmit={onSubmit}
+        className="flex flex-col justify-center items-center px-6"
+        nuevoOperativo={nuevoOperativo}
+        methods={methods}
+      >
+        {children}
+      </FormLayout>
     </Modal>
   )
 }

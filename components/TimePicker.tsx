@@ -1,5 +1,4 @@
 'use client'
-import { ChangeEvent } from 'react'
 import {
   UseControllerProps,
   useController,
@@ -52,7 +51,7 @@ export function TimeField({
       variant="bordered"
       label={label}
       labelPlacement="outside"
-      required={!!rules?.required}
+      isRequired={!!rules?.required}
       size="md"
       radius="sm"
       type="time"

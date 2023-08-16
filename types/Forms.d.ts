@@ -46,35 +46,19 @@ export interface FormInputProps {
   extranjero?: boolean
 }
 
-export interface EditInputProps {
+export interface EditInputProps extends FormInputProps {
   id: number
-  legajo_a_cargo: number
-  legajo_planilla: number
-  seguridad: seguridad
-  qth: string
-  zona: vicente_lopez
-  fecha: Date
-  turno: string
-  lpcarga: number
-  hora: Date
-  dominio: string
-  zona_infractor: barrios
-  licencia?: number
-  tipo_licencia?: tipo_licencias
-  resolucion?: resolucion
-  acta?: number
-  extranjero?: boolean
-  motivo?: motivos
+  id_op: number
 }
 
 export interface FormAutosProps extends FormInputProps {
   graduacion_alcoholica: number
-  motivo: motivos
+  motivo?: motivos
 }
 
 export interface EditAutosProps extends EditInputProps {
   graduacion_alcoholica: number
-  motivo: motivos
+  motivo?: motivos
 }
 
 export interface FormMotosProps extends FormInputProps {

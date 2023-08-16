@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Combobox } from '@headlessui/react'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import {
@@ -33,7 +33,7 @@ export default function MyCombobox({
   const {
     field,
     fieldState: { invalid, error },
-  } = useController({ name, control, rules, defaultValue: '' })
+  } = useController({ name, control, rules })
   const [query, setQuery] = useState('')
 
   const filteredOptions =
@@ -44,16 +44,21 @@ export default function MyCombobox({
         )
 
   const removeSelected = () => {
-    field.onChange(null)
+    field.onChange(undefined)
     if (persist) persist({ [name]: null })
     setQuery('')
   }
 
   const handleChange = (currentValue: any) => {
     field.onChange(currentValue)
-    setQuery(currentValue[inputLabel])
     if (persist) persist({ [name]: currentValue })
   }
+
+  useEffect(() => {
+    if (!field.value) {
+      setQuery('')
+    }
+  }, [field.value])
 
   return (
     <Combobox
@@ -65,18 +70,6 @@ export default function MyCombobox({
       {...field}
       onChange={handleChange}
     >
-      <Combobox.Label
-        className={twMerge(
-          rules?.required
-            ? "after:content-['*'] after:text-danger after:ml-0.5"
-            : '',
-          'block text-[14px] font-medium text-foreground pb-1.5',
-          invalid ? 'text-danger' : 'text-foreground'
-        )}
-      >
-        {label}
-      </Combobox.Label>
-
       <Combobox.Input
         required={!!rules?.required}
         as={Input}
@@ -85,12 +78,13 @@ export default function MyCombobox({
           errorMessage: 'mt-2',
         }}
         radius="sm"
+        label={label}
+        isRequired={!!rules?.required}
+        labelPlacement="outside"
         validationState={invalid ? 'invalid' : 'valid'}
         errorMessage={error?.message}
         variant="bordered"
-        displayValue={(option: any) =>
-          option ? option[inputLabel] : undefined
-        }
+        value={field.value ? field.value[inputLabel] : query}
         placeholder="Elija una opcion"
         onChange={(event) => setQuery(event.target.value)}
         endContent={
@@ -127,30 +121,7 @@ export default function MyCombobox({
               }
               value={option}
             >
-              {({ selected, active }) => (
-                <>
-                  <span
-                    className={`block truncate ${
-                      selected ? 'font-medium' : 'font-normal'
-                    }`}
-                  >
-                    {option[inputLabel]}
-                  </span>
-                  {selected ? (
-                    <span
-                      className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                        active ? 'text-white' : 'text-teal-600'
-                      }`}
-                    >
-                      <Check
-                        onClick={removeSelected}
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  ) : null}
-                </>
-              )}
+              {option[inputLabel]}
             </Combobox.Option>
           ))
         )}

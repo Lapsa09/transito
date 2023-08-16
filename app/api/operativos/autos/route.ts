@@ -16,7 +16,11 @@ const es_del = async (zona_infractor: string) => {
 }
 
 const alcoholemia = (graduacion_alcoholica: number): resultado => {
-  if (graduacion_alcoholica === 0 || !graduacion_alcoholica)
+  if (
+    graduacion_alcoholica == 0 ||
+    !graduacion_alcoholica ||
+    graduacion_alcoholica == 0.0
+  )
     return resultado.NEGATIVA
   else if (graduacion_alcoholica > 0.05 && graduacion_alcoholica < 0.5)
     return resultado.NO_PUNITIVA
@@ -42,7 +46,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
   const op = await prisma.operativos_operativos.findFirst({
     select: { id_op: true },
     where: {
-      fecha,
+      fecha: new Date(fecha),
       qth,
       turno,
       legajo_a_cargo: +legajo_a_cargo,
@@ -57,7 +61,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
   if (!op) {
     const { id_op } = await prisma.operativos_operativos.create({
       data: {
-        fecha,
+        fecha: new Date(fecha),
         qth,
         turno,
         legajo_a_cargo: +legajo_a_cargo,
@@ -144,7 +148,7 @@ export async function POST(req: Request) {
     const data = {
       ...body,
       es_del: await es_del(body.zona_infractor.barrio),
-      resultado: alcoholemia(++body.graduacion_alcoholica),
+      resultado: alcoholemia(body.graduacion_alcoholica),
       id_operativo: await operativoAlcoholemia(body),
       fechacarga: new Date(),
       mes: new Date(body.fecha).getMonth() + 1,

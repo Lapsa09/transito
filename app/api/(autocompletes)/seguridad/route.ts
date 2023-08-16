@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server'
 
-const seguridad = [
-  { seguridad: 'POLICIA' },
-  { seguridad: 'PREFECTURA' },
-  { seguridad: 'SECRETARIA DE SEGURIDAD' },
-  { seguridad: 'NO' },
-]
+const seguridad = ['POLICIA', 'PREFECTURA', 'SECRETARIA DE SEGURIDAD', 'NO']
 
 export function GET() {
   return NextResponse.json(seguridad)

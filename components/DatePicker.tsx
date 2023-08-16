@@ -78,7 +78,7 @@ export function DateField({
       onChange={onChange}
       variant="bordered"
       label={label}
-      required={!!rules?.required}
+      isRequired={!!rules?.required}
       labelPlacement="outside"
       size="md"
       radius="sm"

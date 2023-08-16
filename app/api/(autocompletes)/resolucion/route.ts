@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server'
 
-const resolucion = [
-  { resolucion: 'PREVENCION' },
-  { resolucion: 'ACTA' },
-  { resolucion: 'REMITIDO' },
-]
+const resolucion = ['PREVENCION', 'ACTA', 'REMITIDO']
 
 export function GET() {
   return NextResponse.json(resolucion)

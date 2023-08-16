@@ -14,8 +14,6 @@ type Props = UseControllerProps &
   React.SelectHTMLAttributes<HTMLSelectElement> & {
     label: string
     options: any[]
-    inputLabel?: string
-    inputId?: string
     persist?: (data: any) => void
   }
 
@@ -24,8 +22,6 @@ function CustomSelect({
   name,
   rules,
   options = [],
-  inputId = name,
-  inputLabel = name,
   className,
   persist,
 }: Props) {
@@ -41,7 +37,7 @@ function CustomSelect({
   }
 
   const displayValue = useMemo(() => {
-    return field.value ? field.value[inputLabel] : ''
+    return field.value || ''
   }, [field.value])
 
   return (
@@ -81,7 +77,7 @@ function CustomSelect({
       <Listbox.Options className="absolute mt-1 z-50 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
         {options.map((option) => (
           <Listbox.Option
-            key={option[inputId]}
+            key={option}
             value={option}
             className={({ active }) =>
               `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
@@ -96,7 +92,7 @@ function CustomSelect({
                     selected ? 'font-medium' : 'font-normal'
                   }`}
                 >
-                  {option[inputLabel]}
+                  {option}
                 </span>
                 {selected ? (
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">

@@ -48,7 +48,7 @@ function FirstStep() {
         persist={setOperativo}
       />
       <Autocomplete
-        name="zona"
+        name="localidad"
         label="Zona"
         inputId="id_barrio"
         inputLabel="barrio"

@@ -1,5 +1,12 @@
-import type { Resolucion, Seguridad, Turnos } from '@/types/autocompletes.api'
-import { barrios, motivos, tipo_licencias, vicente_lopez } from '@prisma/client'
+import {
+  barrios,
+  motivos,
+  resolucion,
+  seguridad,
+  tipo_licencias,
+  turnos,
+  vicente_lopez,
+} from '@prisma/client'
 import axios from 'axios'
 
 type Props = {
@@ -38,14 +45,14 @@ export const getVicenteLopez = async () => {
 }
 
 export const getTurnos = async () => {
-  const data = await getter<Turnos[]>({
+  const data = await getter<turnos[]>({
     route: 'turnos',
   })
   return data
 }
 
 export const getSeguridad = async () => {
-  const data = await getter<Seguridad[]>({
+  const data = await getter<seguridad[]>({
     route: 'seguridad',
   })
   return data
@@ -59,7 +66,7 @@ export const getLicencias = async () => {
 }
 
 export const getResolucion = async () => {
-  const data = await getter<Resolucion[]>({
+  const data = await getter<resolucion[]>({
     route: 'resolucion',
   })
   return data

@@ -1,11 +1,18 @@
+'use client'
+
 import React from 'react'
+import { DataTable } from '@/components/table'
+import { columns } from './columns'
+import { Registro } from '@/types/camiones'
+import useSWR from 'swr'
 import { getCamiones } from '@/services'
-import ClientTable from './ClientTable'
 
-async function page() {
-  const data = await getCamiones()
+function ClientTable() {
+  const { data, isLoading } = useSWR<Registro[]>('camiones', getCamiones)
 
-  return <ClientTable data={data} />
+  if (isLoading) return null
+
+  return <DataTable columns={columns} data={data!} />
 }
 
-export default page
+export default ClientTable

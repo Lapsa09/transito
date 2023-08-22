@@ -6,12 +6,12 @@ export async function GET(req: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const auto = await prisma.operativos_registros.findUnique({
+  const auto = await prisma.motos_registros.findUnique({
     where: { id: Number(id) },
     include: {
-      motivo: true,
+      motivos: true,
       operativo: { include: { localidad: true } },
-      tipo_licencia: true,
+      tipo_licencias: true,
       zona_infractor: true,
     },
   })
@@ -44,10 +44,9 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
 
   const body = await req.json()
 
-  const auto = await prisma.operativos_registros.update({
+  const moto = await prisma.motos_registros.update({
     where: { id: Number(id) },
     data: {
-      id_motivo: body.motivo?.id_motivo,
       id_licencia: body.tipo_licencia?.id_tipo,
       zona_infractor: {
         connect: {
@@ -56,9 +55,16 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       },
       acta: body.acta,
       dominio: body.dominio,
-      graduacion_alcoholica: body.graduacion_alcoholica,
       licencia: body.licencia,
       resolucion: body.resolucion,
+      motivos: {
+        createMany: {
+          data: body.motivos.map((motivo: any) => ({
+            id_motivo: motivo.id_motivo,
+            id_operativo: body.id_operativo,
+          })),
+        },
+      },
       operativo: {
         update: {
           fecha: body.fecha,
@@ -81,15 +87,15 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       },
     },
     include: {
-      motivo: true,
+      motivos: true,
       operativo: { include: { localidad: true } },
-      tipo_licencia: true,
+      tipo_licencias: true,
       zona_infractor: true,
     },
   })
   return NextResponse.json(
     JSON.parse(
-      JSON.stringify(auto, (_, value) =>
+      JSON.stringify(moto, (_, value) =>
         typeof value === 'bigint' ? value.toString() : value
       )
     )

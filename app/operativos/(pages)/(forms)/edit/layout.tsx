@@ -70,6 +70,7 @@ function layout({ children }: React.PropsWithChildren) {
         route: `operativos/${layoutSegment}/${id}`,
       })
       reset(operativo)
+      setActiveStep(1)
     }
     fetchOperativo()
   }, [layoutSegment, id])

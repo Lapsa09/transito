@@ -20,7 +20,7 @@ function layout({ children }: { children: React.ReactNode }) {
       lpcarga: data?.user?.legajo,
     },
   })
-  const { reset } = methods
+  const { reset, setFocus } = methods
   const layoutSegment = useSelectedLayoutSegment() as
     | 'autos'
     | 'motos'
@@ -52,6 +52,7 @@ function layout({ children }: { children: React.ReactNode }) {
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       const { expiresAt, ...rest } = operativo
       reset(rest)
+      setFocus('dominio')
     } catch (error: any) {
       toast({
         title: error.response.data || error.message,

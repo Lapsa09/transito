@@ -73,7 +73,7 @@ export interface FormCamionesProps extends FormInputProps {
   motivo: motivos
   remito: boolean
   carga: boolean
-  lp: number
+  legajo: number
   origen?: string
   destino?: string
   localidad_origen: barrios

@@ -16,7 +16,7 @@ import {
 import TimeField from '../TimePicker'
 import { IoMdRemove } from 'react-icons/io'
 import Button from '../Button'
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 import {
   getListaOperarios,
   getListaClientes,
@@ -26,6 +26,7 @@ import {
 import { ServiciosFormProps } from '@/types'
 import Link from 'next/link'
 import { toast } from '@/hooks'
+import { NuevoCliente, NuevoOperario } from '../MiniModals'
 
 function ServiciosForm() {
   const [medioPago, setMedioPago] = useState('recibo')
@@ -33,7 +34,7 @@ function ServiciosForm() {
 
   const { getValues, control, setValue, handleSubmit, reset } = methods
 
-  const { data: clientes, isLoading } = useSWR('operarios', getListaClientes)
+  const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
 
   const { cliente } = getValues()
 
@@ -68,15 +69,18 @@ function ServiciosForm() {
         className="flex flex-col items-center gap-2"
       >
         <div className="flex w-5/6 justify-between flex-wrap gap-1">
-          <AutoComplete
-            label="Cliente"
-            options={clientes!}
-            name="cliente"
-            inputId="id_cliente"
-            inputLabel="cliente"
-            className="w-full basis-5/12"
-            rules={{ required: true }}
-          />
+          <div className="flex">
+            <AutoComplete
+              label="Cliente"
+              options={clientes!}
+              name="cliente"
+              inputId="id_cliente"
+              inputLabel="cliente"
+              className="w-full basis-5/12"
+              rules={{ required: true }}
+            />
+            <NuevoCliente />
+          </div>
           {cliente && (
             <>
               <RadioGroup
@@ -124,7 +128,6 @@ function ServiciosForm() {
               )}
             </>
           )}
-
           <DateField
             label="Fecha del servicio"
             name="fecha_servicio"
@@ -136,6 +139,7 @@ function ServiciosForm() {
             name="feriado"
             className="w-full basis-5/12"
           />
+          <Input name="memo" label="Memo" className="w-full basis-5/12" />
         </div>
         <div className="flex flex-col items-center flex-wrap gap-2 w-11/12">
           <h3 className="text-lg font-semibold">Operarios</h3>
@@ -261,15 +265,18 @@ function OperarioForm({
         onClick={() => remove(index)}
       />
       <div className={'flex justify-between flex-wrap w-5/6'}>
-        <AutoComplete
-          label="Operario"
-          options={operarios!}
-          inputId="legajo"
-          inputLabel="nombre"
-          name={`operarios.${index}.operario`}
-          className="w-full basis-5/12"
-          rules={{ required: true }}
-        />
+        <div className="flex">
+          <AutoComplete
+            label="Operario"
+            options={operarios!}
+            inputId="legajo"
+            inputLabel="nombre"
+            name={`operarios.${index}.operario`}
+            className="w-full basis-5/12"
+            rules={{ required: true }}
+          />
+          <NuevoOperario />
+        </div>
         <TimeField
           label="Hora de inicio"
           name={`operarios.${index}.hora_inicio`}

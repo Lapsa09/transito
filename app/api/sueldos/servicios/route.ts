@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
           },
         },
         fecha_recibo: body.fecha_recibo,
+        importe_recibo: body.importe_recibo,
       },
     })
   }
@@ -66,6 +67,13 @@ export async function POST(req: NextRequest) {
       fecha_recibo: 'asc',
     },
   })
+
+  if (recibos.length === 0) {
+    return NextResponse.json('No hay suficiente dinero', {
+      status: 400,
+    })
+  }
+
   let acumulado = 0
   let i = 0
   const recibosNecesarios: recibos[] = []
@@ -91,6 +99,7 @@ export async function POST(req: NextRequest) {
           hora_inicio: operario.hora_inicio,
           hora_fin: operario.hora_fin,
           a_cobrar: operario.a_cobrar,
+          cancelado: false,
           recibos: {
             connect: {
               recibo: recibosNecesarios[0].recibo,
@@ -109,7 +118,7 @@ export async function POST(req: NextRequest) {
       recibosNecesarios[0].acopio -= operario.a_cobrar
     } else {
       let cuantoFalta = operario.a_cobrar
-      while (recibosNecesarios[0].acopio < operario.a_cobrar) {
+      while (recibosNecesarios[0].acopio < cuantoFalta) {
         cuantoFalta -= recibosNecesarios[0].acopio
         await prisma.operarios_servicios.create({
           data: {

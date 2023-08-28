@@ -146,7 +146,7 @@ export const OperarioColumns: ColumnDef<IOperario>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.nombre,
+    accessorFn: (row) => row.operarios.nombre,
     id: 'nombre',
     cell: (info) => info.getValue(),
     header: () => <span>Nombre</span>,

@@ -1,6 +1,8 @@
 import {
   barrios,
+  clientes,
   motivos,
+  operario,
   resolucion,
   seguridad,
   tipo_licencias,
@@ -118,4 +120,21 @@ export type EstadoMovil = {
 export type EstadoOperario = {
   id_estado: number
   estado: string
+}
+
+export type ServiciosFormProps = {
+  cliente: clientes
+  recibo?: number
+  fecha_recibo?: Date
+  importe_recibo?: number
+  acopio?: number
+  fecha_servicio: Date
+  feriado?: boolean
+  operarios: {
+    operario?: operario
+    hora_inicio: string
+    hora_fin: string
+    a_cobrar: number
+  }[]
+  importe_servicio: number
 }

@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { Switch } from './ui/switch'
+import { Switch } from '@nextui-org/react'
 import {
   UseControllerProps,
   useController,
@@ -9,9 +9,10 @@ import {
 
 type Props = UseControllerProps & {
   label: string
+  className?: string
 }
 
-function CustomSwitch({ name, label, rules }: Props) {
+function CustomSwitch({ name, label, rules, className }: Props) {
   const { control } = useFormContext()
   const { field } = useController({
     name,
@@ -20,10 +21,13 @@ function CustomSwitch({ name, label, rules }: Props) {
     defaultValue: false,
   })
   return (
-    <div className="flex">
-      <label htmlFor={name}>{label}</label>
-      <Switch checked={field.value} onCheckedChange={field.onChange} />
-    </div>
+    <Switch
+      className={className}
+      isSelected={field.value}
+      onValueChange={field.onChange}
+    >
+      {label}
+    </Switch>
   )
 }
 

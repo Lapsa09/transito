@@ -101,7 +101,7 @@ export function LiquidacionesLinkCard() {
 
 export function NewServicioLinkCard() {
   return (
-    <CardWithLink link="/servicios/create">
+    <CardWithLink link="/sueldos/servicios/create">
       <MdFiberNew className="text-6xl" />
       <Typography className="text-4xl">Nuevo Servicio</Typography>
     </CardWithLink>

@@ -1,10 +1,17 @@
+'use client'
 import React from 'react'
 import { getOperarios } from '@/services'
-import ClientTable from './ClientTable'
+import { DataTable } from '@/components/table'
+import { OperarioColumns } from './columns'
+import OperariosTable from './expansions'
+import useSWR from 'swr'
 
-async function page() {
-  const data = await getOperarios()
-  return <ClientTable data={data} />
+function page() {
+  const { data, isLoading } = useSWR('operarios', getOperarios)
+  if (isLoading) return null
+  return (
+    <DataTable columns={OperarioColumns} data={data} expand={OperariosTable} />
+  )
 }
 
 export default page

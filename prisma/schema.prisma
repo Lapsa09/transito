@@ -390,7 +390,8 @@ model operarios {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model operarios_servicios {
-  legajo      Int
+  id          Int      @id @default(autoincrement())
+  legajo      Int?
   memo        String?   @db.VarChar
   recibo      Int
   id_servicio Int
@@ -399,10 +400,10 @@ model operarios_servicios {
   hora_fin    DateTime? @db.Time(6)
   cancelado   Boolean?
   servicios   servicios @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
-  operarios   operarios @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+  operarios   operarios? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
   recibos     recibos   @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([legajo, id_servicio, recibo])
+
   @@schema("sueldos")
 }
 
@@ -417,7 +418,7 @@ model recibos {
   recibo              Int                   @id
   fecha_recibo        DateTime?             @db.Date
   importe_recibo      Int?
-  acopio              Int?
+  acopio              Int
   id_cliente          Int?
   operarios_servicios operarios_servicios[]
   clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)

@@ -21,7 +21,7 @@ import { Fragment } from 'react'
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
-  data: TData[]
+  data?: TData[]
   getRowCanExpand?: (row: Row<TData>) => boolean
   expand?: ({ data }: { data: TData }) => React.ReactNode
   onClick?: (row: Row<TData>) => void
@@ -29,7 +29,7 @@ interface DataTableProps<TData> {
 
 export function DataTable<TData>({
   columns,
-  data,
+  data = [],
   getRowCanExpand,
   expand,
   onClick,

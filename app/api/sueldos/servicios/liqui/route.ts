@@ -50,10 +50,11 @@ export async function GET(req: NextRequest) {
           let cuantoFalta = operario.a_cobrar!
           while (recibos[i].acopio < cuantoFalta && i < recibos.length) {
             cuantoFalta -= recibos[i].acopio
-            operario.recibo = recibos[i].recibo
-            operario.a_cobrar = recibos[i].acopio
+            const _operario = { ...operario }
+            _operario.recibo = recibos[i].recibo
+            _operario.a_cobrar = recibos[i].acopio
             recibos[i].acopio = 0
-            operarios.push(operario)
+            operarios.push(_operario)
             i++
           }
           if (cuantoFalta > 0) {

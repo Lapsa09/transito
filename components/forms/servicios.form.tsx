@@ -1,8 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import AutoComplete from '@/components/Autocomplete'
 import Input from '@/components/Input'
-import { Radio, RadioGroup } from '@nextui-org/react'
 import DateField from '../DatePicker'
 import Switch from '../Switch'
 import {
@@ -16,26 +15,32 @@ import {
 import TimeField from '../TimePicker'
 import { IoMdRemove } from 'react-icons/io'
 import Button from '../Button'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import {
   getListaOperarios,
   getListaClientes,
   getPrecios,
   nuevoServicio,
+  updateServicio,
+  getAcopioFromCliente,
 } from '@/services'
 import { ServiciosFormProps } from '@/types'
 import Link from 'next/link'
 import { toast } from '@/hooks'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
+import { useRouter } from 'next/navigation'
 
-function ServiciosForm() {
-  const [medioPago, setMedioPago] = useState('recibo')
-  const methods = useForm<ServiciosFormProps>()
-
-  const { getValues, control, setValue, handleSubmit, reset } = methods
+function LayoutServiciosForm({
+  onSubmit,
+}: {
+  onSubmit: SubmitHandler<ServiciosFormProps>
+}) {
+  const { control, setValue, handleSubmit, watch, getValues } =
+    useFormContext<ServiciosFormProps>()
 
   const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
 
+  const { hay_recibo } = watch()
   const { cliente } = getValues()
 
   const { fields, append, remove } = useFieldArray<ServiciosFormProps>({
@@ -48,134 +53,134 @@ function ServiciosForm() {
     setValue('importe_servicio', importe_servicio)
   }, [fields])
 
-  const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
-    try {
-      const req = await nuevoServicio({ body })
-      toast({ title: req, variant: 'success' })
-      reset()
-    } catch (error: any) {
-      toast({
-        title: error.response.data || error.message,
-        variant: 'destructive',
+  useEffect(() => {
+    if (cliente) {
+      getAcopioFromCliente(cliente.id_cliente).then((res) => {
+        setValue('acopio', res)
       })
     }
-  }
+  }, [cliente])
+
+  useEffect(() => {
+    if (!hay_recibo) {
+      setValue('recibo', undefined)
+      setValue('fecha_recibo', undefined)
+      setValue('importe_recibo', undefined)
+    }
+  }, [hay_recibo])
 
   if (isLoading) return null
   return (
-    <FormProvider {...methods}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col items-center gap-2"
-      >
-        <div className="flex w-5/6 justify-between flex-wrap gap-1">
-          <div className="flex">
-            <AutoComplete
-              label="Cliente"
-              options={clientes!}
-              name="cliente"
-              inputId="id_cliente"
-              inputLabel="cliente"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col items-center gap-2"
+    >
+      <div className="flex w-5/6 justify-between flex-wrap gap-1">
+        <div className="flex w-full basis-5/12 items-end pb-6">
+          <AutoComplete
+            label="Cliente"
+            options={clientes!}
+            name="cliente"
+            inputId="id_cliente"
+            inputLabel="cliente"
+            className="w-full p-0"
+            rules={{ required: true }}
+          />
+          <NuevoCliente />
+        </div>
+        {cliente && (
+          <>
+            <Switch
+              label="Desea agregar un recibo?"
+              name="hay_recibo"
               className="w-full basis-5/12"
-              rules={{ required: true }}
             />
-            <NuevoCliente />
-          </div>
-          {cliente && (
-            <>
-              <RadioGroup
-                orientation="horizontal"
-                label="Medio de pago"
-                value={medioPago}
-                onValueChange={setMedioPago}
-                className="w-full basis-5/12"
-              >
-                <Radio value="recibo">Recibo</Radio>
-                <Radio value="acopio">Acopio</Radio>
-              </RadioGroup>
-              {medioPago === 'recibo' ? (
-                <>
-                  <Input
-                    label="Recibo"
-                    name="recibo"
-                    rules={{ required: true }}
-                    type="number"
-                    className="w-full basis-5/12"
-                  />
-                  <DateField
-                    label="Fecha del recibo"
-                    name="fecha_recibo"
-                    rules={{ required: true }}
-                    className="w-full basis-5/12"
-                  />
-                  <Input
-                    label="Importe del recibo"
-                    name="importe_recibo"
-                    rules={{ required: true }}
-                    type="number"
-                    className="w-full basis-5/12"
-                  />
-                </>
-              ) : (
-                <Input
-                  label="Acopio"
-                  name="acopio"
-                  rules={{ required: true }}
-                  type="number"
-                  className="w-full basis-5/12"
-                  disabled
-                />
-              )}
-            </>
-          )}
+            <Input
+              label="Recibo"
+              name="recibo"
+              rules={{ required: hay_recibo }}
+              type="number"
+              className="w-full basis-5/12"
+              isDisabled={!hay_recibo}
+            />
+            <DateField
+              label="Fecha del recibo"
+              name="fecha_recibo"
+              rules={{ required: hay_recibo }}
+              className="w-full basis-5/12"
+              isDisabled={!hay_recibo}
+            />
+            <Input
+              label="Importe del recibo"
+              name="importe_recibo"
+              rules={{ required: hay_recibo }}
+              type="number"
+              className="w-full basis-5/12"
+              isDisabled={!hay_recibo}
+            />
+
+            <Input
+              label="Acopio"
+              name="acopio"
+              rules={{ required: true }}
+              type="number"
+              placeholder="0"
+              className="w-full basis-5/12"
+              isDisabled
+            />
+          </>
+        )}
+        <div className="flex w-full basis-5/12">
           <DateField
             label="Fecha del servicio"
             name="fecha_servicio"
             rules={{ required: true }}
-            className="w-full basis-5/12"
+            className="w-full"
           />
-          <Switch
-            label="Es feriado?"
-            name="feriado"
-            className="w-full basis-5/12"
-          />
-          <Input name="memo" label="Memo" className="w-full basis-5/12" />
-        </div>
-        <div className="flex flex-col items-center flex-wrap gap-2 w-11/12">
-          <h3 className="text-lg font-semibold">Operarios</h3>
-          <Button
-            className="w-1/4"
-            onClick={() =>
-              append({
-                operario: undefined,
-                hora_inicio: '',
-                hora_fin: '',
-                a_cobrar: 0,
-              })
-            }
-          >
-            Agregar operario
-          </Button>
-          {fields.map((field, index) => (
-            <OperarioForm index={index} key={field.id} remove={remove} />
-          ))}
+          <Switch label="Es feriado?" name="feriado" className="w-full ml-2" />
         </div>
         <Input
-          label="Importe del servicio"
-          name="importe_servicio"
-          type="number"
-          className="w-1/4"
-          placeholder="0"
-          isDisabled
+          name="memo"
+          label="Memo"
+          className="w-full basis-5/12"
+          placeholder="0000/00"
         />
-        <div className="flex">
-          <Link href="/sueldos">
-            <Button className="bg-danger">Cancelar</Button>
-          </Link>
-          <Button type="submit">Crear servicio</Button>
-        </div>
-      </form>
-    </FormProvider>
+      </div>
+      <div className="flex flex-col items-center flex-wrap gap-2 w-11/12">
+        <h3 className="text-lg font-semibold">Operarios</h3>
+        <Button
+          className="w-1/4"
+          onClick={() =>
+            append({
+              operario: undefined,
+              hora_inicio: '',
+              hora_fin: '',
+              a_cobrar: 0,
+              cancelado: false,
+            })
+          }
+        >
+          Agregar operario
+        </Button>
+        {fields.map((field, index) => (
+          <OperarioForm index={index} key={field.id} remove={remove} />
+        ))}
+      </div>
+      <Input
+        label="Importe del servicio"
+        name="importe_servicio"
+        type="number"
+        className="w-1/4"
+        placeholder="0"
+        isDisabled
+      />
+      <div className="flex">
+        <Link href="/sueldos">
+          <Button className="bg-danger">Cancelar</Button>
+        </Link>
+        <Button type="submit">Crear servicio</Button>
+      </div>
+    </form>
   )
 }
 
@@ -187,9 +192,12 @@ function OperarioForm({
   remove: UseFieldArrayRemove
 }) {
   const { setValue, watch } = useFormContext<ServiciosFormProps>()
-  const { data: operarios } = useSWR('operarios', getListaOperarios)
-  const { data: precios } = useSWR('precios', getPrecios)
-  const { feriado, fecha_servicio, operarios: watchOps } = watch()
+  const { data: operarios, isLoading } = useSWR('operarios', getListaOperarios)
+  const { data: precios, isLoading: loadingPrecios } = useSWR(
+    'precios',
+    getPrecios
+  )
+  const { feriado, fecha_servicio, operarios: watchOps = [] } = watch()
   const field = watchOps[index]
 
   const getImporteOperario = ({
@@ -200,7 +208,7 @@ function OperarioForm({
     isFeriado,
     precios,
   }: {
-    dia: Date
+    dia: string
     inicio: string
     fin: string
     importe: number
@@ -239,21 +247,22 @@ function OperarioForm({
   useEffect(() => {
     const importe = getImporteOperario({
       dia: fecha_servicio,
-      inicio: field.hora_inicio,
-      fin: field.hora_fin,
-      importe: field.a_cobrar,
+      inicio: field?.hora_inicio,
+      fin: field?.hora_fin,
+      importe: field?.a_cobrar,
       isFeriado: feriado,
       precios,
     })
 
     setValue(`operarios.${index}.a_cobrar`, importe)
-  }, [field.hora_inicio, field.hora_fin, feriado, fecha_servicio, precios])
+  }, [field?.hora_inicio, field?.hora_fin, feriado, fecha_servicio, precios])
 
   useEffect(() => {
     const importe_servicio = watchOps.reduce((acc, op) => acc + op.a_cobrar, 0)
     setValue('importe_servicio', importe_servicio)
-  }, [field.a_cobrar])
+  }, [field?.a_cobrar])
 
+  if (isLoading || loadingPrecios) return null
   return (
     <div
       className={`py-2 flex justify-evenly items-center w-full ${
@@ -265,14 +274,14 @@ function OperarioForm({
         onClick={() => remove(index)}
       />
       <div className={'flex justify-between flex-wrap w-5/6'}>
-        <div className="flex">
+        <div className="flex w-full basis-5/12 items-end pb-6">
           <AutoComplete
             label="Operario"
             options={operarios!}
             inputId="legajo"
             inputLabel="nombre"
             name={`operarios.${index}.operario`}
-            className="w-full basis-5/12"
+            className="w-full p-0"
             rules={{ required: true }}
           />
           <NuevoOperario />
@@ -303,4 +312,62 @@ function OperarioForm({
   )
 }
 
-export default ServiciosForm
+function CreateServicioForm() {
+  const methods = useForm<ServiciosFormProps>()
+  const { reset } = methods
+  const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
+    try {
+      const req = await nuevoServicio({ body })
+      toast({ title: req, variant: 'success' })
+      reset()
+    } catch (error: any) {
+      toast({
+        title: error.response.data || error.message,
+        variant: 'destructive',
+      })
+    }
+  }
+
+  return (
+    <FormProvider {...methods}>
+      <LayoutServiciosForm onSubmit={onSubmit} />
+    </FormProvider>
+  )
+}
+
+function EditServicioForm({
+  id,
+  servicio,
+}: {
+  servicio: ServiciosFormProps
+  id: string
+}) {
+  const methods = useForm<ServiciosFormProps>()
+  const { reset } = methods
+  const router = useRouter()
+
+  useEffect(() => {
+    reset(servicio)
+  }, [id])
+
+  const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
+    try {
+      const res = await updateServicio({ body, id_servicio: id })
+      mutate('servicios', res)
+      router.back()
+    } catch (error: any) {
+      toast({
+        title: error.response.data || error.message,
+        variant: 'destructive',
+      })
+    }
+  }
+
+  return (
+    <FormProvider {...methods}>
+      <LayoutServiciosForm onSubmit={onSubmit} />
+    </FormProvider>
+  )
+}
+
+export { CreateServicioForm, EditServicioForm }

@@ -6,10 +6,12 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
-import { Input } from '@nextui-org/input'
+import { Input, InputProps } from '@nextui-org/input'
 import { X } from 'lucide-react'
 
-interface DateFieldProps extends UseControllerProps {
+interface DateFieldProps
+  extends UseControllerProps,
+    Omit<InputProps, 'defaultValue' | 'name'> {
   className?: string
   persist?: (data: any) => void
   label?: string
@@ -38,23 +40,25 @@ export function DateField({
         ...rules?.validate,
         validDate: (value) => {
           const date = new Date(value)
-          return date.toString() !== 'Invalid Date' || 'Fecha inválida'
+          return value
+            ? date.toString() !== 'Invalid Date' || 'Fecha inválida'
+            : true
         },
         minDate: (value) => {
           const date = new Date(value)
           const minDate = new Date(date.getMonth() - 6)
-          return (
-            date >= minDate ||
-            'La fecha no debe ser mas de 6 meses anterior a la fecha actual'
-          )
+          return value
+            ? date >= minDate ||
+                'La fecha no debe ser mas de 6 meses anterior a la fecha actual'
+            : true
         },
         maxDate: (value) => {
           const date = new Date(value)
           const maxDate = new Date()
-          return (
-            date <= maxDate ||
-            'La fecha no debe ser posterior a la fecha actual'
-          )
+          return value
+            ? date <= maxDate ||
+                'La fecha no debe ser posterior a la fecha actual'
+            : true
         },
       },
     },

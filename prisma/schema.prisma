@@ -393,7 +393,7 @@ model operarios_servicios {
   id          Int      @id @default(autoincrement())
   legajo      Int?
   memo        String?   @db.VarChar
-  recibo      Int
+  recibo      Int?
   id_servicio Int
   a_cobrar    Int?
   hora_inicio DateTime? @db.Time(6)
@@ -401,7 +401,6 @@ model operarios_servicios {
   cancelado   Boolean?
   servicios   servicios @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
   operarios   operarios? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
-  recibos     recibos   @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
 
 
   @@schema("sueldos")
@@ -420,9 +419,8 @@ model recibos {
   importe_recibo      Int?
   acopio              Int
   id_cliente          Int?
-  operarios_servicios operarios_servicios[]
   clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
-  servicios           servicios[]
+
 
   @@schema("sueldos")
 }
@@ -437,7 +435,6 @@ model servicios {
   feriado             Boolean?
   operarios_servicios operarios_servicios[]
   clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
-  recibos             recibos?              @relation(fields: [recibo], references: [recibo], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("sueldos")
 }

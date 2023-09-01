@@ -135,6 +135,12 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
     footer: (props) => props.column.id,
   },
+  {
+    id: 'importe_servicio',
+    accessorFn: (row) => row.importe_servicio,
+    header: () => <span>Importe Servicio</span>,
+    cell: ({ getValue }) => `$ ${getValue<number>()}`,
+  },
 ]
 
 export const OperarioColumns: ColumnDef<IOperario>[] = [
@@ -146,7 +152,7 @@ export const OperarioColumns: ColumnDef<IOperario>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.operarios.nombre,
+    accessorFn: (row) => row.operarios?.nombre,
     id: 'nombre',
     cell: (info) => info.getValue(),
     header: () => <span>Nombre</span>,

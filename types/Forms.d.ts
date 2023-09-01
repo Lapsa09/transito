@@ -124,17 +124,20 @@ export type EstadoOperario = {
 
 export type ServiciosFormProps = {
   cliente: clientes
+  hay_recibo: boolean
   recibo?: number
-  fecha_recibo?: Date
+  fecha_recibo?: string
   importe_recibo?: number
-  acopio?: number
-  fecha_servicio: Date
+  acopio: number
+  fecha_servicio: string
   feriado?: boolean
+  memo?: string
   operarios: {
     operario?: operario
     hora_inicio: string
     hora_fin: string
     a_cobrar: number
+    cancelado: boolean
   }[]
   importe_servicio: number
 }

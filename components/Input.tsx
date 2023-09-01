@@ -51,7 +51,7 @@ function CustomInput({
       id={name}
       placeholder={placeholder}
       label={label}
-      className={twMerge('data-[has-helper=true]:pb-t pb-6', className)}
+      className={twMerge('data-[has-helper=true]:pb-6 pb-6', className)}
       classNames={{
         inputWrapper: 'border border-gray-600',
         input: 'uppercase',

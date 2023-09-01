@@ -56,6 +56,13 @@ export const getListaOperarios = async () => {
   return data
 }
 
+export const getAcopioFromCliente = async (id_cliente: number) => {
+  const data = await getter<number>({
+    route: 'sueldos/clientes/acopio/' + id_cliente,
+  })
+  return data
+}
+
 export const nuevoServicio = async ({ body }: { body: ServiciosFormProps }) => {
   const data = await setter<string>({
     route: 'sueldos/servicios',
@@ -87,9 +94,70 @@ export const updateMemo = async ({
   body: FieldValues
   id_servicio: number
 }) => {
-  const data = await updater<servicios>({
+  const data = await updater<Servicio>({
     route: 'sueldos/servicios/memo/' + id,
     body,
+  })
+  return data
+}
+
+export const cancelarOperario = async ({
+  id_servicio: id,
+  body,
+}: {
+  body: FieldValues
+  id_servicio: number
+}) => {
+  const data = await updater<Servicio>({
+    route: 'sueldos/operarios/servicio/' + id,
+    body,
+  })
+  return data
+}
+
+export const getServicioForEdit = async (id: string) => {
+  const data = await getter<ServiciosFormProps>({
+    route: 'sueldos/servicios/' + id,
+  })
+  return data
+}
+
+export const updateServicio = async ({
+  body,
+  id_servicio: id,
+}: {
+  body: ServiciosFormProps
+  id_servicio: string
+}) => {
+  const data = await updater<Servicio>({
+    route: 'sueldos/servicios/memo/' + id,
+    body,
+  })
+  return data
+}
+
+export const getForExport = async ({
+  mes,
+  año,
+}: {
+  mes: number
+  año: number
+}) => {
+  const data = await getter<Servicio[]>({
+    route: 'sueldos/servicios/liqui?mes=' + mes + '&año=' + año,
+  })
+  return data
+}
+
+export const getExportables = async () => {
+  const data = await getter<
+    {
+      mes: number
+      año: number
+      total: number
+    }[]
+  >({
+    route: 'sueldos/servicios/liqui/list',
   })
   return data
 }

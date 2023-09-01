@@ -40,7 +40,7 @@ export const NuevoCliente = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>
+      <Button className="py-3" onClick={onOpen}>
         <IoMdAdd />
       </Button>
       <Modal size="sm" isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -90,7 +90,7 @@ export const NuevoOperario = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>
+      <Button className="py-3" onClick={onOpen}>
         <IoMdAdd />
       </Button>
       <Modal size="sm" isOpen={isOpen} onOpenChange={onOpenChange}>

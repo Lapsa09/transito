@@ -7,7 +7,7 @@ import type {
 } from '@prisma/client'
 
 export interface IOperario extends operarios_servicios {
-  operarios: operario
+  operarios: operario | null
 }
 
 export interface Servicio extends servicios {

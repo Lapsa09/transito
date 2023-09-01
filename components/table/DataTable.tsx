@@ -5,8 +5,12 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  getExpandedRowModel,
+  getFilteredRowModel,
+  ColumnFiltersState,
   Row,
+  SortingState,
+  getSortedRowModel,
+  RowSelectionState,
 } from '@tanstack/react-table'
 import {
   Table,
@@ -17,7 +21,8 @@ import {
   TableRow,
 } from '@/components/ui'
 import { DataTablePagination } from './DataTablePagination'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
+import Filter from './DataTableFilters'
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -25,6 +30,8 @@ interface DataTableProps<TData> {
   getRowCanExpand?: (row: Row<TData>) => boolean
   expand?: ({ data }: { data: TData }) => React.ReactNode
   onClick?: (row: Row<TData>) => void
+  rowClassName?: (row: Row<TData>) => string
+  enableRowSelection?: boolean
 }
 
 export function DataTable<TData>({
@@ -33,7 +40,12 @@ export function DataTable<TData>({
   getRowCanExpand,
   expand,
   onClick,
+  rowClassName,
+  enableRowSelection = false,
 }: DataTableProps<TData>) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const table = useReactTable({
     data,
     columns,
@@ -41,6 +53,17 @@ export function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     columnResizeMode: 'onChange',
+    onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+      sorting,
+      rowSelection,
+    },
+    enableRowSelection,
+    onRowSelectionChange: setRowSelection,
   })
 
   return (
@@ -57,12 +80,32 @@ export function DataTable<TData>({
                     className="relative pl-4 py-1 font-bold h-[30px]"
                     style={{ width: header.getSize() }}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {header.isPlaceholder ? null : (
+                      <>
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? 'cursor-pointer select-none'
+                              : '',
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: ' 🔼',
+                            desc: ' 🔽',
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                        {header.column.getCanFilter() ? (
+                          <div>
+                            <Filter column={header.column} table={table} />
+                          </div>
+                        ) : null}
+                      </>
+                    )}
                     <div
                       onMouseDown={header.getResizeHandler()}
                       onTouchStart={header.getResizeHandler()}
@@ -86,6 +129,7 @@ export function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <Fragment key={row.id}>
                   <TableRow
+                    className={rowClassName ? rowClassName(row) : ''}
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
                   >

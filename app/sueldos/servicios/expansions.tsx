@@ -9,7 +9,13 @@ type MesProps = {
 }
 
 function Mes({ data }: MesProps) {
-  return <DataTable data={data.servicios} columns={OperarioColumns} />
+  return (
+    <DataTable
+      data={data.servicios}
+      columns={OperarioColumns}
+      rowClassName={(row) => (row.original.cancelado ? 'bg-danger' : '')}
+    />
+  )
 }
 
 export default Mes

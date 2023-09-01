@@ -6,7 +6,7 @@ import { ServicioColumns } from './columns'
 import Mes from './expansions'
 import useSWR from 'swr'
 
-async function page() {
+function page() {
   const { data, isLoading } = useSWR('servicios', getServicios)
   if (isLoading) return null
   return (
@@ -14,7 +14,7 @@ async function page() {
       columns={ServicioColumns}
       data={data}
       expand={Mes}
-      getRowCanExpand={() => true}
+      getRowCanExpand={(row) => row.original.servicios?.length > 0}
     />
   )
 }

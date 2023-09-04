@@ -161,3 +161,11 @@ export const getExportables = async () => {
   })
   return data
 }
+
+export const exportAgenda = async ({ body }: { body: { fecha: string } }) => {
+  const data = await setter({
+    route: 'sueldos/servicios/export',
+    body,
+  })
+  return data
+}

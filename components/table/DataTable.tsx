@@ -21,15 +21,14 @@ import {
   TableRow,
 } from '@/components/ui'
 import { DataTablePagination } from './DataTablePagination'
-import { Fragment, useState } from 'react'
+import { ComponentType, Fragment, useState } from 'react'
 import Filter from './DataTableFilters'
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data?: TData[]
   getRowCanExpand?: (row: Row<TData>) => boolean
-  expand?: ({ data }: { data: TData }) => React.ReactNode
-  onClick?: (row: Row<TData>) => void
+  expand?: ComponentType<{ data: TData }>
   rowClassName?: (row: Row<TData>) => string
   enableRowSelection?: boolean
 }
@@ -38,8 +37,7 @@ export function DataTable<TData>({
   columns,
   data = [],
   getRowCanExpand,
-  expand,
-  onClick,
+  expand: Expand,
   rowClassName,
   enableRowSelection = false,
 }: DataTableProps<TData>) {
@@ -65,7 +63,6 @@ export function DataTable<TData>({
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
   })
-
   return (
     <div className="w-full">
       <div className="rounded-md border overflow-x-auto">
@@ -137,7 +134,6 @@ export function DataTable<TData>({
                       <TableCell
                         key={cell.id}
                         style={{ width: cell.column.getSize() }}
-                        onClick={onClick && (() => onClick(row))}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -146,14 +142,12 @@ export function DataTable<TData>({
                       </TableCell>
                     ))}
                   </TableRow>
-                  {expand && (
+                  {Expand && (
                     <TableRow
                       className={`${row.getIsExpanded() ? '' : 'hidden'}`}
                     >
                       <TableCell colSpan={row.getVisibleCells().length}>
-                        {expand({
-                          data: row.original,
-                        })}
+                        <Expand data={row.original} />
                       </TableCell>
                     </TableRow>
                   )}
@@ -172,7 +166,7 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {data.length > 10 && <DataTablePagination table={table} />}
     </div>
   )
 }

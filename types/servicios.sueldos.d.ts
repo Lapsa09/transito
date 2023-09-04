@@ -6,10 +6,10 @@ import {
 } from '@prisma/client'
 
 export interface Operarios extends operarios_servicios {
-  operario: operario
+  operarios: operario
 }
 
 export interface Servicio extends servicios {
-  cliente: clientes
-  servicios: Operarios[]
+  clientes: clientes
+  operarios_servicios: Operarios[]
 }

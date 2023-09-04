@@ -124,12 +124,12 @@ export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
   const onSubmit = async (body: FieldValues) => {
     try {
       await mutate<servicios[]>(
-        'operarios',
+        'servicios',
         async (data) => {
           const req = await updateMemo({ body, id_servicio })
           if (data) {
             return data.map((servicio) => {
-              if (servicio.id_servicio === id_servicio) {
+              if (servicio.id_servicio === req.id_servicio) {
                 return req
               }
               return servicio
@@ -156,17 +156,17 @@ export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
           <ModalHeader className="flex flex-col gap-1">
             Nuevo Cliente
           </ModalHeader>
-          <ModalBody>
-            <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalBody>
               <FormProvider {...methods}>
                 <Input name="memo" label="Memo" />
               </FormProvider>
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onClose}>Cerrar</Button>
-            <Button type="submit">Guardar</Button>
-          </ModalFooter>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose}>Cerrar</Button>
+              <Button type="submit">Guardar</Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </>

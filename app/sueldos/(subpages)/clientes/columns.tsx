@@ -6,7 +6,6 @@ export const ClientesColumns: ColumnDef<Cliente>[] = [
   {
     id: 'expander',
     header: () => null,
-    size: 1450,
     cell: ({ row }) => {
       return (
         row.getCanExpand() && (
@@ -50,7 +49,7 @@ export const ClientesColumns: ColumnDef<Cliente>[] = [
   {
     accessorFn: (row) => row.a_deudor,
     id: 'a_deudor',
-    header: 'A Deudor',
+    header: 'Gastado',
     cell: ({ getValue }) => `$ ${getValue<number>()}`,
     footer: (props) => props.column.id,
   },

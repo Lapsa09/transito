@@ -5,7 +5,6 @@ import { Operario, Operarios } from '@/types/operarios.sueldos'
 export const OperarioColumns: ColumnDef<Operario>[] = [
   {
     id: 'expander',
-    size: 1450,
     cell: ({ row }) => {
       return (
         row.getCanExpand() && (
@@ -39,14 +38,14 @@ export const OperarioColumns: ColumnDef<Operario>[] = [
 
 export const OperariosColumns: ColumnDef<Operarios>[] = [
   {
-    accessorFn: (row) => row.servicio.cliente.cliente,
+    accessorFn: (row) => row.servicios?.clientes?.cliente,
     id: 'cliente',
     header: () => <span>Cliente</span>,
     cell: ({ getValue }) => getValue<string>(),
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.servicio.fecha_servicio,
+    accessorFn: (row) => row.servicios?.fecha_servicio,
     id: 'fecha_servicio',
     header: () => 'Fecha Servicio',
     cell: ({ getValue }) => new Date(getValue<Date>()).toLocaleDateString(),
@@ -60,14 +59,14 @@ export const OperariosColumns: ColumnDef<Operarios>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.servicio.importe_servicio,
+    accessorFn: (row) => row.servicios?.importe_servicio,
     id: 'importe_servicio',
     header: () => <span>Importe Servicio</span>,
     cell: ({ getValue }) => `$ ${getValue<number>()}`,
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.servicio.memo,
+    accessorFn: (row) => row.servicios?.memo,
     id: 'memo',
     header: () => <span>Memo</span>,
     cell: ({ getValue }) => getValue<string>(),

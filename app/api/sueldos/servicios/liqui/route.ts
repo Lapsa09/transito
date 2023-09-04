@@ -42,25 +42,29 @@ export async function GET(req: NextRequest) {
       const operarios = []
       let i = 0
       for (const operario of servicio.operarios_servicios) {
-        if (recibos[i].acopio >= operario.a_cobrar!) {
+        let acopio = recibos[i].importe_recibo!
+        if (acopio >= operario.a_cobrar!) {
           operario.recibo = recibos[i].recibo
-          recibos[i].acopio -= operario.a_cobrar!
+          acopio -= operario.a_cobrar!
+          recibos[i].acopio = acopio
           operarios.push(operario)
         } else {
           let cuantoFalta = operario.a_cobrar!
-          while (recibos[i].acopio < cuantoFalta && i < recibos.length) {
-            cuantoFalta -= recibos[i].acopio
+          while (acopio < cuantoFalta && i < recibos.length) {
+            cuantoFalta -= acopio
             const _operario = { ...operario }
             _operario.recibo = recibos[i].recibo
             _operario.a_cobrar = recibos[i].acopio
-            recibos[i].acopio = 0
+            acopio = 0
+            recibos[i].acopio = acopio
             operarios.push(_operario)
             i++
           }
           if (cuantoFalta > 0) {
             operario.recibo = recibos[i].recibo
             operario.a_cobrar = cuantoFalta
-            recibos[i].acopio -= cuantoFalta
+            acopio -= cuantoFalta
+            recibos[i].acopio = acopio
             operarios.push(operario)
           }
         }

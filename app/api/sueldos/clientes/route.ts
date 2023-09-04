@@ -11,9 +11,9 @@ const sueldosPrisma = prisma.$extends({
           ...rest,
           include: {
             ...rest.include,
+            recibos: true,
             servicios: {
               include: {
-                recibos: true,
                 operarios_servicios: { include: { operarios: true } },
               },
             },
@@ -32,14 +32,19 @@ const sueldosPrisma = prisma.$extends({
               if (recibo) {
                 recibo.servicios.push(servicio)
                 recibo.gastos += servicio.importe_servicio!
-                recibo.acopio += servicio.recibos?.acopio || 0
               } else {
                 acc.push({
                   mes,
                   año,
                   servicios: [servicio],
                   gastos: servicio.importe_servicio!,
-                  acopio: servicio.recibos?.acopio || 0,
+                  acopio: cliente.recibos
+                    .filter(
+                      (recibo) =>
+                        recibo.fecha_recibo?.getMonth() === mes &&
+                        recibo.fecha_recibo?.getFullYear() === año
+                    )
+                    .reduce((acc, recibo) => acc + recibo.acopio, 0),
                 })
               }
 

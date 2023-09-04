@@ -29,7 +29,7 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     },
   },
   {
-    accessorFn: (row) => row.cliente?.cliente,
+    accessorFn: (row) => row.clientes?.cliente,
     id: 'cliente',
     cell: (info) => info.getValue(),
     header: () => <span>Cliente</span>,
@@ -78,7 +78,7 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.operario.nombre,
+    accessorFn: (row) => row.operarios?.nombre,
     id: 'nombre',
     cell: (info) => info.getValue(),
     header: () => <span>Nombre</span>,
@@ -87,21 +87,21 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
   {
     accessorFn: (row) => row.hora_inicio,
     id: 'hora_inicio',
-    cell: (info) => info.getValue(),
+    cell: (info) => new Date(info.getValue<string>()).toLocaleTimeString(),
     header: () => <span>Hora Inicio</span>,
     footer: (props) => props.column.id,
   },
   {
     accessorFn: (row) => row.hora_fin,
     id: 'hora_fin',
-    cell: (info) => info.getValue(),
+    cell: (info) => new Date(info.getValue<string>()).toLocaleTimeString(),
     header: () => <span>Hora Fin</span>,
     footer: (props) => props.column.id,
   },
   {
     accessorFn: (row) => row.a_cobrar,
     id: 'a_cobrar',
-    cell: (info) => info.getValue(),
+    cell: (info) => `$ ${info.getValue<number>()}`,
     header: () => <span>A Cobrar</span>,
     footer: (props) => props.column.id,
   },
@@ -110,14 +110,13 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
     header: () => null,
     cell: (info) => (
       <Button
-        onClick={() => {
-          mutate<servicios[]>(
+        onClick={async () => {
+          await mutate<Servicio[]>(
             'servicios',
             async (data) => {
               const res = await cancelarOperario({
                 id_servicio: info.row.original.id,
                 body: {
-                  legajo: info.row.original.legajo,
                   cancelado: info.row.original.cancelado,
                 },
               })

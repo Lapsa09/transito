@@ -12,7 +12,6 @@ export interface IOperario extends operarios_servicios {
 
 export interface Servicio extends servicios {
   operarios_servicios: IOperario[]
-  recibos: recibos | null
 }
 
 export interface Historial {

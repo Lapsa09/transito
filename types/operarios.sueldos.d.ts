@@ -10,9 +10,9 @@ export interface Operario extends operario {
 }
 
 export interface Operarios extends operarios_servicios {
-  servicio: Servicio
+  servicios: Servicio
 }
 
 export interface Servicio extends servicios {
-  cliente: clientes
+  clientes: clientes
 }

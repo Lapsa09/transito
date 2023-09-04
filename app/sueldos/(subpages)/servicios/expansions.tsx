@@ -11,7 +11,7 @@ type MesProps = {
 function Mes({ data }: MesProps) {
   return (
     <DataTable
-      data={data.servicios}
+      data={data.operarios_servicios}
       columns={OperarioColumns}
       rowClassName={(row) => (row.original.cancelado ? 'bg-danger' : '')}
     />

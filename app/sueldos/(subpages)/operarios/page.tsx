@@ -9,7 +9,7 @@ import useSWR from 'swr'
 function page() {
   const { data, isLoading } = useSWR('operarios', getOperarios)
   if (isLoading) return null
-  console.log(data)
+
   return (
     <DataTable
       columns={OperarioColumns}

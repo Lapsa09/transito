@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { ServiciosFormProps } from '@/types'
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+  _: NextRequest,
+  { params }: { params: { id: string } }
+) {
   console.log(params.id)
   const servicios = await prisma.servicios.findFirst({
     where: {

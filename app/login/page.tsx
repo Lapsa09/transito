@@ -47,11 +47,13 @@ function page() {
             label="Legajo"
             name="legajo"
             rules={{ required: 'Campo requerido' }}
+            placeholder="12345"
           />
           <Input
             label="Contraseña"
             name="password"
             type="password"
+            placeholder="********"
             rules={{ required: 'Campo requerido' }}
           />
           <Button type="submit">Iniciar sesion</Button>

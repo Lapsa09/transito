@@ -55,9 +55,9 @@ export async function GET() {
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(autos, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    )
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ),
   )
 }
 
@@ -86,6 +86,10 @@ export async function POST(req: Request) {
       })
     }
 
+    const _hora = new Date(data.fecha)
+    // @ts-ignore
+    _hora.setHours(...data.hora.split(':'))
+
     const camion = await prisma.camiones_registros.create({
       data: {
         acta: data.acta,
@@ -103,7 +107,7 @@ export async function POST(req: Request) {
         id_localidad_destino: data.localidad_destino?.id_barrio,
         remito: data.remito,
         carga: data.carga,
-        hora: data.hora,
+        hora: _hora,
       },
       include: {
         operativo: {
@@ -118,9 +122,9 @@ export async function POST(req: Request) {
     return NextResponse.json(
       JSON.parse(
         JSON.stringify(camion, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value
-        )
-      )
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
+      ),
     )
   } catch (error) {
     console.log(error)

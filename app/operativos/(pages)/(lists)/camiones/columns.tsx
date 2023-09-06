@@ -16,32 +16,33 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'ID',
   },
   {
-    accessorKey: 'fecha',
+    accessorFn: (row) => row.operativo?.fecha,
     header: 'Fecha',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+    id: 'fecha',
   },
   {
-    accessorKey: 'legajo_carga',
-    header: 'Legajo Carga',
+    accessorFn: (row) => row.operativo?.legajo,
+    header: 'Legajo',
   },
   {
-    accessorKey: 'direccion',
+    accessorFn: (row) => row.operativo?.direccion,
     header: 'Direccion',
   },
   {
-    accessorKey: 'localidad',
+    accessorFn: (row) => row.operativo?.localidad?.barrio,
     header: 'Localidad',
   },
   {
-    accessorKey: 'cp',
+    accessorFn: (row) => row.operativo?.localidad?.cp,
     header: 'CP',
   },
   {
-    accessorKey: 'turno',
+    accessorFn: (row) => row.operativo?.turno,
     header: 'Turno',
   },
   {
-    accessorKey: 'hora_carga',
+    accessorKey: 'hora',
     header: 'Hora',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
@@ -58,7 +59,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Origen',
   },
   {
-    accessorKey: 'localidad_origen',
+    accessorFn: (row) => row.localidad_origen?.barrio,
     header: 'Localidad Origen',
   },
   {
@@ -66,7 +67,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Destino',
   },
   {
-    accessorKey: 'localidad_destino',
+    accessorFn: (row) => row.localidad_destino?.barrio,
     header: 'Localidad Destino',
   },
   {
@@ -84,7 +85,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Acta',
   },
   {
-    accessorKey: 'motivo',
+    accessorFn: (row) => row.motivo?.motivo,
     header: 'Motivo',
   },
   {

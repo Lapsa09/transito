@@ -32,8 +32,8 @@ export type Registro = {
 
 export type Operativo = {
   id_op: number
-  fecha: Date | null
-  hora: Date | null
+  fecha: string
+  hora: string
   qth: string | null
   legajo_a_cargo: number | null
   legajo_planilla: number | null

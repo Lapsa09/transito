@@ -32,67 +32,77 @@ function page() {
           router.replace('/login')
         })
         .catch((error: any) => {
-          toast({ title: error.response.data, variant: 'destructive' })
+          toast({
+            title: error.response?.data || error.message,
+            variant: 'destructive',
+          })
         })
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-16 dark:bg-black flex flex-col items-center">
+    <div className="max-w-3xl mx-auto bg-white p-16 dark:bg-black flex flex-col items-center">
       <MainLogoOVT />
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div>
-              <Input
-                label="Legajo"
-                placeholder="12345"
-                type="number"
-                name="legajo"
-                rules={{ required: 'Campo requerido' }}
-              />
-            </div>
-            <div>
-              <Input
-                label="Nombre"
-                placeholder="John"
-                name="nombre"
-                rules={{ required: 'Campo requerido' }}
-              />
-            </div>
-            <div>
-              <Input
-                label="Apellido"
-                placeholder="Doe"
-                name="apellido"
-                rules={{ required: 'Campo requerido' }}
-              />
-            </div>
-            <div>
-              <Input
-                label="Telefono"
-                placeholder="11-1234-5678"
-                name="telefono"
-                type="tel"
-              />
-            </div>
+        <form
+          className="flex w-full flex-col items-center"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className="flex w-5/6 justify-between flex-wrap">
+            <Input
+              label="Legajo"
+              placeholder="12345"
+              type="number"
+              name="legajo"
+              className="w-full basis-5/12"
+              rules={{ required: 'Campo requerido' }}
+            />
+
+            <Input
+              label="Nombre"
+              placeholder="John"
+              name="nombre"
+              className="w-full basis-5/12"
+              rules={{ required: 'Campo requerido' }}
+            />
+
+            <Input
+              label="Apellido"
+              placeholder="Doe"
+              name="apellido"
+              className="w-full basis-5/12"
+              rules={{ required: 'Campo requerido' }}
+            />
+
+            <Input
+              label="Telefono"
+              placeholder="11-1234-5678"
+              name="telefono"
+              className="w-full basis-5/12"
+              type="tel"
+            />
+
+            <Input
+              label="Contraseña"
+              name="password"
+              type="password"
+              className="w-full basis-5/12"
+              placeholder="******"
+              rules={{ required: 'Campo requerido' }}
+            />
+            <Input
+              label="Confirmar Contraseña"
+              name="confirmPassword"
+              type="password"
+              className="w-full basis-5/12"
+              placeholder="******"
+              rules={{ required: 'Campo requerido' }}
+            />
           </div>
-          <Input
-            label="Contraseña"
-            name="password"
-            type="password"
-            rules={{ required: 'Campo requerido' }}
-          />
-          <Input
-            label="Confirmar Contraseña"
-            name="confirmPassword"
-            type="password"
-            rules={{ required: 'Campo requerido' }}
-          />
           <Button type="submit">Registrarse</Button>
         </form>
       </FormProvider>
-      <p>
+      <p className="mt-2">
         Ya estas registrado? <Link href="/login">Inicia sesion</Link>
       </p>
     </div>

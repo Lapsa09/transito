@@ -15,14 +15,14 @@ const es_del = async (zona_infractor: string) => {
   }
 }
 
-const alcoholemia = (graduacion_alcoholica: number): resultado => {
+const alcoholemia = (graduacion_alcoholica: string): resultado => {
   if (
-    graduacion_alcoholica == 0 ||
+    +graduacion_alcoholica === 0 ||
     !graduacion_alcoholica ||
-    graduacion_alcoholica == 0.0
+    +graduacion_alcoholica === 0.0
   )
     return resultado.NEGATIVA
-  else if (graduacion_alcoholica > 0.05 && graduacion_alcoholica < 0.5)
+  else if (+graduacion_alcoholica > 0.05 && +graduacion_alcoholica < 0.5)
     return resultado.NO_PUNITIVA
   else return resultado.PUNITIVA
 }
@@ -98,15 +98,15 @@ export async function GET() {
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(autos, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    )
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ),
   )
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const body: FormAutosProps = await req.json()
 
     const data = {
       ...body,
@@ -135,7 +135,9 @@ export async function POST(req: Request) {
       data: {
         acta: data.acta,
         dominio: data.dominio.toUpperCase(),
-        graduacion_alcoholica: data.graduacion_alcoholica.toString(),
+        graduacion_alcoholica: data.graduacion_alcoholica
+          ? +data.graduacion_alcoholica
+          : 0,
         fechacarga: new Date(),
         licencia: data.licencia ? ++data.licencia : undefined,
         lpcarga: data.lpcarga,
@@ -162,9 +164,9 @@ export async function POST(req: Request) {
     return NextResponse.json(
       JSON.parse(
         JSON.stringify(auto, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value
-        )
-      )
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
+      ),
     )
   } catch (error) {
     console.log(error)

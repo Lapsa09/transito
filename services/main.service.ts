@@ -6,34 +6,31 @@ import {
   tipo_licencias,
   turnos,
   vicente_lopez,
+  zonas,
 } from '@prisma/client'
-import axios from 'axios'
+import Axios from 'axios'
 
 type Props = {
   route: string
   body?: any
 }
 
+const axios = Axios.create({ baseURL: 'http://trtraobs1:3000/api/' })
+
 export const getter = async <T = any>({ route }: Props) => {
-  const { data } = await axios.get<T>('http://localhost:3000/api/' + route)
+  const { data } = await axios.get<T>(route)
 
   return data
 }
 
 export const setter = async <T = any>({ route, body }: Props) => {
-  const { data } = await axios.post<T>(
-    'http://localhost:3000/api/' + route,
-    body
-  )
+  const { data } = await axios.post<T>(route, body)
 
   return data
 }
 
 export const updater = async <T = any>({ route, body }: Props) => {
-  const { data } = await axios.put<T>(
-    'http://localhost:3000/api/' + route,
-    body
-  )
+  const { data } = await axios.put<T>(route, body)
   return data
 }
 
@@ -93,6 +90,13 @@ export const getRoles = async () => {
   return data
 }
 
+export const getZonasPaseo = async () => {
+  const data = await getter<zonas[]>({
+    route: 'zonas/paseo',
+  })
+  return data
+}
+
 export const getSelects = async () => {
   const [
     zonas,
@@ -102,6 +106,7 @@ export const getSelects = async () => {
     resolucion,
     motivos,
     vicenteLopez,
+    zonasPaseo,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -110,6 +115,7 @@ export const getSelects = async () => {
     getResolucion(),
     getMotivos(),
     getVicenteLopez(),
+    getZonasPaseo(),
   ])
   return {
     zonas,
@@ -119,5 +125,6 @@ export const getSelects = async () => {
     resolucion,
     motivos,
     vicenteLopez,
+    zonasPaseo,
   }
 }

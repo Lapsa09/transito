@@ -49,7 +49,7 @@ function CustomInput({
       onChange={onChange}
       type={type}
       id={name}
-      placeholder={placeholder}
+      placeholder={placeholder ?? ' '}
       label={label}
       className={twMerge('data-[has-helper=true]:pb-6 pb-6', className)}
       classNames={{

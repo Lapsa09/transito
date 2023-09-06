@@ -156,7 +156,7 @@ model operativos_operativos {
   id_op           Int                    @id @default(autoincrement())
   fecha           DateTime?              @db.Date
   qth             String?                @db.VarChar
-  turno           turnos?
+  turno           turnos_old?
   legajo_a_cargo  Int?
   legajo_planilla Int?
   id_localidad    Int?

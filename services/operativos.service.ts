@@ -3,6 +3,7 @@ import { EditAutosProps, EditCamionesProps, EditMotosProps } from '@/types'
 import { Registro as Auto } from '@/types/autos'
 import { Registro as Camion } from '@/types/camiones'
 import { Registro as Moto } from '@/types/motos'
+import { Registro as Paseo } from '@/types/rio'
 
 export const getAutos = async () =>
   await getter<Auto[]>({ route: 'operativos/autos' })
@@ -14,6 +15,12 @@ export const getCamiones = async () =>
   await getter<Camion[]>({
     route: 'operativos/camiones',
   })
+
+export const getPaseo = async () => {
+  return await getter<Paseo[]>({
+    route: 'operativos/rio',
+  })
+}
 
 export const getSingleAuto = async (id: number) =>
   await getter<EditAutosProps>({

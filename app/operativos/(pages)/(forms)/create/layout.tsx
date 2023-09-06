@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import FormLayout from '@/components/forms/layout.form'
-import { FormInputProps, LocalOperativo } from '@/types'
+import { FormInputProps, LocalOperativo, Registro } from '@/types'
 import { mutate } from 'swr'
 import { useStepForm, useToast } from '@/hooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
@@ -29,7 +29,7 @@ function layout({ children }: React.PropsWithChildren) {
     layoutSegment,
     {
       expiresAt: 0,
-    }
+    },
   )
   const { setActiveStep } = useStepForm()
   const onSubmit: SubmitHandler<FormInputProps> = async (body) => {
@@ -37,7 +37,7 @@ function layout({ children }: React.PropsWithChildren) {
       await mutate(
         layoutSegment,
         async (data: any) => {
-          const post = await setter({
+          const post = await setter<Registro>({
             route: `/operativos/${layoutSegment}`,
             body,
           })
@@ -46,15 +46,19 @@ function layout({ children }: React.PropsWithChildren) {
         },
         {
           revalidate: false,
-        }
+        },
       )
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       const { expiresAt, ...rest } = operativo
-      reset(rest)
+      if (layoutSegment === 'camiones') {
+        reset({ ...rest, hora: '' })
+      } else {
+        reset(rest)
+      }
       setFocus('dominio')
     } catch (error: any) {
       toast({
-        title: error.response.data || error.message,
+        title: error.response?.data || error.message,
         variant: 'destructive',
       })
     }

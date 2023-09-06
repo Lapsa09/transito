@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import FormLayout from '@/components/forms/layout.form'
-import { FormInputProps, LocalOperativo, Registro } from '@/types'
+import { FormInputProps, LocalOperativo, Registro, RioFormProps } from '@/types'
 import { mutate } from 'swr'
 import { useStepForm, useToast } from '@/hooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
@@ -13,7 +13,7 @@ import Modal from '@/components/Modal'
 
 function layout({ children }: { children: React.ReactNode }) {
   const { data } = useSession({ required: true })
-  const methods = useForm<FormInputProps>({
+  const methods = useForm<FormInputProps | RioFormProps>({
     mode: 'all',
     resetOptions: { keepDefaultValues: true },
     defaultValues: {
@@ -25,15 +25,18 @@ function layout({ children }: { children: React.ReactNode }) {
     | 'autos'
     | 'motos'
     | 'camiones'
+    | 'rio'
   const { toast } = useToast()
   const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
     layoutSegment,
     {
       expiresAt: 0,
-    }
+    },
   )
   const { setActiveStep } = useStepForm()
-  const onSubmit: SubmitHandler<FormInputProps> = async (body) => {
+  const onSubmit: SubmitHandler<FormInputProps | RioFormProps> = async (
+    body,
+  ) => {
     try {
       await mutate<Registro[]>(
         layoutSegment,
@@ -47,15 +50,19 @@ function layout({ children }: { children: React.ReactNode }) {
         },
         {
           revalidate: false,
-        }
+        },
       )
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       const { expiresAt, ...rest } = operativo
-      reset(rest)
+      if (layoutSegment === 'camiones') {
+        reset({ ...rest, hora: '' })
+      } else {
+        reset(rest)
+      }
       setFocus('dominio')
     } catch (error: any) {
       toast({
-        title: error.response.data || error.message,
+        title: error.response?.data || error.message,
         variant: 'destructive',
       })
     }

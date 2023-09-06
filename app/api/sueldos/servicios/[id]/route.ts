@@ -4,15 +4,18 @@ import { ServiciosFormProps } from '@/types'
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
-  console.log(params.id)
   const servicios = await prisma.servicios.findFirst({
     where: {
       id_servicio: +params.id,
     },
     include: {
-      clientes: { select: { cliente: true } },
+      clientes: {
+        include: {
+          recibos: true,
+        },
+      },
       operarios_servicios: {
         include: {
           operarios: true,
@@ -20,12 +23,26 @@ export async function GET(
       },
     },
   })
-  return NextResponse.json(servicios)
+
+  const res = {
+    ...servicios,
+    cliente: servicios?.clientes,
+    fecha_servicio: servicios?.fecha_servicio?.toISOString().split('T')[0],
+    ...servicios?.clientes?.recibos[0],
+    fecha_recibo: servicios?.clientes?.recibos[0]?.fecha_recibo
+      ?.toISOString()
+      .split('T')[0],
+    hay_recibo: servicios?.clientes?.recibos?.length! > 0,
+  }
+
+  delete res.clientes
+
+  return NextResponse.json(res)
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const body: ServiciosFormProps = await req.json()
 

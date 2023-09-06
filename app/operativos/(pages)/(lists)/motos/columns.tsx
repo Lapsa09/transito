@@ -14,41 +14,41 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'ID',
   },
   {
-    accessorKey: 'fecha',
+    accessorFn: (row) => row.operativo?.fecha,
     header: 'Fecha',
-    cell: ({ row }) => new Date(row.getValue('fecha')).toLocaleDateString(),
+    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
   },
   {
-    accessorKey: 'hora',
+    accessorFn: (row) => row.operativo?.hora,
     header: 'Hora',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
-    accessorKey: 'legajo_a_cargo',
+    accessorFn: (row) => row.operativo?.legajo_a_cargo,
     header: 'Legajo a cargo',
   },
   {
-    accessorKey: 'legajo_planilla',
+    accessorFn: (row) => row.operativo?.legajo_planilla,
     header: 'Legajo planilla',
   },
   {
-    accessorKey: 'qth',
+    accessorFn: (row) => row.operativo?.qth,
     header: 'QTH',
   },
   {
-    accessorKey: 'barrio',
+    accessorFn: (row) => row.operativo?.localidad?.barrio,
     header: 'Barrio',
   },
   {
-    accessorKey: 'cp',
+    accessorFn: (row) => row.operativo?.localidad?.cp,
     header: 'CP',
   },
   {
-    accessorKey: 'turno',
+    accessorFn: (row) => row.operativo?.turno,
     header: 'Turno',
   },
   {
-    accessorKey: 'seguridad',
+    accessorFn: (row) => row.operativo?.seguridad,
     header: 'Seguridad',
   },
   {
@@ -60,15 +60,15 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Licencia',
   },
   {
-    accessorKey: 'tipo_licencia',
+    accessorFn: (row) => row.tipo_licencias?.tipo,
     header: 'Tipo de licencia',
   },
   {
-    accessorKey: 'tipo_vehiculo',
+    accessorFn: (row) => row.tipo_licencias?.vehiculo,
     header: 'Tipo de vehículo',
   },
   {
-    accessorKey: 'zona_infractor',
+    accessorFn: (row) => row.barrio?.barrio,
     header: 'Zona infractor',
   },
   {
@@ -76,7 +76,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Resolución',
   },
   {
-    accessorKey: 'motivos',
+    accessorFn: (row) => row.motivos.map((m) => m.motivo).join(', '),
     header: 'Motivos',
   },
   {

@@ -10,7 +10,8 @@ import { Typography } from '@material-tailwind/react'
 function Header() {
   const session = useSession()
 
-  if (session.status === 'unauthenticated') return null
+  if (session.status === 'unauthenticated' || session.status === 'loading')
+    return null
 
   const user = session.data?.user
 

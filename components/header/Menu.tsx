@@ -12,6 +12,7 @@ const operativos: Links[] = [
   { link: '/operativos/autos', name: 'Autos' },
   { link: '/operativos/motos', name: 'Motos' },
   { link: '/operativos/camiones', name: 'Camiones' },
+  { link: '/operativos/rio', name: 'Rio' },
 ]
 
 const pages: Links[] = [
@@ -22,8 +23,8 @@ const pages: Links[] = [
     permission: Roles.INSPECTOR,
   },
   { name: 'Sueldos', permission: Roles.ADMINISTRATIVO, link: '/sueldos' },
-  { name: 'Waze', permission: Roles.WAZE, link: '/waze' },
-  { name: 'Radio', permission: Roles.INSPECTOR, link: '/radio' },
+  // { name: 'Waze', permission: Roles.WAZE, link: '/waze' },
+  // { name: 'Radio', permission: Roles.INSPECTOR, link: '/radio' },
 ]
 
 function Menu() {
@@ -48,7 +49,7 @@ function Menu() {
                   {page.name}
                 </Button>
               </Link>
-            )
+            ),
           )}
 
           <Button variant="text" className="text-gray-700 hover:text-green-400">

@@ -195,7 +195,7 @@ function OperarioForm({
   const { data: operarios, isLoading } = useSWR('operarios', getListaOperarios)
   const { data: precios, isLoading: loadingPrecios } = useSWR(
     'precios',
-    getPrecios
+    getPrecios,
   )
   const { feriado, fecha_servicio, operarios: watchOps = [] } = watch()
   const field = watchOps[index]

@@ -8,6 +8,8 @@ import {
   tipo_licencias,
   turnos,
   vicente_lopez,
+  motivo,
+  zonas,
 } from '@prisma/client'
 import { Operativo } from './operativos'
 
@@ -54,7 +56,7 @@ export interface EditInputProps extends FormInputProps {
 }
 
 export interface FormAutosProps extends FormInputProps {
-  graduacion_alcoholica: number
+  graduacion_alcoholica: string
   motivo?: motivos
 }
 
@@ -140,4 +142,18 @@ export type ServiciosFormProps = {
     cancelado: boolean
   }[]
   importe_servicio: number
+}
+
+export type RioFormProps = {
+  fecha: string
+  motivo: motivo
+  lp: string
+  turno: turnos
+  hora: string
+  dominio: string
+  acta: bigint
+  resolucion: resolucion
+  fechacarga: string
+  lpcarga: string
+  zona: zonas
 }

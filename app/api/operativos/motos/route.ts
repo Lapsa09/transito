@@ -1,30 +1,34 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
+import { FormMotosProps } from '@/types'
 
-const operativoMotos = async (body: any) => {
+const operativoMotos = async (body: FormMotosProps) => {
   const {
     fecha,
-    direccion,
+    qth,
     turno,
     legajo_a_cargo,
     legajo_planilla,
-    zona,
+    localidad,
     seguridad,
     hora,
   } = body
 
+  const _hora = new Date(fecha)
+  // @ts-ignore
+  _hora.setHours(...hora.split(':'))
+
   try {
     const op = await prisma.motos_operativos.findFirst({
       where: {
-        fecha,
-        qth: direccion,
+        fecha: new Date(fecha),
+        qth,
         turno,
-        legajo_a_cargo,
-        legajo_planilla,
-        id_zona: zona.id_barrio,
+        legajo_a_cargo: +legajo_a_cargo,
+        legajo_planilla: +legajo_planilla,
         seguridad,
-        hora,
-        direccion_full: `${direccion}, ${zona.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+        hora: _hora,
+        direccion_full: `${qth}, ${localidad?.cp}, Vicente Lopez, Buenos Aires, Argentina`,
       },
       select: {
         id_op: true,
@@ -34,15 +38,15 @@ const operativoMotos = async (body: any) => {
     if (!op) {
       const id_op = await prisma.motos_operativos.create({
         data: {
-          fecha,
-          qth: direccion,
+          fecha: new Date(fecha),
+          qth,
           turno,
-          legajo_a_cargo,
-          legajo_planilla,
-          id_zona: zona.id_barrio,
+          legajo_a_cargo: +legajo_a_cargo,
+          legajo_planilla: +legajo_planilla,
+          id_zona: localidad?.id_barrio,
           seguridad,
-          hora,
-          direccion_full: `${direccion}, ${zona.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+          hora: _hora,
+          direccion_full: `${qth}, ${localidad?.cp}, Vicente Lopez, Buenos Aires, Argentina`,
         },
         select: {
           id_op: true,
@@ -72,7 +76,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json()
+  const body: FormMotosProps = await req.json()
 
   const data = { ...body, id_operativo: await operativoMotos(body) }
 
@@ -91,41 +95,50 @@ export async function POST(req: Request) {
 
   const moto = await prisma.motos_registros.create({
     data: {
-      id_licencia: data.id_licencia,
-      id_zona_infractor: data.zona_infractor.id_zona,
       acta: data.acta,
       dominio: data.dominio,
       fechacarga: new Date(),
-      licencia: data.licencia,
+      licencia: data.licencia ? +data.licencia : null,
       lpcarga: data.lpcarga,
-      resolucion: data.resolucion,
+      resolucion: data.resolucion || 'PREVENCION',
       id_operativo: data.id_operativo,
       mes: new Date(data.fecha).getMonth() + 1,
       semana: Math.ceil(new Date(data.fecha).getDate() / 7),
-      motivos: {
-        createMany: {
-          data: data.motivos.map((motivo: any) => ({
-            id_motivo: motivo.id_motivo,
-            id_operativo: data.id_operativo,
-          })),
-        },
-      },
+      id_licencia: data.tipo_licencia?.id_tipo,
+      id_zona_infractor: data.zona_infractor?.id_barrio,
     },
     include: {
       operativo: {
-        include: { localidad: { select: { barrio: true, cp: true } } },
+        include: { localidad: true },
       },
-      motivos: true,
+      motivos: { include: { motivo: true } },
       tipo_licencias: true,
       zona_infractor: true,
     },
   })
+  if (data.motivos) {
+    const motivos = []
+    for (const motivo of data.motivos) {
+      const nuevo_motivo = await prisma.moto_motivo.create({
+        data: {
+          id_motivo: motivo.id_motivo,
+          id_registro: moto.id,
+        },
+        include: {
+          motivo: true,
+        },
+      })
+      motivos.push(nuevo_motivo)
+    }
+
+    moto.motivos = motivos
+  }
 
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(moto, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    )
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ),
   )
 }

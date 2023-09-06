@@ -5,6 +5,7 @@ import React from 'react'
 async function page({ params }: { params: { id: string } }) {
   const { id } = params
   const servicio = await getServicioForEdit(id)
+
   return (
     <div>
       <EditServicioForm servicio={servicio} id={id} />

@@ -92,6 +92,8 @@ function layout({ children }: { children: React.ReactNode }) {
         className="flex flex-col justify-center items-center px-6"
         nuevoOperativo={nuevoOperativo}
         methods={methods}
+        steps={2}
+        stepTitles={['Operativo', 'Vehiculo']}
       >
         {children}
       </FormLayout>

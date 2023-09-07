@@ -5,37 +5,26 @@ import Input from '@/components/Input'
 import DateField from '../DatePicker'
 import Switch from '../Switch'
 import {
-  FormProvider,
-  SubmitHandler,
   UseFieldArrayRemove,
   useFieldArray,
-  useForm,
   useFormContext,
 } from 'react-hook-form'
 import TimeField from '../TimePicker'
 import { IoMdRemove } from 'react-icons/io'
 import Button from '../Button'
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 import {
   getListaOperarios,
   getListaClientes,
   getPrecios,
-  nuevoServicio,
-  updateServicio,
   getAcopioFromCliente,
 } from '@/services'
 import { ServiciosFormProps } from '@/types'
 import Link from 'next/link'
-import { toast } from '@/hooks'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
-import { useRouter } from 'next/navigation'
 
-function LayoutServiciosForm({
-  onSubmit,
-}: {
-  onSubmit: SubmitHandler<ServiciosFormProps>
-}) {
-  const { control, setValue, handleSubmit, watch, getValues } =
+function LayoutServiciosForm() {
+  const { control, setValue, watch, getValues } =
     useFormContext<ServiciosFormProps>()
 
   const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
@@ -71,10 +60,7 @@ function LayoutServiciosForm({
 
   if (isLoading) return null
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col items-center gap-2"
-    >
+    <div className="flex flex-col items-center gap-2">
       <div className="flex w-5/6 justify-between flex-wrap gap-1">
         <div className="flex w-full basis-5/12 items-end pb-6">
           <AutoComplete
@@ -180,7 +166,7 @@ function LayoutServiciosForm({
         </Link>
         <Button type="submit">Crear servicio</Button>
       </div>
-    </form>
+    </div>
   )
 }
 
@@ -312,62 +298,4 @@ function OperarioForm({
   )
 }
 
-function CreateServicioForm() {
-  const methods = useForm<ServiciosFormProps>()
-  const { reset } = methods
-  const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
-    try {
-      const req = await nuevoServicio({ body })
-      toast({ title: req, variant: 'success' })
-      reset()
-    } catch (error: any) {
-      toast({
-        title: error.response.data || error.message,
-        variant: 'destructive',
-      })
-    }
-  }
-
-  return (
-    <FormProvider {...methods}>
-      <LayoutServiciosForm onSubmit={onSubmit} />
-    </FormProvider>
-  )
-}
-
-function EditServicioForm({
-  id,
-  servicio,
-}: {
-  servicio: ServiciosFormProps
-  id: string
-}) {
-  const methods = useForm<ServiciosFormProps>()
-  const { reset } = methods
-  const router = useRouter()
-
-  useEffect(() => {
-    reset(servicio)
-  }, [id])
-
-  const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
-    try {
-      const res = await updateServicio({ body, id_servicio: id })
-      mutate('servicios', res)
-      router.back()
-    } catch (error: any) {
-      toast({
-        title: error.response.data || error.message,
-        variant: 'destructive',
-      })
-    }
-  }
-
-  return (
-    <FormProvider {...methods}>
-      <LayoutServiciosForm onSubmit={onSubmit} />
-    </FormProvider>
-  )
-}
-
-export { CreateServicioForm, EditServicioForm }
+export default LayoutServiciosForm

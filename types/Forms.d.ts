@@ -157,3 +157,8 @@ export type RioFormProps = {
   lpcarga: string
   zona: zonas
 }
+
+export type FormProps = FormInputProps &
+  EditInputProps &
+  ServiciosFormProps &
+  RioFormProps

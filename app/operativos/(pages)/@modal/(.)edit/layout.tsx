@@ -40,12 +40,12 @@ function layout({ children }: React.PropsWithChildren) {
             body,
           })
           return data?.map((item) =>
-            item.id === registro.id ? registro : item
+            item.id === registro.id ? registro : item,
           )
         },
         {
           revalidate: false,
-        }
+        },
       )
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       router.back()
@@ -83,6 +83,8 @@ function layout({ children }: React.PropsWithChildren) {
         className="flex flex-col justify-center items-center px-6"
         nuevoOperativo={nuevoOperativo}
         methods={methods}
+        steps={2}
+        stepTitles={['Operativo', 'Vehiculo']}
       >
         {children}
       </FormLayout>

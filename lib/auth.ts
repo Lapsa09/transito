@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
         }
         const isPasswordValid = await bycript.compare(
           credentials.password,
-          user.user_password
+          user.user_password,
         )
         if (!isPasswordValid) {
           throw new Error('Contraseña invalida')
@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
   },
-  secret: process.env.NEXTAUTH_URL,
+  secret: process.env.NEXTAUTH_SECRET,
 
   callbacks: {
     jwt({ token, user }) {

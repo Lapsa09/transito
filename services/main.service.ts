@@ -82,14 +82,6 @@ export const getMotivos = async () => {
   })
   return data
 }
-
-export const getRoles = async () => {
-  const data = await getter<{ [permiso: string]: string }>({
-    route: 'roles',
-  })
-  return data
-}
-
 export const getZonasPaseo = async () => {
   const data = await getter<zonas[]>({
     route: 'zonas/paseo',

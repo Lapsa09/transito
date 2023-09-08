@@ -15,7 +15,9 @@ type Props = {
   body?: any
 }
 
-const axios = Axios.create({ baseURL: `${process.env.NEXTAUTH_URL}/api` })
+const axios = Axios.create({
+  baseURL: `https://transito.vicentelopez.gov.ar/api`,
+})
 
 export const getter = async <T = any>({ route }: Props) => {
   const { data } = await axios.get<T>(route)

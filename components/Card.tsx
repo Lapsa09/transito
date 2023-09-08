@@ -56,7 +56,7 @@ export function CamionesLinkCard() {
 
 export function PaseoRioLinkCard() {
   return (
-    <CardWithLink link="/operativos/paseo">
+    <CardWithLink link="/operativos/rio">
       <FaParking className="text-6xl" />
       <Typography className="text-4xl">Paseo del Rio</Typography>
     </CardWithLink>

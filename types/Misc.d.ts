@@ -1,10 +1,5 @@
 import { turnos } from '@prisma/client'
 
-export interface FormProps {
-  handleClose: () => void | ((to: To) => void)
-  afterCreate: (_data: any) => void
-}
-
 export enum Roles {
   ADMIN = 'ADMIN',
   INSPECTOR = 'INSPECTOR',

@@ -25,7 +25,6 @@ function page() {
     signIn('credentials', {
       ...data,
       redirect: false,
-      callbackUrl: process.env.NEXTAUTH_URL,
     })
       .then((callback) => {
         if (callback?.ok) {

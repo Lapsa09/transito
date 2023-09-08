@@ -22,7 +22,7 @@ interface Props extends UseControllerProps {
 export default function MyCombobox({
   label,
   name,
-  options,
+  options = [],
   inputId = name,
   inputLabel = name,
   className,
@@ -40,7 +40,7 @@ export default function MyCombobox({
     query === ''
       ? options
       : options.filter((option) =>
-          option[inputLabel].toLowerCase().includes(query.toLowerCase())
+          option[inputLabel].toLowerCase().includes(query.toLowerCase()),
         )
 
   const removeSelected = () => {
@@ -65,7 +65,7 @@ export default function MyCombobox({
       as="div"
       className={twMerge(
         'data-[has-helper=true]:pb-6 pb-6 relative',
-        className
+        className,
       )}
       {...field}
       onChange={handleChange}

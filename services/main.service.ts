@@ -16,7 +16,7 @@ type Props = {
 }
 
 const axios = Axios.create({
-  baseURL: `https://transito.vicentelopez.gov.ar/api`,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
 })
 
 export const getter = async <T = any>({ route }: Props) => {

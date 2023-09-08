@@ -20,7 +20,6 @@ import {
   getAcopioFromCliente,
 } from '@/services'
 import { ServiciosFormProps } from '@/types'
-import Link from 'next/link'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
 
 function LayoutServiciosForm() {
@@ -160,12 +159,6 @@ function LayoutServiciosForm() {
         placeholder="0"
         isDisabled
       />
-      <div className="flex">
-        <Link href="/sueldos">
-          <Button className="bg-danger">Cancelar</Button>
-        </Link>
-        <Button type="submit">Crear servicio</Button>
-      </div>
     </div>
   )
 }

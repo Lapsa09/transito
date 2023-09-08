@@ -17,8 +17,8 @@ model camiones_operativos {
   direccion      String?              @db.VarChar
   id_localidad   Int?
   direccion_full String?              @db.VarChar
-  latitud        String?              @db.VarChar
-  longitud       String?              @db.VarChar
+  latitud        Decimal?              
+  longitud       Decimal?
   localidad      vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros      camiones_registros[]
 
@@ -75,8 +75,8 @@ model motos_operativos {
   seguridad       seguridad?
   id_zona         Int?
   direccion_full  String?           @db.VarChar
-  latitud         String?           @db.VarChar
-  longitud        String?           @db.VarChar
+  latitud         Decimal?
+  longitud        Decimal?
   localidad       vicente_lopez?    @relation(fields: [id_zona], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       motos_registros[]
 

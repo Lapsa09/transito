@@ -25,6 +25,7 @@ const pages: Links[] = [
   { name: 'Sueldos', permission: Roles.ADMINISTRATIVO, link: '/sueldos' },
   // { name: 'Waze', permission: Roles.WAZE, link: '/waze' },
   // { name: 'Radio', permission: Roles.INSPECTOR, link: '/radio' },
+  { name: 'Logistica', permission: Roles.LOGISTICA, link: '/logistica' },
 ]
 
 function Menu() {

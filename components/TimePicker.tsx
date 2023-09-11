@@ -16,7 +16,6 @@ interface TimeFieldProps extends UseControllerProps {
 
 export function TimeField({
   name,
-  defaultValue,
   rules,
   label,
   className,
@@ -30,7 +29,7 @@ export function TimeField({
   } = useController({
     control,
     name,
-    defaultValue,
+    defaultValue: '',
     rules,
   })
 

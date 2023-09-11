@@ -98,13 +98,13 @@ function FirstStep() {
 }
 
 function SecondStep() {
-  const { getValues, setValue } = useFormContext()
+  const { watch, setValue } = useFormContext()
   const { fields, append, remove } = useFieldArray({ name: 'motivos' })
   const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
-    getValues('resolucion') === IResolucion.ACTA ||
-    getValues('resolucion') === IResolucion.REMITIDO
+    watch('resolucion') === IResolucion.ACTA ||
+    watch('resolucion') === IResolucion.REMITIDO
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
@@ -121,6 +121,7 @@ function SecondStep() {
   const { licencias, motivos, resolucion, zonas } = data!
 
   useEffect(() => {
+    if (fields.length === 0) sumarMotivos()
     if (!esSancionable) {
       setValue('motivo', null)
       setValue('acta', null)
@@ -130,10 +131,13 @@ function SecondStep() {
   return (
     <div className="flex w-full justify-between flex-wrap">
       {esSancionable && (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center basis-full gap-2">
+          <IoMdRemove
+            className="cursor-pointer text-3xl"
+            onClick={restarMotivos}
+          />
           <h4>Motivos: {fields.length}</h4>
-          <IoMdAdd onClick={sumarMotivos} />
-          <IoMdRemove onClick={restarMotivos} />
+          <IoMdAdd className="cursor-pointer text-3xl" onClick={sumarMotivos} />
         </div>
       )}
       <Input.Dominio

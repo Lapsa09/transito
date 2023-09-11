@@ -19,7 +19,6 @@ interface DateFieldProps
 
 export function DateField({
   name,
-  defaultValue,
   rules,
   className,
   label,
@@ -33,7 +32,7 @@ export function DateField({
   } = useController({
     control,
     name,
-    defaultValue,
+    defaultValue: '',
     rules: {
       ...rules,
       validate: {

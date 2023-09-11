@@ -28,14 +28,21 @@ export const getOperarios = async () => {
 }
 
 export const getPrecios = async () => {
-  const data = await getter<{ id: string; precio: number }[]>({
+  const data = await getter<
+    { id: 'precio_normal' | 'precio_pico'; precio: number }[]
+  >({
     route: 'sueldos/precios',
   })
   return data
 }
 
-export const updatePrecios = async (body: { id: string; precio: number }[]) => {
-  const data = await updater<{ id: string; precio: number }[]>({
+export const updatePrecios = async (body: {
+  precio_normal: number
+  precio_pico: number
+}) => {
+  const data = await updater<
+    { id: 'precio_normal' | 'precio_pico'; precio: number }[]
+  >({
     route: 'sueldos/precios',
     body,
   })

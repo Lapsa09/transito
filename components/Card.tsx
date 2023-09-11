@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fa'
 import { RiMotorbikeFill } from 'react-icons/ri'
 import { BsFillPersonFill } from 'react-icons/bs'
-import { MdFiberNew } from 'react-icons/md'
+import { MdAttachMoney, MdFiberNew } from 'react-icons/md'
 
 import Link from 'next/link'
 
@@ -104,6 +104,15 @@ export function NewServicioLinkCard() {
     <CardWithLink link="/sueldos/servicios/create">
       <MdFiberNew className="text-6xl" />
       <Typography className="text-4xl">Nuevo Servicio</Typography>
+    </CardWithLink>
+  )
+}
+
+export function ActualizarPreciosCard() {
+  return (
+    <CardWithLink link="/sueldos/precios">
+      <MdAttachMoney className="text-6xl" />
+      <Typography className="text-4xl">Actualizar Precios</Typography>
     </CardWithLink>
   )
 }

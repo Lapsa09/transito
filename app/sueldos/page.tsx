@@ -1,4 +1,5 @@
 import {
+  ActualizarPreciosCard,
   ClientesLinkCard,
   LiquidacionesLinkCard,
   NewServicioLinkCard,
@@ -9,12 +10,13 @@ import React from 'react'
 
 function page() {
   return (
-    <div className="flex gap-5 justify-center flex-wrap">
+    <div className="flex gap-5 justify-center flex-wrap w-8/12 mx-auto">
       <NewServicioLinkCard />
       <ClientesLinkCard />
       <ServiciosLinkCard />
       <OperariosLinkCard />
       <LiquidacionesLinkCard />
+      <ActualizarPreciosCard />
     </div>
   )
 }

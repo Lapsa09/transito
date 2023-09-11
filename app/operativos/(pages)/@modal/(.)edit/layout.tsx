@@ -7,7 +7,7 @@ import { getter, updater } from '@/services'
 import { mutate } from 'swr'
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import { useToast } from '@/hooks'
-import { EditInputProps, LocalOperativo, Registro } from '@/types'
+import { EditInputProps, LocalOperativo, Registro, Roles } from '@/types'
 import FormLayout from '@/components/forms/layout.form'
 import { useLocalStorage } from 'usehooks-ts'
 import { useSession } from 'next-auth/react'
@@ -67,11 +67,15 @@ function layout({ children }: React.PropsWithChildren) {
 
   useEffect(() => {
     const fetchOperativo = async () => {
-      const operativo = await getter<EditInputProps>({
-        route: `operativos/${layoutSegment}/${id}`,
-      })
-      reset(operativo)
-      setActiveStep(1)
+      if (data?.user?.role === Roles.ADMIN) {
+        const operativo = await getter<EditInputProps>({
+          route: `operativos/${layoutSegment}/${id}`,
+        })
+        reset(operativo)
+        setActiveStep(1)
+      } else {
+        router.replace('/operativos/' + layoutSegment)
+      }
     }
     fetchOperativo()
   }, [layoutSegment, id])

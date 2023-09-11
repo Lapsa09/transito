@@ -8,12 +8,32 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
-  const body = await request.json()
-  await prisma.precios.updateMany({
-    data: body,
-  })
+  try {
+    const body: { precio_normal: string; precio_pico: string } =
+      await request.json()
+    await prisma.precios.update({
+      where: {
+        id: 'precio_normal',
+      },
+      data: {
+        precio: Number(body.precio_normal),
+      },
+    })
 
-  const precios = await prisma.precios.findMany()
+    await prisma.precios.update({
+      where: {
+        id: 'precio_pico',
+      },
+      data: {
+        precio: Number(body.precio_pico),
+      },
+    })
 
-  return NextResponse.json(precios)
+    const precios = await prisma.precios.findMany()
+
+    return NextResponse.json(precios)
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
+  }
 }

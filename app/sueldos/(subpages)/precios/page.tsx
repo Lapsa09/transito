@@ -17,7 +17,7 @@ function page() {
   }>()
   const router = useRouter()
   const { handleSubmit } = methods
-  const { isLoading, mutate } = useSWR('/precios', getPrecios, {
+  const { isLoading, mutate } = useSWR('precios', getPrecios, {
     onSuccess: (data) => {
       data.forEach((precio) => {
         methods.setValue(precio.id, precio.precio)
@@ -35,9 +35,10 @@ function page() {
 
         return res
       })
-
+      toast({ title: 'Precios actualizados', variant: 'success' })
       router.push('/sueldos')
     } catch (error: any) {
+      console.log(error)
       toast({ title: error.response.data, variant: 'destructive' })
     }
   }

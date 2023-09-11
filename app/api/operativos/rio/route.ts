@@ -39,7 +39,7 @@ const radicacion = async (body: RioFormProps) => {
     const { dominio } = body
 
     const pythonProcess = spawn('python', [
-      'C:/Users/agustin.dinardo/Desktop/transito/my-app/py/dnrpa.py',
+      process.env.NEXT_PUBLIC_DNRPA_ROUTE!,
       dominio,
     ])
     pythonProcess.stdout.on('data', async (data) => {

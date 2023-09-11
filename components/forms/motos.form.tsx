@@ -12,7 +12,7 @@ import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
 import { setExpiration } from '@/utils/misc'
-import { LocalOperativo } from '@/types'
+import { FormMotosProps, LocalOperativo } from '@/types'
 
 export const steps = [<FirstStep />, <SecondStep />]
 
@@ -98,7 +98,7 @@ function FirstStep() {
 }
 
 function SecondStep() {
-  const { watch, setValue } = useFormContext()
+  const { watch, resetField } = useFormContext<FormMotosProps>()
   const { fields, append, remove } = useFieldArray({ name: 'motivos' })
   const { data } = useSWR('/api/selects', getSelects)
 
@@ -121,11 +121,10 @@ function SecondStep() {
   const { licencias, motivos, resolucion, zonas } = data!
 
   useEffect(() => {
-    if (fields.length === 0) sumarMotivos()
     if (!esSancionable) {
-      setValue('motivo', null)
-      setValue('acta', null)
-    }
+      resetField('motivos')
+      resetField('acta')
+    } else if (fields.length === 0) sumarMotivos()
   }, [esSancionable])
 
   return (

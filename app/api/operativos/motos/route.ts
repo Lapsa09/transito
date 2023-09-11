@@ -117,7 +117,7 @@ export async function POST(req: Request) {
       zona_infractor: true,
     },
   })
-  if (data.motivos.length > 0) {
+  if (data.motivos) {
     const motivos = []
     for (const motivo of data.motivos) {
       const nuevo_motivo = await prisma.moto_motivo.create({

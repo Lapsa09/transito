@@ -47,33 +47,33 @@ function CustomSelect({
       {...field}
       onChange={onChange}
     >
-      <Input
-        readOnly
-        endContent={
-          <Listbox.Button>
+      <Listbox.Button className="w-full">
+        <Input
+          readOnly
+          endContent={
             <ChevronsUpDown
               className="h-5 w-5 text-gray-400 cursor-pointer"
               aria-hidden="true"
             />
-          </Listbox.Button>
-        }
-        {...field}
-        value={displayValue}
-        radius="sm"
-        role="button"
-        label={label}
-        onChange={onChange}
-        labelPlacement="outside"
-        isRequired={!!rules?.required}
-        placeholder="Elija una opcion"
-        validationState={invalid ? 'invalid' : 'valid'}
-        errorMessage={error?.message}
-        variant="bordered"
-        classNames={{
-          inputWrapper: 'border border-gray-600',
-          label: 'text-left',
-        }}
-      />
+          }
+          {...field}
+          value={displayValue}
+          radius="sm"
+          role="button"
+          label={label}
+          onChange={onChange}
+          labelPlacement="outside"
+          isRequired={!!rules?.required}
+          placeholder="Elija una opcion"
+          validationState={invalid ? 'invalid' : 'valid'}
+          errorMessage={error?.message}
+          variant="bordered"
+          classNames={{
+            inputWrapper: 'border border-gray-600',
+            label: 'text-left',
+          }}
+        />
+      </Listbox.Button>
       <Listbox.Options className="absolute mt-1 z-50 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
         {options.map((option) => (
           <Listbox.Option

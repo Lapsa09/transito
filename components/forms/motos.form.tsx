@@ -108,7 +108,7 @@ function SecondStep() {
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
-      append({ id_motivo: null, motivo: '' })
+      append(null)
     }
   }
 

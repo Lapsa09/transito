@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormMotosProps } from '@/types'
+import { resolucion } from '@prisma/client'
 
 const operativoMotos = async (body: FormMotosProps) => {
   const {
@@ -95,12 +96,12 @@ export async function POST(req: Request) {
 
   const moto = await prisma.motos_registros.create({
     data: {
-      acta: data.acta,
+      acta: data.acta ? +data.acta : null,
       dominio: data.dominio,
       fechacarga: new Date(),
       licencia: data.licencia ? +data.licencia : null,
       lpcarga: data.lpcarga,
-      resolucion: data.resolucion || 'PREVENCION',
+      resolucion: data.resolucion || resolucion.PREVENCION,
       id_operativo: data.id_operativo,
       mes: new Date(data.fecha).getMonth() + 1,
       semana: Math.ceil(new Date(data.fecha).getDate() / 7),

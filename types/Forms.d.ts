@@ -43,10 +43,10 @@ export interface FormInputProps {
   hora: string
   dominio: string
   zona_infractor: barrios
-  licencia?: number
+  licencia?: string
   tipo_licencia?: tipo_licencias
   resolucion?: resolucion
-  acta?: number
+  acta?: string
   extranjero?: boolean
 }
 

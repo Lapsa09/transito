@@ -74,7 +74,7 @@ export interface EditMotosProps extends EditInputProps {
 }
 
 export interface FormCamionesProps extends FormInputProps {
-  motivo: motivos
+  motivo?: motivos
   remito: boolean
   carga: boolean
   legajo: number

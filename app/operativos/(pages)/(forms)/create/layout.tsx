@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import FormLayout from '@/components/forms/layout.form'
-import { FormInputProps, LocalOperativo, Registro } from '@/types'
+import { FormInputProps, LocalOperativo, Registro, RioFormProps } from '@/types'
 import { mutate } from 'swr'
 import { useStepForm, useToast } from '@/hooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
@@ -24,6 +24,7 @@ function layout({ children }: React.PropsWithChildren) {
     | 'autos'
     | 'motos'
     | 'camiones'
+    | 'rio'
   const { toast } = useToast()
   const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
     layoutSegment,
@@ -32,16 +33,18 @@ function layout({ children }: React.PropsWithChildren) {
     },
   )
   const { setActiveStep } = useStepForm()
-  const onSubmit: SubmitHandler<FormInputProps> = async (body) => {
+  const onSubmit: SubmitHandler<FormInputProps | RioFormProps> = async (
+    body,
+  ) => {
     try {
-      await mutate(
+      await mutate<Registro[]>(
         layoutSegment,
-        async (data: any) => {
+        async (data) => {
           const post = await setter<Registro>({
             route: `/operativos/${layoutSegment}`,
             body,
           })
-
+          if (!data) return [post]
           return [post, ...data]
         },
         {

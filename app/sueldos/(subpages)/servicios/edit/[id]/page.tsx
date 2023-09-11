@@ -42,7 +42,7 @@ function page({ params }: { params: { id: string } }) {
   return (
     <FormLayout
       onSubmit={onSubmit}
-      className="flex flex-col justify-center items-center px-6"
+      className="flex flex-col justify-center px-6"
       methods={methods}
       steps={1}
       stepTitles={['Editar servicio']}

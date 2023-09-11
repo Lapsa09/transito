@@ -37,7 +37,7 @@ export interface FormInputProps {
   seguridad: seguridad
   qth: string
   localidad: vicente_lopez
-  fecha: Date
+  fecha: string
   turno: turnos
   lpcarga: number
   hora: string

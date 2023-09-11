@@ -56,6 +56,8 @@ function layout({ children }: { children: React.ReactNode }) {
       const { expiresAt, ...rest } = operativo
       if (layoutSegment === 'camiones') {
         reset({ ...rest, hora: '' })
+      } else if (layoutSegment === 'rio') {
+        reset({ ...body, dominio: '' })
       } else {
         reset(rest)
       }

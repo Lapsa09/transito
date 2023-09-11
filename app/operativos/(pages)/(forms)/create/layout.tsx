@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react'
 
 function layout({ children }: React.PropsWithChildren) {
   const { data } = useSession({ required: true })
-  const methods = useForm<FormInputProps>({
+  const methods = useForm<FormInputProps | RioFormProps>({
     mode: 'all',
     resetOptions: { keepDefaultValues: true },
     defaultValues: {
@@ -55,6 +55,8 @@ function layout({ children }: React.PropsWithChildren) {
       const { expiresAt, ...rest } = operativo
       if (layoutSegment === 'camiones') {
         reset({ ...rest, hora: '' })
+      } else if (layoutSegment === 'rio') {
+        reset({ ...body, dominio: '' })
       } else {
         reset(rest)
       }

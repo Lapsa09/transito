@@ -14,27 +14,31 @@ function page() {
   const { data, isLoading } = useSWR('servicios', getServicios)
   const [exported, setExported] = useState(false)
   const methods = useForm<{ fecha: string }>()
-  const { getValues } = methods
+  const { watch } = methods
 
   const handleExport = async () => {
-    const { fecha } = getValues()
+    const { fecha } = watch()
     return await exportAgenda({ body: { fecha } })
   }
 
   if (isLoading) return null
   return (
     <div>
-      <Button onClick={() => setExported(!exported)}>Exportar</Button>
-      {exported && (
-        <div className="flex">
-          <FormProvider {...methods}>
-            <DateField name="fecha" label="Fecha" />
-            <CSVDownloadButton fetcher={handleExport}>
-              Exportar
-            </CSVDownloadButton>
-          </FormProvider>
-        </div>
-      )}
+      <div className="flex items-center h-24 gap-4">
+        <Button onClick={() => setExported(!exported)}>
+          Exportar servicios del dia...
+        </Button>
+        {exported && (
+          <div className="flex items-center w-1/4">
+            <FormProvider {...methods}>
+              <DateField name="fecha" label="Fecha" />
+              <CSVDownloadButton fetcher={handleExport}>
+                Exportar
+              </CSVDownloadButton>
+            </FormProvider>
+          </div>
+        )}
+      </div>
       <DataTable
         columns={ServicioColumns}
         data={data}

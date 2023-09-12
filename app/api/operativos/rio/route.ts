@@ -3,6 +3,7 @@ import { RioFormProps } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { spawn } from 'child_process'
 import { once } from 'events'
+import { DateTime } from 'luxon'
 
 const operativoPaseo = async (body: RioFormProps) => {
   const { fecha, turno, lp } = body
@@ -135,7 +136,7 @@ export async function POST(req: NextRequest) {
       id_operativo,
       id_zona: data.zona.id_zona,
       id_localidad,
-      fechacarga: new Date().toLocaleString(),
+      fechacarga: DateTime.now().toSQL(),
     },
     include: {
       zona: true,

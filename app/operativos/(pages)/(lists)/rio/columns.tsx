@@ -11,8 +11,8 @@ export const columns: ColumnDef<Registro>[] = [
     ),
   },
   {
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), {
+    accessorFn: ({ operativo: { fecha } }) =>
+      DateTime.fromISO(fecha, {
         setZone: true,
       }).toLocaleString(DateTime.DATE_SHORT),
     header: 'Fecha',
@@ -29,8 +29,8 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Legajo',
   },
   {
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), {
+    accessorFn: ({ hora }) =>
+      DateTime.fromISO(hora, {
         setZone: true,
       }).toLocaleString(DateTime.TIME_24_SIMPLE),
     header: 'Hora',
@@ -48,10 +48,19 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Zona',
   },
   {
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), {
+    accessorFn: ({ fechacarga }) => {
+      const sql = DateTime.fromSQL(fechacarga, {
         setZone: true,
-      }).toLocaleString(DateTime.DATETIME_SHORT),
+      })
+
+      if (sql.isValid) {
+        return sql.toLocaleString(DateTime.DATETIME_SHORT)
+      } else {
+        return DateTime.fromFormat(fechacarga, 'F').toLocaleString(
+          DateTime.DATETIME_SHORT,
+        )
+      }
+    },
     header: 'Fecha de carga',
   },
 ]

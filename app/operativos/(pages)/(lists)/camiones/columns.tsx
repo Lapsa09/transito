@@ -17,10 +17,9 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'ID',
   },
   {
-    accessorFn: (row) => row.operativo?.fecha,
     header: 'Fecha',
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), { setZone: true }).toLocaleString(
+    accessorFn: ({ operativo: { fecha } }) =>
+      DateTime.fromISO(fecha, { setZone: true }).toLocaleString(
         DateTime.DATE_SHORT,
       ),
     id: 'fecha',
@@ -46,10 +45,9 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Turno',
   },
   {
-    accessorKey: 'hora',
     header: 'Hora',
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), { setZone: true }).toLocaleString(
+    accessorFn: ({ hora }) =>
+      DateTime.fromISO(hora, { setZone: true }).toLocaleString(
         DateTime.TIME_24_SIMPLE,
       ),
   },

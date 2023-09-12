@@ -15,20 +15,19 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'id',
   },
   {
-    accessorFn: (row) => row.operativo?.fecha,
-    id: 'fecha',
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), { setZone: true }).toLocaleString(
+    accessorFn: (row) =>
+      DateTime.fromISO(row.operativo.fecha, { setZone: true }).toLocaleString(
         DateTime.DATE_SHORT,
       ),
+    id: 'fecha',
+    header: 'Fecha',
   },
   {
-    accessorFn: (row) => row.operativo?.hora,
-    id: 'hora',
-    cell: ({ getValue }) =>
-      DateTime.fromISO(getValue<string>(), {
+    accessorFn: (row) =>
+      DateTime.fromISO(row.operativo.hora, {
         setZone: true,
       }).toLocaleString(DateTime.TIME_24_SIMPLE),
+    id: 'hora',
   },
   {
     accessorFn: (row) => row.operativo?.qth?.toLocaleUpperCase(),

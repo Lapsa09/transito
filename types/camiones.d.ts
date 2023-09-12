@@ -8,7 +8,7 @@ import type {
 
 export type Operativo = {
   id_op: number
-  fecha: Date | null
+  fecha: string
   turno: turnos | null
   legajo: string | null
   direccion: string | null
@@ -21,7 +21,7 @@ export type Operativo = {
 
 export type Registro = {
   id: number
-  hora: Date | null
+  hora: string
   dominio: string | null
   origen: string | null
   destino: string | null
@@ -44,5 +44,5 @@ export type Registro = {
   localidad_destino: barrios | null
   localidad_origen: barrios | null
   motivo: motivos | null
-  operativo: Operativo | null
+  operativo: Operativo
 }

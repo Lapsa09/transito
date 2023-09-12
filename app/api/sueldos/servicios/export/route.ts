@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
+import { DateTime } from 'luxon'
 
 export async function POST(req: NextRequest) {
-  const { fecha } = await req.json()
+  const body = await req.json()
+
+  const fecha = DateTime.fromFormat(body.fecha, 'yyyy-MM-dd').toISO()
 
   const agenda = await prisma.servicios.findMany({
     where: {

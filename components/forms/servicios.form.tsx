@@ -21,9 +21,10 @@ import {
 } from '@/services'
 import { ServiciosFormProps } from '@/types'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
+import { DateTime } from 'luxon'
 
 function LayoutServiciosForm() {
-  const { control, setValue, watch, getValues } =
+  const { control, setValue, watch, getValues, resetField } =
     useFormContext<ServiciosFormProps>()
 
   const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
@@ -51,9 +52,9 @@ function LayoutServiciosForm() {
 
   useEffect(() => {
     if (!hay_recibo) {
-      setValue('recibo', undefined)
-      setValue('fecha_recibo', undefined)
-      setValue('importe_recibo', undefined)
+      resetField('recibo')
+      resetField('fecha_recibo')
+      resetField('importe_recibo')
     }
   }, [hay_recibo])
 
@@ -197,26 +198,26 @@ function OperarioForm({
     if (!dia || !inicio || !fin || !precios) {
       return importe
     }
-    const fecha_servicio = new Date(dia)
-    const hora_inicio = new Date(fecha_servicio.toDateString() + ' ' + inicio)
-    const hora_fin = new Date(fecha_servicio.toDateString() + ' ' + fin)
 
-    if (
-      isNaN(hora_inicio.getMilliseconds()) ||
-      isNaN(hora_fin.getMilliseconds())
-    ) {
+    const fecha_servicio = DateTime.fromFormat(dia, 'yyyy-MM-dd')
+    const hora_inicio = fecha_servicio.set({
+      hour: parseInt(inicio.split(':')[0]),
+      minute: parseInt(inicio.split(':')[1]),
+    })
+    const hora_fin = fecha_servicio.set({
+      hour: parseInt(fin.split(':')[0]),
+      minute: parseInt(fin.split(':')[1]),
+    })
+
+    if (!hora_inicio.isValid || !hora_fin.isValid) {
       return importe ?? 0
     }
 
     const [precio_normal, precio_pico] = precios
 
-    const diff = hora_fin.getHours() - hora_inicio.getHours()
-    if (
-      fecha_servicio.getDay() >= 1 &&
-      fecha_servicio.getDay() <= 5 &&
-      !isFeriado
-    ) {
-      if (hora_inicio?.getHours() >= 8 && hora_inicio?.getHours() <= 20) {
+    const diff = hora_fin.diff(hora_inicio, 'hours').hours
+    if (fecha_servicio.day >= 1 && fecha_servicio.day <= 5 && !isFeriado) {
+      if (hora_inicio?.hour >= 8 && hora_inicio?.hour <= 20) {
         return precio_normal.precio * diff
       }
     }

@@ -1,11 +1,10 @@
 import Button from '@/components/Button'
-import IndeterminateCheckbox from '@/components/Checkbox'
 import { NumeroMemo } from '@/components/MiniModals'
 import { cancelarOperario } from '@/services'
 import { Operarios, Servicio } from '@/types/servicios.sueldos'
-import { servicios } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { DateTime } from 'luxon'
 import Link from 'next/link'
 import { mutate } from 'swr'
 
@@ -48,20 +47,11 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
   {
     accessorKey: 'fecha_servicio',
     header: () => 'Fecha Servicio',
-    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+    cell: ({ getValue }) =>
+      DateTime.fromISO(getValue<string>(), {
+        setZone: true,
+      }).toLocaleString(DateTime.DATE_SHORT),
     footer: (props) => props.column.id,
-    sortingFn: (a, b) => {
-      const dateA = new Date(a.original.fecha_servicio!)
-      const dateB = new Date(b.original.fecha_servicio!)
-
-      if (dateA > dateB) {
-        return 1
-      }
-      if (dateA < dateB) {
-        return -1
-      }
-      return 0
-    },
   },
   {
     accessorFn: (row) => row.importe_servicio,
@@ -99,14 +89,20 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
   {
     accessorFn: (row) => row.hora_inicio,
     id: 'hora_inicio',
-    cell: (info) => new Date(info.getValue<string>()).toLocaleTimeString(),
+    cell: (info) =>
+      DateTime.fromISO(info.getValue<string>(), {
+        setZone: true,
+      }).toLocaleString(DateTime.TIME_24_SIMPLE),
     header: () => <span>Hora Inicio</span>,
     footer: (props) => props.column.id,
   },
   {
     accessorFn: (row) => row.hora_fin,
     id: 'hora_fin',
-    cell: (info) => new Date(info.getValue<string>()).toLocaleTimeString(),
+    cell: (info) =>
+      DateTime.fromISO(info.getValue<string>(), {
+        setZone: true,
+      }).toLocaleString(DateTime.TIME_24_SIMPLE),
     header: () => <span>Hora Fin</span>,
     footer: (props) => props.column.id,
   },

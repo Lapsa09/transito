@@ -1,5 +1,6 @@
 import { Registro } from '@/types/camiones'
 import { ColumnDef } from '@tanstack/react-table'
+import { DateTime } from 'luxon'
 import Link from 'next/link'
 
 export const columns: ColumnDef<Registro>[] = [
@@ -18,20 +19,11 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.fecha,
     header: 'Fecha',
-    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+    cell: ({ getValue }) =>
+      DateTime.fromISO(getValue<string>(), { setZone: true }).toLocaleString(
+        DateTime.DATE_SHORT,
+      ),
     id: 'fecha',
-    sortingFn: (a, b) => {
-      const dateA = new Date(a.original.operativo?.fecha!)
-      const dateB = new Date(b.original.operativo?.fecha!)
-
-      if (dateA > dateB) {
-        return 1
-      }
-      if (dateA < dateB) {
-        return -1
-      }
-      return 0
-    },
   },
   {
     accessorFn: (row) => row.operativo?.legajo,
@@ -56,7 +48,10 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'hora',
     header: 'Hora',
-    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
+    cell: ({ getValue }) =>
+      DateTime.fromISO(getValue<string>(), { setZone: true }).toLocaleString(
+        DateTime.TIME_24_SIMPLE,
+      ),
   },
   {
     accessorKey: 'dominio',

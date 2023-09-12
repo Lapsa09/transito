@@ -262,7 +262,6 @@ function OperarioForm({
             inputLabel="nombre"
             name={`operarios.${index}.operario`}
             className="w-full p-0"
-            rules={{ required: true }}
           />
           <NuevoOperario />
         </div>

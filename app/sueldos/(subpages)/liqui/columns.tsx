@@ -1,5 +1,6 @@
 import CSVDownloadButton from '@/components/CSVDownloadButton'
 import { getForExport } from '@/services'
+import { Meses } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
 import React from 'react'
 
@@ -10,8 +11,7 @@ export const LiquiColumns: ColumnDef<{
   {
     id: 'mes',
     header: () => <span>Mes</span>,
-    cell: (info) => info.getValue(),
-    accessorFn: (row) => row.mes,
+    accessorFn: (row) => Meses[row.mes as keyof typeof Meses],
   },
   {
     id: 'año',

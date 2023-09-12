@@ -8,7 +8,6 @@ import useSWR from 'swr'
 import { getPrecios, updatePrecios } from '@/services'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/hooks'
-import { MdAttachMoney } from 'react-icons/md'
 
 function page() {
   const methods = useForm<{

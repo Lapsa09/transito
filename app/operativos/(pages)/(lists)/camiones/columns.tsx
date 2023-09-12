@@ -20,6 +20,18 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Fecha',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
     id: 'fecha',
+    sortingFn: (a, b) => {
+      const dateA = new Date(a.original.operativo?.fecha!)
+      const dateB = new Date(b.original.operativo?.fecha!)
+
+      if (dateA > dateB) {
+        return 1
+      }
+      if (dateA < dateB) {
+        return -1
+      }
+      return 0
+    },
   },
   {
     accessorFn: (row) => row.operativo?.legajo,

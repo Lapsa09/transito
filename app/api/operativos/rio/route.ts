@@ -65,15 +65,20 @@ const radicacion = async (body: RioFormProps) => {
             },
           })
           if (!_res) {
-            res.push(44)
+            const nuevoBarrio = await prisma.barrios.create({
+              data: {
+                barrio: localidad,
+              },
+            })
+            res.push(nuevoBarrio.id_barrio)
           } else {
-            res.push(_res!.id_barrio)
+            res.push(_res.id_barrio)
           }
         }
       }
     })
-    pythonProcess.stderr.on('data', (data) => {
-      console.log(data.toString())
+    pythonProcess.stderr.on('error', (error) => {
+      console.log(error.message)
       return NextResponse.json('El dominio no existe', { status: 400 })
     })
 
@@ -92,6 +97,9 @@ export async function GET() {
       zona: true,
       barrio: true,
     },
+    orderBy: {
+      id: 'desc',
+    },
   })
 
   return NextResponse.json(res)
@@ -100,8 +108,19 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const data: RioFormProps = await req.json()
 
-  const [id_localidad] = await radicacion(data)
   const id_operativo = await operativoPaseo(data)
+  const repetido = await prisma.nuevo_control_registros.findFirst({
+    where: {
+      dominio: data.dominio,
+      id_operativo: id_operativo,
+    },
+  })
+
+  if (repetido) {
+    return NextResponse.json('El dominio ya fue cargado', { status: 400 })
+  }
+
+  const [id_localidad] = await radicacion(data)
 
   const _hora = new Date(data.fecha)
   // @ts-ignore

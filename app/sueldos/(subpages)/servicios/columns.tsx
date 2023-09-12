@@ -50,6 +50,18 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     header: () => 'Fecha Servicio',
     cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
     footer: (props) => props.column.id,
+    sortingFn: (a, b) => {
+      const dateA = new Date(a.original.fecha_servicio!)
+      const dateB = new Date(b.original.fecha_servicio!)
+
+      if (dateA > dateB) {
+        return 1
+      }
+      if (dateA < dateB) {
+        return -1
+      }
+      return 0
+    },
   },
   {
     accessorFn: (row) => row.importe_servicio,
@@ -130,7 +142,7 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
               }
               return [res]
             },
-            { revalidate: false }
+            { revalidate: false },
           )
         }}
       >

@@ -13,6 +13,18 @@ export const columns: ColumnDef<Registro>[] = [
     accessorFn: (registro) =>
       new Date(registro.operativo.fecha).toLocaleDateString(),
     header: 'Fecha',
+    sortingFn: (a, b) => {
+      const dateA = new Date(a.original.operativo.fecha)
+      const dateB = new Date(b.original.operativo.fecha)
+
+      if (dateA > dateB) {
+        return 1
+      }
+      if (dateA < dateB) {
+        return -1
+      }
+      return 0
+    },
   },
   {
     accessorFn: (registro) =>

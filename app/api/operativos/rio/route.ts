@@ -61,7 +61,9 @@ const radicacion = async (body: RioFormProps) => {
         } else {
           const _res = await prisma.barrios.findFirst({
             where: {
-              barrio: localidad,
+              barrio: {
+                contains: localidad,
+              },
             },
           })
           if (!_res) {
@@ -77,7 +79,7 @@ const radicacion = async (body: RioFormProps) => {
         }
       }
     })
-    pythonProcess.stderr.on('error', (error) => {
+    pythonProcess.stdout.on('error', (error) => {
       console.log(error.message)
       return NextResponse.json('El dominio no existe', { status: 400 })
     })

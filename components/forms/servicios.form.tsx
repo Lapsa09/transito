@@ -24,8 +24,14 @@ import { NuevoCliente, NuevoOperario } from '../MiniModals'
 import { DateTime } from 'luxon'
 
 function LayoutServiciosForm() {
-  const { control, setValue, watch, getValues, resetField } =
-    useFormContext<ServiciosFormProps>()
+  const {
+    control,
+    setValue,
+    watch,
+    getValues,
+    resetField,
+    formState: { isSubmitSuccessful },
+  } = useFormContext<ServiciosFormProps>()
 
   const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
 
@@ -57,6 +63,12 @@ function LayoutServiciosForm() {
       resetField('importe_recibo')
     }
   }, [hay_recibo])
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      remove()
+    }
+  }, [isSubmitSuccessful])
 
   if (isLoading) return null
   return (

@@ -37,7 +37,19 @@ function FirstStep() {
         name="fecha"
         label="Fecha"
         className="w-full basis-5/12"
-        rules={{ required: 'Este campo es requerido' }}
+        rules={{
+          required: 'Este campo es requerido',
+          validate: {
+            maxDate: (value) => {
+              const date = new Date(value)
+              const maxDate = new Date()
+              return value
+                ? date <= maxDate ||
+                    'La fecha no debe ser posterior a la fecha actual'
+                : true
+            },
+          },
+        }}
         persist={setOperativo}
       />
       <Input

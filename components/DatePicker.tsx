@@ -51,14 +51,6 @@ export function DateField({
                 'La fecha no debe ser mas de 6 meses anterior a la fecha actual'
             : true
         },
-        maxDate: (value) => {
-          const date = new Date(value)
-          const maxDate = new Date()
-          return value
-            ? date <= maxDate ||
-                'La fecha no debe ser posterior a la fecha actual'
-            : true
-        },
       },
     },
   })

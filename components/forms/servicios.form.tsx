@@ -102,17 +102,18 @@ function LayoutServiciosForm() {
               rules={{ required: hay_recibo }}
               type="number"
               className="w-full basis-5/12"
+              startContent="$"
               isDisabled={!hay_recibo}
             />
 
             <Input
               label="Acopio"
               name="acopio"
-              rules={{ required: true }}
               type="number"
               placeholder="0"
               className="w-full basis-5/12"
               isDisabled
+              startContent="$"
             />
           </>
         )}
@@ -158,6 +159,7 @@ function LayoutServiciosForm() {
         type="number"
         className="w-1/4"
         placeholder="0"
+        startContent="$"
         isDisabled
       />
     </div>
@@ -280,11 +282,11 @@ function OperarioForm({
         <Input
           label="A cobrar"
           name={`operarios.${index}.a_cobrar`}
-          rules={{ required: true }}
           placeholder="0"
           className="w-full basis-5/12"
           type="number"
           isDisabled
+          startContent="$"
         />
       </div>
     </div>

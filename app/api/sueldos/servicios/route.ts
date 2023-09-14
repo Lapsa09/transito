@@ -1,6 +1,7 @@
 import prisma from '@/lib/prismadb'
 import { ServiciosFormProps } from '@/types'
 import { parseToISOTime } from '@/utils/misc'
+import { DateTime } from 'luxon'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET() {
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
           id_cliente: body.cliente.id_cliente,
         },
       },
-      fecha_servicio: new Date(body.fecha_servicio),
+      fecha_servicio: DateTime.fromISO(body.fecha_servicio).toISO(),
       feriado: body.feriado,
       importe_servicio: body.importe_servicio,
     },
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
             id_cliente: body.cliente.id_cliente,
           },
         },
-        fecha_recibo: new Date(body.fecha_recibo!),
+        fecha_recibo: DateTime.fromISO(body.fecha_recibo!).toISO(),
         importe_recibo: +body.importe_recibo!,
       },
     })

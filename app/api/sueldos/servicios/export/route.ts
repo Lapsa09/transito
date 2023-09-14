@@ -21,5 +21,23 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  return NextResponse.json(agenda)
+  return NextResponse.json(
+    agenda.map((servicio) => {
+      return {
+        ...servicio,
+        fecha_servicio: DateTime.fromJSDate(servicio.fecha_servicio!).toFormat(
+          'dd/MM/yyyy',
+        ),
+        operarios_servicios: servicio.operarios_servicios.map((operario) => {
+          return {
+            ...operario,
+            hora_inicio: DateTime.fromJSDate(operario.hora_inicio!).toFormat(
+              'HH:mm',
+            ),
+            hora_fin: DateTime.fromJSDate(operario.hora_fin!).toFormat('HH:mm'),
+          }
+        }),
+      }
+    }),
+  )
 }

@@ -73,7 +73,13 @@ export async function GET() {
     },
   })
 
-  return NextResponse.json(motos)
+  return NextResponse.json(
+    JSON.parse(
+      JSON.stringify(motos, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ),
+  )
 }
 
 export async function POST(req: Request) {

@@ -1,6 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { ServiciosFormProps } from '@/types'
-import { DateTime } from 'luxon'
+import { parseToISOTime } from '@/utils/misc'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET() {
@@ -56,21 +56,9 @@ export async function POST(req: NextRequest) {
   }
 
   for (const operario of body.operarios) {
-    const hora_inicio = DateTime.fromISO(body.fecha_servicio)
-      .setLocale('es-AR')
-      .set({
-        hour: +operario.hora_inicio.split(':')[0],
-        minute: +operario.hora_inicio.split(':')[1],
-      })
-      .toJSDate()
+    const hora_inicio = parseToISOTime(operario.hora_inicio)
 
-    const hora_fin = DateTime.fromISO(body.fecha_servicio)
-      .setLocale('es-AR')
-      .set({
-        hour: +operario.hora_fin.split(':')[0],
-        minute: +operario.hora_fin.split(':')[1],
-      })
-      .toJSDate()
+    const hora_fin = parseToISOTime(operario.hora_fin)
 
     await prisma.operarios_servicios.create({
       data: {

@@ -29,7 +29,7 @@ export const NuevoCliente = () => {
         (data) => (data ? [...data, req] : [req]),
         {
           revalidate: false,
-        }
+        },
       )
 
       onClose()
@@ -48,17 +48,17 @@ export const NuevoCliente = () => {
           <ModalHeader className="flex flex-col gap-1">
             Nuevo Cliente
           </ModalHeader>
-          <ModalBody>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormProvider {...methods}>
+              <ModalBody>
                 <Input name="cliente" label="Cliente" />
-              </FormProvider>
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onClose}>Cerrar</Button>
-            <Button type="submit">Guardar</Button>
-          </ModalFooter>
+              </ModalBody>
+              <ModalFooter>
+                <Button onClick={onClose}>Cerrar</Button>
+                <Button type="submit">Guardar</Button>
+              </ModalFooter>
+            </FormProvider>
+          </form>
         </ModalContent>
       </Modal>
     </>
@@ -73,13 +73,13 @@ export const NuevoOperario = () => {
   const onSubmit = async (body: FieldValues) => {
     try {
       const req = await createOperario({ body })
-
+      console.log(req)
       await mutate<operario[]>(
         'operarios',
         (data) => (data ? [...data, req] : [req]),
         {
           revalidate: false,
-        }
+        },
       )
 
       onClose()
@@ -98,18 +98,18 @@ export const NuevoOperario = () => {
           <ModalHeader className="flex flex-col gap-1">
             Nuevo Cliente
           </ModalHeader>
-          <ModalBody>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormProvider {...methods}>
+              <ModalBody>
                 <Input name="legajo" label="Legajo" type="number" />
                 <Input name="nombre" label="Nombre" />
-              </FormProvider>
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onClose}>Cerrar</Button>
-            <Button type="submit">Guardar</Button>
-          </ModalFooter>
+              </ModalBody>
+              <ModalFooter>
+                <Button onClick={onClose}>Cerrar</Button>
+                <Button type="submit">Guardar</Button>
+              </ModalFooter>
+            </FormProvider>
+          </form>
         </ModalContent>
       </Modal>
     </>
@@ -139,7 +139,7 @@ export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
         },
         {
           revalidate: false,
-        }
+        },
       )
 
       onClose()

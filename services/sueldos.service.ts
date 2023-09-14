@@ -137,7 +137,7 @@ export const updateServicio = async ({
   id_servicio: string
 }) => {
   const data = await updater<Servicio>({
-    route: 'sueldos/servicios/memo/' + id,
+    route: 'sueldos/servicios/' + id,
     body,
   })
   return data

@@ -73,7 +73,7 @@ export default function MyCombobox({
   }
 
   return (
-    <div className={cn(className, 'pb-6')}>
+    <div className={cn('pb-6', className)}>
       <label
         className={`block text-small font-medium text-foreground pb-1.5 ${
           rules?.required &&

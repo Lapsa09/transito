@@ -5,7 +5,6 @@ import { LogoOVT, LogoVL } from '../Logos'
 import Menu from './Menu'
 import { useSession } from 'next-auth/react'
 import { Roles } from '@/types'
-import { Typography } from '@material-tailwind/react'
 
 function Header() {
   const session = useSession()
@@ -23,8 +22,9 @@ function Header() {
         <Menu />
       ) : (
         <div className="flex justify-between">
-          <Typography>{fullName}</Typography>
-          <Typography>Legajo {user?.legajo}</Typography>
+          <h3 className="capitalize">
+            {fullName} Legajo {user?.legajo}
+          </h3>
         </div>
       )}
       <LogoOVT className="lg:order-3" />

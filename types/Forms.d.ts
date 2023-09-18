@@ -37,16 +37,16 @@ export interface FormInputProps {
   seguridad: seguridad
   qth: string
   localidad: vicente_lopez
-  fecha: Date
+  fecha: string
   turno: turnos
   lpcarga: number
   hora: string
   dominio: string
   zona_infractor: barrios
-  licencia?: number
+  licencia?: string
   tipo_licencia?: tipo_licencias
   resolucion?: resolucion
-  acta?: number
+  acta?: string
   extranjero?: boolean
 }
 
@@ -74,7 +74,7 @@ export interface EditMotosProps extends EditInputProps {
 }
 
 export interface FormCamionesProps extends FormInputProps {
-  motivo: motivos
+  motivo?: motivos
   remito: boolean
   carga: boolean
   legajo: number

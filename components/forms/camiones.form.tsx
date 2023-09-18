@@ -11,7 +11,7 @@ import { getSelects } from '@/services'
 import { useFormContext } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
-import { LocalOperativo } from '@/types'
+import { FormCamionesProps, LocalOperativo } from '@/types'
 import { setExpiration } from '@/utils/misc'
 
 export const steps = [<FirstStep />, <SecondStep />]
@@ -37,7 +37,19 @@ function FirstStep() {
         name="fecha"
         label="Fecha"
         className="w-full basis-5/12"
-        rules={{ required: 'Este campo es requerido' }}
+        rules={{
+          required: 'Este campo es requerido',
+          validate: {
+            maxDate: (value) => {
+              const date = new Date(value)
+              const maxDate = new Date()
+              return value
+                ? date <= maxDate ||
+                    'La fecha no debe ser posterior a la fecha actual'
+                : true
+            },
+          },
+        }}
         persist={setOperativo}
       />
       <Input
@@ -76,19 +88,19 @@ function FirstStep() {
 }
 
 function SecondStep() {
-  const { getValues, setValue } = useFormContext()
+  const { watch, resetField } = useFormContext<FormCamionesProps>()
   const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
-    getValues('resolucion') === IResolucion.ACTA ||
-    getValues('resolucion') === IResolucion.REMITIDO
+    watch('resolucion') === IResolucion.ACTA ||
+    watch('resolucion') === IResolucion.REMITIDO
 
   const { motivos, resolucion, zonas } = data!
 
   useEffect(() => {
     if (!esSancionable) {
-      setValue('motivo', null)
-      setValue('acta', null)
+      resetField('motivo')
+      resetField('acta')
     }
   }, [esSancionable])
 

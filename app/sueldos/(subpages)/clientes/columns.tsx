@@ -1,6 +1,7 @@
 import { Cliente, Historial, IOperario, Servicio, Meses } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { DateTime } from 'luxon'
 
 export const ClientesColumns: ColumnDef<Cliente>[] = [
   {
@@ -131,7 +132,10 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
   {
     accessorKey: 'fecha_servicio',
     header: () => 'Fecha Servicio',
-    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+    cell: ({ getValue }) =>
+      DateTime.fromISO(getValue<string>(), {
+        setZone: true,
+      }).toLocaleString(DateTime.DATE_SHORT),
     footer: (props) => props.column.id,
   },
   {

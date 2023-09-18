@@ -72,7 +72,7 @@ function layout({
             </Button>
           )}
 
-          <Button disabled={!isValid && isLastStep} type="submit">
+          <Button disabled={isLastStep && !isValid} type="submit">
             {isLastStep ? 'Guardar' : 'Siguiente'}
           </Button>
         </div>

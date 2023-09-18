@@ -1,5 +1,6 @@
 import { Registro } from '@/types/autos'
 import { ColumnDef } from '@tanstack/react-table'
+import { DateTime } from 'luxon'
 import Link from 'next/link'
 
 export const columns: ColumnDef<Registro>[] = [
@@ -14,14 +15,19 @@ export const columns: ColumnDef<Registro>[] = [
     id: 'id',
   },
   {
-    accessorFn: (row) => row.operativo?.fecha,
+    accessorFn: (row) =>
+      DateTime.fromISO(row.operativo.fecha, { setZone: true }).toLocaleString(
+        DateTime.DATE_SHORT,
+      ),
     id: 'fecha',
-    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+    header: 'Fecha',
   },
   {
-    accessorFn: (row) => row.operativo?.hora,
+    accessorFn: (row) =>
+      DateTime.fromISO(row.operativo.hora, {
+        setZone: true,
+      }).toLocaleString(DateTime.TIME_24_SIMPLE),
     id: 'hora',
-    cell: ({ getValue }) => new Date(getValue<string>()).toLocaleTimeString(),
   },
   {
     accessorFn: (row) => row.operativo?.qth?.toLocaleUpperCase(),

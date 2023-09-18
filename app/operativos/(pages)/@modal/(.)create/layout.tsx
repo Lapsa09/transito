@@ -20,7 +20,7 @@ function layout({ children }: { children: React.ReactNode }) {
       lpcarga: data?.user?.legajo,
     },
   })
-  const { reset, setFocus } = methods
+  const { reset, setFocus, setValue } = methods
   const layoutSegment = useSelectedLayoutSegment() as
     | 'autos'
     | 'motos'
@@ -56,6 +56,8 @@ function layout({ children }: { children: React.ReactNode }) {
       const { expiresAt, ...rest } = operativo
       if (layoutSegment === 'camiones') {
         reset({ ...rest, hora: '' })
+      } else if (layoutSegment === 'rio') {
+        reset({ ...body, dominio: '' })
       } else {
         reset(rest)
       }
@@ -75,6 +77,12 @@ function layout({ children }: { children: React.ReactNode }) {
     reset()
     setActiveStep(0)
   }
+
+  useEffect(() => {
+    if (data?.user?.legajo) {
+      setValue('lpcarga', data.user.legajo)
+    }
+  }, [data])
 
   useEffect(() => {
     if (operativo.expiresAt < Date.now()) {

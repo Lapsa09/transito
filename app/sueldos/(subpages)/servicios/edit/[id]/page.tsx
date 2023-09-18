@@ -15,20 +15,16 @@ function page({ params }: { params: { id: string } }) {
   const methods = useForm<ServiciosFormProps>()
   const { reset } = methods
   const router = useRouter()
-  const {
-    isLoading,
-    data: servicio,
-    mutate: refetch,
-  } = useSWR('servicios/edit', async () => await getServicioForEdit(id))
-
-  useEffect(() => {
-    refetch().then(() => reset(servicio))
-  }, [id])
+  const { isLoading } = useSWR(
+    'servicios/edit',
+    async () => await getServicioForEdit(id),
+    { onSuccess: (data) => reset(data) },
+  )
 
   const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
     try {
-      const res = await updateServicio({ body, id_servicio: id })
-      mutate('servicios', res)
+      await updateServicio({ body, id_servicio: id })
+      mutate('servicios')
       router.back()
     } catch (error: any) {
       toast({

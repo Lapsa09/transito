@@ -9,7 +9,7 @@ import {
 
 export interface Operativo {
   direccion_full: string
-  fecha: Date
+  fecha: string
   hora: string
   id_op?: number
   latitud: number

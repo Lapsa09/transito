@@ -1,14 +1,26 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { Combobox } from '@headlessui/react'
-import { Check, ChevronsUpDown, X } from 'lucide-react'
+import { useState } from 'react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import {
   UseControllerProps,
   useController,
   useFormContext,
 } from 'react-hook-form'
-import { twMerge } from 'tailwind-merge'
-import { Input } from '@nextui-org/react'
+import { cn } from '@/lib/utils'
+import {
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from './ui/scroll-area'
 
 interface Props extends UseControllerProps {
   options: any[]
@@ -35,6 +47,7 @@ export default function MyCombobox({
     fieldState: { invalid, error },
   } = useController({ name, control, rules })
   const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
 
   const filteredOptions =
     query === ''
@@ -43,89 +56,82 @@ export default function MyCombobox({
           option[inputLabel].toLowerCase().includes(query.toLowerCase()),
         )
 
-  const removeSelected = () => {
-    field.onChange(undefined)
-    if (persist) persist({ [name]: null })
-    setQuery('')
-  }
-
-  const handleChange = (currentValue: any) => {
-    field.onChange(currentValue)
-    if (persist) persist({ [name]: currentValue })
-  }
-
-  useEffect(() => {
-    if (!field.value) {
+  const handleChange = (currentValue: string) => {
+    const option = options.find(
+      (option) =>
+        option[inputLabel].toLowerCase() === currentValue.toLowerCase(),
+    )
+    if (field.value && option[inputId] === field.value[inputId]) {
+      field.onChange(null)
+      if (persist) persist({ [name]: null })
       setQuery('')
+    } else {
+      field.onChange(option)
+      if (persist) persist({ [name]: option })
     }
-  }, [field.value])
+    setOpen(false)
+  }
 
   return (
-    <Combobox
-      as="div"
-      className={twMerge(
-        'data-[has-helper=true]:pb-6 pb-6 relative',
-        className,
-      )}
-      {...field}
-      onChange={handleChange}
-    >
-      <Combobox.Input
-        required={!!rules?.required}
-        as={Input}
-        classNames={{
-          inputWrapper: 'border border-gray-600',
-          errorMessage: 'mt-2',
-        }}
-        radius="sm"
-        label={label}
-        isRequired={!!rules?.required}
-        labelPlacement="outside"
-        validationState={invalid ? 'invalid' : 'valid'}
-        errorMessage={error?.message}
-        variant="bordered"
-        value={field.value ? field.value[inputLabel] : query}
-        placeholder="Elija una opcion"
-        onChange={(event) => setQuery(event.target.value)}
-        endContent={
-          field.value ? (
-            <X
-              onClick={removeSelected}
-              className="h-10 w-6 text-gray-400 cursor-pointer"
-              aria-hidden="true"
+    <div className={cn('pb-6', className)}>
+      <label
+        className={`block text-small font-medium text-foreground pb-1.5 ${
+          rules?.required &&
+          "after:content-['*'] after:text-danger after:ml-0.5"
+        } will-change-auto origin-top-left transition-all !duration-200 !ease-[cubic-bezier(0,0,0.2,1)] motion-reduce:transition-none`}
+        htmlFor={field.name}
+      >
+        {label}
+      </label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            name={field.name}
+            className={`w-full justify-between border ${
+              invalid ? 'border-danger' : 'border-gray-600'
+            }`}
+          >
+            <span className={`${invalid && 'text-danger'} font-normal `}>
+              {field.value ? field.value[inputLabel] : 'Elija una opcion...'}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0">
+          <Command shouldFilter={false}>
+            <CommandInput
+              value={query}
+              onValueChange={setQuery}
+              placeholder="Elija una opcion..."
             />
-          ) : (
-            <Combobox.Button className="flex items-center">
-              <ChevronsUpDown
-                className="h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            </Combobox.Button>
-          )
-        }
-      />
-
-      <Combobox.Options className="absolute z-50 max-h-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-        {filteredOptions.length === 0 ? (
-          <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-            Vacio
-          </div>
-        ) : (
-          filteredOptions.map((option) => (
-            <Combobox.Option
-              key={option[inputId]}
-              className={({ active }) =>
-                `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                  active ? 'bg-teal-600 text-white' : 'text-gray-900'
-                }`
-              }
-              value={option}
-            >
-              {option[inputLabel]}
-            </Combobox.Option>
-          ))
-        )}
-      </Combobox.Options>
-    </Combobox>
+            <ScrollArea className="h-60">
+              <CommandEmpty>Vacio.</CommandEmpty>
+              <CommandGroup>
+                {filteredOptions.map((framework) => (
+                  <CommandItem key={framework[inputId]} onSelect={handleChange}>
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        field.value &&
+                          field.value[inputId] === framework[inputId]
+                          ? 'opacity-100'
+                          : 'opacity-0',
+                      )}
+                    />
+                    {framework[inputLabel]}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </ScrollArea>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      <span className="text-tiny text-danger left-1 pt-1 px-1">
+        {error?.message}
+      </span>
+    </div>
   )
 }

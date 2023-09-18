@@ -1,5 +1,13 @@
-//set expiration date at 8 hours from now
+import { DateTime } from 'luxon'
+
 export const setExpiration = () => {
-  const now = new Date()
-  return now.setHours(now.getHours() + 8)
+  const now = DateTime.now()
+
+  return now.plus({ hours: 8 }).toMillis()
+}
+
+export const parseToISOTime = (date: string) => {
+  const res = DateTime.fromFormat(date, 'HH:mm')
+
+  return res.minus({ hour: 3 }).toISO()
 }

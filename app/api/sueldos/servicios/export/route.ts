@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
+import { DateTime } from 'luxon'
 
 export async function POST(req: NextRequest) {
-  const { fecha } = await req.json()
+  const body = await req.json()
+
+  const fecha = DateTime.fromFormat(body.fecha, 'yyyy-MM-dd').toISO()
 
   const agenda = await prisma.servicios.findMany({
     where: {
@@ -18,5 +21,25 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  return NextResponse.json(agenda)
+  return NextResponse.json(
+    agenda.map((servicio) => {
+      return {
+        ...servicio,
+        fecha_servicio: DateTime.fromJSDate(servicio.fecha_servicio!)
+          .toUTC()
+          .toLocaleString(DateTime.DATE_SHORT),
+        operarios_servicios: servicio.operarios_servicios.map((operario) => {
+          return {
+            ...operario,
+            hora_inicio: DateTime.fromJSDate(operario.hora_inicio!)
+              .toUTC()
+              .toLocaleString(DateTime.TIME_24_SIMPLE),
+            hora_fin: DateTime.fromJSDate(operario.hora_fin!)
+              .toUTC()
+              .toLocaleString(DateTime.TIME_24_SIMPLE),
+          }
+        }),
+      }
+    }),
+  )
 }

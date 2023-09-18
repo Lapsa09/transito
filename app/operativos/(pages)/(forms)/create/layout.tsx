@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
 import FormLayout from '@/components/forms/layout.form'
-import { FormInputProps, LocalOperativo, Registro } from '@/types'
+import { FormInputProps, LocalOperativo, Registro, RioFormProps } from '@/types'
 import { mutate } from 'swr'
 import { useStepForm, useToast } from '@/hooks'
 import { useSelectedLayoutSegment } from 'next/navigation'
@@ -12,18 +12,19 @@ import { useSession } from 'next-auth/react'
 
 function layout({ children }: React.PropsWithChildren) {
   const { data } = useSession({ required: true })
-  const methods = useForm<FormInputProps>({
+  const methods = useForm<FormInputProps | RioFormProps>({
     mode: 'all',
     resetOptions: { keepDefaultValues: true },
     defaultValues: {
       lpcarga: data?.user?.legajo,
     },
   })
-  const { reset, setFocus } = methods
+  const { reset, setFocus, setValue } = methods
   const layoutSegment = useSelectedLayoutSegment() as
     | 'autos'
     | 'motos'
     | 'camiones'
+    | 'rio'
   const { toast } = useToast()
   const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
     layoutSegment,
@@ -32,16 +33,18 @@ function layout({ children }: React.PropsWithChildren) {
     },
   )
   const { setActiveStep } = useStepForm()
-  const onSubmit: SubmitHandler<FormInputProps> = async (body) => {
+  const onSubmit: SubmitHandler<FormInputProps | RioFormProps> = async (
+    body,
+  ) => {
     try {
-      await mutate(
+      await mutate<Registro[]>(
         layoutSegment,
-        async (data: any) => {
+        async (data) => {
           const post = await setter<Registro>({
             route: `/operativos/${layoutSegment}`,
             body,
           })
-
+          if (!data) return [post]
           return [post, ...data]
         },
         {
@@ -52,6 +55,8 @@ function layout({ children }: React.PropsWithChildren) {
       const { expiresAt, ...rest } = operativo
       if (layoutSegment === 'camiones') {
         reset({ ...rest, hora: '' })
+      } else if (layoutSegment === 'rio') {
+        reset({ ...body, dominio: '' })
       } else {
         reset(rest)
       }
@@ -71,6 +76,12 @@ function layout({ children }: React.PropsWithChildren) {
     reset()
     setActiveStep(0)
   }
+
+  useEffect(() => {
+    if (data?.user?.legajo) {
+      setValue('lpcarga', data.user.legajo)
+    }
+  }, [data])
 
   useEffect(() => {
     if (operativo.expiresAt < Date.now()) {

@@ -12,7 +12,7 @@ import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { useLocalStorage } from 'usehooks-ts'
 import { resolucion as IResolucion } from '@prisma/client'
 import { setExpiration } from '@/utils/misc'
-import { LocalOperativo } from '@/types'
+import { FormMotosProps, LocalOperativo } from '@/types'
 
 export const steps = [<FirstStep />, <SecondStep />]
 
@@ -38,7 +38,19 @@ function FirstStep() {
         name="fecha"
         label="Fecha"
         className="w-full basis-5/12"
-        rules={{ required: 'Este campo es requerido' }}
+        rules={{
+          required: 'Este campo es requerido',
+          validate: {
+            maxDate: (value) => {
+              const date = new Date(value)
+              const maxDate = new Date()
+              return value
+                ? date <= maxDate ||
+                    'La fecha no debe ser posterior a la fecha actual'
+                : true
+            },
+          },
+        }}
         persist={setOperativo}
       />
       <TimePicker
@@ -98,17 +110,17 @@ function FirstStep() {
 }
 
 function SecondStep() {
-  const { getValues, setValue } = useFormContext()
+  const { watch, resetField } = useFormContext<FormMotosProps>()
   const { fields, append, remove } = useFieldArray({ name: 'motivos' })
   const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
-    getValues('resolucion') === IResolucion.ACTA ||
-    getValues('resolucion') === IResolucion.REMITIDO
+    watch('resolucion') === IResolucion.ACTA ||
+    watch('resolucion') === IResolucion.REMITIDO
 
   const sumarMotivos = () => {
     if (fields.length < 5) {
-      append({ id_motivo: null, motivo: '' })
+      append(null)
     }
   }
 
@@ -122,18 +134,21 @@ function SecondStep() {
 
   useEffect(() => {
     if (!esSancionable) {
-      setValue('motivo', null)
-      setValue('acta', null)
-    }
+      resetField('motivos')
+      resetField('acta')
+    } else if (fields.length === 0) sumarMotivos()
   }, [esSancionable])
 
   return (
     <div className="flex w-full justify-between flex-wrap">
       {esSancionable && (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center basis-full gap-2">
+          <IoMdRemove
+            className="cursor-pointer text-3xl"
+            onClick={restarMotivos}
+          />
           <h4>Motivos: {fields.length}</h4>
-          <IoMdAdd onClick={sumarMotivos} />
-          <IoMdRemove onClick={restarMotivos} />
+          <IoMdAdd className="cursor-pointer text-3xl" onClick={sumarMotivos} />
         </div>
       )}
       <Input.Dominio

@@ -8,13 +8,18 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { cliente } = await req.json()
+  try {
+    const { cliente } = await req.json()
+    console.log(cliente)
+    const clientes = await prisma.clientes.create({
+      data: {
+        cliente: cliente.toUpperCase(),
+      },
+    })
 
-  const clientes = await prisma.clientes.create({
-    data: {
-      cliente,
-    },
-  })
-
-  return NextResponse.json(clientes)
+    return NextResponse.json(clientes)
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
+  }
 }

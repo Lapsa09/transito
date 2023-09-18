@@ -8,8 +8,8 @@ import {
 
 export interface Operativos {
   direccion_full: string | null
-  fecha: Date | null
-  hora: Date | null
+  fecha: string
+  hora: string
   id_localidad: number | null
   id_op: number | null
   latitud: number | null
@@ -45,5 +45,5 @@ export interface Registro {
   semana: number | null
   tipo_licencia: tipo_licencias | null
   zona_infractor: barrios | null
-  operativo: Operativos | null
+  operativo: Operativos
 }

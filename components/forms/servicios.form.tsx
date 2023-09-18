@@ -21,10 +21,17 @@ import {
 } from '@/services'
 import { ServiciosFormProps } from '@/types'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
+import { DateTime } from 'luxon'
 
 function LayoutServiciosForm() {
-  const { control, setValue, watch, getValues } =
-    useFormContext<ServiciosFormProps>()
+  const {
+    control,
+    setValue,
+    watch,
+    getValues,
+    resetField,
+    formState: { isSubmitSuccessful },
+  } = useFormContext<ServiciosFormProps>()
 
   const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
 
@@ -51,11 +58,17 @@ function LayoutServiciosForm() {
 
   useEffect(() => {
     if (!hay_recibo) {
-      setValue('recibo', undefined)
-      setValue('fecha_recibo', undefined)
-      setValue('importe_recibo', undefined)
+      resetField('recibo')
+      resetField('fecha_recibo')
+      resetField('importe_recibo')
     }
   }, [hay_recibo])
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      remove()
+    }
+  }, [isSubmitSuccessful])
 
   if (isLoading) return null
   return (
@@ -101,17 +114,18 @@ function LayoutServiciosForm() {
               rules={{ required: hay_recibo }}
               type="number"
               className="w-full basis-5/12"
+              startContent="$"
               isDisabled={!hay_recibo}
             />
 
             <Input
               label="Acopio"
               name="acopio"
-              rules={{ required: true }}
               type="number"
               placeholder="0"
               className="w-full basis-5/12"
               isDisabled
+              startContent="$"
             />
           </>
         )}
@@ -157,6 +171,7 @@ function LayoutServiciosForm() {
         type="number"
         className="w-1/4"
         placeholder="0"
+        startContent="$"
         isDisabled
       />
     </div>
@@ -197,26 +212,26 @@ function OperarioForm({
     if (!dia || !inicio || !fin || !precios) {
       return importe
     }
-    const fecha_servicio = new Date(dia)
-    const hora_inicio = new Date(fecha_servicio.toDateString() + ' ' + inicio)
-    const hora_fin = new Date(fecha_servicio.toDateString() + ' ' + fin)
 
-    if (
-      isNaN(hora_inicio.getMilliseconds()) ||
-      isNaN(hora_fin.getMilliseconds())
-    ) {
+    const fecha_servicio = DateTime.fromFormat(dia, 'yyyy-MM-dd')
+    const hora_inicio = fecha_servicio.set({
+      hour: parseInt(inicio.split(':')[0]),
+      minute: parseInt(inicio.split(':')[1]),
+    })
+    const hora_fin = fecha_servicio.set({
+      hour: parseInt(fin.split(':')[0]),
+      minute: parseInt(fin.split(':')[1]),
+    })
+
+    if (!hora_inicio.isValid || !hora_fin.isValid) {
       return importe ?? 0
     }
 
     const [precio_normal, precio_pico] = precios
 
-    const diff = hora_fin.getHours() - hora_inicio.getHours()
-    if (
-      fecha_servicio.getDay() >= 1 &&
-      fecha_servicio.getDay() <= 5 &&
-      !isFeriado
-    ) {
-      if (hora_inicio?.getHours() >= 8 && hora_inicio?.getHours() <= 20) {
+    const diff = hora_fin.diff(hora_inicio, 'hours').hours
+    if (fecha_servicio.day >= 1 && fecha_servicio.day <= 5 && !isFeriado) {
+      if (hora_inicio?.hour >= 8 && hora_inicio?.hour <= 20) {
         return precio_normal.precio * diff
       }
     }
@@ -224,22 +239,33 @@ function OperarioForm({
   }
 
   useEffect(() => {
-    const importe = getImporteOperario({
-      dia: fecha_servicio,
-      inicio: field?.hora_inicio,
-      fin: field?.hora_fin,
-      importe: field?.a_cobrar,
-      isFeriado: feriado,
-      precios,
-    })
+    if (field.operario && field.operario?.legajo === 1) {
+      setValue(`operarios.${index}.a_cobrar`, 0)
+    } else {
+      const importe = getImporteOperario({
+        dia: fecha_servicio,
+        inicio: field?.hora_inicio,
+        fin: field?.hora_fin,
+        importe: field?.a_cobrar,
+        isFeriado: feriado,
+        precios,
+      })
 
-    setValue(`operarios.${index}.a_cobrar`, importe)
-  }, [field?.hora_inicio, field?.hora_fin, feriado, fecha_servicio, precios])
+      setValue(`operarios.${index}.a_cobrar`, importe)
+    }
+  }, [
+    field.hora_inicio,
+    field.hora_fin,
+    feriado,
+    fecha_servicio,
+    precios,
+    field.operario,
+  ])
 
   useEffect(() => {
     const importe_servicio = watchOps.reduce((acc, op) => acc + op.a_cobrar, 0)
     setValue('importe_servicio', importe_servicio)
-  }, [field?.a_cobrar])
+  }, [field.a_cobrar])
 
   if (isLoading || loadingPrecios) return null
   return (
@@ -261,7 +287,6 @@ function OperarioForm({
             inputLabel="nombre"
             name={`operarios.${index}.operario`}
             className="w-full p-0"
-            rules={{ required: true }}
           />
           <NuevoOperario />
         </div>
@@ -280,11 +305,11 @@ function OperarioForm({
         <Input
           label="A cobrar"
           name={`operarios.${index}.a_cobrar`}
-          rules={{ required: true }}
           placeholder="0"
           className="w-full basis-5/12"
           type="number"
           isDisabled
+          startContent="$"
         />
       </div>
     </div>

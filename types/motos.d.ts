@@ -27,7 +27,7 @@ export type Registro = {
   motivos: motivos[]
   tipo_licencias: tipo_licencias | null
   barrio: barrios | null
-  operativo: Operativo | null
+  operativo: Operativo
 }
 
 export type Operativo = {

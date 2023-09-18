@@ -17,7 +17,7 @@ model camiones_operativos {
   direccion      String?              @db.VarChar
   id_localidad   Int?
   direccion_full String?              @db.VarChar
-  latitud        Decimal?              
+  latitud        Decimal?
   longitud       Decimal?
   localidad      vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros      camiones_registros[]
@@ -38,13 +38,13 @@ model camiones_registros {
   resolucion           String?              @db.VarChar
   acta                 String?              @db.VarChar
   hora_carga           DateTime?            @db.Time(6)
-  mes                  Int?
+    mes                  Int?
   semana               Int?
   id_localidad_origen  Int?
   id_localidad_destino Int?
   id_motivo            Int?
   id_operativo         Int?
-  lpcarga              Int?
+lpcarga              Int?
   localidad_destino    barrios?             @relation("registros_id_localidad_destinoTobarrios", fields: [id_localidad_destino], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   localidad_origen     barrios?             @relation("registros_id_localidad_origenTobarrios", fields: [id_localidad_origen], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   motivo               motivos?             @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
@@ -60,7 +60,7 @@ model moto_motivo {
   motivo      motivos         @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
   registro    motos_registros @relation(fields: [id_registro], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([id_registro, id_motivo])
+  @@id([id_registro, id_motivo], map: "pk_moto_motivo")
   @@schema("motos")
 }
 
@@ -86,8 +86,8 @@ model motos_operativos {
 
 model motos_registros {
   dominio           String?           @db.VarChar
-  licencia          Int?
-  acta              Int?
+  licencia          BigInt?
+  acta              BigInt?
   resolucion        resolucion?
   fechacarga        DateTime?         @db.Timestamp(6)
   lpcarga           Int?
@@ -169,7 +169,8 @@ model operativos_operativos {
 model operativos_registros {
   dominio               String?                @db.VarChar
   licencia              BigInt?
-  acta                  Int?
+  acta                  BigInt?
+  graduacion_alcoholica Float?                 @db.Real
   resolucion            resolucion?
   fechacarga            DateTime?              @db.Timestamp(6)
   lpcarga               Int?
@@ -182,7 +183,6 @@ model operativos_registros {
   id_zona_infractor     Int?
   id_operativo          Int?
   id_motivo             Int?
-  graduacion_alcoholica Float?
   tipo_licencia         tipo_licencias?        @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
   zona_infractor        barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
   motivo                motivos?               @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
@@ -416,7 +416,6 @@ model recibos {
 
 model servicios {
   id_servicio         Int                   @id @default(autoincrement())
-  recibo              Int?
   fecha_servicio      DateTime?             @db.Date
   importe_servicio    Int?
   memo                String?               @db.VarChar
@@ -652,4 +651,16 @@ enum turnos_old {
   OPERATIVO
 
   @@schema("public")
+}
+
+enum motivos_camion {
+  DISCAPACITADO
+  LICENCIA
+  CONTRAMANO
+  FALTA_DE_CHAPA_PATENTE             @map("FALTA DE CHAPA PATENTE")
+  FUERA_DE_LA_RED_DE_TRANSITO_PESADO @map("FUERA DE LA RED DE TRANSITO PESADO")
+  SIN_CATEGORIA_HABILITANTE          @map("SIN CATEGORIA HABILITANTE")
+  SE_DA_A_LA_FUGA                    @map("SE DA A LA FUGA")
+
+  @@schema("camiones")
 }

@@ -3,6 +3,7 @@ import { RioFormProps } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { spawn } from 'child_process'
 import { once } from 'events'
+import { DateTime } from 'luxon'
 
 const operativoPaseo = async (body: RioFormProps) => {
   const { fecha, turno, lp } = body
@@ -39,7 +40,7 @@ const radicacion = async (body: RioFormProps) => {
     const { dominio } = body
 
     const pythonProcess = spawn('python', [
-      'C:/Users/agustin.dinardo/Desktop/transito/my-app/py/dnrpa.py',
+      process.env.NEXT_PUBLIC_DNRPA_ROUTE!,
       dominio,
     ])
     pythonProcess.stdout.on('data', async (data) => {
@@ -61,19 +62,26 @@ const radicacion = async (body: RioFormProps) => {
         } else {
           const _res = await prisma.barrios.findFirst({
             where: {
-              barrio: localidad,
+              barrio: {
+                contains: localidad,
+              },
             },
           })
           if (!_res) {
-            res.push(44)
+            const nuevoBarrio = await prisma.barrios.create({
+              data: {
+                barrio: localidad,
+              },
+            })
+            res.push(nuevoBarrio.id_barrio)
           } else {
-            res.push(_res!.id_barrio)
+            res.push(_res.id_barrio)
           }
         }
       }
     })
-    pythonProcess.stderr.on('data', (data) => {
-      console.log(data.toString())
+    pythonProcess.stdout.on('error', (error) => {
+      console.log(error.message)
       return NextResponse.json('El dominio no existe', { status: 400 })
     })
 
@@ -92,6 +100,9 @@ export async function GET() {
       zona: true,
       barrio: true,
     },
+    orderBy: {
+      id: 'desc',
+    },
   })
 
   return NextResponse.json(res)
@@ -100,8 +111,19 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const data: RioFormProps = await req.json()
 
-  const [id_localidad] = await radicacion(data)
   const id_operativo = await operativoPaseo(data)
+  const repetido = await prisma.nuevo_control_registros.findFirst({
+    where: {
+      dominio: data.dominio,
+      id_operativo: id_operativo,
+    },
+  })
+
+  if (repetido) {
+    return NextResponse.json('El dominio ya fue cargado', { status: 400 })
+  }
+
+  const [id_localidad] = await radicacion(data)
 
   const _hora = new Date(data.fecha)
   // @ts-ignore
@@ -114,7 +136,7 @@ export async function POST(req: NextRequest) {
       id_operativo,
       id_zona: data.zona.id_zona,
       id_localidad,
-      fechacarga: new Date().toLocaleString(),
+      fechacarga: DateTime.now().toSQL(),
     },
     include: {
       zona: true,

@@ -133,13 +133,13 @@ export async function POST(req: Request) {
 
     const auto = await prisma.operativos_registros.create({
       data: {
-        acta: data.acta,
+        acta: data.acta ? +data.acta : null,
         dominio: data.dominio.toUpperCase(),
         graduacion_alcoholica: data.graduacion_alcoholica
           ? +data.graduacion_alcoholica
           : 0,
         fechacarga: new Date(),
-        licencia: data.licencia ? ++data.licencia : undefined,
+        licencia: data.licencia ? +data.licencia : undefined,
         lpcarga: data.lpcarga,
         resolucion: data.resolucion || resolucion.PREVENCION,
         es_del: data.es_del,

@@ -19,7 +19,7 @@ function layout({ children }: React.PropsWithChildren) {
       lpcarga: data?.user?.legajo,
     },
   })
-  const { reset, setFocus } = methods
+  const { reset, setFocus, setValue } = methods
   const layoutSegment = useSelectedLayoutSegment() as
     | 'autos'
     | 'motos'
@@ -76,6 +76,12 @@ function layout({ children }: React.PropsWithChildren) {
     reset()
     setActiveStep(0)
   }
+
+  useEffect(() => {
+    if (data?.user?.legajo) {
+      setValue('lpcarga', data.user.legajo)
+    }
+  }, [data])
 
   useEffect(() => {
     if (operativo.expiresAt < Date.now()) {

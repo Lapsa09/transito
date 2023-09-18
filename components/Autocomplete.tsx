@@ -20,6 +20,7 @@ import {
   PopoverContent,
 } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from './ui/scroll-area'
 
 interface Props extends UseControllerProps {
   options: any[]
@@ -55,19 +56,16 @@ export default function MyCombobox({
           option[inputLabel].toLowerCase().includes(query.toLowerCase()),
         )
 
-  const removeSelected = () => {
-    field.onChange(null)
-    if (persist) persist({ [name]: null })
-  }
-
   const handleChange = (currentValue: string) => {
     const option = options.find(
       (option) =>
         option[inputLabel].toLowerCase() === currentValue.toLowerCase(),
     )
-    if (field.value && option[inputId] === field.value[inputId])
-      removeSelected()
-    else {
+    if (field.value && option[inputId] === field.value[inputId]) {
+      field.onChange(null)
+      if (persist) persist({ [name]: null })
+      setQuery('')
+    } else {
       field.onChange(option)
       if (persist) persist({ [name]: option })
     }
@@ -75,7 +73,7 @@ export default function MyCombobox({
   }
 
   return (
-    <div className={className}>
+    <div className={cn(className, 'pb-6')}>
       <label
         className={`block text-small font-medium text-foreground pb-1.5 ${
           rules?.required &&
@@ -109,22 +107,25 @@ export default function MyCombobox({
               onValueChange={setQuery}
               placeholder="Elija una opcion..."
             />
-            <CommandEmpty>Vacio.</CommandEmpty>
-            <CommandGroup>
-              {filteredOptions.map((framework) => (
-                <CommandItem key={framework[inputId]} onSelect={handleChange}>
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      field.value && field.value[inputId] === framework[inputId]
-                        ? 'opacity-100'
-                        : 'opacity-0',
-                    )}
-                  />
-                  {framework[inputLabel]}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            <ScrollArea className="h-60">
+              <CommandEmpty>Vacio.</CommandEmpty>
+              <CommandGroup>
+                {filteredOptions.map((framework) => (
+                  <CommandItem key={framework[inputId]} onSelect={handleChange}>
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        field.value &&
+                          field.value[inputId] === framework[inputId]
+                          ? 'opacity-100'
+                          : 'opacity-0',
+                      )}
+                    />
+                    {framework[inputLabel]}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </ScrollArea>
           </Command>
         </PopoverContent>
       </Popover>

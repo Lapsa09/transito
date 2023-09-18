@@ -239,22 +239,33 @@ function OperarioForm({
   }
 
   useEffect(() => {
-    const importe = getImporteOperario({
-      dia: fecha_servicio,
-      inicio: field?.hora_inicio,
-      fin: field?.hora_fin,
-      importe: field?.a_cobrar,
-      isFeriado: feriado,
-      precios,
-    })
+    if (field.operario && field.operario?.legajo === 1) {
+      setValue(`operarios.${index}.a_cobrar`, 0)
+    } else {
+      const importe = getImporteOperario({
+        dia: fecha_servicio,
+        inicio: field?.hora_inicio,
+        fin: field?.hora_fin,
+        importe: field?.a_cobrar,
+        isFeriado: feriado,
+        precios,
+      })
 
-    setValue(`operarios.${index}.a_cobrar`, importe)
-  }, [field?.hora_inicio, field?.hora_fin, feriado, fecha_servicio, precios])
+      setValue(`operarios.${index}.a_cobrar`, importe)
+    }
+  }, [
+    field.hora_inicio,
+    field.hora_fin,
+    feriado,
+    fecha_servicio,
+    precios,
+    field.operario,
+  ])
 
   useEffect(() => {
     const importe_servicio = watchOps.reduce((acc, op) => acc + op.a_cobrar, 0)
     setValue('importe_servicio', importe_servicio)
-  }, [field?.a_cobrar])
+  }, [field.a_cobrar])
 
   if (isLoading || loadingPrecios) return null
   return (

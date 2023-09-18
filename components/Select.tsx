@@ -52,7 +52,7 @@ function CustomSelect({
           readOnly
           endContent={
             <ChevronsUpDown
-              className="h-5 w-5 text-gray-400 cursor-pointer"
+              className="ml-2 h-4 w-4 shrink-0 opacity-50 cursor-pointer"
               aria-hidden="true"
             />
           }

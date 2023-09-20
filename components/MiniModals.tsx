@@ -8,7 +8,12 @@ import {
 } from '@nextui-org/react'
 import Button from './Button'
 import Input from './Input'
-import { FieldValues, FormProvider, useForm } from 'react-hook-form'
+import {
+  FieldValues,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from 'react-hook-form'
 import { createCliente, createOperario, updateMemo } from '@/services'
 import { mutate } from 'swr'
 import { clientes, operario, servicios } from '@prisma/client'
@@ -19,7 +24,7 @@ export const NuevoCliente = () => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   const methods = useForm()
   const { handleSubmit } = methods
-
+  const { setValue } = useFormContext()
   const onSubmit = async (body: FieldValues) => {
     try {
       const req = await createCliente({ body })
@@ -31,6 +36,8 @@ export const NuevoCliente = () => {
           revalidate: false,
         },
       )
+
+      setValue('cliente', req)
 
       onClose()
     } catch (error) {

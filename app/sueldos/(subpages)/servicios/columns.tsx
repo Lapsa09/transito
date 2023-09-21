@@ -67,6 +67,11 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     footer: (props) => props.column.id,
   },
   {
+    id: 'cantidad_operarios',
+    cell: (info) => info.row.original.operarios_servicios?.length,
+    header: () => <span>Cantidad de operarios</span>,
+  },
+  {
     id: 'edit',
     header: () => null,
     cell: ({ row }) => (

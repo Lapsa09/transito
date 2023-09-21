@@ -1,13 +1,15 @@
 import {
   dependencia,
-  kilometraje_fecha,
   kilometraje_vehiculos,
   logistica_tipo_vehiculo,
   movil,
   proveedor,
   reparaciones,
   sector,
-  suministro,
+  pedido_repuesto,
+  repuesto,
+  vtv,
+  tipo_repuesto,
 } from '@prisma/client'
 
 export interface Vehiculo extends movil {
@@ -16,12 +18,25 @@ export interface Vehiculo extends movil {
   tipo_vehiculo: logistica_tipo_vehiculo
 }
 
-export interface KilometrajeVehiculo extends kilometraje_fecha {
-  kilometraje_vehiculos: kilometraje_vehiculos
-}
+export interface KilometrajeVehiculo extends kilometraje_vehiculos {}
 
 export interface Reparacion extends reparaciones {
-  suministro: suministro & {
+  suministro: pedido_repuesto & {
     proveedor: proveedor
+    repuesto: repuesto
   }
+  movil: movil
+}
+
+export interface VTV extends vtv {}
+
+export interface Repuesto extends repuesto {
+  tipo_repuesto: tipo_repuesto
+}
+
+export interface PedidoRepuesto extends pedido_repuesto {
+  repuesto: repuesto & {
+    tipo_repuesto: tipo_repuesto
+  }
+  proveedor: proveedor
 }

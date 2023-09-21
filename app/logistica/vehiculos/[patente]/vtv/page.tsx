@@ -1,17 +1,17 @@
 'use client'
 
-import React from 'react'
 import { DataTable } from '@/components/table'
-import useSWR from 'swr'
 import { getter } from '@/services'
-import { columnsVehiculos } from './columns'
-import { KilometrajeVehiculo } from '@/types/logistica'
+import React from 'react'
+import useSWR from 'swr'
+import { columns } from './columns'
+import { VTV } from '@/types/logistica'
 
 function page({ params }: { params: { patente: string } }) {
   const { patente } = params
 
-  const { data, isLoading } = useSWR<KilometrajeVehiculo[]>(
-    { route: `logistica/vehiculos/${patente}/service` },
+  const { data, isLoading } = useSWR<VTV[]>(
+    { route: `logistica/vehiculos/${patente}/vtv` },
     getter,
   )
 
@@ -19,7 +19,7 @@ function page({ params }: { params: { patente: string } }) {
   return (
     <div>
       <h1 className="text-center mb-5">{patente}</h1>
-      <DataTable data={data} columns={columnsVehiculos} />
+      <DataTable data={data} columns={columns} />
     </div>
   )
 }

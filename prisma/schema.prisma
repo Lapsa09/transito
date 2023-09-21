@@ -465,6 +465,7 @@ model kilometraje_vehiculos {
 model movil {
   patente               String                   @id @db.VarChar
   marca                 String?                  @db.VarChar
+  nro_movil             String?                  @db.VarChar
   modelo                String?                  @db.VarChar
   a_o                   Int?                     @map("año")
   tipo_combustible      String?                  @db.VarChar
@@ -482,7 +483,6 @@ model movil {
   tipo_vehiculo         logistica_tipo_vehiculo? @relation(fields: [id_tipo_vehiculo], references: [id_tipo])
   sector                sector?                  @relation(fields: [id_uso], references: [id_sector])
   reparaciones          reparaciones[]
-  suministro            pedido_repuesto[]
   vtv                   vtv?
 
   @@schema("logistica")
@@ -506,17 +506,16 @@ model proveedor {
 }
 
 model reparaciones {
-  id            Int       @id @default(autoincrement())
-  fecha         DateTime? @db.Date
-  concepto      String?   @db.VarChar
-  estado        String?   @db.VarChar
-  articulo      Int       @unique
-  patente       String?   @db.VarChar
-  fecha_entrega DateTime? @db.Date
-  retira        String?   @db.VarChar
-  observacion   String?   @db.VarChar
-  suministro    repuesto  @relation(fields: [articulo], references: [id])
-  movil         movil?    @relation(fields: [patente], references: [patente])
+  id          Int             @id @default(autoincrement())
+  fecha       DateTime?       @db.Date
+  concepto    String?         @db.VarChar
+  estado      String?         @db.VarChar
+  articulo    Int             @unique
+  patente     String?         @db.VarChar
+  retira      String?         @db.VarChar
+  observacion String?         @db.VarChar
+  suministro  pedido_repuesto @relation(fields: [articulo], references: [id])
+  movil       movil?          @relation(fields: [patente], references: [patente])
 
   @@schema("logistica")
 }
@@ -530,16 +529,16 @@ model sector {
 }
 
 model pedido_repuesto {
-  id           Int       @id @default(autoincrement())
-  orden_compra Int?
-  fecha_pedido DateTime? @db.Date
-  fecha_stock  DateTime? @db.Date
-  patente      String?   @db.VarChar
-  id_repuesto  Int
-  id_proveedor Int
-  proveedor    proveedor @relation(fields: [id_proveedor], references: [id])
-  movil        movil?    @relation(fields: [patente], references: [patente])
-  repuesto     repuesto  @relation(fields: [id_repuesto], references: [id])
+  id            Int           @id @default(autoincrement())
+  orden_compra  Int?
+  fecha_pedido  DateTime?     @db.Date
+  fecha_entrega DateTime?     @db.Date
+  id_repuesto   Int
+  cantidad      Int           @default(1)
+  id_proveedor  Int
+  proveedor     proveedor     @relation(fields: [id_proveedor], references: [id])
+  repuesto      repuesto      @relation(fields: [id_repuesto], references: [id])
+  reparaciones  reparaciones?
 
   @@schema("logistica")
 }
@@ -549,8 +548,7 @@ model repuesto {
   id_tipo_repuesto Int
   item             String?           @db.VarChar
   cantidad         Int?              @default(0)
-  reparaciones     reparaciones?
-  repuestos        pedido_repuesto[]
+  pedidos          pedido_repuesto[]
   tipo_repuesto    tipo_repuesto     @relation(fields: [id_tipo_repuesto], references: [id_tipo_repuesto])
 
   @@schema("logistica")
@@ -575,7 +573,6 @@ model logistica_tipo_vehiculo {
 
 model vtv {
   patente       String    @id @db.VarChar
-  nro_movil     String?   @db.VarChar
   fecha_emision DateTime? @db.Date
   observacion   String?   @db.VarChar
   vencimiento   DateTime? @db.Date

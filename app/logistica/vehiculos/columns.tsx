@@ -78,14 +78,6 @@ export const columns: ColumnDef<Vehiculo>[] = [
     ),
   },
   {
-    id: 'suministros',
-    cell: ({ row }) => (
-      <Link href={`/logistica/vehiculos/${row.original.patente}/suministros`}>
-        <Button>Suministros</Button>
-      </Link>
-    ),
-  },
-  {
     id: 'vtv',
     cell: ({ row }) => (
       <Link href={`/logistica/vehiculos/${row.original.patente}/vtv`}>

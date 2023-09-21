@@ -1,19 +1,18 @@
 import prisma from '@/lib/prismadb'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET({ params }: { params: { patente: string } }) {
+export async function GET(
+  _: NextRequest,
+  { params }: { params: { patente: string } },
+) {
   const { patente } = params
 
-  const vehiculo = await prisma.kilometraje_fecha.findMany({
+  const vehiculo = await prisma.kilometraje_vehiculos.findMany({
     where: {
       patente,
     },
     include: {
-      kilometraje_vehiculos: {
-        include: {
-          movil: true,
-        },
-      },
+      movil: true,
     },
   })
 

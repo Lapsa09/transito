@@ -52,6 +52,12 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
         setZone: true,
       }).toLocaleString(DateTime.DATE_SHORT),
     footer: (props) => props.column.id,
+    filterFn: (row, id, filter) =>
+      DateTime.fromISO(row.getValue<string>(id), {
+        setZone: true,
+      })
+        .toLocaleString(DateTime.DATE_SHORT)
+        .includes(filter),
   },
   {
     accessorFn: (row) => row.importe_servicio,

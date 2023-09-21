@@ -52,6 +52,12 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
         setZone: true,
       }).toLocaleString(DateTime.DATE_SHORT),
     footer: (props) => props.column.id,
+    filterFn: (row, id, filter) =>
+      DateTime.fromISO(row.getValue<string>(id), {
+        setZone: true,
+      })
+        .toLocaleString(DateTime.DATE_SHORT)
+        .includes(filter),
   },
   {
     accessorFn: (row) => row.importe_servicio,
@@ -59,6 +65,14 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     cell: (info) => `$ ${info.getValue<number>()}`,
     header: () => <span>Importe Servicio</span>,
     footer: (props) => props.column.id,
+  },
+  {
+    id: 'cantidad_operarios',
+    cell: (info) =>
+      info.row.original.operarios_servicios?.filter(
+        (operario) => operario.legajo !== 1,
+      ).length,
+    header: () => <span>Cantidad de operarios</span>,
   },
   {
     id: 'edit',

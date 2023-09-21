@@ -89,7 +89,7 @@ export function DataTable<TData>({
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                           {{
                             asc: ' 🔼',
@@ -98,7 +98,7 @@ export function DataTable<TData>({
                         </div>
                         {header.column.getCanFilter() ? (
                           <div>
-                            <Filter column={header.column} table={table} />
+                            <Filter column={header.column} />
                           </div>
                         ) : null}
                       </>
@@ -137,7 +137,7 @@ export function DataTable<TData>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

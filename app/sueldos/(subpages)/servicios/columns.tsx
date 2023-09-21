@@ -68,7 +68,10 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
   },
   {
     id: 'cantidad_operarios',
-    cell: (info) => info.row.original.operarios_servicios?.length,
+    cell: (info) =>
+      info.row.original.operarios_servicios?.filter(
+        (operario) => operario.legajo !== 1,
+      ).length,
     header: () => <span>Cantidad de operarios</span>,
   },
   {

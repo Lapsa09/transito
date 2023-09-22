@@ -2,7 +2,7 @@ import type { Cliente } from '@/types/clientes.sueldos'
 import { getter, setter, updater } from './main.service'
 import { Operario } from '@/types/operarios.sueldos'
 import { Servicio } from '@/types/servicios.sueldos'
-import { clientes, operarios, servicios } from '@prisma/client'
+import { clientes, operarios } from '@prisma/client'
 import { ServiciosFormProps } from '@/types'
 import { FieldValues } from 'react-hook-form'
 
@@ -49,20 +49,6 @@ export const updatePrecios = async (body: {
   return data
 }
 
-export const getListaClientes = async () => {
-  const data = await getter<clientes[]>({
-    route: 'sueldos/clientes/list',
-  })
-  return data
-}
-
-export const getListaOperarios = async () => {
-  const data = await getter<operarios[]>({
-    route: 'sueldos/operarios/list',
-  })
-  return data
-}
-
 export const getAcopioFromCliente = async (id_cliente: number) => {
   const data = await getter<number>({
     route: 'sueldos/clientes/acopio/' + id_cliente,
@@ -80,7 +66,7 @@ export const nuevoServicio = async ({ body }: { body: ServiciosFormProps }) => {
 
 export const createCliente = async ({ body }: { body: FieldValues }) => {
   const data = await setter<clientes>({
-    route: 'sueldos/clientes/list',
+    route: 'clientes',
     body,
   })
   return data
@@ -88,7 +74,7 @@ export const createCliente = async ({ body }: { body: FieldValues }) => {
 
 export const createOperario = async (body: { body: FieldValues }) => {
   const data = await setter<operarios>({
-    route: 'sueldos/operarios/list',
+    route: 'operarios',
     body,
   })
   return data
@@ -151,7 +137,13 @@ export const getForExport = async ({
   año: number
 }) => {
   const data = await getter<Servicio[]>({
-    route: 'sueldos/servicios/liqui?mes=' + mes + '&año=' + año,
+    route: 'sueldos/servicios/liqui',
+    config: {
+      params: {
+        mes,
+        año,
+      },
+    },
   })
   return data
 }

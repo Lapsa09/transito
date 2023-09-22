@@ -1,4 +1,5 @@
 import { Registro } from '@/types/camiones'
+import { turnos } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
@@ -41,7 +42,8 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'CP',
   },
   {
-    accessorFn: (row) => row.operativo?.turno,
+    accessorFn: (row) =>
+      row.operativo?.turno === turnos.MA_ANA ? 'MAÑANA' : row.operativo?.turno,
     header: 'Turno',
   },
   {

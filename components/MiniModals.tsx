@@ -14,11 +14,18 @@ import {
   useForm,
   useFormContext,
 } from 'react-hook-form'
-import { createCliente, createOperario, updateMemo } from '@/services'
+import {
+  createCliente,
+  createOperario,
+  getSelects,
+  updateMemo,
+} from '@/services'
 import { mutate } from 'swr'
 import { clientes, operario, servicios } from '@prisma/client'
 import { toast } from '@/hooks'
 import { IoMdAdd } from 'react-icons/io'
+
+type Data = Awaited<ReturnType<typeof getSelects>>
 
 export const NuevoCliente = () => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
@@ -29,9 +36,13 @@ export const NuevoCliente = () => {
     try {
       const req = await createCliente({ body })
 
-      await mutate<clientes[]>(
-        'clientes',
-        (data) => (data ? [...data, req] : [req]),
+      await mutate<Data>(
+        'api/selects',
+        (data) => {
+          data?.clientes.push(req)
+
+          return data
+        },
         {
           revalidate: false,
         },
@@ -81,9 +92,13 @@ export const NuevoOperario = () => {
     try {
       const req = await createOperario({ body })
       console.log(req)
-      await mutate<operario[]>(
-        'operarios',
-        (data) => (data ? [...data, req] : [req]),
+      await mutate<Data>(
+        'api/selects',
+        (data) => {
+          data?.operarios.push(req)
+
+          return data
+        },
         {
           revalidate: false,
         },

@@ -13,12 +13,7 @@ import TimeField from '../TimePicker'
 import { IoMdRemove } from 'react-icons/io'
 import Button from '../Button'
 import useSWR from 'swr'
-import {
-  getListaOperarios,
-  getListaClientes,
-  getPrecios,
-  getAcopioFromCliente,
-} from '@/services'
+import { getPrecios, getAcopioFromCliente, getSelects } from '@/services'
 import { ServiciosFormProps } from '@/types'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
 import { DateTime, Interval } from 'luxon'
@@ -27,8 +22,7 @@ import Loader from '../Loader'
 function LayoutServiciosForm() {
   const { control, setValue, watch, getValues, resetField } =
     useFormContext<ServiciosFormProps>()
-
-  const { data: clientes, isLoading } = useSWR('clientes', getListaClientes)
+  const { data, isLoading } = useSWR('api/selects', getSelects)
 
   const { hay_recibo } = watch()
   const { cliente } = getValues()
@@ -66,7 +60,7 @@ function LayoutServiciosForm() {
         <div className="flex w-full basis-5/12 items-end pb-6">
           <AutoComplete
             label="Cliente"
-            options={clientes!}
+            options={data?.clientes!}
             name="cliente"
             inputId="id_cliente"
             inputLabel="cliente"
@@ -174,7 +168,7 @@ function OperarioForm({
   remove: UseFieldArrayRemove
 }) {
   const { setValue, watch } = useFormContext<ServiciosFormProps>()
-  const { data: operarios, isLoading } = useSWR('operarios', getListaOperarios)
+  const { data, isLoading } = useSWR('api/selects', getSelects)
   const { data: precios, isLoading: loadingPrecios } = useSWR(
     'precios',
     getPrecios,
@@ -293,7 +287,7 @@ function OperarioForm({
         <div className="flex w-full basis-5/12 items-end pb-6">
           <AutoComplete
             label="Operario"
-            options={operarios!}
+            options={data?.operarios!}
             inputId="legajo"
             inputLabel="nombre"
             name={`operarios.${index}.operario`}

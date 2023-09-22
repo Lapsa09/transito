@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormAutosProps } from '@/types'
-import { del, resolucion, resultado } from '@prisma/client'
+import { del, resolucion, resultado, turnos } from '@prisma/client'
 
 const es_del = async (zona_infractor: string) => {
   try {
@@ -48,7 +48,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
     where: {
       fecha: new Date(fecha),
       qth,
-      turno,
+      turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
       legajo_a_cargo: +legajo_a_cargo,
       legajo_planilla: +legajo_planilla,
       id_localidad: localidad.id_barrio,
@@ -63,7 +63,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
       data: {
         fecha: new Date(fecha),
         qth,
-        turno,
+        turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
         legajo_a_cargo: +legajo_a_cargo,
         legajo_planilla: +legajo_planilla,
         id_localidad: localidad.id_barrio,

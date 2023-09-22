@@ -20,7 +20,7 @@ export interface Operativo {
   longitud: number
   qth: string
   seguridad?: seguridad
-  turno: turnos
+  turno: 'MAÑANA' | 'TARDE' | 'NOCHE'
   legajo?: string
 }
 

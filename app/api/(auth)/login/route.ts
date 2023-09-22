@@ -1,4 +1,5 @@
 import prisma from '@/lib/prismadb'
+import { turnos } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     user = {
       ...rest,
       role: op?.permisos?.permiso,
-      turno: op?.turno,
+      turno: op?.turno === turnos.MA_ANA ? 'MAÑANA' : op?.turno,
     }
   }
 

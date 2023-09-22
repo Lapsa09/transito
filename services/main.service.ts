@@ -1,6 +1,8 @@
 import {
   barrios,
+  clientes,
   motivos,
+  operarios,
   resolucion,
   seguridad,
   tipo_licencias,
@@ -8,31 +10,32 @@ import {
   vicente_lopez,
   zonas,
 } from '@prisma/client'
-import Axios from 'axios'
+import Axios, { AxiosRequestConfig } from 'axios'
 
 type Props = {
   route: string
   body?: any
+  config?: AxiosRequestConfig<any>
 }
 
 const axios = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
 })
 
-export const getter = async <T = any>({ route }: Props) => {
-  const { data } = await axios.get<T>(route)
+export const getter = async <T = any>({ route, config }: Props) => {
+  const { data } = await axios.get<T>(route, config)
 
   return data
 }
 
-export const setter = async <T = any>({ route, body }: Props) => {
-  const { data } = await axios.post<T>(route, body)
+export const setter = async <T = any>({ route, body, config }: Props) => {
+  const { data } = await axios.post<T>(route, body, config)
 
   return data
 }
 
-export const updater = async <T = any>({ route, body }: Props) => {
-  const { data } = await axios.put<T>(route, body)
+export const updater = async <T = any>({ route, body, config }: Props) => {
+  const { data } = await axios.put<T>(route, body, config)
   return data
 }
 
@@ -91,6 +94,20 @@ export const getZonasPaseo = async () => {
   return data
 }
 
+export const getListaClientes = async () => {
+  const data = await getter<clientes[]>({
+    route: 'clientes',
+  })
+  return data
+}
+
+export const getListaOperarios = async () => {
+  const data = await getter<operarios[]>({
+    route: 'operarios',
+  })
+  return data
+}
+
 export const getSelects = async () => {
   const [
     zonas,
@@ -101,6 +118,8 @@ export const getSelects = async () => {
     motivos,
     vicenteLopez,
     zonasPaseo,
+    clientes,
+    operarios,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -110,6 +129,8 @@ export const getSelects = async () => {
     getMotivos(),
     getVicenteLopez(),
     getZonasPaseo(),
+    getListaClientes(),
+    getListaOperarios(),
   ])
   return {
     zonas,
@@ -120,5 +141,7 @@ export const getSelects = async () => {
     motivos,
     vicenteLopez,
     zonasPaseo,
+    clientes,
+    operarios,
   }
 }

@@ -2,6 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import { Registro } from '@/types/motos'
 import { DateTime } from 'luxon'
+import { turnos } from '@prisma/client'
 
 export const columns: ColumnDef<Registro>[] = [
   {
@@ -49,7 +50,8 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'CP',
   },
   {
-    accessorFn: (row) => row.operativo?.turno,
+    accessorFn: (row) =>
+      row.operativo?.turno === turnos.MA_ANA ? 'MAÑANA' : row.operativo?.turno,
     header: 'Turno',
   },
   {

@@ -38,13 +38,13 @@ model camiones_registros {
   resolucion           String?              @db.VarChar
   acta                 String?              @db.VarChar
   hora_carga           DateTime?            @db.Time(6)
-    mes                  Int?
+  mes                  Int?
   semana               Int?
   id_localidad_origen  Int?
   id_localidad_destino Int?
   id_motivo            Int?
   id_operativo         Int?
-lpcarga              Int?
+  lpcarga              Int?
   localidad_destino    barrios?             @relation("registros_id_localidad_destinoTobarrios", fields: [id_localidad_destino], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   localidad_origen     barrios?             @relation("registros_id_localidad_origenTobarrios", fields: [id_localidad_origen], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   motivo               motivos?             @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
@@ -167,26 +167,26 @@ model operativos_operativos {
 }
 
 model operativos_registros {
-  dominio               String?                @db.VarChar
+  dominio               String                @db.VarChar
   licencia              BigInt?
   acta                  BigInt?
-  graduacion_alcoholica Float?                 @db.Real
-  resolucion            resolucion?
-  fechacarga            DateTime?              @db.Timestamp(6)
+  graduacion_alcoholica Float?                @db.Real
+  resolucion            resolucion?           @default(PREVENCION)
+  fechacarga            DateTime?             @default(now()) @db.Timestamp(6)
   lpcarga               Int?
   mes                   Int?
   semana                Int?
   es_del                del?
   resultado             resultado?
-  id                    Int                    @id @default(autoincrement())
+  id                    Int                   @id @default(autoincrement())
   id_licencia           Int?
-  id_zona_infractor     Int?
-  id_operativo          Int?
+  id_zona_infractor     Int
+  id_operativo          Int
   id_motivo             Int?
-  tipo_licencia         tipo_licencias?        @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
-  zona_infractor        barrios?               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
-  motivo                motivos?               @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
-  operativo             operativos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  tipo_licencia         tipo_licencias?       @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
+  zona_infractor        barrios               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  motivo                motivos?              @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
+  operativo             operativos_operativos @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("operativos")

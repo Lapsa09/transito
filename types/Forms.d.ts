@@ -6,7 +6,6 @@ import {
   resolucion,
   seguridad,
   tipo_licencias,
-  turnos,
   vicente_lopez,
   motivo,
   zonas,
@@ -38,7 +37,7 @@ export interface FormInputProps {
   qth: string
   localidad: vicente_lopez
   fecha: string
-  turno: turnos
+  turno: 'MAÑANA' | 'TARDE' | 'NOCHE'
   lpcarga: number
   hora: string
   dominio: string
@@ -84,11 +83,11 @@ export interface FormCamionesProps extends FormInputProps {
   localidad_destino: barrios
 }
 
-export interface EditCamionesProps extends FormInputProps {
+export interface EditCamionesProps extends EditInputProps {
   motivo: motivos
   remito: boolean
   carga: boolean
-  lp: number
+  legajo: string
   origen?: string
   destino?: string
   localidad_origen: barrios
@@ -148,7 +147,7 @@ export type RioFormProps = {
   fecha: string
   motivo: motivo
   lp: string
-  turno: turnos
+  turno: 'MAÑANA' | 'TARDE' | 'NOCHE'
   hora: string
   dominio: string
   acta: bigint

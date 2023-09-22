@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormCamionesProps } from '@/types'
-import { resolucion } from '@prisma/client'
+import { resolucion, turnos } from '@prisma/client'
 
 const operativoCamiones = async (body: FormCamionesProps) => {
   const { fecha, qth, turno, legajo, localidad } = body
@@ -11,7 +11,7 @@ const operativoCamiones = async (body: FormCamionesProps) => {
     where: {
       fecha: new Date(fecha),
       direccion: qth,
-      turno,
+      turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
       legajo: legajo.toString(),
       id_localidad: localidad.id_barrio,
       direccion_full: `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
@@ -23,7 +23,7 @@ const operativoCamiones = async (body: FormCamionesProps) => {
       data: {
         fecha: new Date(fecha),
         direccion: qth,
-        turno,
+        turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
         legajo: legajo.toString(),
         id_localidad: localidad.id_barrio,
         direccion_full: `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,

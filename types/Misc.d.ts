@@ -1,5 +1,3 @@
-import { turnos } from '@prisma/client'
-
 export enum Roles {
   ADMIN = 'ADMIN',
   INSPECTOR = 'INSPECTOR',
@@ -15,7 +13,7 @@ export type User = {
   user_password: string
   telefono: number
   role: Roles
-  turno: turnos | null
+  turno: 'MAÑANA' | 'TARDE' | 'NOCHE' | null
 }
 
 export interface Links {

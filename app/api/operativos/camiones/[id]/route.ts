@@ -1,4 +1,6 @@
 import prisma from '@/lib/prismadb'
+import { EditCamionesProps } from '@/types'
+import { turnos } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
 export async function GET(req: Request, state: { params: { id: string } }) {
@@ -28,9 +30,9 @@ export async function GET(req: Request, state: { params: { id: string } }) {
     return NextResponse.json(
       JSON.parse(
         JSON.stringify(res, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value
-        )
-      )
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
+      ),
     )
   }
   return NextResponse.json(null)
@@ -41,7 +43,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const body = await req.json()
+  const body: EditCamionesProps = await req.json()
 
   const camion = await prisma.camiones_registros.update({
     where: { id: Number(id) },
@@ -71,7 +73,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
           fecha: body.fecha,
           legajo: body.legajo,
           direccion: body.qth,
-          turno: body.turno,
+          turno: body.turno === 'MAÑANA' ? turnos.MA_ANA : body.turno,
           localidad: {
             connect: {
               id_barrio: body.localidad.id_barrio,
@@ -90,8 +92,8 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(camion, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    )
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ),
   )
 }

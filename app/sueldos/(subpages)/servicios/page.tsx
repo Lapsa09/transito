@@ -6,19 +6,19 @@ import { ServicioColumns } from './columns'
 import Mes from './expansions'
 import useSWR from 'swr'
 import Button from '@/components/Button'
-import { FormProvider, useForm } from 'react-hook-form'
+import { SubmitHandler } from 'react-hook-form'
 import DateField from '@/components/DatePicker'
-import CSVDownloadButton from '@/components/CSVDownloadButton'
+import { RegularForm } from '@/components/forms/layout.form'
+import { exporter } from '@/utils/csvExport'
 
 function page() {
   const { data, isLoading } = useSWR('servicios', getServicios)
   const [exported, setExported] = useState(false)
-  const methods = useForm<{ fecha: string }>()
-  const { watch } = methods
 
-  const handleExport = async () => {
-    const { fecha } = watch()
-    return await exportAgenda({ body: { fecha } })
+  const handleExport: SubmitHandler<{ fecha: string }> = async (body) => {
+    const data = await exportAgenda({ body })
+
+    exporter(data)
   }
 
   if (isLoading) return null
@@ -29,14 +29,13 @@ function page() {
           Exportar servicios del dia...
         </Button>
         {exported && (
-          <div className="flex items-center w-1/4">
-            <FormProvider {...methods}>
-              <DateField name="fecha" label="Fecha" />
-              <CSVDownloadButton fetcher={handleExport}>
-                Exportar
-              </CSVDownloadButton>
-            </FormProvider>
-          </div>
+          <RegularForm
+            className="flex items-center w-1/4"
+            onSubmit={handleExport}
+          >
+            <DateField name="fecha" label="Fecha" rules={{ required: true }} />
+            <Button type="submit">Exportar</Button>
+          </RegularForm>
         )}
       </div>
       <DataTable

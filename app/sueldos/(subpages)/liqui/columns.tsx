@@ -1,6 +1,7 @@
-import CSVDownloadButton from '@/components/CSVDownloadButton'
+import Button from '@/components/Button'
 import { getForExport } from '@/services'
 import { Meses } from '@/types'
+import { exporter } from '@/utils/csvExport'
 import { ColumnDef } from '@tanstack/react-table'
 import React from 'react'
 
@@ -22,16 +23,18 @@ export const LiquiColumns: ColumnDef<{
   {
     id: 'actions',
     cell: ({ row }) => (
-      <CSVDownloadButton
-        fetcher={async () =>
-          await getForExport({
-            mes: row.original.mes,
-            año: row.original.año,
-          })
+      <Button
+        onClick={async () =>
+          exporter(
+            await getForExport({
+              mes: row.original.mes,
+              año: row.original.año,
+            }),
+          )
         }
       >
         Exportar
-      </CSVDownloadButton>
+      </Button>
     ),
   },
 ]

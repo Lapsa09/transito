@@ -8,12 +8,7 @@ import {
 } from '@nextui-org/react'
 import Button from './Button'
 import Input from './Input'
-import {
-  FieldValues,
-  FormProvider,
-  useForm,
-  useFormContext,
-} from 'react-hook-form'
+import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form'
 import {
   createCliente,
   createOperario,
@@ -21,18 +16,17 @@ import {
   updateMemo,
 } from '@/services'
 import { mutate } from 'swr'
-import { clientes, operario, servicios } from '@prisma/client'
+import { servicios } from '@prisma/client'
 import { toast } from '@/hooks'
 import { IoMdAdd } from 'react-icons/io'
+import { RegularForm } from './forms/layout.form'
 
 type Data = Awaited<ReturnType<typeof getSelects>>
 
 export const NuevoCliente = () => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-  const methods = useForm()
-  const { handleSubmit } = methods
   const { setValue } = useFormContext()
-  const onSubmit = async (body: FieldValues) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (body) => {
     try {
       const req = await createCliente({ body })
 
@@ -66,17 +60,15 @@ export const NuevoCliente = () => {
           <ModalHeader className="flex flex-col gap-1">
             Nuevo Cliente
           </ModalHeader>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormProvider {...methods}>
-              <ModalBody>
-                <Input name="cliente" label="Cliente" />
-              </ModalBody>
-              <ModalFooter>
-                <Button onClick={onClose}>Cerrar</Button>
-                <Button type="submit">Guardar</Button>
-              </ModalFooter>
-            </FormProvider>
-          </form>
+          <RegularForm onSubmit={onSubmit}>
+            <ModalBody>
+              <Input name="cliente" label="Cliente" />
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose}>Cerrar</Button>
+              <Button type="submit">Guardar</Button>
+            </ModalFooter>
+          </RegularForm>
         </ModalContent>
       </Modal>
     </>
@@ -85,10 +77,8 @@ export const NuevoCliente = () => {
 
 export const NuevoOperario = () => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-  const methods = useForm()
-  const { handleSubmit } = methods
 
-  const onSubmit = async (body: FieldValues) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (body) => {
     try {
       const req = await createOperario({ body })
       console.log(req)
@@ -120,18 +110,16 @@ export const NuevoOperario = () => {
           <ModalHeader className="flex flex-col gap-1">
             Nuevo Cliente
           </ModalHeader>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormProvider {...methods}>
-              <ModalBody>
-                <Input name="legajo" label="Legajo" type="number" />
-                <Input name="nombre" label="Nombre" />
-              </ModalBody>
-              <ModalFooter>
-                <Button onClick={onClose}>Cerrar</Button>
-                <Button type="submit">Guardar</Button>
-              </ModalFooter>
-            </FormProvider>
-          </form>
+          <RegularForm onSubmit={onSubmit}>
+            <ModalBody>
+              <Input name="legajo" label="Legajo" type="number" />
+              <Input name="nombre" label="Nombre" />
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose}>Cerrar</Button>
+              <Button type="submit">Guardar</Button>
+            </ModalFooter>
+          </RegularForm>
         </ModalContent>
       </Modal>
     </>
@@ -140,10 +128,8 @@ export const NuevoOperario = () => {
 
 export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-  const methods = useForm()
-  const { handleSubmit } = methods
 
-  const onSubmit = async (body: FieldValues) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (body) => {
     try {
       await mutate<servicios[]>(
         'servicios',
@@ -178,17 +164,15 @@ export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
           <ModalHeader className="flex flex-col gap-1">
             Nuevo Cliente
           </ModalHeader>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <RegularForm onSubmit={onSubmit}>
             <ModalBody>
-              <FormProvider {...methods}>
-                <Input name="memo" label="Memo" />
-              </FormProvider>
+              <Input name="memo" label="Memo" />
             </ModalBody>
             <ModalFooter>
               <Button onClick={onClose}>Cerrar</Button>
               <Button type="submit">Guardar</Button>
             </ModalFooter>
-          </form>
+          </RegularForm>
         </ModalContent>
       </Modal>
     </>

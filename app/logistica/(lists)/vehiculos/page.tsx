@@ -13,12 +13,7 @@ function page() {
     getter,
   )
   if (isLoading) return null
-  return (
-    <div>
-      <h1 className="text-center mb-5">Vehiculos</h1>
-      <DataTable data={data} columns={columns} />
-    </div>
-  )
+  return <DataTable data={data} columns={columns} />
 }
 
 export default page

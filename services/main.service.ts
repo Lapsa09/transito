@@ -1,9 +1,12 @@
 import {
   barrios,
   clientes,
+  dependencia,
+  logistica_tipo_vehiculo,
   motivos,
   operarios,
   resolucion,
+  sector,
   seguridad,
   tipo_licencias,
   turnos,
@@ -108,6 +111,27 @@ export const getListaOperarios = async () => {
   return data
 }
 
+export const getTipoMoviles = async () => {
+  const data = await getter<logistica_tipo_vehiculo[]>({
+    route: 'moviles/tipo',
+  })
+  return data
+}
+
+export const getSectoresLogistica = async () => {
+  const data = await getter<sector[]>({
+    route: 'moviles/sectores',
+  })
+  return data
+}
+
+export const getDependenciasLogistica = async () => {
+  const data = await getter<dependencia[]>({
+    route: 'moviles/dependencias',
+  })
+  return data
+}
+
 export const getSelects = async () => {
   const [
     zonas,
@@ -120,6 +144,9 @@ export const getSelects = async () => {
     zonasPaseo,
     clientes,
     operarios,
+    tipoMoviles,
+    dependencias,
+    sectores,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -131,6 +158,9 @@ export const getSelects = async () => {
     getZonasPaseo(),
     getListaClientes(),
     getListaOperarios(),
+    getTipoMoviles(),
+    getDependenciasLogistica(),
+    getSectoresLogistica(),
   ])
   return {
     zonas,
@@ -143,5 +173,8 @@ export const getSelects = async () => {
     zonasPaseo,
     clientes,
     operarios,
+    tipoMoviles,
+    dependencias,
+    sectores,
   }
 }

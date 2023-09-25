@@ -1,28 +1,18 @@
 'use client'
 
+import useSWR from 'swr'
 import React from 'react'
 import Input from '@/components/Input'
 import Button from '@/components/Button'
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
-import useSWR from 'swr'
+import { SubmitHandler } from 'react-hook-form'
 import { getPrecios, updatePrecios } from '@/services'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/hooks'
+import { RegularForm } from '@/components/forms/layout.form'
 
 function page() {
-  const methods = useForm<{
-    precio_normal: number
-    precio_pico: number
-  }>()
   const router = useRouter()
-  const { handleSubmit } = methods
-  const { isLoading, mutate } = useSWR('precios', getPrecios, {
-    onSuccess: (data) => {
-      data.forEach((precio) => {
-        methods.setValue(precio.id, precio.precio)
-      })
-    },
-  })
+  const { isLoading, mutate, data } = useSWR('precios', getPrecios)
 
   const onSubmit: SubmitHandler<{
     precio_normal: number
@@ -44,26 +34,25 @@ function page() {
 
   if (isLoading) return null
   return (
-    <FormProvider {...methods}>
-      <form
-        className="w-7/12 mx-auto flex flex-col"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <Input
-          name="precio_normal"
-          label="Precio Normal"
-          type="number"
-          startContent="$"
-        />
-        <Input
-          name="precio_pico"
-          label="Precio Pico"
-          type="number"
-          startContent="$"
-        />
-        <Button type="submit">Actualizar</Button>
-      </form>
-    </FormProvider>
+    <RegularForm
+      className="w-7/12 mx-auto flex flex-col"
+      onSubmit={onSubmit}
+      data={data}
+    >
+      <Input
+        name="precio_normal"
+        label="Precio Normal"
+        type="number"
+        startContent="$"
+      />
+      <Input
+        name="precio_pico"
+        label="Precio Pico"
+        type="number"
+        startContent="$"
+      />
+      <Button type="submit">Actualizar</Button>
+    </RegularForm>
   )
 }
 

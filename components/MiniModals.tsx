@@ -8,6 +8,7 @@ import {
 } from '@nextui-org/react'
 import Button from './Button'
 import Input from './Input'
+import Autocomplete from './Autocomplete'
 import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form'
 import {
   createCliente,
@@ -167,6 +168,61 @@ export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
           <RegularForm onSubmit={onSubmit}>
             <ModalBody>
               <Input name="memo" label="Memo" />
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose}>Cerrar</Button>
+              <Button type="submit">Guardar</Button>
+            </ModalFooter>
+          </RegularForm>
+        </ModalContent>
+      </Modal>
+    </>
+  )
+}
+
+export const NuevoRepuesto = () => {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+
+  const onSubmit: SubmitHandler<FieldValues> = async (body) => {
+    try {
+      const req = await createOperario({ body })
+      console.log(req)
+      await mutate<Data>(
+        'api/selects',
+        (data) => {
+          data?.operarios.push(req)
+
+          return data
+        },
+        {
+          revalidate: false,
+        },
+      )
+
+      onClose()
+    } catch (error) {
+      toast({ title: 'Error', variant: 'destructive' })
+    }
+  }
+
+  return (
+    <>
+      <Button className="py-3" onClick={onOpen}>
+        <IoMdAdd />
+      </Button>
+      <Modal size="sm" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            Nuevo Repuesto
+          </ModalHeader>
+          <RegularForm onSubmit={onSubmit}>
+            <ModalBody>
+              <Input label="Item" name="item" />
+              <Autocomplete
+                label="Tipo de repuesto"
+                name="tipo_repuesto"
+                options={[]}
+              />
             </ModalBody>
             <ModalFooter>
               <Button onClick={onClose}>Cerrar</Button>

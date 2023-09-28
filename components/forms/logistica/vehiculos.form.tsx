@@ -4,9 +4,7 @@ import CustomSwitch from '../../Switch'
 import { getSelects } from '@/services'
 import Autocomplete from '../../Autocomplete'
 
-export const steps = [<Step1 />, <Step2 />]
-
-function Step1() {
+function VehiculosForm() {
   const { data, isLoading } = useSWR('api/selects', getSelects)
 
   if (isLoading) return null
@@ -34,28 +32,19 @@ function Step1() {
         name="tipo_vehiculo"
         label="Tipo de vehiculo"
         className="w-full basis-5/12"
-        options={data?.tipoMoviles!}
+        options={data?.tipoMoviles}
       />
       <Autocomplete
         name="dependencia"
         label="Dependencia"
         className="w-full basis-5/12"
-        options={data?.dependencias!}
+        options={data?.dependencias}
       />
-    </div>
-  )
-}
-
-function Step2() {
-  const { data, isLoading } = useSWR('api/selects', getSelects)
-  if (isLoading) return null
-  return (
-    <div className="flex w-full justify-between flex-wrap">
       <Autocomplete
         name="sector"
         label="Sector"
         className="w-full basis-5/12"
-        options={data?.sectores!}
+        options={data?.sectores}
       />
       <CustomInput name="motor" label="Motor" className="w-full basis-5/12" />
       <CustomInput
@@ -82,3 +71,5 @@ function Step2() {
     </div>
   )
 }
+
+export default VehiculosForm

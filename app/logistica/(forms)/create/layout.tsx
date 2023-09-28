@@ -10,10 +10,10 @@ function layout({ children }: React.PropsWithChildren) {
   }
   return (
     <FormLayout
-      steps={2}
+      steps={1}
       onSubmit={onSubmit}
       methods={methods}
-      stepTitles={['1', '2']}
+      stepTitles={['Registrar movil']}
     >
       {children}
     </FormLayout>

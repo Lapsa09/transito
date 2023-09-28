@@ -5,6 +5,7 @@ import {
   logistica_tipo_vehiculo,
   motivos,
   operarios,
+  repuesto,
   resolucion,
   sector,
   seguridad,
@@ -132,6 +133,13 @@ export const getDependenciasLogistica = async () => {
   return data
 }
 
+export const getRepuestos = async () => {
+  const data = await getter<repuesto[]>({
+    route: 'moviles/repuestos',
+  })
+  return data
+}
+
 export const getSelects = async () => {
   const [
     zonas,
@@ -147,6 +155,7 @@ export const getSelects = async () => {
     tipoMoviles,
     dependencias,
     sectores,
+    repuestos,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -161,6 +170,7 @@ export const getSelects = async () => {
     getTipoMoviles(),
     getDependenciasLogistica(),
     getSectoresLogistica(),
+    getRepuestos(),
   ])
   return {
     zonas,
@@ -176,5 +186,6 @@ export const getSelects = async () => {
     tipoMoviles,
     dependencias,
     sectores,
+    repuestos,
   }
 }

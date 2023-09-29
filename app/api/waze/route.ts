@@ -84,13 +84,13 @@ const fetchWaze = async () => {
   body.hora = horas(DateTime.now().setLocale('es-AR').hour)
   const repetido = await prisma.dia.findFirst({
     where: {
-      fecha: DateTime.now().toISODate()!,
+      fecha: DateTime.now().toISO()!,
     },
   })
   if (repetido) body.fecha = repetido.id
   else {
     const { id } = await prisma.dia.create({
-      data: { fecha: DateTime.now().toISODate()! },
+      data: { fecha: DateTime.now().toISO()! },
     })
     body.fecha = id
   }

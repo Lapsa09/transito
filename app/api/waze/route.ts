@@ -74,7 +74,7 @@ const fetchWaze = async () => {
   body.calles = routes
     .filter((r) => Object.keys(calles).includes(r.name))
     .map((r) => ({
-      calle: calles[r.name as keyof typeof calles],
+      id_calles: calles[r.name as keyof typeof calles],
       tiempo: seconds_to_mins(r.time),
       tiempo_hist: seconds_to_mins(r.historicTime),
       velocidad: get_speed(r.time, r.length),

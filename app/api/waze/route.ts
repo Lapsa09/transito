@@ -18,6 +18,7 @@ interface Promedio {
   velocidad: recorrido['velocidad']
   velocidad_hist: recorrido['velocidad_hist']
   calles: calles['calles']
+  trafico?: string
 }
 
 const xprisma = prisma.$extends({
@@ -66,7 +67,7 @@ const xprisma = prisma.$extends({
                   velocidad: rec.velocidad,
                   velocidad_hist: rec.velocidad_hist,
                   calles: rec.calles.calles,
-                  horario: rep.horarios?.horario,
+                  horario: rep.horarios.horario,
                   id_trafico: rec.nivel_trafico.id,
                 })
               }
@@ -77,11 +78,12 @@ const xprisma = prisma.$extends({
         }, [])
         //now i need the average of every numeric value
         const prom = res.map((r) => {
-          r.tiempo /= 15
-          r.tiempo_hist /= 15
-          r.velocidad /= 15
-          r.velocidad_hist /= 15
-          r.id_trafico /= 15
+          r.tiempo = Math.round(r.tiempo / data.length)
+          r.tiempo_hist = Math.round(r.tiempo_hist / data.length)
+          r.velocidad = Math.round(r.velocidad / data.length)
+          r.velocidad_hist = Math.round(r.velocidad_hist / data.length)
+          r.id_trafico = Math.round(r.id_trafico / data.length)
+
           return r
         })
 
@@ -93,7 +95,7 @@ const xprisma = prisma.$extends({
           })
 
           if (trafico) {
-            pro.id_trafico = trafico.id
+            pro.trafico = trafico.nivel
           }
         }
 

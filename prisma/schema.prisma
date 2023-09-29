@@ -446,7 +446,7 @@ model dia {
 
 model horarios {
   id      Int       @id @default(autoincrement())
-  horario DateTime? @db.Time(6)
+  horario DateTime  @db.Time(6)
   reporte reporte[]
 
   @@schema("waze")

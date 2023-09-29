@@ -205,27 +205,53 @@ export async function POST() {
             id_calles: calle.id_calles,
           },
         })
-        await prisma.recorrido.update({
-          where: {
-            id: recorrido?.id,
-          },
-          data: {
-            calles: {
-              connect: {
-                id: calle.id_calles,
-              },
+        if (recorrido) {
+          await prisma.recorrido.update({
+            where: {
+              id: recorrido.id,
             },
-            nivel_trafico: {
-              connect: {
-                id: calle.id_trafico,
+            data: {
+              calles: {
+                connect: {
+                  id: calle.id_calles,
+                },
               },
+              nivel_trafico: {
+                connect: {
+                  id: calle.id_trafico,
+                },
+              },
+              tiempo: calle.tiempo,
+              tiempo_hist: calle.tiempo_hist,
+              velocidad: calle.velocidad,
+              velocidad_hist: calle.velocidad_hist,
             },
-            tiempo: calle.tiempo,
-            tiempo_hist: calle.tiempo_hist,
-            velocidad: calle.velocidad,
-            velocidad_hist: calle.velocidad_hist,
-          },
-        })
+          })
+        } else {
+          await prisma.recorrido.create({
+            data: {
+              calles: {
+                connect: {
+                  id: calle.id_calles,
+                },
+              },
+              reporte: {
+                connect: {
+                  id: repetido.id,
+                },
+              },
+              nivel_trafico: {
+                connect: {
+                  id: calle.id_trafico,
+                },
+              },
+              tiempo: calle.tiempo,
+              tiempo_hist: calle.tiempo_hist,
+              velocidad: calle.velocidad,
+              velocidad_hist: calle.velocidad_hist,
+            },
+          })
+        }
       }
     }
     return NextResponse.json('Success')

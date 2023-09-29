@@ -198,11 +198,16 @@ export async function POST() {
         })
       }
     } else {
-      for (const calle of calles)
-        await prisma.recorrido.update({
-          // @ts-ignore
+      for (const calle of calles) {
+        const recorrido = await prisma.recorrido.findFirst({
           where: {
             id_reporte: repetido.id,
+            id_calles: calle.id_calles,
+          },
+        })
+        await prisma.recorrido.update({
+          where: {
+            id: recorrido?.id,
           },
           data: {
             calles: {
@@ -221,6 +226,7 @@ export async function POST() {
             velocidad_hist: calle.velocidad_hist,
           },
         })
+      }
     }
     return NextResponse.json('Success')
   } catch (error) {

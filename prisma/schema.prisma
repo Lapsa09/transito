@@ -430,7 +430,7 @@ model servicios {
 
 model calles {
   id        Int         @id @default(autoincrement())
-  calles    String?     @db.VarChar
+  calles    String      @db.VarChar
   recorrido recorrido[]
 
   @@schema("waze")
@@ -454,7 +454,7 @@ model horarios {
 
 model nivel_trafico {
   id        Int         @id @default(autoincrement())
-  nivel     String?     @db.VarChar
+  nivel     String      @db.VarChar
   recorrido recorrido[]
 
   @@schema("waze")
@@ -464,10 +464,10 @@ model recorrido {
   id             Int           @id @default(autoincrement())
   id_calles      Int
   id_reporte     Int
-  tiempo         Int?
-  tiempo_hist    Int?
-  velocidad      Int?
-  velocidad_hist Int?
+  tiempo         Int
+  tiempo_hist    Int
+  velocidad      Int
+  velocidad_hist Int
   id_trafico     Int
   calles         calles        @relation(fields: [id_calles], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reporte        reporte       @relation(fields: [id_reporte], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -478,11 +478,11 @@ model recorrido {
 
 model reporte {
   id         Int         @id @default(autoincrement())
-  id_horario Int?
-  id_dia     Int?
+  id_horario Int
+  id_dia     Int
   recorrido  recorrido[]
-  dia        dia?        @relation(fields: [id_dia], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  horarios   horarios?   @relation(fields: [id_horario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  dia        dia         @relation(fields: [id_dia], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  horarios   horarios    @relation(fields: [id_horario], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("waze")
 }

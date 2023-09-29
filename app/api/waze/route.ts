@@ -3,24 +3,105 @@ import axios from 'axios'
 import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 import { RootObject } from '@/types/waze'
-import { calles, recorrido } from '@prisma/client'
+import {
+  type calles,
+  type horarios,
+  type nivel_trafico,
+  type recorrido,
+} from '@prisma/client'
 
-const promedio = (data: any[]) => {
-  const res: Record<any, any> = {}
-  data.forEach((d) => {
-    res[d.horario] ??= []
-    res[d.horario].push({
-      id: d.id_calles,
-      calles: d.calles,
-      trafico: Math.round(d.nivel_trafico),
-      tiempo: Math.round(d.tiempo),
-      tiempo_hist: Math.round(d.tiempo_hist),
-      velocidad: Math.round(d.velocidad),
-      velocidad_hist: Math.round(d.velocidad_hist),
-    })
-  })
-  return res
+interface Promedio {
+  horario: horarios['horario']
+  id_trafico: nivel_trafico['id']
+  tiempo: recorrido['tiempo']
+  tiempo_hist: recorrido['tiempo_hist']
+  velocidad: recorrido['velocidad']
+  velocidad_hist: recorrido['velocidad_hist']
+  calles: calles['calles']
 }
+
+const xprisma = prisma.$extends({
+  model: {
+    recorrido: {
+      async getPromedio() {
+        const data = await prisma.dia.findMany({
+          include: {
+            reporte: {
+              include: {
+                horarios: true,
+                recorrido: {
+                  include: {
+                    calles: true,
+                    nivel_trafico: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            fecha: 'desc',
+          },
+          take: 15,
+        })
+
+        const res = data.reduce<Promedio[]>((acc, curr) => {
+          curr.reporte.forEach((rep) => {
+            rep.recorrido.forEach((rec) => {
+              const index = acc.find(
+                (a) =>
+                  a.calles === rec.calles.calles &&
+                  a.horario === rep.horarios?.horario,
+              )
+
+              if (index) {
+                index.tiempo += rec.tiempo
+                index.tiempo_hist += rec.tiempo_hist
+                index.velocidad += rec.velocidad
+                index.velocidad_hist += rec.velocidad_hist
+                index.id_trafico += rec.nivel_trafico.id
+              } else {
+                acc.push({
+                  tiempo: rec.tiempo,
+                  tiempo_hist: rec.tiempo_hist,
+                  velocidad: rec.velocidad,
+                  velocidad_hist: rec.velocidad_hist,
+                  calles: rec.calles.calles,
+                  horario: rep.horarios?.horario,
+                  id_trafico: rec.nivel_trafico.id,
+                })
+              }
+            })
+          })
+
+          return acc
+        }, [])
+        //now i need the average of every numeric value
+        const prom = res.map((r) => {
+          r.tiempo /= 15
+          r.tiempo_hist /= 15
+          r.velocidad /= 15
+          r.velocidad_hist /= 15
+          r.id_trafico /= 15
+          return r
+        })
+
+        for (const pro of prom) {
+          const trafico = await prisma.nivel_trafico.findFirst({
+            where: {
+              id: pro.id_trafico,
+            },
+          })
+
+          if (trafico) {
+            pro.id_trafico = trafico.id
+          }
+        }
+
+        return prom
+      },
+    },
+  },
+})
 
 const calles = {
   'Laprida - Maipu a B. Parera': 1,
@@ -32,6 +113,8 @@ const calles = {
   'Villate  -  Maipu a B. Parera ': 7,
   'Roca -  Maipu a B. Parera ': 8,
   'Melo - B. Parera a Maipu': 9,
+  'Libertador - a Provincia': 10,
+  'Libertador - a Capital': 11,
 }
 
 const horas = (h: number) => {
@@ -62,7 +145,7 @@ const fetchWaze = async () => {
   } = await axios.get<RootObject>(process.env.WAZE_API!)
 
   const body: {
-    calles: Partial<recorrido & calles>[]
+    calles: Array<Omit<recorrido, 'id' | 'id_reporte'> & Omit<calles, 'id'>>
     hora: number
     fecha: number
   } = {
@@ -80,6 +163,7 @@ const fetchWaze = async () => {
       velocidad: get_speed(r.time, r.length),
       velocidad_hist: get_speed(r.historicTime, r.length),
       id_trafico: r.jamLevel + 1,
+      calles: r.name,
     }))
   body.hora = horas(DateTime.now().setLocale('es-AR').hour)
   const repetido = await prisma.dia.findFirst({
@@ -99,54 +183,33 @@ const fetchWaze = async () => {
 
 export async function GET() {
   try {
-    const reportesPrisma = await prisma.reporte.findMany({
+    const res = await prisma.dia.findFirst({
       include: {
-        dia: true,
-        recorrido: {
+        reporte: {
           include: {
-            calles: true,
-            nivel_trafico: true,
-          },
-        },
-        horarios: true,
-      },
-    })
-
-    const promediosPrisma = await prisma.recorrido.findMany({
-      where: {
-        reporte: {
-          dia: {
-            fecha: {
-              gte: DateTime.now().minus({ days: 15 }).toFormat('MM/dd/yyyy'),
-            },
-          },
-        },
-      },
-      select: {
-        tiempo: true,
-        tiempo_hist: true,
-        velocidad: true,
-        velocidad_hist: true,
-        calles: {
-          select: {
-            calles: true,
-          },
-        },
-        reporte: {
-          select: {
-            horarios: {
-              select: {
-                horario: true,
+            horarios: true,
+            recorrido: {
+              include: {
+                calles: true,
+                nivel_trafico: true,
               },
             },
           },
+          orderBy: {
+            id_horario: 'asc',
+          },
         },
+      },
+      orderBy: {
+        fecha: 'desc',
       },
     })
 
+    const promedio = await xprisma.recorrido.getPromedio()
+
     return NextResponse.json({
-      res: reportesPrisma,
-      promedio: promedio(promediosPrisma),
+      res,
+      promedio,
     })
   } catch (error: any) {
     console.log(error.message)

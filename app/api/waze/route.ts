@@ -79,7 +79,7 @@ const fetchWaze = async () => {
       tiempo_hist: seconds_to_mins(r.historicTime),
       velocidad: get_speed(r.time, r.length),
       velocidad_hist: get_speed(r.historicTime, r.length),
-      trafico: r.jamLevel + 1,
+      id_trafico: r.jamLevel + 1,
     }))
   body.hora = horas(DateTime.now().setLocale('es-AR').hour)
   const repetido = await prisma.dia.findFirst({

@@ -1,6 +1,19 @@
 import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 
+const xprisma = prisma.$extends({
+  result: {
+    dia: {
+      mes: {
+        needs: { fecha: true },
+        compute({ fecha }) {
+          return new Date(fecha).getMonth()
+        },
+      },
+    },
+  },
+})
+
 export async function GET() {
   try {
     const dias =

@@ -438,7 +438,7 @@ model calles {
 
 model dia {
   id      Int       @id @default(autoincrement())
-  fecha   DateTime? @db.Date
+  fecha   DateTime  @db.Date
   reporte reporte[]
 
   @@schema("waze")
@@ -461,17 +461,17 @@ model nivel_trafico {
 }
 
 model recorrido {
-  id             Int            @id @default(autoincrement())
-  id_calles      Int?
-  id_reporte     Int?
+  id             Int           @id @default(autoincrement())
+  id_calles      Int
+  id_reporte     Int
   tiempo         Int?
   tiempo_hist    Int?
   velocidad      Int?
   velocidad_hist Int?
-  id_trafico     Int?
-  calles         calles?        @relation(fields: [id_calles], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reporte        reporte?       @relation(fields: [id_reporte], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nivel_trafico  nivel_trafico? @relation(fields: [id_trafico], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id_trafico     Int
+  calles         calles        @relation(fields: [id_calles], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reporte        reporte       @relation(fields: [id_reporte], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nivel_trafico  nivel_trafico @relation(fields: [id_trafico], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("waze")
 }

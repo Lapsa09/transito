@@ -1,7 +1,9 @@
 import { DateTime } from 'luxon'
 import axios from 'axios'
 import prisma from '@/lib/prismadb'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { RootObject } from '@/types/waze'
+import { calles, recorrido } from '@prisma/client'
 
 const promedio = (data: any[]) => {
   const res: Record<any, any> = {}
@@ -35,7 +37,7 @@ const calles = {
 const horas = (h: number) => {
   if (h >= 8 && h < 11) return 1
   if (h >= 11 && h < 16) return 2
-  if (h >= 16) return 3
+  return 3
 }
 
 const seconds_to_mins = (secs: number) => {
@@ -54,46 +56,45 @@ const get_speed = (secs: number, mts: number) => {
   return Math.round(meters_to_kms(mts) / seconds_to_hrs(secs))
 }
 
-const fetchWaze = async (req: NextRequest) => {
-  try {
-    const {
-      data: { routes },
-    } = await axios.get(process.env.WAZE_API!)
+const fetchWaze = async () => {
+  const {
+    data: { routes },
+  } = await axios.get<RootObject>(process.env.WAZE_API!)
 
-    const body: Record<'calles' | 'hora' | 'fecha', any> = {
-      calles: null,
-      hora: null,
-      fecha: null,
-    }
-
-    body.calles = routes
-      .filter((r: any) => Object.keys(calles).includes(r.name))
-      .map((r: any) => ({
-        calle: calles[r.name as keyof typeof calles],
-        tiempo: seconds_to_mins(r.time),
-        tiempo_hist: seconds_to_mins(r.historicTime),
-        velocidad: get_speed(r.time, r.length),
-        velocidad_hist: get_speed(r.historicTime, r.length),
-        trafico: r.jamLevel + 1,
-      }))
-    body.hora = horas(DateTime.now().setLocale('es-AR').hour)
-    const repetido = await prisma.dia.findFirst({
-      where: {
-        fecha: DateTime.now().toFormat('MM/dd/yyyy'),
-      },
-    })
-    if (repetido) body.fecha = repetido.id
-    else {
-      const { id } = await prisma.dia.create({
-        data: { fecha: DateTime.now().toFormat('MM/dd/yyyy') },
-      })
-      body.fecha = id
-    }
-    return body
-  } catch (error) {
-    console.log(error)
-    NextResponse.json('Server error', { status: 500 })
+  const body: {
+    calles: Partial<recorrido & calles>[]
+    hora: number
+    fecha: number
+  } = {
+    calles: [],
+    hora: 0,
+    fecha: 0,
   }
+
+  body.calles = routes
+    .filter((r) => Object.keys(calles).includes(r.name))
+    .map((r) => ({
+      calle: calles[r.name as keyof typeof calles],
+      tiempo: seconds_to_mins(r.time),
+      tiempo_hist: seconds_to_mins(r.historicTime),
+      velocidad: get_speed(r.time, r.length),
+      velocidad_hist: get_speed(r.historicTime, r.length),
+      trafico: r.jamLevel + 1,
+    }))
+  body.hora = horas(DateTime.now().setLocale('es-AR').hour)
+  const repetido = await prisma.dia.findFirst({
+    where: {
+      fecha: DateTime.now().toISODate()!,
+    },
+  })
+  if (repetido) body.fecha = repetido.id
+  else {
+    const { id } = await prisma.dia.create({
+      data: { fecha: DateTime.now().toISODate()! },
+    })
+    body.fecha = id
+  }
+  return body
 }
 
 export async function GET() {
@@ -153,10 +154,9 @@ export async function GET() {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
-    //@ts-ignore
-    const { calles, fecha, hora } = await fetchWaze(req)
+    const { calles, fecha, hora } = await fetchWaze()
 
     const repetido = await prisma.reporte.findFirst({
       where: {
@@ -175,29 +175,29 @@ export async function POST(req: NextRequest) {
       for (const calle of calles) {
         await prisma.recorrido.create({
           data: {
-            id_calles: calle.calle,
-            id_reporte,
+            calles: {
+              connect: {
+                id: calle.id_calles,
+              },
+            },
+            reporte: {
+              connect: {
+                id: id_reporte,
+              },
+            },
+            nivel_trafico: {
+              connect: {
+                id: calle.id_trafico,
+              },
+            },
             tiempo: calle.tiempo,
             tiempo_hist: calle.tiempo_hist,
             velocidad: calle.velocidad,
             velocidad_hist: calle.velocidad_hist,
-            id_trafico: calle.trafico,
           },
         })
       }
     } else {
-      // await pool.query(
-      //   'update waze.recorrido set id_calles=$1, tiempo=$2, tiempo_hist=$3, velocidad=$4, velocidad_hist=$5, id_trafico=$6 where id_reporte=$7',
-      //   [
-      //     calle.calle,
-      //     calle.tiempo,
-      //     calle.tiempo_hist,
-      //     calle.velocidad,
-      //     calle.velocidad_hist,
-      //     calle.trafico,
-      //     repetido.rows[0].id,
-      //   ],
-      // )
       for (const calle of calles)
         await prisma.recorrido.update({
           // @ts-ignore
@@ -205,12 +205,20 @@ export async function POST(req: NextRequest) {
             id_reporte: repetido.id,
           },
           data: {
-            id_calles: calle.calle,
+            calles: {
+              connect: {
+                id: calle.id_calles,
+              },
+            },
+            nivel_trafico: {
+              connect: {
+                id: calle.id_trafico,
+              },
+            },
             tiempo: calle.tiempo,
             tiempo_hist: calle.tiempo_hist,
             velocidad: calle.velocidad,
             velocidad_hist: calle.velocidad_hist,
-            id_trafico: calle.trafico,
           },
         })
     }

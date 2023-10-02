@@ -3,109 +3,77 @@ import axios from 'axios'
 import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 import { RootObject } from '@/types/waze'
-import {
-  type calles,
-  type horarios,
-  type nivel_trafico,
-  type recorrido,
-} from '@prisma/client'
+import { type calles, type recorrido } from '@prisma/client'
 
 interface Promedio {
-  horario: horarios['horario']
-  id_trafico: nivel_trafico['id']
-  tiempo: recorrido['tiempo']
-  tiempo_hist: recorrido['tiempo_hist']
-  velocidad: recorrido['velocidad']
-  velocidad_hist: recorrido['velocidad_hist']
-  calles: calles['calles']
-  trafico?: string
+  horario: string
+  id_trafico: number
+  tiempo: number
+  tiempo_hist: number
+  velocidad: number
+  velocidad_hist: number
+  calles: string
+  trafico: string
 }
 
 const xprisma = prisma.$extends({
   model: {
     recorrido: {
       async getPromedio() {
-        const data = await prisma.dia.findMany({
-          include: {
-            reporte: {
-              include: {
-                horarios: true,
-                recorrido: {
-                  include: {
-                    calles: true,
-                    nivel_trafico: true,
-                  },
-                },
-              },
-            },
-          },
-          orderBy: {
-            fecha: 'desc',
-          },
-          take: 15,
-        })
-
-        const res = data.reduce<Promedio[]>((acc, curr) => {
-          curr.reporte.forEach((rep) => {
-            rep.recorrido.forEach((rec) => {
-              const index = acc.find(
-                (a) =>
-                  a.calles === rec.calles.calles &&
-                  a.horario === rep.horarios?.horario,
-              )
-
-              if (index) {
-                index.tiempo += rec.tiempo
-                index.tiempo_hist += rec.tiempo_hist
-                index.velocidad += rec.velocidad
-                index.velocidad_hist += rec.velocidad_hist
-                index.id_trafico += rec.nivel_trafico.id
-              } else {
-                acc.push({
-                  tiempo: rec.tiempo,
-                  tiempo_hist: rec.tiempo_hist,
-                  velocidad: rec.velocidad,
-                  velocidad_hist: rec.velocidad_hist,
-                  calles: rec.calles.calles,
-                  horario: rep.horarios.horario,
-                  id_trafico: rec.nivel_trafico.id,
-                })
-              }
-            })
-          })
-
-          return acc
-        }, [])
-        //now i need the average of every numeric value
-        const prom = res.map((r) => {
-          r.tiempo = Math.round(r.tiempo / data.length)
-          r.tiempo_hist = Math.round(r.tiempo_hist / data.length)
-          r.velocidad = Math.round(r.velocidad / data.length)
-          r.velocidad_hist = Math.round(r.velocidad_hist / data.length)
-          r.id_trafico = Math.round(r.id_trafico / data.length)
-
-          return r
-        })
-
-        for (const pro of prom) {
-          const trafico = await prisma.nivel_trafico.findFirst({
-            where: {
-              id: pro.id_trafico,
-            },
-          })
-
-          if (trafico) {
-            pro.trafico = trafico.nivel
-          }
-        }
-
-        return prom
+        const promedio: Promedio[] = await prisma.$queryRaw`
+        SELECT
+        case when avg(r.velocidad_hist)::int-avg(r.velocidad)::int >1 
+        then ceil(avg(r.id_trafico))::int
+        else floor(avg(r.id_trafico)) ::int
+        end as id_trafico,
+        round(avg(r.tiempo))::int as tiempo,
+        round(avg(r.tiempo_hist))::int as tiempo_hist,
+        round(avg(r.velocidad))::int as velocidad,
+        round(avg(r.velocidad_hist))::int as velocidad_hist,
+          c.calles,
+          h.horario,
+          n.nivel as trafico
+        FROM
+          waze.recorrido r
+        INNER JOIN
+          waze.calles c
+        ON
+          r.id_calles = c.id
+        INNER JOIN
+          waze.reporte rp
+        ON
+          r.id_reporte = rp.id
+        INNER JOIN
+          waze.horarios h
+        ON
+          rp.id_horario = h.id
+        INNER JOIN
+          waze.nivel_trafico n
+        ON
+          1 = n.id
+        WHERE
+          rp.id_dia IN (
+            SELECT
+              id
+            FROM
+              waze.dia
+            ORDER BY
+              fecha DESC
+            LIMIT
+              15
+          )
+        group by c.calles,h.horario,r.id_calles,rp.id_horario,n.nivel
+        ORDER BY
+          r.id_calles ASC,
+          rp.id_horario ASC
+        `
+        return promedio
       },
     },
   },
 })
 
-const calles = {
+const callesList = {
   'Laprida - Maipu a B. Parera': 1,
   'Laprida - B.Parera a Maipu': 2,
   'Acassuso  -  Libertador a B. Parera ': 3,
@@ -157,9 +125,9 @@ const fetchWaze = async () => {
   }
 
   body.calles = routes
-    .filter((r) => Object.keys(calles).includes(r.name))
+    .filter((r) => Object.keys(callesList).includes(r.name))
     .map((r) => ({
-      id_calles: calles[r.name as keyof typeof calles],
+      id_calles: callesList[r.name as keyof typeof callesList],
       tiempo: seconds_to_mins(r.time),
       tiempo_hist: seconds_to_mins(r.historicTime),
       velocidad: get_speed(r.time, r.length),

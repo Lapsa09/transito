@@ -65,24 +65,27 @@ export const columns: ColumnDef<Vehiculo>[] = [
     id: 'service',
     cell: ({ row }) => (
       <Link href={`/logistica/vehiculos/${row.original.patente}/service`}>
-        <Button>Service</Button>
+        <Button>Ver</Button>
       </Link>
     ),
+    header: 'Service',
   },
   {
     id: 'reparaciones',
     cell: ({ row }) => (
       <Link href={`/logistica/vehiculos/${row.original.patente}/reparaciones`}>
-        <Button>Reparaciones</Button>
+        <Button>Ver</Button>
       </Link>
     ),
+    header: 'Reparaciones',
   },
   {
     id: 'vtv',
     cell: ({ row }) => (
       <Link href={`/logistica/vehiculos/${row.original.patente}/vtv`}>
-        <Button>VTV</Button>
+        <Button>Ver</Button>
       </Link>
     ),
+    header: 'VTV',
   },
 ]

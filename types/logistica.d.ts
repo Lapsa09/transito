@@ -40,3 +40,11 @@ export interface PedidoRepuesto extends pedido_repuesto {
   }
   proveedor: proveedor
 }
+
+export type LogisticaForms =
+  | Vehiculo
+  | KilometrajeVehiculo
+  | Reparacion
+  | VTV
+  | Repuesto
+  | PedidoRepuesto

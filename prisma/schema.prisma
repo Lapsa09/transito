@@ -526,27 +526,26 @@ model sector {
 }
 
 model pedido_repuesto {
-  id            Int       @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   orden_compra  Int?
-  fecha_pedido  DateTime? @db.Date
-  fecha_entrega DateTime? @db.Date
-  id_repuesto   Int
-  cantidad      Int       @default(1)
+  fecha_pedido  DateTime?  @db.Date
+  fecha_entrega DateTime?  @db.Date
+  cantidad      Int        @default(1)
   id_proveedor  Int
-  proveedor     proveedor @relation(fields: [id_proveedor], references: [id])
-  repuesto      repuesto  @relation(fields: [id_repuesto], references: [id])
+  proveedor     proveedor  @relation(fields: [id_proveedor], references: [id])
+  repuesto      repuesto[]
 
   @@schema("logistica")
 }
 
 model repuesto {
-  id               Int               @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   id_tipo_repuesto Int
-  item             String?           @db.VarChar
-  stock            Int?              @default(0)
-  pedidos          pedido_repuesto[]
-  tipo_repuesto    tipo_repuesto     @relation(fields: [id_tipo_repuesto], references: [id_tipo_repuesto])
-  reparaciones     reparaciones?     @relation(fields: [id], references: [articulo])
+  item             String?         @db.VarChar
+  stock            Int?            @default(0)
+  pedido           pedido_repuesto @relation(fields: [id], references: [id], map: "fk_pedido")
+  tipo_repuesto    tipo_repuesto   @relation(fields: [id_tipo_repuesto], references: [id_tipo_repuesto])
+  reparaciones     reparaciones?   @relation(fields: [id], references: [articulo])
 
   @@schema("logistica")
 }

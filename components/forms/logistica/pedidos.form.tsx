@@ -6,7 +6,7 @@ import { NuevoRepuesto } from '@/components/MiniModals'
 
 function PedidosForm() {
   return (
-    <div className="flex w-full justify-between flex-wrap">
+    <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput
         label="Orden de Compra"
         name="orden_compra"

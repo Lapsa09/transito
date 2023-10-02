@@ -7,23 +7,17 @@ export async function GET(
 ) {
   const { patente } = params
 
-  const reparaciones = await prisma.reparaciones.findMany({
+  const vehiculo = await prisma.vtv.findMany({
     where: {
       patente,
     },
     include: {
-      suministro: {
-        include: {
-          pedidos: {
-            include: {
-              proveedor: true,
-            },
-          },
-        },
-      },
       movil: true,
+    },
+    orderBy: {
+      fecha_emision: 'desc',
     },
   })
 
-  return NextResponse.json(reparaciones)
+  return NextResponse.json(vehiculo)
 }

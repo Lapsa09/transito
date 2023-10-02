@@ -1,3 +1,5 @@
+'use client'
+
 import useSWR from 'swr'
 import CustomInput from '../../Input'
 import CustomSwitch from '../../Switch'
@@ -9,7 +11,7 @@ function VehiculosForm() {
 
   if (isLoading) return null
   return (
-    <div className="flex w-full justify-between flex-wrap">
+    <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput.Dominio
         name="patente"
         label="Patente"
@@ -66,7 +68,7 @@ function VehiculosForm() {
       <CustomSwitch
         name="plan_renovacion"
         label="Posee plan de renovacion?"
-        className="w-full basis-5/12"
+        className="w-full basis-5/12 max-w-full"
       />
     </div>
   )

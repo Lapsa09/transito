@@ -7,12 +7,12 @@ export async function GET() {
       movil: true,
       suministro: {
         include: {
-          proveedor: true,
-          repuesto: {
+          pedido: {
             include: {
-              tipo_repuesto: true,
+              proveedor: true,
             },
           },
+          tipo_repuesto: true,
         },
       },
     },

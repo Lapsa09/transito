@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["camiones", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos"]
+  schemas  = ["camiones", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze", "logistica"]
 }
 
 model camiones_operativos {
@@ -579,6 +579,65 @@ model vtv {
   movil         movil     @relation(fields: [patente], references: [patente], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("logistica")
+}
+
+model calles {
+  id        Int         @id @default(autoincrement())
+  calles    String      @db.VarChar
+  recorrido recorrido[]
+
+  @@schema("waze")
+}
+
+model dia {
+  id      Int       @id @default(autoincrement())
+  fecha   DateTime  @db.Date
+  reporte reporte[]
+
+  @@schema("waze")
+}
+
+model horarios {
+  id      Int       @id @default(autoincrement())
+  horario DateTime  @db.Time(6)
+  reporte reporte[]
+
+  @@schema("waze")
+}
+
+model nivel_trafico {
+  id        Int         @id @default(autoincrement())
+  nivel     String      @db.VarChar
+  recorrido recorrido[]
+
+  @@schema("waze")
+}
+
+model recorrido {
+  id             Int           @id @default(autoincrement())
+  id_calles      Int
+  id_reporte     Int
+  tiempo         Int
+  tiempo_hist    Int
+  velocidad      Int
+  velocidad_hist Int
+  id_trafico     Int
+  calles         calles        @relation(fields: [id_calles], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reporte        reporte       @relation(fields: [id_reporte], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nivel_trafico  nivel_trafico @relation(fields: [id_trafico], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("waze")
+}
+
+model reporte {
+  id         Int         @id @default(autoincrement())
+  id_horario Int
+  id_dia     Int
+  recorrido  recorrido[]
+  dia        dia         @relation(fields: [id_dia], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  horarios   horarios    @relation(fields: [id_horario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("waze")
 }
 
 enum motivo {

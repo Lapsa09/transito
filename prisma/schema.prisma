@@ -165,7 +165,7 @@ model operativos_operativos {
   latitud         String?                @db.VarChar
   longitud        String?                @db.VarChar
   turno           turnos_old?
-  localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio])
+  localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       operativos_registros[]
 
   @@map("operativos")
@@ -396,8 +396,8 @@ model operarios_servicios {
   hora_fin    DateTime?  @db.Time(6)
   cancelado   Boolean?
   id          Int        @id @default(autoincrement())
-  servicios   servicios  @relation(fields: [id_servicio], references: [id_servicio])
-  operarios   operarios? @relation(fields: [legajo], references: [legajo])
+  servicios   servicios  @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+  operarios   operarios? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("sueldos")
 }
@@ -415,7 +415,7 @@ model recibos {
   importe_recibo Int?
   acopio         Int
   id_cliente     Int?
-  clientes       clientes? @relation(fields: [id_cliente], references: [id_cliente])
+  clientes       clientes? @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("sueldos")
 }
@@ -480,7 +480,7 @@ model movil {
   tipo_vehiculo         logistica_tipo_vehiculo? @relation(fields: [id_tipo_vehiculo], references: [id_tipo])
   sector                sector?                  @relation(fields: [id_uso], references: [id_sector])
   reparaciones          reparaciones[]
-  vtv                   vtv?
+  vtv                   vtv[]
 
   @@schema("logistica")
 }
@@ -569,13 +569,15 @@ model logistica_tipo_vehiculo {
 }
 
 model vtv {
-  patente       String    @id @db.VarChar
+  id            Int       @id @default(autoincrement())
+  patente       String    @db.VarChar
+  nro_movil     String?   @db.VarChar
   fecha_emision DateTime? @db.Date
   observacion   String?   @db.VarChar
   vencimiento   DateTime? @db.Date
   condicion     String?   @db.VarChar
   estado        String?   @db.VarChar
-  movil         movil     @relation(fields: [patente], references: [patente])
+  movil         movil     @relation(fields: [patente], references: [patente], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("logistica")
 }

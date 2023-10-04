@@ -120,6 +120,7 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
         onSubmit={handleSubmit(onSubmit)}
       >
         {children}
+        <Button type="submit">Guardar</Button>
       </form>
     </FormProvider>
   )

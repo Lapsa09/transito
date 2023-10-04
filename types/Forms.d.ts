@@ -11,6 +11,7 @@ import {
   zonas,
 } from '@prisma/client'
 import { Operativo } from './operativos'
+import { type LogisticaForms } from './logistica'
 
 export interface LocalOperativo extends Partial<Operativo> {
   expiresAt: number
@@ -160,4 +161,5 @@ export type RioFormProps = {
 export type FormProps = FormInputProps &
   EditInputProps &
   ServiciosFormProps &
-  RioFormProps
+  RioFormProps &
+  LogisticaForms

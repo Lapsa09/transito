@@ -438,6 +438,7 @@ model dependencia {
   id_dependencia Int     @id @default(autoincrement())
   dependencia    String? @db.VarChar
   movil          movil[]
+  uso            uso[]
 
   @@schema("logistica")
 }
@@ -453,32 +454,30 @@ model kilometraje_vehiculos {
   proximo_cambio_distribucion Int?
   filtro_aceite               Int?
   proximo_cambio_filtro       Int?
-  interno                     String?   @db.VarChar
   movil                       movil     @relation(fields: [patente], references: [patente])
 
   @@schema("logistica")
 }
 
 model movil {
-  patente               String                   @id @db.VarChar
-  marca                 String?                  @db.VarChar
-  nro_movil             String?                  @db.VarChar
-  modelo                String?                  @db.VarChar
-  a_o                   Int?                     @map("año")
-  tipo_combustible      String?                  @db.VarChar
-  id_uso                Int?
-  tipo_motor            Float?
-  empresa_seguimiento   String?                  @db.VarChar
-  km_dia                Int?                     @map("km/dia")
-  plan_renovacion       Boolean?
-  id_tipo_vehiculo      Int?
-  id_dependencia        Int?
-  no_chasis             BigInt?
-  id_megatrans          String?                  @db.VarChar
+  patente               String                  @id @db.VarChar
+  marca                 String                  @db.VarChar
+  nro_movil             String                  @db.VarChar
+  modelo                String                  @db.VarChar
+  a_o                   Int                     @map("año")
+  tipo_combustible      String                  @db.VarChar
+  id_uso                Int
+  tipo_motor            Float
+  empresa_seguimiento   String                  @db.VarChar
+  plan_renovacion       Boolean
+  id_tipo_vehiculo      Int
+  id_dependencia        Int
+  no_chasis             BigInt
+  id_megatrans          String?                 @db.VarChar
   kilometraje_vehiculos kilometraje_vehiculos[]
-  dependencia           dependencia?             @relation(fields: [id_dependencia], references: [id_dependencia])
-  tipo_vehiculo         logistica_tipo_vehiculo? @relation(fields: [id_tipo_vehiculo], references: [id_tipo])
-  sector                sector?                  @relation(fields: [id_uso], references: [id_sector])
+  dependencia           dependencia             @relation(fields: [id_dependencia], references: [id_dependencia])
+  tipo_vehiculo         logistica_tipo_vehiculo @relation(fields: [id_tipo_vehiculo], references: [id_tipo])
+  uso                   uso                     @relation(fields: [id_uso], references: [id_uso])
   reparaciones          reparaciones[]
   vtv                   vtv[]
 
@@ -517,10 +516,12 @@ model reparaciones {
   @@schema("logistica")
 }
 
-model sector {
-  id_sector Int     @id @default(autoincrement())
-  sector    String? @db.VarChar
-  movil     movil[]
+model uso {
+  id_uso         Int         @id @default(autoincrement())
+  uso            String?     @db.VarChar
+  id_dependencia Int
+  movil          movil[]
+  dependencia    dependencia @relation(fields: [id_dependencia], references: [id_dependencia])
 
   @@schema("logistica")
 }

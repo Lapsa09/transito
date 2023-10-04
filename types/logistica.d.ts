@@ -5,7 +5,7 @@ import {
   movil,
   proveedor,
   reparaciones,
-  sector,
+  uso,
   pedido_repuesto,
   repuesto,
   vtv,
@@ -13,7 +13,7 @@ import {
 } from '@prisma/client'
 
 export interface Vehiculo extends movil {
-  sector: sector
+  uso: uso
   dependencia: dependencia
   tipo_vehiculo: logistica_tipo_vehiculo
 }
@@ -26,6 +26,10 @@ export interface Reparacion extends reparaciones {
     repuesto: repuesto
   }
   movil: movil
+}
+
+export type ReparacionForm = reparaciones & {
+  repuesto: repuesto
 }
 
 export interface VTV extends vtv {}
@@ -44,7 +48,8 @@ export interface PedidoRepuesto extends pedido_repuesto {
 export type LogisticaForms =
   | Vehiculo
   | KilometrajeVehiculo
-  | Reparacion
+  | ReparacionForm
   | VTV
   | Repuesto
   | PedidoRepuesto
+  | proveedor

@@ -4,7 +4,7 @@ import React from 'react'
 
 function VTVForm() {
   return (
-    <div className="flex w-full justify-between flex-wrap">
+    <div className="flex w-full px-10 justify-between flex-wrap">
       <DateField
         label="Fecha de emision"
         name="fecha_emision"

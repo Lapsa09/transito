@@ -43,26 +43,29 @@ function VehiculosForm() {
         options={data?.dependencias}
       />
       <Autocomplete
-        name="sector"
-        label="Sector"
+        name="uso"
+        label="Uso"
         className="w-full basis-5/12"
-        options={data?.sectores}
+        options={data?.usos}
       />
-      <CustomInput name="motor" label="Motor" className="w-full basis-5/12" />
+      <CustomInput
+        name="tipo_motor"
+        label="Motor"
+        className="w-full basis-5/12"
+      />
       <CustomInput
         name="empresa_seguimiento"
         label="Empresa de seguimiento"
         className="w-full basis-5/12"
       />
-      <CustomInput name="km_dia" label="Km/dia" className="w-full basis-5/12" />
-      <CustomInput
-        name="km_recorridos"
-        label="Km recorridos"
-        className="w-full basis-5/12"
-      />
       <CustomInput
         name="no_chasis"
         label="Nro chasis"
+        className="w-full basis-5/12"
+      />
+      <CustomInput
+        name="id_megatrans"
+        label="Id megatrans"
         className="w-full basis-5/12"
       />
       <CustomSwitch

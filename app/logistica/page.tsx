@@ -8,6 +8,7 @@ function page() {
       <Link href={'/logistica/vehiculos'}>Vehiculos</Link>
       <Link href={'/logistica/repuestos/pedidos'}>Pedidos</Link>
       <Link href={'/logistica/repuestos/reparaciones'}>Reparaciones</Link>
+      <Link href={'/logistica/repuestos/proveedores'}>Proveedores</Link>
     </div>
   )
 }

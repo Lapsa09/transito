@@ -3,7 +3,7 @@ import React from 'react'
 
 function ProveedorForm() {
   return (
-    <div className="flex w-full justify-between flex-wrap">
+    <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput label="Nombre" name="nombre" className="w-full basis-5/12" />
       <CustomInput label="Tipo" name="tipo" className="w-full basis-5/12" />
       <CustomInput label="Marcas" name="marcas" className="w-full basis-5/12" />
@@ -23,7 +23,12 @@ function ProveedorForm() {
         name="telefono"
         className="w-full basis-5/12"
       />
-      <CustomInput label="Email" name="email" className="w-full basis-5/12" />
+      <CustomInput
+        label="Email"
+        type="email"
+        name="email"
+        className="w-full basis-5/12"
+      />
       <CustomInput
         label="Horarios"
         name="horarios"

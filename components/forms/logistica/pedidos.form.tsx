@@ -1,10 +1,15 @@
+'use client'
+
 import DateField from '@/components/DatePicker'
 import CustomInput from '@/components/Input'
 import React from 'react'
 import Autocomplete from '@/components/Autocomplete'
 import { NuevoRepuesto } from '@/components/MiniModals'
+import useSWR from 'swr'
+import { getSelects } from '@/services'
 
 function PedidosForm() {
+  const { data } = useSWR('api/selects', getSelects)
   return (
     <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput
@@ -26,7 +31,7 @@ function PedidosForm() {
         <Autocomplete
           label="Repuesto"
           name="repuesto"
-          options={[]}
+          options={data?.repuestos}
           className="w-full p-0"
         />
         <NuevoRepuesto />
@@ -40,7 +45,7 @@ function PedidosForm() {
       <Autocomplete
         label="Proveedor"
         name="proveedor"
-        options={[]}
+        options={data?.proveedores}
         className="w-full basis-5/12"
       />
     </div>

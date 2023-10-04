@@ -1,5 +1,5 @@
 import prisma from '@/lib/prismadb'
-import { VTV } from '@/types/logistica'
+import { KilometrajeVehiculo } from '@/types/logistica'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -8,15 +8,12 @@ export async function GET(
 ) {
   const { patente } = params
 
-  const vehiculo = await prisma.vtv.findMany({
+  const vehiculo = await prisma.kilometraje_vehiculos.findMany({
     where: {
       patente,
     },
     include: {
       movil: true,
-    },
-    orderBy: {
-      fecha_emision: 'desc',
     },
   })
 
@@ -27,20 +24,24 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: VTV = await req.json()
+  const body: KilometrajeVehiculo = await req.json()
   const { patente } = params
-  const vehiculo = await prisma.vtv.create({
+  const vehiculo = await prisma.kilometraje_vehiculos.create({
     data: {
       movil: {
         connect: {
           patente,
         },
       },
-      fecha_emision: body.fecha_emision,
-      vencimiento: body.vencimiento,
-      condicion: body.condicion,
-      estado: body.estado,
-      observacion: body.observacion,
+      fecha: body.fecha,
+      filtro_aceite: body.filtro_aceite,
+      interno: body.interno,
+      kit_distribucion: body.kit_distribucion,
+      kit_poly_v: body.kit_poly_v,
+      km: body.km,
+      proximo_cambio_distribucion: body.proximo_cambio_distribucion,
+      proximo_cambio_filtro: body.proximo_cambio_filtro,
+      proximo_cambio_poly_v: body.proximo_cambio_poly_v,
     },
     include: {
       movil: true,

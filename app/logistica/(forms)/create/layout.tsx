@@ -11,10 +11,10 @@ function layout({ children }: React.PropsWithChildren) {
   const layoutSegment = useSelectedLayoutSegments()
 
   const onSubmit: SubmitHandler<LogisticaForms> = async (body) => {
-    const route = String(layoutSegment)
+    const route = layoutSegment.join('/')
 
     await mutate<LogisticaForms[]>(
-      { route: `logistica/${layoutSegment.join('/')}` },
+      { route: `logistica/${route}` },
       async (data) => {
         const res = await setter<LogisticaForms>({ route, body })
 

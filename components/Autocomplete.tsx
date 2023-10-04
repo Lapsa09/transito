@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from './ui/scroll-area'
 
 interface Props extends UseControllerProps {
-  options: any[]
+  options?: any[]
   label: string
   inputLabel?: string
   inputId?: string

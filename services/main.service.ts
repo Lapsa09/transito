@@ -1,14 +1,19 @@
 import {
   barrios,
   clientes,
+  dependencia,
+  logistica_tipo_vehiculo,
   motivos,
   operarios,
+  repuesto,
   resolucion,
+  uso,
   seguridad,
   tipo_licencias,
   turnos,
   vicente_lopez,
   zonas,
+  proveedor,
 } from '@prisma/client'
 import Axios, { AxiosRequestConfig } from 'axios'
 
@@ -108,6 +113,41 @@ export const getListaOperarios = async () => {
   return data
 }
 
+export const getTipoMoviles = async () => {
+  const data = await getter<logistica_tipo_vehiculo[]>({
+    route: 'moviles/tipo',
+  })
+  return data
+}
+
+export const getSectoresLogistica = async () => {
+  const data = await getter<uso[]>({
+    route: 'moviles/usos',
+  })
+  return data
+}
+
+export const getDependenciasLogistica = async () => {
+  const data = await getter<dependencia[]>({
+    route: 'moviles/dependencias',
+  })
+  return data
+}
+
+export const getRepuestos = async () => {
+  const data = await getter<repuesto[]>({
+    route: 'moviles/repuestos',
+  })
+  return data
+}
+
+export const getProveedores = async () => {
+  const data = await getter<proveedor[]>({
+    route: 'moviles/proveedores',
+  })
+  return data
+}
+
 export const getSelects = async () => {
   const [
     zonas,
@@ -120,6 +160,11 @@ export const getSelects = async () => {
     zonasPaseo,
     clientes,
     operarios,
+    tipoMoviles,
+    dependencias,
+    usos,
+    repuestos,
+    proveedores,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -131,6 +176,11 @@ export const getSelects = async () => {
     getZonasPaseo(),
     getListaClientes(),
     getListaOperarios(),
+    getTipoMoviles(),
+    getDependenciasLogistica(),
+    getSectoresLogistica(),
+    getRepuestos(),
+    getProveedores(),
   ])
   return {
     zonas,
@@ -143,5 +193,10 @@ export const getSelects = async () => {
     zonasPaseo,
     clientes,
     operarios,
+    tipoMoviles,
+    dependencias,
+    usos,
+    repuestos,
+    proveedores,
   }
 }

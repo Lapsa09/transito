@@ -11,6 +11,7 @@ export default async function middleware(req: NextRequest) {
     TRAFICO: '/waze',
     ADMINISTRATIVO: '/sueldos',
     ADMIN: '/',
+    LOGISTICA: '/logistica',
   }
 
   const isProtectedPath = !publicPages.some((page) => pathname.startsWith(page))

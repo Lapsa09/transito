@@ -5,9 +5,21 @@ import CustomInput from '../../Input'
 import CustomSwitch from '../../Switch'
 import { getSelects } from '@/services'
 import Autocomplete from '../../Autocomplete'
+import { useFormContext } from 'react-hook-form'
+import { Vehiculo } from '@/types/logistica'
+import { useMemo } from 'react'
 
 function VehiculosForm() {
   const { data, isLoading } = useSWR('api/selects', getSelects)
+
+  const { watch } = useFormContext<Vehiculo>()
+
+  const usos = useMemo(() => {
+    if (!data?.dependencias) return []
+    return data.usos.filter(
+      (uso) => uso.id_dependencia === watch('dependencia').id_dependencia,
+    )
+  }, [watch('dependencia')])
 
   if (isLoading) return null
   return (
@@ -20,7 +32,7 @@ function VehiculosForm() {
       <CustomInput name="marca" label="Marca" className="w-full basis-5/12" />
       <CustomInput name="modelo" label="Modelo" className="w-full basis-5/12" />
       <CustomInput
-        name="año"
+        name="a_o"
         label="Año"
         type="number"
         className="w-full basis-5/12"
@@ -35,6 +47,8 @@ function VehiculosForm() {
         label="Tipo de vehiculo"
         className="w-full basis-5/12"
         options={data?.tipoMoviles}
+        inputId="id_tipo"
+        inputLabel="tipo"
       />
       <Autocomplete
         name="dependencia"
@@ -46,11 +60,16 @@ function VehiculosForm() {
         name="uso"
         label="Uso"
         className="w-full basis-5/12"
-        options={data?.usos}
+        options={usos}
       />
       <CustomInput
         name="tipo_motor"
         label="Motor"
+        className="w-full basis-5/12"
+      />
+      <CustomInput
+        name="tipo_combustible"
+        label="Combustible"
         className="w-full basis-5/12"
       />
       <CustomInput

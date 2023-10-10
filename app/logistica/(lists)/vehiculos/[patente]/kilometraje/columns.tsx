@@ -1,14 +1,12 @@
 import { KilometrajeVehiculo } from '@/types/logistica'
 import { ColumnDef } from '@tanstack/react-table'
+import { DateTime } from 'luxon'
 
 export const columns: ColumnDef<KilometrajeVehiculo>[] = [
   {
-    accessorFn: (row) => row.interno,
-    header: 'Interno',
-  },
-  {
     header: 'Fecha',
-    accessorKey: 'fecha',
+    accessorFn: (row) =>
+      DateTime.fromISO(String(row.fecha)).toFormat('dd/MM/yyyy'),
   },
   {
     header: 'Kilometros',

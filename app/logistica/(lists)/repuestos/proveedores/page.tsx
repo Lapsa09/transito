@@ -9,7 +9,7 @@ import { proveedor } from '@prisma/client'
 
 function page() {
   const { data, isLoading } = useSWR<proveedor[]>(
-    { route: '/logistica/proveedores' },
+    { route: '/logistica/repuestos/proveedores' },
     getter,
   )
 

@@ -11,7 +11,7 @@ export const columns: ColumnDef<Repuesto>[] = [
     header: 'Tipo de repuesto',
   },
   {
-    accessorFn: (row) => row.stock,
+    accessorFn: (row) => row.cantidad,
     header: 'Stock',
   },
 ]

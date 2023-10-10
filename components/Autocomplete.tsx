@@ -14,12 +14,13 @@ import {
   CommandGroup,
   CommandItem,
 } from '@/components/ui/command'
+
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
+  Button,
+} from '@nextui-org/react'
 import { ScrollArea } from './ui/scroll-area'
 
 interface Props extends UseControllerProps {
@@ -58,8 +59,7 @@ export default function MyCombobox({
 
   const handleChange = (currentValue: string) => {
     const option = options.find(
-      (option) =>
-        option[inputLabel].toLowerCase() === currentValue.toLowerCase(),
+      (option) => option[inputLabel].toLowerCase() === currentValue,
     )
     if (field.value && option[inputId] === field.value[inputId]) {
       field.onChange(null)
@@ -83,13 +83,21 @@ export default function MyCombobox({
       >
         {label}
       </label>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+      <Popover
+        classNames={{
+          base: 'w-full',
+        }}
+        placement="bottom"
+        isOpen={open}
+        onOpenChange={setOpen}
+      >
+        <PopoverTrigger>
           <Button
-            variant="outline"
+            variant="bordered"
             role="combobox"
             aria-expanded={open}
             name={field.name}
+            radius="sm"
             className={`w-full justify-between border ${
               invalid ? 'border-danger' : 'border-gray-600'
             }`}
@@ -106,6 +114,7 @@ export default function MyCombobox({
               value={query}
               onValueChange={setQuery}
               placeholder="Elija una opcion..."
+              autoFocus
             />
             <ScrollArea className="h-60">
               <CommandEmpty>Vacio.</CommandEmpty>

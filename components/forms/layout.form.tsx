@@ -93,16 +93,18 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
   children,
   className,
   data,
+  id,
 }: PropsWithChildren<{
   onSubmit: SubmitHandler<T>
   className?: string
   data?: K[]
+  id?: string
 }>) => {
   const methods = useForm<T>({
     mode: 'all',
   })
   const { handleSubmit } = methods
-
+  const router = useRouter()
   useEffect(() => {
     if (data) {
       data.forEach((item) => {
@@ -117,10 +119,21 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
     <FormProvider {...methods}>
       <form
         className={cn('w-full', className)}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={(e) => {
+          e.stopPropagation()
+          handleSubmit(onSubmit)(e)
+        }}
+        id={id}
       >
         {children}
-        <Button type="submit">Guardar</Button>
+        <div className="flex justify-between gap-10">
+          <Button onClick={router.back} className="bg-red-700 hover:bg-red-800">
+            Cancelar
+          </Button>
+          <Button form={id} type="submit">
+            Guardar
+          </Button>
+        </div>
       </form>
     </FormProvider>
   )

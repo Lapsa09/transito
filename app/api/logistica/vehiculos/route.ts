@@ -5,7 +5,7 @@ import { NextResponse, NextRequest } from 'next/server'
 export async function GET() {
   const vehiculos = await prisma.movil.findMany({
     include: {
-      sector: true,
+      uso: true,
       dependencia: true,
       tipo_vehiculo: true,
     },
@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
 
   const vehiculo = await prisma.movil.create({
     data: {
-      sector: {
+      uso: {
         connect: {
-          id_sector: body.sector.id_sector,
+          id_uso: body.uso.id_uso,
         },
       },
       dependencia: {
@@ -37,18 +37,17 @@ export async function POST(req: NextRequest) {
       patente: body.patente,
       marca: body.marca,
       modelo: body.modelo,
-      a_o: body.a_o,
+      a_o: +body.a_o,
       no_chasis: body.no_chasis,
       empresa_seguimiento: body.empresa_seguimiento,
       id_megatrans: body.id_megatrans,
-      km_dia: body.km_dia,
       nro_movil: body.nro_movil,
       plan_renovacion: body.plan_renovacion,
       tipo_combustible: body.tipo_combustible,
-      tipo_motor: body.tipo_motor,
+      tipo_motor: body.tipo_motor ? +body.tipo_motor : null,
     },
     include: {
-      sector: true,
+      uso: true,
       dependencia: true,
       tipo_vehiculo: true,
     },

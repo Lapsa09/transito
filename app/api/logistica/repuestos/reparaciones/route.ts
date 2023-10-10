@@ -5,13 +5,8 @@ export async function GET() {
   const pedidos = await prisma.reparaciones.findMany({
     include: {
       movil: true,
-      suministro: {
+      repuesto: {
         include: {
-          pedido: {
-            include: {
-              proveedor: true,
-            },
-          },
           tipo_repuesto: true,
         },
       },

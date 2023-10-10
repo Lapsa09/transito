@@ -4,19 +4,25 @@ import { DateTime } from 'luxon'
 
 export const columns: ColumnDef<VTV>[] = [
   {
-    accessorFn: (row) => DateTime.fromJSDate(row.fecha_emision!).monthLong,
+    accessorFn: (row) => DateTime.fromISO(String(row.fecha_emision)).monthLong,
     header: 'Mes',
   },
   {
-    accessorFn: (row) => DateTime.fromJSDate(row.fecha_emision!).year,
+    accessorFn: (row) => DateTime.fromISO(String(row.fecha_emision)).year,
     header: 'Año',
   },
   {
-    accessorFn: (row) => row.fecha_emision,
+    accessorFn: (row) =>
+      DateTime.fromISO(String(row.fecha_emision))
+        .plus({ day: 1 })
+        .toLocaleString(DateTime.DATE_SHORT),
     header: 'Fecha de emisión',
   },
   {
-    accessorFn: (row) => row.vencimiento,
+    accessorFn: (row) =>
+      DateTime.fromISO(String(row.vencimiento))
+        .plus({ day: 1 })
+        .toLocaleString(DateTime.DATE_SHORT),
     header: 'Fecha de vencimiento',
   },
   {

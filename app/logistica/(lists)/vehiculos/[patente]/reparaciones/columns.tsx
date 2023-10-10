@@ -3,19 +3,21 @@ import { ColumnDef } from '@tanstack/react-table'
 
 export const columns: ColumnDef<Reparacion>[] = [
   {
-    accessorFn: (row) => row.suministro.repuesto.item,
+    accessorFn: (row) => row.repuesto.item,
     header: 'Repuesto',
   },
   {
-    accessorFn: (row) => row.suministro.fecha_pedido,
+    accessorFn: (row) =>
+      row.repuesto.pedido_repuesto.fecha_pedido?.toLocaleDateString(),
     header: 'Fecha pedido',
   },
   {
-    accessorFn: (row) => row.suministro.fecha_entrega,
+    accessorFn: (row) =>
+      row.repuesto.pedido_repuesto.fecha_entrega?.toLocaleDateString(),
     header: 'Fecha entrega',
   },
   {
-    accessorFn: (row) => row.suministro.orden_compra,
+    accessorFn: (row) => row.repuesto.pedido_repuesto.orden_compra,
     header: 'Orden de compra',
   },
   {

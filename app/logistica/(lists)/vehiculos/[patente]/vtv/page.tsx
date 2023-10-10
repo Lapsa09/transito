@@ -18,7 +18,7 @@ function page({ params }: { params: { patente: string } }) {
   if (isLoading) return null
   return (
     <div>
-      <h1 className="text-center mb-5">{patente}</h1>
+      <h1 className="text-center mb-5 uppercase">{patente}</h1>
       <DataTable data={data} columns={columns} />
     </div>
   )

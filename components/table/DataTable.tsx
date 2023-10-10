@@ -126,7 +126,7 @@ export function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <Fragment key={row.id}>
                   <TableRow
-                    className={rowClassName ? rowClassName(row) : ''}
+                    className={rowClassName ? rowClassName(row) : 'uppercase'}
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
                   >

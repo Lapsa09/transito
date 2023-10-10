@@ -1,25 +1,46 @@
 'use client'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useStepForm } from '@/hooks'
 import { getter, updater } from '@/services'
-import { mutate } from 'swr'
+import useSWR, { mutate } from 'swr'
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import { useToast } from '@/hooks'
-import { EditInputProps, LocalOperativo, Registro, Roles } from '@/types'
+import {
+  EditInputProps,
+  LocalOperativo,
+  Registro,
+  RioFormProps,
+  Roles,
+} from '@/types'
 import FormLayout from '@/components/forms/layout.form'
 import { useLocalStorage } from 'usehooks-ts'
 import { useSession } from 'next-auth/react'
+import Loader from '@/components/Loader'
 
 function layout({ children }: React.PropsWithChildren) {
   const { data } = useSession({ required: true })
   const router = useRouter()
   const [layoutSegment, id] = useSelectedLayoutSegments()
-
+  const { isLoading } = useSWR(
+    data?.user?.role === Roles.ADMIN
+      ? { route: `/operativos/${layoutSegment}/${id}` }
+      : null,
+    getter,
+    {
+      onSuccess: async (data) => {
+        reset(data)
+        setActiveStep(1)
+      },
+      onError: () => {
+        router.replace('/operativos/' + layoutSegment)
+      },
+    },
+  )
   const [, setOperativo] = useLocalStorage<LocalOperativo>(layoutSegment, {
     expiresAt: 0,
   })
-  const methods = useForm<EditInputProps>({
+  const methods = useForm<EditInputProps | RioFormProps>({
     mode: 'all',
     defaultValues: {
       lpcarga: data?.user?.legajo,
@@ -29,7 +50,9 @@ function layout({ children }: React.PropsWithChildren) {
   const { reset } = methods
   const { toast } = useToast()
 
-  const onSubmit: SubmitHandler<EditInputProps> = async (body) => {
+  const onSubmit: SubmitHandler<EditInputProps | RioFormProps> = async (
+    body,
+  ) => {
     try {
       await mutate<Registro[]>(
         layoutSegment,
@@ -64,21 +87,7 @@ function layout({ children }: React.PropsWithChildren) {
     setActiveStep(0)
   }
 
-  useEffect(() => {
-    const fetchOperativo = async () => {
-      if (data?.user?.role === Roles.ADMIN) {
-        const operativo = await getter<EditInputProps>({
-          route: `operativos/${layoutSegment}/${id}`,
-        })
-        reset(operativo)
-        setActiveStep(1)
-      } else {
-        router.replace('/operativos/' + layoutSegment)
-      }
-    }
-    fetchOperativo()
-  }, [layoutSegment, id])
-
+  if (isLoading) return <Loader />
   return (
     <FormLayout
       onSubmit={onSubmit}

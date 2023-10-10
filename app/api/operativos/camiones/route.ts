@@ -88,7 +88,7 @@ export async function POST(req: Request) {
 
     const _hora = new Date(data.fecha)
     // @ts-ignore
-    _hora.setHours(...data.hora.split(':'))
+    _hora.setUTCHours(...data.hora.split(':'))
 
     const camion = await prisma.camiones_registros.create({
       data: {

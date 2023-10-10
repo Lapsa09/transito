@@ -17,7 +17,7 @@ const operativoMotos = async (body: FormMotosProps) => {
 
   const _hora = new Date(fecha)
   // @ts-ignore
-  _hora.setHours(...hora.split(':'))
+  _hora.setUTCHours(...hora.split(':'))
 
   try {
     const op = await prisma.motos_operativos.findFirst({

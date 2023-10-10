@@ -2,9 +2,16 @@ import DateField from '@/components/DatePicker'
 import CustomInput from '@/components/Input'
 import React from 'react'
 
-function VTVForm() {
+function VTVForm({ patente }: { patente: string }) {
   return (
     <div className="flex w-full px-10 justify-between flex-wrap">
+      <CustomInput
+        label="Patente"
+        name="patente"
+        className="w-full"
+        defaultValue={patente}
+        isDisabled
+      />
       <DateField
         label="Fecha de emision"
         name="fecha_emision"

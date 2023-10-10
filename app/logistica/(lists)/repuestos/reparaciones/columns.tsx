@@ -23,7 +23,7 @@ export const columns: ColumnDef<Reparacion>[] = [
     header: 'Articulo',
   },
   {
-    accessorFn: (row) => row.suministro.repuesto.item,
+    accessorFn: (row) => row.repuesto.item,
     header: 'Repuesto',
   },
   {

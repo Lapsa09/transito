@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["camiones", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze", "logistica"]
+  schemas  = ["camiones", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze"]
 }
 
 model camiones_operativos {
@@ -17,9 +17,9 @@ model camiones_operativos {
   direccion      String?              @db.VarChar
   id_localidad   Int?
   direccion_full String?              @db.VarChar
-  latitud        String?              @db.VarChar
-  longitud       String?              @db.VarChar
-  localidad      vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio])
+  latitud        Float?               @db.Real
+  longitud       Float?               @db.Real
+  localidad      vicente_lopez?       @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros      camiones_registros[]
 
   @@map("operativos")
@@ -40,9 +40,6 @@ model camiones_registros {
   hora_carga           DateTime?            @db.Time(6)
   mes                  Int?
   semana               Int?
-  direccion_full       String?              @db.VarChar
-  latitud              String?              @db.VarChar
-  longitud             String?              @db.VarChar
   id_localidad_origen  Int?
   id_localidad_destino Int?
   id_motivo            Int?
@@ -63,7 +60,7 @@ model moto_motivo {
   motivo      motivos         @relation(fields: [id_motivo], references: [id_motivo])
   registro    motos_registros @relation(fields: [id_registro], references: [id])
 
-  @@id([id_registro, id_motivo])
+  @@id([id_registro, id_motivo], map: "pk_moto_motivo")
   @@schema("motos")
 }
 
@@ -78,9 +75,9 @@ model motos_operativos {
   seguridad       seguridad?
   id_zona         Int?
   direccion_full  String?           @db.VarChar
-  latitud         String?           @db.VarChar
-  longitud        String?           @db.VarChar
-  localidad       vicente_lopez?    @relation(fields: [id_zona], references: [id_barrio])
+  latitud         Float?            @db.Real
+  longitud        Float?            @db.Real
+  localidad       vicente_lopez?    @relation(fields: [id_zona], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       motos_registros[]
 
   @@map("operativos")
@@ -97,16 +94,13 @@ model motos_registros {
   mes               Int?
   semana            Int?
   id                Int               @id @default(autoincrement())
-  direccion_full    String?           @db.VarChar
-  latitud           String?           @db.VarChar
-  longitud          String?           @db.VarChar
   id_licencia       Int?
   id_zona_infractor Int?
   id_operativo      Int?
   motivos           moto_motivo[]
-  tipo_licencias    tipo_licencias?   @relation(fields: [id_licencia], references: [id_tipo], map: "fk_licencia")
-  zona_infractor    barrios?          @relation(fields: [id_zona_infractor], references: [id_barrio], map: "fk_zona_infractor")
-  operativo         motos_operativos? @relation(fields: [id_operativo], references: [id_op])
+  tipo_licencias    tipo_licencias?   @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
+  zona_infractor    barrios?          @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
+  operativo         motos_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("motos")
@@ -136,9 +130,9 @@ model nuevo_control_registros {
   id_localidad Int?
   id_operativo Int?
   id_zona      Int?
-  barrio       barrios?                  @relation(fields: [id_localidad], references: [id_barrio], map: "fk_localidad")
-  operativo    nuevo_control_operativos? @relation(fields: [id_operativo], references: [id_op])
-  zona         zonas?                    @relation(fields: [id_zona], references: [id_zona])
+  barrio       barrios?                  @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_localidad")
+  operativo    nuevo_control_operativos? @relation(fields: [id_operativo], references: [id_op], onDelete: NoAction, onUpdate: NoAction)
+  zona         zonas?                    @relation(fields: [id_zona], references: [id_zona], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registros")
   @@schema("nuevo_control")
@@ -162,8 +156,8 @@ model operativos_operativos {
   seguridad       seguridad?
   hora            DateTime?              @db.Time(6)
   direccion_full  String?                @db.VarChar
-  latitud         String?                @db.VarChar
-  longitud        String?                @db.VarChar
+  latitud         Float?                 @db.Real
+  longitud        Float?                 @db.Real
   turno           turnos_old?
   localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       operativos_registros[]
@@ -274,8 +268,8 @@ model puntajes {
   a_percibir          Float?
   legajo              Int?
   id_mes              Int?
-  mensual             mensual?  @relation(fields: [id_mes], references: [id])
-  operario            operario? @relation(fields: [legajo], references: [legajo])
+  mensual             mensual?  @relation(fields: [id_mes], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  operario            operario? @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
@@ -429,7 +423,7 @@ model servicios {
   id_cliente          Int?
   feriado             Boolean?
   operarios_servicios operarios_servicios[]
-  clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente])
+  clientes            clientes?             @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("sueldos")
 }
@@ -465,19 +459,19 @@ model movil {
   nro_movil             String                  @db.VarChar
   modelo                String                  @db.VarChar
   a_o                   Int                     @map("año")
-  tipo_combustible      String                  @db.VarChar
-  id_uso                Int
-  tipo_motor            Float
-  empresa_seguimiento   String                  @db.VarChar
-  plan_renovacion       Boolean
+  tipo_combustible      String?                 @db.VarChar
+  id_uso                Int?
+  tipo_motor            Float?
+  empresa_seguimiento   String?                 @db.VarChar
+  plan_renovacion       Boolean                 @default(false)
   id_tipo_vehiculo      Int
   id_dependencia        Int
-  no_chasis             BigInt
+  no_chasis             String?                 @db.VarChar
   id_megatrans          String?                 @db.VarChar
   kilometraje_vehiculos kilometraje_vehiculos[]
   dependencia           dependencia             @relation(fields: [id_dependencia], references: [id_dependencia])
   tipo_vehiculo         logistica_tipo_vehiculo @relation(fields: [id_tipo_vehiculo], references: [id_tipo])
-  uso                   uso                     @relation(fields: [id_uso], references: [id_uso])
+  uso                   uso?                    @relation(fields: [id_uso], references: [id_uso])
   reparaciones          reparaciones[]
   vtv                   vtv[]
 
@@ -502,16 +496,16 @@ model proveedor {
 }
 
 model reparaciones {
-  id          Int        @id @default(autoincrement())
-  fecha       DateTime?  @db.Date
-  concepto    String?    @db.VarChar
-  estado      String?    @db.VarChar
-  articulo    Int        @unique
-  patente     String?    @db.VarChar
-  retira      String?    @db.VarChar
-  observacion String?    @db.VarChar
-  suministro  repuesto[]
-  movil       movil?     @relation(fields: [patente], references: [patente])
+  id          Int       @id @default(autoincrement())
+  fecha       DateTime? @db.Date
+  concepto    String?   @db.VarChar
+  estado      String?   @db.VarChar
+  articulo    Int       @unique
+  patente     String    @db.VarChar
+  retira      String?   @db.VarChar
+  observacion String?   @db.VarChar
+  movil       movil     @relation(fields: [patente], references: [patente])
+  repuesto    repuesto? @relation(fields: [articulo], references: [id])
 
   @@schema("logistica")
 }
@@ -528,13 +522,12 @@ model uso {
 
 model pedido_repuesto {
   id            Int        @id @default(autoincrement())
-  orden_compra  Int?
+  orden_compra  Int
   fecha_pedido  DateTime?  @db.Date
   fecha_entrega DateTime?  @db.Date
-  cantidad      Int        @default(1)
   id_proveedor  Int
   proveedor     proveedor  @relation(fields: [id_proveedor], references: [id])
-  repuesto      repuesto[]
+  repuestos     repuesto[]
 
   @@schema("logistica")
 }
@@ -542,11 +535,11 @@ model pedido_repuesto {
 model repuesto {
   id               Int             @id @default(autoincrement())
   id_tipo_repuesto Int
-  item             String?         @db.VarChar
-  stock            Int?            @default(0)
-  pedido           pedido_repuesto @relation(fields: [id], references: [id], map: "fk_pedido")
+  item             String          @db.VarChar
+  id_pedido        Int
+  reparacion       reparaciones?
   tipo_repuesto    tipo_repuesto   @relation(fields: [id_tipo_repuesto], references: [id_tipo_repuesto])
-  reparaciones     reparaciones?   @relation(fields: [id], references: [articulo])
+  pedido_repuesto  pedido_repuesto @relation(fields: [id_pedido], references: [id], map: "repuesto_id_pedido_fkey")
 
   @@schema("logistica")
 }

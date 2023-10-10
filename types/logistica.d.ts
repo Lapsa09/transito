@@ -21,9 +21,10 @@ export interface Vehiculo extends movil {
 export interface KilometrajeVehiculo extends kilometraje_vehiculos {}
 
 export interface Reparacion extends reparaciones {
-  suministro: pedido_repuesto & {
-    proveedor: proveedor
-    repuesto: repuesto
+  repuesto: repuesto & {
+    pedido_repuesto: pedido_repuesto & {
+      proveedor: proveedor
+    }
   }
   movil: movil
 }
@@ -36,12 +37,11 @@ export interface VTV extends vtv {}
 
 export interface Repuesto extends repuesto {
   tipo_repuesto: tipo_repuesto
+  cantidad: number
 }
 
 export interface PedidoRepuesto extends pedido_repuesto {
-  repuesto: repuesto & {
-    tipo_repuesto: tipo_repuesto
-  }
+  repuestos: Repuesto[]
   proveedor: proveedor
 }
 
@@ -53,3 +53,4 @@ export type LogisticaForms =
   | Repuesto
   | PedidoRepuesto
   | proveedor
+  | stock

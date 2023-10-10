@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
 
   const _hora = new Date(data.fecha)
   // @ts-ignore
-  _hora.setHours(...data.hora.split(':'))
+  _hora.setUTCHours(...data.hora.split(':'))
 
   const res = await prisma.nuevo_control_registros.create({
     data: {

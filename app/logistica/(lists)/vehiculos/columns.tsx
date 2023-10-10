@@ -38,12 +38,8 @@ export const columns: ColumnDef<Vehiculo>[] = [
     header: 'No. de chasis',
   },
   {
-    accessorKey: 'km_dia',
-    header: 'Km por dia',
-  },
-  {
-    accessorFn: (vehiculo) => vehiculo.sector.sector,
-    header: 'Sector',
+    accessorFn: (vehiculo) => vehiculo.uso.uso,
+    header: 'Uso',
   },
   {
     accessorFn: (vehiculo) => vehiculo.dependencia.dependencia,
@@ -62,13 +58,13 @@ export const columns: ColumnDef<Vehiculo>[] = [
     header: 'Empresa de seguimiento',
   },
   {
-    id: 'service',
+    id: 'kilometraje',
     cell: ({ row }) => (
-      <Link href={`/logistica/vehiculos/${row.original.patente}/service`}>
+      <Link href={`/logistica/vehiculos/${row.original.patente}/kilometraje`}>
         <Button>Ver</Button>
       </Link>
     ),
-    header: 'Service',
+    header: 'Kilometraje',
   },
   {
     id: 'reparaciones',

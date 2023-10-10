@@ -4,6 +4,10 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   const repuestos = await prisma.repuesto.findMany({
     include: { tipo_repuesto: true },
+    where: {
+      reparacion: null,
+    },
+    distinct: 'item',
   })
 
   return NextResponse.json(repuestos)

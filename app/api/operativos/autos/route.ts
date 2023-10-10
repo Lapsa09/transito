@@ -41,7 +41,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
 
   const _hora = new Date(fecha)
   // @ts-ignore
-  _hora.setHours(...hora.split(':'))
+  _hora.setUTCHours(...hora.split(':'))
 
   const op = await prisma.operativos_operativos.findFirst({
     select: { id_op: true },

@@ -1,5 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { VTV } from '@/types/logistica'
+import { DateTime } from 'luxon'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -36,8 +37,14 @@ export async function POST(
           patente,
         },
       },
-      fecha_emision: body.fecha_emision,
-      vencimiento: body.vencimiento,
+      fecha_emision: DateTime.fromFormat(
+        String(body.fecha_emision),
+        'yyyy-MM-dd',
+      ).toISO(),
+      vencimiento: DateTime.fromFormat(
+        String(body.vencimiento),
+        'yyyy-MM-dd',
+      ).toISO(),
       condicion: body.condicion,
       estado: body.estado,
       observacion: body.observacion,

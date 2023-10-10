@@ -24,6 +24,7 @@ function CustomInput({
   type = 'text',
   className,
   persist,
+  defaultValue,
   ...props
 }: Props) {
   const { control } = useFormContext()
@@ -34,7 +35,7 @@ function CustomInput({
     name,
     control,
     rules,
-    defaultValue: '',
+    defaultValue: defaultValue ?? '',
   })
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

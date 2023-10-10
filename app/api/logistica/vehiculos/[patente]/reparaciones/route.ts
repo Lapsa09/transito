@@ -1,5 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { Reparacion } from '@/types/logistica'
+import { DateTime } from 'luxon'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -13,9 +14,9 @@ export async function GET(
       patente,
     },
     include: {
-      suministro: {
+      repuesto: {
         include: {
-          pedido: {
+          pedido_repuesto: {
             include: {
               proveedor: true,
             },
@@ -35,6 +36,7 @@ export async function POST(
 ) {
   const body: Reparacion = await req.json()
   const { patente } = params
+
   const reparacion = await prisma.reparaciones.create({
     data: {
       movil: {
@@ -42,22 +44,21 @@ export async function POST(
           patente,
         },
       },
-      suministro: {
+      repuesto: {
         connect: {
-          id: body.suministro.id,
+          id: body.repuesto.id,
         },
       },
-      fecha: body.fecha,
-      articulo: body.articulo,
+      fecha: DateTime.fromFormat(String(body.fecha), 'yyyy-MM-dd').toISO(),
       concepto: body.concepto,
       estado: body.estado,
       observacion: body.observacion,
       retira: body.retira,
     },
     include: {
-      suministro: {
+      repuesto: {
         include: {
-          pedido: {
+          pedido_repuesto: {
             include: {
               proveedor: true,
             },

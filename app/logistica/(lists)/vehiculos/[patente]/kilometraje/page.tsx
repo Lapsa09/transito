@@ -11,14 +11,14 @@ function page({ params }: { params: { patente: string } }) {
   const { patente } = params
 
   const { data, isLoading } = useSWR<KilometrajeVehiculo[]>(
-    { route: `logistica/vehiculos/${patente}/service` },
+    { route: `logistica/vehiculos/${patente}/kilometraje` },
     getter,
   )
 
   if (isLoading) return null
   return (
     <div>
-      <h1 className="text-center mb-5">{patente}</h1>
+      <h1 className="text-center mb-5 uppercase">{patente}</h1>
       <DataTable data={data} columns={columns} />
     </div>
   )

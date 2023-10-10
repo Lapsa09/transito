@@ -41,8 +41,16 @@ export interface Repuesto extends repuesto {
 }
 
 export interface PedidoRepuesto extends pedido_repuesto {
-  repuestos: Repuesto[]
+  repuestos: Array<Repuesto & { cantidad: number }>
   proveedor: proveedor
+}
+
+export interface PedidoForm extends pedido_repuesto {
+  repuestos: {
+    tipo_repuesto: tipo_repuesto
+    cantidad: number
+    item: string
+  }[]
 }
 
 export type LogisticaForms =
@@ -51,6 +59,6 @@ export type LogisticaForms =
   | ReparacionForm
   | VTV
   | Repuesto
-  | PedidoRepuesto
+  | PedidoForm
   | proveedor
   | stock

@@ -7,11 +7,11 @@ import Autocomplete from '@/components/Autocomplete'
 import useSWR from 'swr'
 import { getSelects } from '@/services'
 import { useFieldArray } from 'react-hook-form'
-import { PedidoRepuesto } from '@/types/logistica'
+import { PedidoForm } from '@/types/logistica'
 
 function PedidosForm() {
   const { data } = useSWR('api/selects', getSelects)
-  const { append, fields, remove } = useFieldArray<PedidoRepuesto>({
+  const { append, fields, remove } = useFieldArray<PedidoForm>({
     name: 'repuestos',
   })
 

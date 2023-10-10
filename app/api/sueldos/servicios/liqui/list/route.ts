@@ -9,12 +9,12 @@ export async function GET() {
     return NextResponse.json(
       JSON.parse(
         JSON.stringify(liquidaciones, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value
-        )
-      )
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
+      ),
     )
   } catch (error: any) {
     console.log(error.message)
-    NextResponse.json('Server error', { status: 500 })
+    return NextResponse.json('Server error', { status: 500 })
   }
 }

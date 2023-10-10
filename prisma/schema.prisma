@@ -416,7 +416,6 @@ model recibos {
 
 model servicios {
   id_servicio         Int                   @id @default(autoincrement())
-  recibo              Int?
   fecha_servicio      DateTime?             @db.Date
   importe_servicio    Int?
   memo                String?               @db.VarChar

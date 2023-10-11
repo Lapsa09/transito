@@ -37,7 +37,8 @@ export interface VTV extends vtv {}
 
 export interface Repuesto extends repuesto {
   tipo_repuesto: tipo_repuesto
-  cantidad: number
+  reparacion: reparaciones
+  pedido_repuesto: pedido_repuesto
 }
 
 export interface PedidoRepuesto extends pedido_repuesto {

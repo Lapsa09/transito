@@ -3,33 +3,8 @@ import { tipo_repuesto } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { NextResponse, NextRequest } from 'next/server'
 
-const xprisma = prisma.$extends({
-  result: {
-    repuesto: {
-      cantidad: {
-        needs: {
-          item: true,
-          id_tipo_repuesto: true,
-        },
-        async compute(data) {
-          return await prisma.repuesto.count({
-            where: {
-              AND: {
-                item: data.item,
-                tipo_repuesto: {
-                  id_tipo_repuesto: data.id_tipo_repuesto,
-                },
-              },
-            },
-          })
-        },
-      },
-    },
-  },
-})
-
 export async function GET() {
-  const pedidos = await xprisma.pedido_repuesto.findMany({
+  const pedidos = await prisma.pedido_repuesto.findMany({
     include: {
       repuestos: {
         include: {
@@ -39,8 +14,32 @@ export async function GET() {
       proveedor: true,
     },
   })
+  const res = []
+  for (const pedido of pedidos) {
+    const repuestos = pedido.repuestos.reduce<any[]>((acc, repuesto) => {
+      const item = acc.find(
+        (r) =>
+          r.item === repuesto.item &&
+          r.tipo_repuesto.id_tipo_repuesto ===
+            repuesto.tipo_repuesto.id_tipo_repuesto,
+      )
 
-  return NextResponse.json(pedidos)
+      if (item) {
+        item.cantidad++
+      } else {
+        acc.push({
+          item: repuesto.item,
+          cantidad: 1,
+          tipo_repuesto: repuesto.tipo_repuesto,
+        })
+      }
+
+      return acc
+    }, [])
+    res.push({ ...pedido, repuestos })
+  }
+
+  return NextResponse.json(res)
 }
 
 export async function POST(req: NextRequest) {
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
     cantidad: number
     fecha_entrega: string
     fecha_pedido: string
-    orden_compra: number
+    orden_compra: string
   } = await req.json()
   const pedido = await prisma.pedido_repuesto.create({
     data: {
@@ -73,7 +72,7 @@ export async function POST(req: NextRequest) {
         String(body.fecha_pedido),
         'yyyy-MM-dd',
       ).toISO(),
-      orden_compra: +body.orden_compra,
+      orden_compra: body.orden_compra,
     },
     include: {
       repuestos: {

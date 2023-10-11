@@ -3,6 +3,10 @@ import { ColumnDef } from '@tanstack/react-table'
 
 export const columns: ColumnDef<Repuesto>[] = [
   {
+    accessorFn: (row) => row.id,
+    header: 'ID',
+  },
+  {
     accessorFn: (row) => row.item,
     header: 'Repuesto',
   },
@@ -11,7 +15,11 @@ export const columns: ColumnDef<Repuesto>[] = [
     header: 'Tipo de repuesto',
   },
   {
-    accessorFn: (row) => row.cantidad,
-    header: 'Stock',
+    accessorFn: (row) => row.reparacion?.patente || 'En almacen',
+    header: 'Ubicacion',
+  },
+  {
+    accessorFn: (row) => (row.reparacion ? 'Usado' : 'Sin usar'),
+    header: 'Estado',
   },
 ]

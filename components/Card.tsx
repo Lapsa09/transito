@@ -7,10 +7,13 @@ import {
   FaTruckMoving,
   FaShuttleVan,
   FaUserNurse,
+  FaTruckPickup,
+  FaWrench,
 } from 'react-icons/fa'
 import { RiMotorbikeFill } from 'react-icons/ri'
-import { BsFillPersonFill } from 'react-icons/bs'
-import { MdAttachMoney, MdFiberNew } from 'react-icons/md'
+import { BsCartPlus, BsFillPersonFill } from 'react-icons/bs'
+import { MdAttachMoney, MdDeliveryDining, MdFiberNew } from 'react-icons/md'
+import { GiAutoRepair } from 'react-icons/gi'
 
 import Link from 'next/link'
 
@@ -113,6 +116,51 @@ export function ActualizarPreciosCard() {
     <CardWithLink link="/sueldos/precios">
       <MdAttachMoney className="text-6xl" />
       <Typography className="text-4xl">Actualizar Precios</Typography>
+    </CardWithLink>
+  )
+}
+
+export function MovilesCard() {
+  return (
+    <CardWithLink link="/logistica/vehiculos">
+      <FaTruckPickup className="text-6xl" />
+      <Typography className="text-4xl">Moviles</Typography>
+    </CardWithLink>
+  )
+}
+
+export function PedidosCard() {
+  return (
+    <CardWithLink link="/logistica/repuestos/pedidos">
+      <MdDeliveryDining className="text-6xl" />
+      <Typography className="text-4xl">Pedidos</Typography>
+    </CardWithLink>
+  )
+}
+
+export function ReparacionesCard() {
+  return (
+    <CardWithLink link="/logistica/repuestos/reparaciones">
+      <FaWrench className="text-6xl" />
+      <Typography className="text-4xl">Reparaciones</Typography>
+    </CardWithLink>
+  )
+}
+
+export function ProveedoresCard() {
+  return (
+    <CardWithLink link="/logistica/repuestos/proveedores">
+      <BsCartPlus className="text-6xl" />
+      <Typography className="text-4xl">Proveedores</Typography>
+    </CardWithLink>
+  )
+}
+
+export function RepuestosCard() {
+  return (
+    <CardWithLink link="/logistica/repuestos">
+      <GiAutoRepair className="text-6xl" />
+      <Typography className="text-4xl">Repuestos</Typography>
     </CardWithLink>
   )
 }

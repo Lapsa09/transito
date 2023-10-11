@@ -1,8 +1,27 @@
 import { PedidoRepuesto, Repuesto } from '@/types/logistica'
 import { ColumnDef } from '@tanstack/react-table'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { DateTime } from 'luxon'
 
 export const columns: ColumnDef<PedidoRepuesto>[] = [
+  {
+    id: 'expander',
+    header: () => null,
+    cell: ({ row }) => {
+      return (
+        row.getCanExpand() && (
+          <button
+            {...{
+              onClick: row.getToggleExpandedHandler(),
+              style: { cursor: 'pointer' },
+            }}
+          >
+            {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
+          </button>
+        )
+      )
+    },
+  },
   {
     accessorFn: (row) =>
       DateTime.fromISO(String(row.fecha_pedido))
@@ -27,7 +46,7 @@ export const columns: ColumnDef<PedidoRepuesto>[] = [
   },
 ]
 
-export const RepuestosColumns: ColumnDef<Repuesto>[] = [
+export const RepuestosColumns: ColumnDef<PedidoRepuesto['repuestos'][0]>[] = [
   {
     accessorFn: (row) => row.item,
     header: 'Repuesto',

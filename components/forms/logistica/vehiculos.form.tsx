@@ -8,6 +8,7 @@ import Autocomplete from '../../Autocomplete'
 import { useFormContext } from 'react-hook-form'
 import { Vehiculo } from '@/types/logistica'
 import { useMemo } from 'react'
+import Loader from '@/components/Loader'
 
 function VehiculosForm() {
   const { data, isLoading } = useSWR('api/selects', getSelects)
@@ -21,7 +22,7 @@ function VehiculosForm() {
     )
   }, [watch('dependencia')])
 
-  if (isLoading) return null
+  if (isLoading) return <Loader />
   return (
     <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput.Dominio

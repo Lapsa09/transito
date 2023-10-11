@@ -521,7 +521,7 @@ model uso {
 
 model pedido_repuesto {
   id            Int        @id @default(autoincrement())
-  orden_compra  Int
+  orden_compra  String     @db.VarChar
   fecha_pedido  DateTime?  @db.Date
   fecha_entrega DateTime?  @db.Date
   id_proveedor  Int

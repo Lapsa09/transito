@@ -1,14 +1,20 @@
 import React from 'react'
-import Link from 'next/link'
+import {
+  MovilesCard,
+  PedidosCard,
+  ProveedoresCard,
+  ReparacionesCard,
+  RepuestosCard,
+} from '@/components/Card'
 
 function page() {
   return (
-    <div>
-      <h1>Logistica</h1>
-      <Link href={'/logistica/vehiculos'}>Vehiculos</Link>
-      <Link href={'/logistica/repuestos/pedidos'}>Pedidos</Link>
-      <Link href={'/logistica/repuestos/reparaciones'}>Reparaciones</Link>
-      <Link href={'/logistica/repuestos/proveedores'}>Proveedores</Link>
+    <div className="flex gap-5 mx-10">
+      <MovilesCard />
+      <PedidosCard />
+      <ReparacionesCard />
+      <ProveedoresCard />
+      <RepuestosCard />
     </div>
   )
 }

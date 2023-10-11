@@ -8,6 +8,7 @@ import useSWR from 'swr'
 import { getSelects } from '@/services'
 import { useFieldArray } from 'react-hook-form'
 import { PedidoForm } from '@/types/logistica'
+import Button from '@/components/Button'
 
 function PedidosForm() {
   const { data } = useSWR('api/selects', getSelects)
@@ -52,30 +53,40 @@ function PedidosForm() {
         inputLabel="nombre"
       />
 
-      <div>
+      <div className="w-full flex flex-col items-center mb-6">
         <h3>Repuestos: {fields.length}</h3>
-        <span onClick={agregarRepuesto}>Añadir</span>
+        <Button variant="text" className="text-xl" onClick={agregarRepuesto}>
+          Añadir
+        </Button>
         {fields.map((field, index) => (
-          <div key={field.id}>
-            <Autocomplete
-              label="Tipo de repuesto"
-              name={`repuestos[${index}].tipo_repuesto`}
-              options={data?.tipoRepuestos}
-              inputId="id_tipo_repuesto"
-              inputLabel="tipo"
-            />
-            <CustomInput label="Item" name={`repuestos[${index}].item`} />
-            <CustomInput
-              label="Cantidad"
-              name={`repuestos[${index}].cantidad`}
-              className="w-full basis-5/12"
-            />
-            <button
-              type="button"
+          <div className="w-full" key={field.id}>
+            <Button
+              variant="text"
+              className="text-danger-500 hover:text-danger-200 mb-3"
               onClick={() => fields.length > 0 && remove(index)}
             >
               Eliminar
-            </button>
+            </Button>
+            <div className="w-full">
+              <Autocomplete
+                label="Tipo de repuesto"
+                name={`repuestos[${index}].tipo_repuesto`}
+                options={data?.tipoRepuestos}
+                inputId="id_tipo_repuesto"
+                inputLabel="tipo"
+                className="w-full basis-5/12"
+              />
+              <CustomInput
+                label="Item"
+                name={`repuestos[${index}].item`}
+                className="w-full basis-5/12"
+              />
+              <CustomInput
+                label="Cantidad"
+                name={`repuestos[${index}].cantidad`}
+                className="w-full basis-5/12"
+              />
+            </div>
           </div>
         ))}
       </div>

@@ -18,7 +18,12 @@ function page() {
   return (
     <div>
       <h1 className="mb-5 text-center">Historial de pedidos de repuestos</h1>
-      <DataTable data={data} columns={columns} expand={Repuestos} />
+      <DataTable
+        data={data}
+        columns={columns}
+        expand={Repuestos}
+        getRowCanExpand={() => true}
+      />
     </div>
   )
 }

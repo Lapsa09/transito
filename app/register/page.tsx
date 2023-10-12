@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Button from '@/components/Button'
 import Input from '@/components/Input'
 import { MainLogoOVT } from '@/components/Logos'
 import { signUp } from '@/services'
@@ -93,7 +92,6 @@ function page() {
             rules={{ required: 'Campo requerido' }}
           />
         </div>
-        <Button type="submit">Registrarse</Button>
       </RegularForm>
       <p className="mt-2">
         Ya estas registrado? <Link href="/login">Inicia sesion</Link>

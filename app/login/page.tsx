@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import Button from '@/components/Button'
 import Input from '@/components/Input'
 import { MainLogoOVT } from '@/components/Logos'
 import { useRouter } from 'next/navigation'
@@ -50,7 +49,6 @@ function page() {
           placeholder="********"
           rules={{ required: 'Campo requerido' }}
         />
-        <Button type="submit">Iniciar sesion</Button>
       </RegularForm>
       <p>
         Todavia no te registraste? <Link href="/register">Registrate aca</Link>

@@ -38,8 +38,17 @@ function SeguroForm({ patente }: { patente: string }) {
 
   return (
     <>
-      <input type="file" className="hidden" onChange={handleChange} ref={ref} />
-      <Button className="bg-green-500" onClick={() => ref.current?.click()}>
+      <input
+        type="file"
+        accept=".pdf"
+        className="hidden"
+        onChange={handleChange}
+        ref={ref}
+      />
+      <Button
+        className="bg-green-500 hover:bg-green-700"
+        onClick={() => ref.current?.click()}
+      >
         +
       </Button>
     </>

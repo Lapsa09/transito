@@ -467,6 +467,7 @@ model movil {
   id_dependencia        Int
   no_chasis             String?                 @db.VarChar
   id_megatrans          String?                 @db.VarChar
+  seguro                String?                 @db.VarChar
   kilometraje_vehiculos kilometraje_vehiculos[]
   dependencia           dependencia             @relation(fields: [id_dependencia], references: [id_dependencia])
   tipo_vehiculo         logistica_tipo_vehiculo @relation(fields: [id_tipo_vehiculo], references: [id_tipo])

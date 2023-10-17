@@ -9,6 +9,7 @@ import { useFormContext } from 'react-hook-form'
 import { Vehiculo } from '@/types/logistica'
 import { useMemo } from 'react'
 import Loader from '@/components/Loader'
+import FileInput from '@/components/FileInput'
 
 function VehiculosForm() {
   const { data, isLoading } = useSWR('api/selects', getSelects)
@@ -18,7 +19,7 @@ function VehiculosForm() {
   const usos = useMemo(() => {
     if (!data?.dependencias) return []
     return data.usos.filter(
-      (uso) => uso.id_dependencia === watch('dependencia').id_dependencia,
+      (uso) => uso.id_dependencia === watch('dependencia')?.id_dependencia,
     )
   }, [watch('dependencia')])
 

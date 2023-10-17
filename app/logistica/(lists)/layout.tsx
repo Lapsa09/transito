@@ -11,7 +11,7 @@ function layout({ children }: PropsWithChildren) {
   return (
     <div>
       <h1 className="text-center mb-5 capitalize">{title.at(-1)}</h1>
-      <h1 className="cursor-pointer" onClick={router.back}>
+      <h1 className="cursor-pointer w-fit" onClick={router.back}>
         Atras
       </h1>
       {!(title[0].includes('repuestos') && title.length === 1) && (

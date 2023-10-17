@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import SeguroForm from '@/components/forms/logistica/seguro.form'
 import { Vehiculo } from '@/types/logistica'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
@@ -83,5 +84,17 @@ export const columns: ColumnDef<Vehiculo>[] = [
       </Link>
     ),
     header: 'VTV',
+  },
+  {
+    id: 'seguro',
+    cell: ({ row }) =>
+      row.original.seguro ? (
+        <Link href={row.original.seguro} target="_blank">
+          <Button>Ver</Button>
+        </Link>
+      ) : (
+        <SeguroForm patente={row.original.patente} />
+      ),
+    header: 'Seguro',
   },
 ]

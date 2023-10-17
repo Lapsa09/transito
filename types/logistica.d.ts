@@ -16,6 +16,7 @@ export interface Vehiculo extends movil {
   uso: uso
   dependencia: dependencia
   tipo_vehiculo: logistica_tipo_vehiculo
+  seguro?: string
 }
 
 export interface KilometrajeVehiculo extends kilometraje_vehiculos {}

@@ -5,8 +5,10 @@ import { setter } from '@/services'
 import { Vehiculo } from '@/types/logistica'
 import React, { useRef } from 'react'
 import { mutate } from 'swr'
+import Link from 'next/link'
 
-function SeguroForm({ patente }: { patente: string }) {
+function SeguroForm({ movil }: { movil: Vehiculo }) {
+  const { patente, seguro } = movil
   const ref = useRef<HTMLInputElement>(null)
   const onSubmit = async (data: { seguro?: File }) => {
     await mutate<Vehiculo[]>('logistica/vehiculos', async (moviles) => {
@@ -31,7 +33,6 @@ function SeguroForm({ patente }: { patente: string }) {
   }
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('a')
     const seguro = e.target.files?.[0]
     await onSubmit({ seguro })
   }
@@ -49,8 +50,13 @@ function SeguroForm({ patente }: { patente: string }) {
         className="bg-green-500 hover:bg-green-700"
         onClick={() => ref.current?.click()}
       >
-        +
+        {seguro ? 'Actualizar seguro' : 'Subir seguro'}
       </Button>
+      {seguro ? (
+        <Link href={seguro} target="_blank">
+          <Button className="bg-blue-500 hover:bg-blue-700">Ver seguro</Button>
+        </Link>
+      ) : null}
     </>
   )
 }

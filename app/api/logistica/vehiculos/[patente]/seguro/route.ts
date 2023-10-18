@@ -13,27 +13,28 @@ export async function POST(
   const formData = await req.formData()
   const seguro = formData.get('seguro') as File
 
-  const [, extension] = seguro.type.split('/')
-
-  await decode(patente, extension, seguro)
+  const link = await decode(patente, seguro)
 
   const movil = await prisma.movil.update({
     where: {
       patente,
     },
     data: {
-      seguro: `${LINKPATH}/${patente}.${extension}`,
+      seguro: link,
     },
   })
 
   return NextResponse.json(movil)
 }
 
-const decode = async (id: string, extension: string, archivo: File) => {
+const decode = async (id: string, archivo: File) => {
+  const [, extension] = archivo.type.split('/')
   const bytes = await archivo?.arrayBuffer()
   const buffer = Buffer.from(bytes)
   if (!fs.existsSync(FILEPATH)) fs.mkdirSync(FILEPATH, { recursive: true })
   fs.writeFileSync(`${FILEPATH}/${id}.${extension}`, buffer, {
     encoding: 'base64',
   })
+
+  return `${LINKPATH}/${id}.${extension}`
 }

@@ -87,14 +87,7 @@ export const columns: ColumnDef<Vehiculo>[] = [
   },
   {
     id: 'seguro',
-    cell: ({ row }) =>
-      row.original.seguro ? (
-        <Link href={row.original.seguro} target="_blank">
-          <Button>Ver</Button>
-        </Link>
-      ) : (
-        <SeguroForm patente={row.original.patente} />
-      ),
+    cell: ({ row }) => <SeguroForm movil={row.original} />,
     header: 'Seguro',
   },
 ]

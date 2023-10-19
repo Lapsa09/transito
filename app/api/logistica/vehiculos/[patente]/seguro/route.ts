@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import * as fs from 'fs'
 
-const LINKPATH = '/logistica/vehiculos/seguros'
-const FILEPATH = 'public/logistica/vehiculos/seguros'
+const decode = async (id: string, archivo: File) => {
+  const LINKPATH = '/logistica/vehiculos/seguros'
+  const FILEPATH = `public${LINKPATH}`
+  const [, extension] = archivo.type.split('/')
+  const bytes = await archivo?.arrayBuffer()
+  const buffer = Buffer.from(bytes)
+  if (!fs.existsSync(FILEPATH)) fs.mkdirSync(FILEPATH, { recursive: true })
+  fs.writeFileSync(`${FILEPATH}/${id}.${extension}`, buffer, {
+    encoding: 'base64',
+  })
+
+  return `${LINKPATH}/${id}.${extension}`
+}
 
 export async function POST(
   req: NextRequest,
@@ -25,16 +36,4 @@ export async function POST(
   })
 
   return NextResponse.json(movil)
-}
-
-const decode = async (id: string, archivo: File) => {
-  const [, extension] = archivo.type.split('/')
-  const bytes = await archivo?.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  if (!fs.existsSync(FILEPATH)) fs.mkdirSync(FILEPATH, { recursive: true })
-  fs.writeFileSync(`${FILEPATH}/${id}.${extension}`, buffer, {
-    encoding: 'base64',
-  })
-
-  return `${LINKPATH}/${id}.${extension}`
 }

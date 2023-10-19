@@ -10,7 +10,8 @@ import Link from 'next/link'
 function SeguroForm({ movil }: { movil: Vehiculo }) {
   const { patente, seguro } = movil
   const ref = useRef<HTMLInputElement>(null)
-  const onSubmit = async (data: { seguro?: File }) => {
+
+  const onSubmit = async (data: { seguro: File }) => {
     await mutate<Vehiculo[]>('logistica/vehiculos', async (moviles) => {
       const movil = await setter<Vehiculo>({
         route: `logistica/vehiculos/${patente}/seguro`,
@@ -24,7 +25,6 @@ function SeguroForm({ movil }: { movil: Vehiculo }) {
 
       if (moviles) {
         return moviles.map((m) => {
-          console.log(m.patente, patente)
           return m.patente.toLowerCase() === patente.toLowerCase() ? movil : m
         })
       }
@@ -34,7 +34,7 @@ function SeguroForm({ movil }: { movil: Vehiculo }) {
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const seguro = e.target.files?.[0]
-    await onSubmit({ seguro })
+    if (seguro) await onSubmit({ seguro })
   }
 
   return (

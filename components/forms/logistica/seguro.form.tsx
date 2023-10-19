@@ -12,24 +12,27 @@ function SeguroForm({ movil }: { movil: Vehiculo }) {
   const ref = useRef<HTMLInputElement>(null)
 
   const onSubmit = async (data: { seguro: File }) => {
-    await mutate<Vehiculo[]>('logistica/vehiculos', async (moviles) => {
-      const movil = await setter<Vehiculo>({
-        route: `logistica/vehiculos/${patente}/seguro`,
-        body: data,
-        config: {
-          headers: {
-            'Content-Type': 'multipart/form-data',
+    await mutate<Vehiculo[]>(
+      { route: 'logistica/vehiculos' },
+      async (moviles) => {
+        const movil = await setter<Vehiculo>({
+          route: `logistica/vehiculos/${patente}/seguro`,
+          body: data,
+          config: {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
           },
-        },
-      })
-
-      if (moviles) {
-        return moviles.map((m) => {
-          return m.patente.toLowerCase() === patente.toLowerCase() ? movil : m
         })
-      }
-      return [movil]
-    })
+
+        if (moviles) {
+          return moviles.map((m) => {
+            return m.patente.toLowerCase() === patente.toLowerCase() ? movil : m
+          })
+        }
+        return [movil]
+      },
+    )
   }
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

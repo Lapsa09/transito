@@ -46,6 +46,10 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
 
   const body: EditMotosProps = await req.json()
 
+  const _hora = new Date(body.fecha)
+  // @ts-ignore
+  _hora.setUTCHours(...body.hora.split(':'))
+
   const moto = await prisma.motos_registros.update({
     where: { id: Number(id) },
     data: {
@@ -74,7 +78,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       operativo: {
         update: {
           fecha: body.fecha,
-          hora: body.hora,
+          hora: _hora,
           legajo_a_cargo: +body.legajo_a_cargo,
           legajo_planilla: +body.legajo_planilla,
           qth: body.qth,

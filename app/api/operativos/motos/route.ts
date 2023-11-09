@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormMotosProps } from '@/types'
 import { resolucion, turnos } from '@prisma/client'
+import { geoLocation } from '@/services'
 
 const operativoMotos = async (body: FormMotosProps) => {
   const {
@@ -19,6 +20,8 @@ const operativoMotos = async (body: FormMotosProps) => {
   // @ts-ignore
   _hora.setUTCHours(...hora.split(':'))
 
+  const direccion_full = `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`
+
   try {
     const op = await prisma.motos_operativos.findFirst({
       where: {
@@ -29,7 +32,7 @@ const operativoMotos = async (body: FormMotosProps) => {
         legajo_planilla: +legajo_planilla,
         seguridad,
         hora: _hora,
-        direccion_full: `${qth}, ${localidad?.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+        direccion_full,
       },
       select: {
         id_op: true,
@@ -37,24 +40,66 @@ const operativoMotos = async (body: FormMotosProps) => {
     })
 
     if (!op) {
-      const id_op = await prisma.motos_operativos.create({
-        data: {
-          fecha: new Date(fecha),
-          qth,
-          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
-          legajo_a_cargo: +legajo_a_cargo,
-          legajo_planilla: +legajo_planilla,
-          id_zona: localidad?.id_barrio,
-          seguridad,
-          hora: _hora,
-          direccion_full: `${qth}, ${localidad?.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+      const geocodificado = await prisma.motos_operativos.findFirst({
+        where: {
+          direccion_full,
+          latitud: {
+            not: null,
+          },
+          longitud: {
+            not: null,
+          },
         },
         select: {
-          id_op: true,
+          direccion_full: true,
+          latitud: true,
+          longitud: true,
         },
       })
+      if (!geocodificado) {
+        const { latitud, longitud } = await geoLocation(direccion_full)
+        const { id_op } = await prisma.motos_operativos.create({
+          data: {
+            fecha: new Date(fecha),
+            qth,
+            turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+            legajo_a_cargo: +legajo_a_cargo,
+            legajo_planilla: +legajo_planilla,
+            id_zona: localidad?.id_barrio,
+            seguridad,
+            hora: _hora,
+            direccion_full,
+            latitud,
+            longitud,
+          },
+          select: {
+            id_op: true,
+          },
+        })
 
-      return id_op.id_op
+        return id_op
+      } else {
+        const { id_op } = await prisma.motos_operativos.create({
+          data: {
+            fecha: new Date(fecha),
+            qth,
+            turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+            legajo_a_cargo: +legajo_a_cargo,
+            legajo_planilla: +legajo_planilla,
+            id_zona: localidad?.id_barrio,
+            seguridad,
+            hora: _hora,
+            direccion_full,
+            latitud: geocodificado.latitud,
+            longitud: geocodificado.longitud,
+          },
+          select: {
+            id_op: true,
+          },
+        })
+
+        return id_op
+      }
     } else {
       return op.id_op
     }

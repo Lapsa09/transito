@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormCamionesProps } from '@/types'
 import { resolucion, turnos } from '@prisma/client'
+import { geoLocation } from '@/services'
 
 const operativoCamiones = async (body: FormCamionesProps) => {
   const { fecha, qth, turno, legajo, localidad } = body
+
+  const direccion_full = `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`
 
   const op = await prisma.camiones_operativos.findFirst({
     select: { id_op: true },
@@ -14,26 +17,73 @@ const operativoCamiones = async (body: FormCamionesProps) => {
       turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
       legajo: legajo.toString(),
       id_localidad: localidad.id_barrio,
-      direccion_full: `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+      direccion_full,
     },
   })
 
   if (!op) {
-    const { id_op } = await prisma.camiones_operativos.create({
-      data: {
-        fecha: new Date(fecha),
-        direccion: qth,
-        turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
-        legajo: legajo.toString(),
-        id_localidad: localidad.id_barrio,
-        direccion_full: `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    const geocodificado = await prisma.camiones_operativos.findFirst({
+      where: {
+        direccion_full,
+        latitud: {
+          not: null,
+        },
+        longitud: {
+          not: null,
+        },
       },
       select: {
-        id_op: true,
+        direccion_full: true,
+        latitud: true,
+        longitud: true,
       },
     })
+    if (!geocodificado) {
+      const { latitud, longitud } = await geoLocation(direccion_full)
+      const { id_op } = await prisma.camiones_operativos.create({
+        data: {
+          fecha: new Date(fecha),
+          direccion: qth,
+          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+          legajo: legajo.toString(),
+          localidad: {
+            connect: {
+              id_barrio: localidad.id_barrio,
+            },
+          },
+          direccion_full,
+          latitud,
+          longitud,
+        },
+        select: {
+          id_op: true,
+        },
+      })
 
-    return id_op
+      return id_op
+    } else {
+      const { id_op } = await prisma.camiones_operativos.create({
+        data: {
+          fecha: new Date(fecha),
+          direccion: qth,
+          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+          legajo: legajo.toString(),
+          localidad: {
+            connect: {
+              id_barrio: localidad.id_barrio,
+            },
+          },
+          direccion_full,
+          latitud: geocodificado.latitud,
+          longitud: geocodificado.longitud,
+        },
+        select: {
+          id_op: true,
+        },
+      })
+
+      return id_op
+    }
   } else {
     return op.id_op
   }

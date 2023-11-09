@@ -156,6 +156,20 @@ export const getTipoRepuestos = async () => {
   return data
 }
 
+export const geoLocation = async (
+  direccion: string,
+): Promise<{ latitud: number; longitud: number }> => {
+  const data = await getter({
+    route: `http://dev.virtualearth.net/REST/v1/Locations/${direccion}?o=json&key=${process.env.MAPS_KEY}`,
+  })
+
+  const {
+    coordinates: [latitud, longitud],
+  } = data.resourceSets[0].resources[0].point
+
+  return { latitud, longitud }
+}
+
 export const getSelects = async () => {
   const [
     zonas,

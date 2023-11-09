@@ -24,16 +24,12 @@ export async function GET(req: Request, state: { params: { id: string } }) {
     const res = {
       ...rest,
       ...operativo,
+      qth: operativo?.direccion,
       fecha: operativo?.fecha?.toISOString().split('T')[0],
+      hora: rest?.hora?.toLocaleTimeString(),
     }
 
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(res, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+    return NextResponse.json(res)
   }
   return NextResponse.json(null)
 }

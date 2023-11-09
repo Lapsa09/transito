@@ -58,34 +58,10 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       graduacion_alcoholica: body.graduacion_alcoholica,
       licencia: body.licencia ? +body.licencia : null,
       resolucion: body.resolucion,
-      zona_infractor: {
-        connect: {
-          id_barrio: body.zona_infractor.id_barrio,
-        },
-      },
-      motivo: {
-        connect: {
-          id_motivo: body.motivo?.id_motivo,
-        },
-      },
-      tipo_licencia: {
-        connect: {
-          id_tipo: body.tipo_licencia?.id_tipo,
-        },
-      },
-      operativo: {
-        update: {
-          fecha: body.fecha,
-          hora: _hora,
-          id_op: body.id_op,
-          legajo_a_cargo: +body.legajo_a_cargo,
-          legajo_planilla: +body.legajo_planilla,
-          qth: body.qth,
-          id_localidad: body.localidad.id_barrio,
-          seguridad: body.seguridad,
-          turno: body.turno === 'MAÑANA' ? turnos.MA_ANA : body.turno,
-        },
-      },
+      id_licencia: body.tipo_licencia?.id_tipo,
+      id_zona_infractor: body.zona_infractor?.id_barrio,
+      id_motivo: body.motivo?.id_motivo,
+      id_operativo: body.id_op,
     },
     include: {
       motivo: true,

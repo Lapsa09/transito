@@ -53,34 +53,10 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       dominio: body.dominio,
       licencia: body.licencia,
       resolucion: body.resolucion,
-      motivo: {
-        connect: {
-          id_motivo: body.motivo?.id_motivo,
-        },
-      },
-      localidad_origen: {
-        connect: {
-          id_barrio: body.localidad_origen.id_barrio,
-        },
-      },
-      localidad_destino: {
-        connect: {
-          id_barrio: body.localidad_destino.id_barrio,
-        },
-      },
-      operativo: {
-        update: {
-          fecha: body.fecha,
-          legajo: body.legajo,
-          direccion: body.qth,
-          turno: body.turno === 'MAÑANA' ? turnos.MA_ANA : body.turno,
-          localidad: {
-            connect: {
-              id_barrio: body.localidad.id_barrio,
-            },
-          },
-        },
-      },
+      id_motivo: body.motivo?.id_motivo,
+      id_localidad_origen: body.localidad_origen?.id_barrio,
+      id_localidad_destino: body.localidad_destino?.id_barrio,
+      id_operativo: body.id_op,
     },
     include: {
       motivo: true,
@@ -89,11 +65,5 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       localidad_origen: true,
     },
   })
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(camion, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+  return NextResponse.json(camion)
 }

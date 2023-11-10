@@ -160,7 +160,7 @@ export const geoLocation = async (
   direccion: string,
 ): Promise<{ latitud: number; longitud: number }> => {
   const data = await getter({
-    route: `http://dev.virtualearth.net/REST/v1/Locations/${direccion}?o=json&key=${process.env.MAPS_KEY}`,
+    route: `http://dev.virtualearth.net/REST/v1/Locations/${direccion}?o=json&key=${process.env.NEXT_PUBLIC_MAPS_KEY}`,
   })
 
   const {

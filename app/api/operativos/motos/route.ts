@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormMotosProps } from '@/types'
-import { resolucion, turnos } from '@prisma/client'
+import { resolucion, seguridad, turnos } from '@prisma/client'
 import { geoLocation } from '@/services'
 
 const operativoMotos = async (body: FormMotosProps) => {
@@ -66,7 +66,7 @@ const operativoMotos = async (body: FormMotosProps) => {
             legajo_a_cargo: +legajo_a_cargo,
             legajo_planilla: +legajo_planilla,
             id_zona: localidad?.id_barrio,
-            seguridad,
+            seguridad: seguridad.split(' ').join('_') as seguridad,
             hora: _hora,
             direccion_full,
             latitud,
@@ -87,7 +87,7 @@ const operativoMotos = async (body: FormMotosProps) => {
             legajo_a_cargo: +legajo_a_cargo,
             legajo_planilla: +legajo_planilla,
             id_zona: localidad?.id_barrio,
-            seguridad,
+            seguridad: seguridad.split(' ').join('_') as seguridad,
             hora: _hora,
             direccion_full,
             latitud: geocodificado.latitud,

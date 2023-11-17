@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormAutosProps } from '@/types'
-import { del, resolucion, resultado, turnos } from '@prisma/client'
+import { del, resolucion, resultado, turnos, seguridad } from '@prisma/client'
 import { geoLocation } from '@/services'
 
 const es_del = async (zona_infractor: string) => {
@@ -87,7 +87,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
           legajo_a_cargo: +legajo_a_cargo,
           legajo_planilla: +legajo_planilla,
           id_localidad: localidad.id_barrio,
-          seguridad,
+          seguridad: seguridad.split(' ').join('_') as seguridad,
           hora: _hora,
           direccion_full,
           latitud,
@@ -107,7 +107,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
           legajo_a_cargo: +legajo_a_cargo,
           legajo_planilla: +legajo_planilla,
           id_localidad: localidad.id_barrio,
-          seguridad,
+          seguridad: seguridad.split(' ').join('_') as seguridad,
           hora: _hora,
           direccion_full,
           latitud: geocodificado.latitud,

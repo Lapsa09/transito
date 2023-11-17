@@ -54,7 +54,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
       legajo_a_cargo: +legajo_a_cargo,
       legajo_planilla: +legajo_planilla,
       id_localidad: localidad.id_barrio,
-      seguridad,
+      seguridad: seguridad.split(' ').join('_') as seguridad,
       hora: _hora,
       direccion_full,
     },

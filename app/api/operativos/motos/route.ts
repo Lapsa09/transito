@@ -30,7 +30,7 @@ const operativoMotos = async (body: FormMotosProps) => {
         turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
         legajo_a_cargo: +legajo_a_cargo,
         legajo_planilla: +legajo_planilla,
-        seguridad,
+        seguridad: seguridad.split(' ').join('_') as seguridad,
         hora: _hora,
         direccion_full,
       },

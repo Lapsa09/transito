@@ -10,6 +10,7 @@ import { RegisterUserProps } from '@/types'
 import Link from 'next/link'
 import { RegularForm } from '@/components/forms/layout.form'
 import { SubmitHandler } from 'react-hook-form'
+import Button from '@/components/Button'
 
 function page() {
   const { toast } = useToast()
@@ -91,6 +92,9 @@ function page() {
             placeholder="******"
             rules={{ required: 'Campo requerido' }}
           />
+        </div>
+        <div className="flex justify-between gap-10">
+          <Button type="submit">Registrarse</Button>
         </div>
       </RegularForm>
       <p className="mt-2">

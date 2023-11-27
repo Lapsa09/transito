@@ -1,30 +1,23 @@
 'use client'
-import { useState } from 'react'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Key, useEffect, useState } from 'react'
+import { ChevronsUpDown } from 'lucide-react'
 import {
+  FieldValues,
   UseControllerProps,
   useController,
   useFormContext,
 } from 'react-hook-form'
 import { cn } from '@/lib/utils'
 import {
-  Command,
-  CommandInput,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from '@/components/ui/command'
-
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  Button,
+  Autocomplete,
+  AutocompleteItem,
+  AutocompleteProps,
 } from '@nextui-org/react'
-import { ScrollArea } from './ui/scroll-area'
 
-interface Props extends UseControllerProps {
-  options?: any[]
+interface Props<T extends FieldValues>
+  extends UseControllerProps,
+    Omit<AutocompleteProps, 'name' | 'children'> {
+  options?: T[]
   label: string
   inputLabel?: string
   inputId?: string
@@ -32,7 +25,7 @@ interface Props extends UseControllerProps {
   persist?: (data: any) => void
 }
 
-export default function MyCombobox({
+export default function MyCombobox<T extends FieldValues>({
   label,
   name,
   options = [],
@@ -41,106 +34,63 @@ export default function MyCombobox({
   className,
   persist,
   rules,
-}: Props) {
+}: Props<T>) {
   const { control } = useFormContext()
   const {
     field,
     fieldState: { invalid, error },
+    formState: { isSubmitSuccessful, isSubmitted },
   } = useController({ name, control, rules })
-  const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(false)
 
-  const filteredOptions =
-    query === ''
-      ? options
-      : options.filter((option) =>
-          option[inputLabel].toLowerCase().includes(query.toLowerCase()),
-        )
+  const [key, setKey] = useState<Key | null>(null)
 
-  const handleChange = (currentValue: string) => {
-    const option = options.find(
-      (option) => option[inputLabel].toLowerCase() === currentValue,
-    )
-    if (field.value && option[inputId] === field.value[inputId]) {
-      field.onChange(null)
-      if (persist) persist({ [name]: null })
-      setQuery('')
-    } else {
-      field.onChange(option)
-      if (persist) persist({ [name]: option })
-    }
-    setOpen(false)
+  const handleChange = (item: Key) => {
+    const option = options.find((o) => o[inputId] == item)
+    setKey(item)
+    field.onChange(option)
+    if (persist) persist({ [name]: option })
   }
 
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      if (!persist) field.onChange(null)
+    }
+  }, [isSubmitted])
+
   return (
-    <div className={cn('pb-6', className)}>
-      <label
-        className={`block text-small font-medium text-foreground pb-1.5 ${
-          rules?.required &&
-          "after:content-['*'] after:text-danger after:ml-0.5"
-        } will-change-auto origin-top-left transition-all !duration-200 !ease-[cubic-bezier(0,0,0.2,1)] motion-reduce:transition-none`}
-        htmlFor={field.name}
-      >
-        {label}
-      </label>
-      <Popover
-        classNames={{
-          base: 'w-full',
-        }}
-        placement="bottom"
-        isOpen={open}
-        onOpenChange={setOpen}
-      >
-        <PopoverTrigger>
-          <Button
-            variant="bordered"
-            role="combobox"
-            aria-expanded={open}
-            name={field.name}
-            radius="sm"
-            className={`w-full justify-between border ${
-              invalid ? 'border-danger' : 'border-gray-600'
-            }`}
-          >
-            <span className={`${invalid && 'text-danger'} font-normal `}>
-              {field.value ? field.value[inputLabel] : 'Elija una opcion...'}
-            </span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
-          <Command shouldFilter={false}>
-            <CommandInput
-              value={query}
-              onValueChange={setQuery}
-              placeholder="Elija una opcion..."
-              autoFocus
-            />
-            <ScrollArea className="h-60">
-              <CommandEmpty>Vacio.</CommandEmpty>
-              <CommandGroup>
-                {filteredOptions.map((framework) => (
-                  <CommandItem key={framework[inputId]} onSelect={handleChange}>
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        field.value &&
-                          field.value[inputId] === framework[inputId]
-                          ? 'opacity-100'
-                          : 'opacity-0',
-                      )}
-                    />
-                    {framework[inputLabel]}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </ScrollArea>
-          </Command>
-        </PopoverContent>
-      </Popover>
-      <span className="text-tiny text-danger left-1 pt-1 px-1">
-        {error?.message}
-      </span>
-    </div>
+    <Autocomplete
+      selectedKey={key}
+      {...field}
+      onSelectionChange={handleChange}
+      label={label}
+      variant="bordered"
+      size="md"
+      isRequired={!!rules?.required}
+      labelPlacement="outside"
+      placeholder="Elija una opcion..."
+      errorMessage={error?.message}
+      inputValue={field.value?.[inputLabel]}
+      isInvalid={invalid}
+      radius="sm"
+      className={cn(className, 'w-full')}
+      inputProps={{
+        classNames: {
+          inputWrapper: 'border border-gray-600',
+          base: 'mb-6',
+        },
+      }}
+      selectorIcon={
+        <ChevronsUpDown
+          className="ml-2 h-4 w-4 shrink-0 opacity-50 cursor-pointer"
+          aria-hidden="true"
+        />
+      }
+    >
+      {options.map((option) => (
+        <AutocompleteItem key={option[inputId]} value={option[inputId]}>
+          {option[inputLabel]}
+        </AutocompleteItem>
+      ))}
+    </Autocomplete>
   )
 }

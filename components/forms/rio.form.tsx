@@ -21,7 +21,7 @@ function FirstStep() {
   const [op, edit] = useLocalStorage<LocalOperativo>('rio', {
     expiresAt: 0,
   })
-  console.log({ op })
+
   const setOperativo = (value: any) => {
     edit((state) => ({
       ...state,

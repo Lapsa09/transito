@@ -7,6 +7,7 @@ import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import { mutate } from 'swr'
 import { setter } from '@/services'
 import { useToast } from '@/hooks'
+import Button from '@/components/Button'
 
 function layout({ children }: React.PropsWithChildren) {
   const layoutSegment = useSelectedLayoutSegments()
@@ -45,6 +46,14 @@ function layout({ children }: React.PropsWithChildren) {
       onSubmit={onSubmit}
     >
       {children}
+      <div className="flex justify-between gap-10">
+        <Button onClick={router.back} className="bg-red-700 hover:bg-red-800">
+          Cancelar
+        </Button>
+        <Button form={route} type="submit">
+          Guardar
+        </Button>
+      </div>
     </RegularForm>
   )
 }

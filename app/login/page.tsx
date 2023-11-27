@@ -9,6 +9,7 @@ import { useToast } from '@/hooks'
 import Link from 'next/link'
 import { RegularForm } from '@/components/forms/layout.form'
 import { SubmitHandler } from 'react-hook-form'
+import Button from '@/components/Button'
 
 function page() {
   const { toast } = useToast()
@@ -24,7 +25,7 @@ function page() {
         if (callback?.ok) {
           router.push('/')
         } else {
-          toast({ title: callback?.error, variant: 'destructive' })
+          toast({ title: `${callback?.error}`, variant: 'destructive' })
         }
       })
       .catch((error) => {
@@ -49,6 +50,11 @@ function page() {
           placeholder="********"
           rules={{ required: 'Campo requerido' }}
         />
+        <div className="flex justify-between gap-10 my-3">
+          <Button className="mx-auto" type="submit">
+            Iniciar sesion
+          </Button>
+        </div>
       </RegularForm>
       <p>
         Todavia no te registraste? <Link href="/register">Registrate aca</Link>

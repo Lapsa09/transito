@@ -9,11 +9,12 @@ import {
   FaUserNurse,
   FaTruckPickup,
   FaWrench,
+  FaTrafficLight,
 } from 'react-icons/fa'
 import { RiMotorbikeFill } from 'react-icons/ri'
 import { BsCartPlus, BsFillPersonFill } from 'react-icons/bs'
 import { MdAttachMoney, MdDeliveryDining, MdFiberNew } from 'react-icons/md'
-import { GiAutoRepair } from 'react-icons/gi'
+import { GiAutoRepair, GiHole } from 'react-icons/gi'
 
 import Link from 'next/link'
 
@@ -161,6 +162,24 @@ export function RepuestosCard() {
     <CardWithLink link="/logistica/repuestos">
       <GiAutoRepair className="text-6xl" />
       <Typography className="text-4xl">Repuestos</Typography>
+    </CardWithLink>
+  )
+}
+
+export function PotHoleCard() {
+  return (
+    <CardWithLink link="/operativos/pothole">
+      <GiHole className="text-6xl" />
+      <Typography className="text-4xl">Baches</Typography>
+    </CardWithLink>
+  )
+}
+
+export function TrafficCard() {
+  return (
+    <CardWithLink link="/operativos/traffic">
+      <FaTrafficLight className="text-6xl" />
+      <Typography className="text-4xl">Trafico</Typography>
     </CardWithLink>
   )
 }

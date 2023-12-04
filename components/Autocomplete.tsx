@@ -41,11 +41,17 @@ export default function MyCombobox<T extends FieldValues>({
     fieldState: { invalid, error },
   } = useController({ name, control, rules })
 
+  const [inputValue, setInputValue] = useState('')
+
   const handleChange = (item: Key) => {
     const option = options.find((o) => o[inputId] == item)
     onChange(option)
     if (persist) persist({ [name]: option })
   }
+
+  useEffect(() => {
+    setInputValue(value?.[inputLabel] || '')
+  }, [value])
 
   return (
     <Autocomplete
@@ -59,7 +65,9 @@ export default function MyCombobox<T extends FieldValues>({
       labelPlacement="outside"
       placeholder="Elija una opcion..."
       errorMessage={error?.message}
-      inputValue={value?.[inputLabel]}
+      inputValue={inputValue}
+      clearButtonProps={{ onClick: () => handleChange('') }}
+      onInputChange={setInputValue}
       isInvalid={invalid}
       radius="sm"
       className={cn(className, 'w-full')}

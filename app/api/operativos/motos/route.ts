@@ -27,10 +27,10 @@ const operativoMotos = async (body: FormMotosProps) => {
       where: {
         fecha: new Date(fecha),
         qth,
-        turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+        turno,
         legajo_a_cargo: +legajo_a_cargo,
         legajo_planilla: +legajo_planilla,
-        seguridad: seguridad.split(' ').join('_') as seguridad,
+        seguridad,
         hora: _hora,
         direccion_full,
       },
@@ -62,11 +62,11 @@ const operativoMotos = async (body: FormMotosProps) => {
           data: {
             fecha: new Date(fecha),
             qth,
-            turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+            turno,
             legajo_a_cargo: +legajo_a_cargo,
             legajo_planilla: +legajo_planilla,
             id_zona: localidad?.id_barrio,
-            seguridad: seguridad.split(' ').join('_') as seguridad,
+            seguridad,
             hora: _hora,
             direccion_full,
             latitud,
@@ -83,11 +83,11 @@ const operativoMotos = async (body: FormMotosProps) => {
           data: {
             fecha: new Date(fecha),
             qth,
-            turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+            turno,
             legajo_a_cargo: +legajo_a_cargo,
             legajo_planilla: +legajo_planilla,
             id_zona: localidad?.id_barrio,
-            seguridad: seguridad.split(' ').join('_') as seguridad,
+            seguridad,
             hora: _hora,
             direccion_full,
             latitud: geocodificado.latitud,
@@ -130,12 +130,12 @@ export async function GET() {
 export async function POST(req: Request) {
   const body: FormMotosProps = await req.json()
 
-  const data = { ...body, id_operativo: await operativoMotos(body) }
+  const id_operativo = await operativoMotos(body)
 
   const repetido = await prisma.motos_registros.findFirst({
     where: {
-      dominio: data.dominio,
-      id_operativo: data.id_operativo,
+      dominio: body.dominio,
+      id_operativo,
     },
   })
 
@@ -147,17 +147,15 @@ export async function POST(req: Request) {
 
   const moto = await prisma.motos_registros.create({
     data: {
-      acta: data.acta ? +data.acta : null,
-      dominio: data.dominio,
+      acta: Number(body.acta) || null,
+      dominio: body.dominio,
       fechacarga: new Date(),
-      licencia: data.licencia ? +data.licencia : null,
-      lpcarga: data.lpcarga,
-      resolucion: data.resolucion || resolucion.PREVENCION,
-      id_operativo: data.id_operativo,
-      mes: new Date(data.fecha).getMonth() + 1,
-      semana: Math.ceil(new Date(data.fecha).getDate() / 7),
-      id_licencia: data.tipo_licencia?.id_tipo,
-      id_zona_infractor: data.zona_infractor?.id_barrio,
+      licencia: Number(body.licencia) || null,
+      lpcarga: body.lpcarga,
+      resolucion: body.resolucion || resolucion.PREVENCION,
+      id_operativo,
+      id_licencia: body.tipo_licencia?.id_tipo,
+      id_zona_infractor: body.zona_infractor?.id_barrio,
     },
     include: {
       operativo: {
@@ -168,9 +166,9 @@ export async function POST(req: Request) {
       zona_infractor: true,
     },
   })
-  if (data.motivos) {
+  if (body.motivos) {
     const motivos = []
-    for (const motivo of data.motivos) {
+    for (const motivo of body.motivos) {
       const nuevo_motivo = await prisma.moto_motivo.create({
         data: {
           id_motivo: motivo.id_motivo,

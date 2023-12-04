@@ -143,7 +143,7 @@ export async function PUT(req: NextRequest, state: { params: { id: string } }) {
         update: {
           fecha: body.fecha,
           lp: +body.lp,
-          turno: body.turno === 'MAÑANA' ? turnos.MA_ANA : body.turno,
+          turno: body.turno,
         },
       },
     },

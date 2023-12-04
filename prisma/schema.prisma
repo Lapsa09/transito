@@ -170,7 +170,7 @@ model operativos_registros {
   dominio               String                @db.VarChar
   licencia              BigInt?
   acta                  BigInt?
-  graduacion_alcoholica Float?                @db.Real
+  graduacion_alcoholica Float?                @default(0) @db.Real
   resolucion            resolucion?           @default(PREVENCION)
   fechacarga            DateTime?             @default(now()) @db.Timestamp(6)
   lpcarga               Int?

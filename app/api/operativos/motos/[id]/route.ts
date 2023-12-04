@@ -1,6 +1,5 @@
 import prisma from '@/lib/prismadb'
 import { EditMotosProps } from '@/types'
-import { turnos } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
 export async function GET(req: Request, state: { params: { id: string } }) {
@@ -83,7 +82,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
           legajo_planilla: +body.legajo_planilla,
           qth: body.qth,
           seguridad: body.seguridad,
-          turno: body.turno === 'MAÑANA' ? turnos.MA_ANA : body.turno,
+          turno: body.turno,
           localidad: {
             connect: {
               id_barrio: body.localidad.id_barrio,

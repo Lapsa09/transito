@@ -11,7 +11,7 @@ const operativoPaseo = async (body: RioFormProps) => {
   const op = await prisma.nuevo_control_operativos.findFirst({
     where: {
       fecha: new Date(fecha),
-      turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+      turno,
       lp: +lp,
     },
   })
@@ -20,7 +20,7 @@ const operativoPaseo = async (body: RioFormProps) => {
     const { id_op } = await prisma.nuevo_control_operativos.create({
       data: {
         fecha: new Date(fecha),
-        turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+        turno,
         lp: +lp,
       },
       select: {

@@ -14,7 +14,7 @@ const operativoCamiones = async (body: FormCamionesProps) => {
     where: {
       fecha: new Date(fecha),
       direccion: qth,
-      turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+      turno,
       legajo: legajo.toString(),
       id_localidad: localidad.id_barrio,
       direccion_full,
@@ -44,7 +44,7 @@ const operativoCamiones = async (body: FormCamionesProps) => {
         data: {
           fecha: new Date(fecha),
           direccion: qth,
-          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+          turno,
           legajo: legajo.toString(),
           localidad: {
             connect: {
@@ -66,7 +66,7 @@ const operativoCamiones = async (body: FormCamionesProps) => {
         data: {
           fecha: new Date(fecha),
           direccion: qth,
-          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+          turno,
           legajo: legajo.toString(),
           localidad: {
             connect: {
@@ -115,18 +115,12 @@ export async function POST(req: Request) {
   try {
     const body: FormCamionesProps = await req.json()
 
-    const data = {
-      ...body,
-      id_operativo: await operativoCamiones(body),
-      fechacarga: new Date(),
-      mes: new Date(body.fecha).getMonth() + 1,
-      semana: Math.ceil(new Date(body.fecha).getDate() / 7),
-    }
+    const id_operativo = await operativoCamiones(body)
 
     const repetido = await prisma.operativos_registros.findFirst({
       where: {
-        dominio: data.dominio,
-        id_operativo: data.id_operativo,
+        dominio: body.dominio,
+        id_operativo,
       },
     })
 
@@ -136,27 +130,25 @@ export async function POST(req: Request) {
       })
     }
 
-    const _hora = new Date(data.fecha)
+    const _hora = new Date(body.fecha)
     // @ts-ignore
-    _hora.setUTCHours(...data.hora.split(':'))
+    _hora.setUTCHours(...body.hora.split(':'))
 
     const camion = await prisma.camiones_registros.create({
       data: {
-        acta: data.acta,
-        dominio: data.dominio.toUpperCase(),
-        licencia: data.licencia,
-        lpcarga: data.lpcarga,
-        resolucion: data.resolucion || resolucion.PREVENCION,
-        mes: new Date(data.fecha).getMonth() + 1,
-        semana: Math.ceil(new Date(data.fecha).getDate() / 7),
-        id_motivo: data.motivo?.id_motivo,
-        id_operativo: data.id_operativo,
-        origen: data.origen,
-        destino: data.destino,
-        id_localidad_origen: data.localidad_origen?.id_barrio,
-        id_localidad_destino: data.localidad_destino?.id_barrio,
-        remito: data.remito,
-        carga: data.carga,
+        acta: body.acta,
+        dominio: body.dominio.toUpperCase(),
+        licencia: body.licencia,
+        lpcarga: body.lpcarga,
+        resolucion: body.resolucion || resolucion.PREVENCION,
+        id_motivo: body.motivo?.id_motivo,
+        id_operativo,
+        origen: body.origen,
+        destino: body.destino,
+        id_localidad_origen: body.localidad_origen?.id_barrio,
+        id_localidad_destino: body.localidad_destino?.id_barrio,
+        remito: body.remito,
+        carga: body.carga,
         hora: _hora,
       },
       include: {

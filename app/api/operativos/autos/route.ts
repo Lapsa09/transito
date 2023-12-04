@@ -50,11 +50,11 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
     where: {
       fecha: new Date(fecha),
       qth,
-      turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+      turno,
       legajo_a_cargo: +legajo_a_cargo,
       legajo_planilla: +legajo_planilla,
       id_localidad: localidad.id_barrio,
-      seguridad: seguridad.split(' ').join('_') as seguridad,
+      seguridad,
       hora: _hora,
       direccion_full,
     },
@@ -83,11 +83,11 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
         data: {
           fecha: new Date(fecha),
           qth,
-          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+          turno,
           legajo_a_cargo: +legajo_a_cargo,
           legajo_planilla: +legajo_planilla,
           id_localidad: localidad.id_barrio,
-          seguridad: seguridad.split(' ').join('_') as seguridad,
+          seguridad,
           hora: _hora,
           direccion_full,
           latitud,
@@ -103,11 +103,11 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
         data: {
           fecha: new Date(fecha),
           qth,
-          turno: turno === 'MAÑANA' ? turnos.MA_ANA : turno,
+          turno,
           legajo_a_cargo: +legajo_a_cargo,
           legajo_planilla: +legajo_planilla,
           id_localidad: localidad.id_barrio,
-          seguridad: seguridad.split(' ').join('_') as seguridad,
+          seguridad,
           hora: _hora,
           direccion_full,
           latitud: geocodificado.latitud,
@@ -150,20 +150,12 @@ export async function POST(req: Request) {
   try {
     const body: FormAutosProps = await req.json()
 
-    const data = {
-      ...body,
-      es_del: await es_del(body.zona_infractor.barrio),
-      resultado: alcoholemia(body.graduacion_alcoholica),
-      id_operativo: await operativoAlcoholemia(body),
-      fechacarga: new Date(),
-      mes: new Date(body.fecha).getMonth() + 1,
-      semana: Math.ceil(new Date(body.fecha).getDate() / 7),
-    }
+    const id_operativo = await operativoAlcoholemia(body)
 
     const repetido = await prisma.operativos_registros.findFirst({
       where: {
-        dominio: data.dominio,
-        id_operativo: data.id_operativo,
+        dominio: body.dominio,
+        id_operativo,
       },
     })
 
@@ -175,23 +167,16 @@ export async function POST(req: Request) {
 
     const auto = await prisma.operativos_registros.create({
       data: {
-        acta: data.acta ? +data.acta : null,
-        dominio: data.dominio.toUpperCase(),
-        graduacion_alcoholica: data.graduacion_alcoholica
-          ? +data.graduacion_alcoholica
-          : 0,
-        fechacarga: new Date(),
-        licencia: data.licencia ? +data.licencia : undefined,
-        lpcarga: data.lpcarga,
-        resolucion: data.resolucion || resolucion.PREVENCION,
-        es_del: data.es_del,
-        resultado: data.resultado,
-        mes: new Date(data.fecha).getMonth() + 1,
-        semana: Math.ceil(new Date(data.fecha).getDate() / 7),
-        id_licencia: data.tipo_licencia?.id_tipo,
-        id_zona_infractor: data.zona_infractor?.id_barrio,
-        id_motivo: data.motivo?.id_motivo,
-        id_operativo: data.id_operativo,
+        acta: Number(body.acta) || null,
+        dominio: body.dominio.toUpperCase(),
+        graduacion_alcoholica: Number(body.graduacion_alcoholica),
+        licencia: Number(body.licencia) || null,
+        lpcarga: body.lpcarga,
+        resolucion: body.resolucion || resolucion.PREVENCION,
+        id_licencia: body.tipo_licencia?.id_tipo,
+        id_zona_infractor: body.zona_infractor?.id_barrio,
+        id_motivo: body.motivo?.id_motivo,
+        id_operativo,
       },
       include: {
         operativo: {

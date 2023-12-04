@@ -53,14 +53,14 @@ export const getVicenteLopez = async () => {
 }
 
 export const getTurnos = async () => {
-  const data = await getter<turnos[]>({
+  const data = await getter<{ id: turnos; label: string }[]>({
     route: 'turnos',
   })
   return data
 }
 
 export const getSeguridad = async () => {
-  const data = await getter<seguridad[]>({
+  const data = await getter<{ id: seguridad; label: string }[]>({
     route: 'seguridad',
   })
   return data
@@ -74,7 +74,7 @@ export const getLicencias = async () => {
 }
 
 export const getResolucion = async () => {
-  const data = await getter<resolucion[]>({
+  const data = await getter<{ id: resolucion; label: string }[]>({
     route: 'resolucion',
   })
   return data

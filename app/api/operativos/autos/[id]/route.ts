@@ -1,9 +1,8 @@
 import prisma from '@/lib/prismadb'
 import { EditAutosProps } from '@/types'
-import { turnos } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
-export async function GET(req: Request, state: { params: { id: string } }) {
+export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
@@ -53,10 +52,10 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   const auto = await prisma.operativos_registros.update({
     where: { id: Number(id) },
     data: {
-      acta: body.acta ? +body.acta : null,
+      acta: Number(body.acta) || null,
       dominio: body.dominio,
       graduacion_alcoholica: body.graduacion_alcoholica,
-      licencia: body.licencia ? +body.licencia : null,
+      licencia: Number(body.licencia) || null,
       resolucion: body.resolucion,
       id_licencia: body.tipo_licencia?.id_tipo,
       id_zona_infractor: body.zona_infractor?.id_barrio,

@@ -12,7 +12,7 @@ import { ChevronsUpDown } from 'lucide-react'
 type Props = UseControllerProps &
   Omit<SelectProps, 'children'> & {
     label: string
-    options: string[]
+    options: { id: any; label: string }[]
     persist?: (data: any) => void
   }
 
@@ -67,8 +67,8 @@ function CustomSelect({
       }
     >
       {options.map((option) => (
-        <SelectItem key={option} value={option}>
-          {option}
+        <SelectItem key={option.id} value={option.id}>
+          {option.label}
         </SelectItem>
       ))}
     </Select>

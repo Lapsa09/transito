@@ -1,50 +1,16 @@
-'use client'
-import { toast } from '@/hooks'
-import { getServicioForEdit, updateServicio } from '@/services'
-import { ServiciosFormProps } from '@/types'
-import React, { useEffect } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { mutate } from 'swr'
-import { useRouter } from 'next/navigation'
-import useSWR from 'swr'
-import FormLayout from '@/components/forms/layout.form'
+import React from 'react'
+import { EditFormLayout } from '@/components/forms/layout.form'
 import LayoutServiciosForm from '@/components/forms/servicios.form'
 
-function page({ params }: { params: { id: string } }) {
-  const { id } = params
-  const methods = useForm<ServiciosFormProps>()
-  const { reset } = methods
-  const router = useRouter()
-  const { isLoading } = useSWR(
-    'servicios/edit',
-    async () => await getServicioForEdit(id),
-    { onSuccess: (data) => reset(data) },
-  )
-
-  const onSubmit: SubmitHandler<ServiciosFormProps> = async (body) => {
-    try {
-      await updateServicio({ body, id_servicio: id })
-      mutate('servicios')
-      router.back()
-    } catch (error: any) {
-      toast({
-        title: error.response?.data ?? 'Server error',
-        variant: 'destructive',
-      })
-    }
-  }
-
-  if (isLoading) return null
+function page() {
   return (
-    <FormLayout
-      onSubmit={onSubmit}
+    <EditFormLayout
       className="flex flex-col justify-center px-6"
-      methods={methods}
-      steps={1}
+      section="sueldos"
       stepTitles={['Editar servicio']}
     >
       <LayoutServiciosForm />
-    </FormLayout>
+    </EditFormLayout>
   )
 }
 

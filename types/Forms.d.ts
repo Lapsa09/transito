@@ -9,6 +9,7 @@ import {
   vicente_lopez,
   motivo,
   zonas,
+  turnos,
 } from '@prisma/client'
 import { Operativo } from './operativos'
 import { type LogisticaForms } from './logistica'
@@ -38,7 +39,7 @@ export interface FormInputProps {
   qth: string
   localidad: vicente_lopez
   fecha: string
-  turno: 'MAÑANA' | 'TARDE' | 'NOCHE'
+  turno: turnos
   lpcarga: number
   hora: string
   dominio: string
@@ -56,7 +57,7 @@ export interface EditInputProps extends FormInputProps {
 }
 
 export interface FormAutosProps extends FormInputProps {
-  graduacion_alcoholica: string
+  graduacion_alcoholica?: string
   motivo?: motivos
 }
 
@@ -148,7 +149,7 @@ export type RioFormProps = {
   fecha: string
   motivo: motivo
   lp: string
-  turno: 'MAÑANA' | 'TARDE' | 'NOCHE'
+  turno: turnos
   hora: string
   dominio: string
   acta: bigint

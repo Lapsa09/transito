@@ -37,29 +37,20 @@ export default function MyCombobox<T extends FieldValues>({
 }: Props<T>) {
   const { control } = useFormContext()
   const {
-    field,
+    field: { value, onChange, ...field },
     fieldState: { invalid, error },
-    formState: { isSubmitSuccessful, isSubmitted },
   } = useController({ name, control, rules })
 
-  const [key, setKey] = useState<Key | null>(null)
-
   const handleChange = (item: Key) => {
-    const option = options.find((o) => o[inputId] == item)
-    setKey(item)
-    field.onChange(option)
+    const option =
+      value?.[inputId] != item ? options.find((o) => o[inputId] == item) : null
+    onChange(option)
     if (persist) persist({ [name]: option })
   }
 
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      if (!persist) field.onChange(null)
-    }
-  }, [isSubmitted])
-
   return (
     <Autocomplete
-      selectedKey={key}
+      selectedKey={value?.[inputId]}
       {...field}
       onSelectionChange={handleChange}
       label={label}
@@ -69,7 +60,7 @@ export default function MyCombobox<T extends FieldValues>({
       labelPlacement="outside"
       placeholder="Elija una opcion..."
       errorMessage={error?.message}
-      inputValue={field.value?.[inputLabel]}
+      inputValue={value?.[inputLabel]}
       isInvalid={invalid}
       radius="sm"
       className={cn(className, 'w-full')}
@@ -81,7 +72,7 @@ export default function MyCombobox<T extends FieldValues>({
       }}
       selectorIcon={
         <ChevronsUpDown
-          className="ml-2 h-4 w-4 shrink-0 opacity-50 cursor-pointer"
+          className="h-4 w-4 shrink-0 opacity-50 cursor-pointer"
           aria-hidden="true"
         />
       }

@@ -34,12 +34,11 @@ export function CreateFormLayout({
   className,
   stepTitles,
   section,
-}: {
-  children: React.ReactNode
+}: PropsWithChildren<{
   className?: string
   stepTitles: string[]
   section: string
-}) {
+}>) {
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
   const router = useRouter()
@@ -65,7 +64,7 @@ export function CreateFormLayout({
     setFocus,
     setValue,
     handleSubmit,
-    formState: { isValid },
+    formState: { isValid, ...formState },
   } = methods
   const layoutSegment = useSelectedLayoutSegment() as
     | 'autos'

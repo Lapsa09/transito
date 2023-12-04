@@ -42,8 +42,7 @@ export default function MyCombobox<T extends FieldValues>({
   } = useController({ name, control, rules })
 
   const handleChange = (item: Key) => {
-    const option =
-      value?.[inputId] != item ? options.find((o) => o[inputId] == item) : null
+    const option = options.find((o) => o[inputId] == item)
     onChange(option)
     if (persist) persist({ [name]: option })
   }

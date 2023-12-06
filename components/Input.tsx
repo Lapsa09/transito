@@ -1,6 +1,6 @@
 'use client'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from '@/utils/validations'
-import { Input, InputProps } from '@nextui-org/react'
+import { Checkbox, Input, InputProps } from '@nextui-org/react'
 import React from 'react'
 import {
   UseControllerProps,
@@ -86,18 +86,27 @@ function InputLegajo(props: Props) {
 }
 
 function InputDominio(props: Props) {
+  const { control } = useFormContext()
+  const { field } = useController({
+    name: 'extranjero',
+    control,
+    defaultValue: false,
+  })
   return (
     <CustomInput
       {...props}
       rules={{
         ...props.rules,
-        pattern: {
-          value: DOMINIO_PATTERN,
-          message: 'Ingrese un dominio valido',
-        },
+        pattern: field.value
+          ? undefined
+          : {
+              value: DOMINIO_PATTERN,
+              message: 'Ingrese un dominio valido',
+            },
         required: 'Este campo es requerido',
       }}
       placeholder='Ej: "ABC123"'
+      endContent={<Checkbox {...field}>Extranjero</Checkbox>}
     />
   )
 }

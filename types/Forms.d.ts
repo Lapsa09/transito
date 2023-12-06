@@ -157,6 +157,7 @@ export type RioFormProps = {
   fechacarga: string
   lpcarga: string
   zona: zonas
+  extranjero?: boolean
 }
 
 export type FormProps = FormInputProps &

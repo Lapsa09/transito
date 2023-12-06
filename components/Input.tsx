@@ -86,7 +86,7 @@ function InputLegajo(props: Props) {
 }
 
 function InputDominio(props: Props) {
-  const { control } = useFormContext()
+  const { control, trigger } = useFormContext()
   const { field } = useController({
     name: 'extranjero',
     control,
@@ -106,7 +106,17 @@ function InputDominio(props: Props) {
         required: 'Este campo es requerido',
       }}
       placeholder='Ej: "ABC123"'
-      endContent={<Checkbox {...field}>Extranjero</Checkbox>}
+      endContent={
+        <Checkbox
+          {...field}
+          onValueChange={(a) => {
+            field.onChange(a)
+            trigger('dominio')
+          }}
+        >
+          Extranjero
+        </Checkbox>
+      }
     />
   )
 }

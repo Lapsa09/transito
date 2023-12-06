@@ -66,7 +66,6 @@ export default function MyCombobox<T extends FieldValues>({
       selectedKey={selected}
       onSelectionChange={handleChange}
       label={label}
-      allowsCustomValue
       variant="bordered"
       size="md"
       isRequired={!!rules?.required}

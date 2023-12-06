@@ -52,11 +52,9 @@ export default function MyCombobox<T extends FieldValues>({
   }
 
   useEffect(() => {
-    if (value) {
-      const option = options.find((o) => o[inputId] == value[inputId])
-      setSelected(option?.[inputId] || null)
-      setInputValue(option?.[inputLabel] || '')
-    }
+    const option = options.find((o) => o[inputId] == value?.[inputId])
+    setSelected(option?.[inputId]?.toString() || null)
+    setInputValue(option?.[inputLabel] || '')
   }, [value])
 
   return (
@@ -64,6 +62,7 @@ export default function MyCombobox<T extends FieldValues>({
       {...field}
       {...props}
       selectedKey={selected}
+      allowsCustomValue
       onSelectionChange={handleChange}
       label={label}
       variant="bordered"

@@ -1,5 +1,5 @@
 'use client'
-import { Key, useState } from 'react'
+import { Key, useEffect, useState } from 'react'
 import { ChevronsUpDown } from 'lucide-react'
 import {
   FieldValues,
@@ -48,10 +48,16 @@ export default function MyCombobox<T extends FieldValues>({
   const handleChange = (item: Key | null) => {
     const option = options.find((o) => o[inputId] == item)
     onChange(option)
-    setSelected(item)
-    setInputValue(option?.[inputLabel] || '')
     if (persist) persist({ [name]: option })
   }
+
+  useEffect(() => {
+    if (value) {
+      const option = options.find((o) => o[inputId] == value[inputId])
+      setSelected(option?.[inputId] || null)
+      setInputValue(option?.[inputLabel] || '')
+    }
+  }, [value])
 
   return (
     <Autocomplete

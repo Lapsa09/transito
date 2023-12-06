@@ -57,7 +57,7 @@ function CustomInput({
         inputWrapper: 'border border-gray-600',
         input: 'uppercase',
       }}
-      validationState={invalid ? 'invalid' : 'valid'}
+      isInvalid={invalid}
       errorMessage={error?.message}
       size="md"
       radius="sm"

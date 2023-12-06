@@ -1,5 +1,5 @@
 'use client'
-import { Key, useEffect, useState } from 'react'
+import { Key, useState } from 'react'
 import { ChevronsUpDown } from 'lucide-react'
 import {
   FieldValues,
@@ -16,7 +16,7 @@ import {
 
 interface Props<T extends FieldValues>
   extends UseControllerProps,
-    Omit<AutocompleteProps, 'name' | 'children'> {
+    Omit<AutocompleteProps, 'name' | 'children' | 'items'> {
   options?: T[]
   label: string
   inputLabel?: string
@@ -34,6 +34,7 @@ export default function MyCombobox<T extends FieldValues>({
   className,
   persist,
   rules,
+  ...props
 }: Props<T>) {
   const { control } = useFormContext()
   const {
@@ -42,35 +43,37 @@ export default function MyCombobox<T extends FieldValues>({
   } = useController({ name, control, rules })
 
   const [inputValue, setInputValue] = useState('')
+  const [selected, setSelected] = useState<Key | null>(null)
 
-  const handleChange = (item: Key) => {
+  const handleChange = (item: Key | null) => {
     const option = options.find((o) => o[inputId] == item)
     onChange(option)
+    setSelected(item)
+    setInputValue(option?.[inputLabel] || '')
     if (persist) persist({ [name]: option })
   }
 
-  useEffect(() => {
-    setInputValue(value?.[inputLabel] || '')
-  }, [value])
-
   return (
     <Autocomplete
-      selectedKey={value?.[inputId]}
       {...field}
+      {...props}
+      selectedKey={selected}
       onSelectionChange={handleChange}
       label={label}
+      allowsCustomValue
       variant="bordered"
       size="md"
       isRequired={!!rules?.required}
+      defaultItems={options}
       labelPlacement="outside"
       placeholder="Elija una opcion..."
       errorMessage={error?.message}
+      id={field.name}
       inputValue={inputValue}
-      clearButtonProps={{ onClick: () => handleChange('') }}
       onInputChange={setInputValue}
       isInvalid={invalid}
       radius="sm"
-      className={cn(className, 'w-full')}
+      className={cn(className)}
       inputProps={{
         classNames: {
           inputWrapper: 'border border-gray-600',
@@ -84,11 +87,11 @@ export default function MyCombobox<T extends FieldValues>({
         />
       }
     >
-      {options.map((option) => (
-        <AutocompleteItem key={option[inputId]} value={option[inputId]}>
+      {(option) => (
+        <AutocompleteItem key={option[inputId]}>
           {option[inputLabel]}
         </AutocompleteItem>
-      ))}
+      )}
     </Autocomplete>
   )
 }

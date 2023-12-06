@@ -137,10 +137,10 @@ export function CreateFormLayout({
   }, [data])
 
   useEffect(() => {
-    if (operativo.expiresAt < Date.now()) {
+    const { expiresAt, ...rest } = operativo
+    if (expiresAt < Date.now() || Object.entries(rest).length === 0) {
       nuevoOperativo()
     } else {
-      const { expiresAt, ...rest } = operativo
       reset(rest)
       setActiveStep(1)
     }
@@ -149,14 +149,9 @@ export function CreateFormLayout({
   return (
     <div className={className}>
       {nuevoOperativo && (
-        <div className="flex justify-between w-full">
-          <Button onClick={nuevoOperativo} variant="text">
-            Nuevo Operativo
-          </Button>
-          <Button onClick={router.back} variant="text">
-            Salir
-          </Button>
-        </div>
+        <Button onClick={nuevoOperativo} variant="text">
+          Nuevo Operativo
+        </Button>
       )}
       <form
         className="overflow-x-hidden"

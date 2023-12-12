@@ -26,7 +26,7 @@ export type Registro = {
   id_operativo: number | null
   motivos: motivos[]
   tipo_licencias: tipo_licencias | null
-  barrio: barrios | null
+  zona_infractor: barrios | null
   operativo: Operativo
 }
 

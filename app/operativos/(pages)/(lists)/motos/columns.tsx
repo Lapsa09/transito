@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table'
-import Link from 'next/link'
 import { Registro } from '@/types/motos'
 import { DateTime } from 'luxon'
 import { turnos } from '@prisma/client'
+import { Link } from '@nextui-org/react'
 
 export const columns: ColumnDef<Registro>[] = [
   {
@@ -75,7 +75,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Tipo de vehículo',
   },
   {
-    accessorFn: (row) => row.barrio?.barrio,
+    accessorFn: (row) => row.zona_infractor?.barrio,
     header: 'Zona infractor',
   },
   {

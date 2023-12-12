@@ -7,7 +7,7 @@ function layout({ children }: React.PropsWithChildren) {
     <Modal>
       <EditFormLayout
         className="flex flex-col justify-center items-center px-6"
-        section="sueldos"
+        section="operativos"
         stepTitles={['Operativo', 'Vehiculo']}
       >
         {children}

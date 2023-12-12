@@ -1,5 +1,5 @@
 'use client'
-import { Key, useEffect, useState } from 'react'
+import { Key, useEffect, useMemo, useState } from 'react'
 import { ChevronsUpDown } from 'lucide-react'
 import {
   FieldValues,
@@ -43,18 +43,20 @@ export default function MyCombobox<T extends FieldValues>({
   } = useController({ name, control, rules })
 
   const [inputValue, setInputValue] = useState('')
-  const [selected, setSelected] = useState<Key | null>(null)
 
   const handleChange = (item: Key | null) => {
     const option = options.find((o) => o[inputId] == item)
-    onChange(option)
+    onChange(option || null)
     if (persist) persist({ [name]: option })
   }
 
   useEffect(() => {
     const option = options.find((o) => o[inputId] == value?.[inputId])
-    setSelected(option?.[inputId]?.toString() || null)
     setInputValue(option?.[inputLabel] || '')
+  }, [value])
+
+  const selected = useMemo(() => {
+    return value?.[inputId]?.toString() || null
   }, [value])
 
   return (
@@ -72,6 +74,11 @@ export default function MyCombobox<T extends FieldValues>({
       labelPlacement="outside"
       placeholder="Elija una opcion..."
       errorMessage={error?.message}
+      clearButtonProps={{
+        onClick: () => {
+          handleChange(null)
+        },
+      }}
       id={field.name}
       inputValue={inputValue}
       onInputChange={setInputValue}

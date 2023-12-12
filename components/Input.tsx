@@ -52,6 +52,7 @@ function CustomInput({
       id={name}
       placeholder={placeholder ?? ' '}
       label={label}
+      inputRef={field.ref}
       className={twMerge('data-[has-helper=true]:pb-6 pb-6', className)}
       classNames={{
         inputWrapper: 'border border-gray-600',
@@ -92,6 +93,14 @@ function InputDominio(props: Props) {
     control,
     defaultValue: false,
   })
+
+  const onDomainStatusChange = (state: boolean) => {
+    field.onChange(state)
+    setTimeout(() => {
+      trigger('dominio')
+    }, 100)
+  }
+
   return (
     <CustomInput
       {...props}
@@ -107,13 +116,7 @@ function InputDominio(props: Props) {
       }}
       placeholder='Ej: "ABC123"'
       endContent={
-        <Checkbox
-          {...field}
-          onValueChange={(a) => {
-            field.onChange(a)
-            trigger('dominio')
-          }}
-        >
+        <Checkbox isSelected={field.value} onValueChange={onDomainStatusChange}>
           Extranjero
         </Checkbox>
       }

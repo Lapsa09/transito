@@ -1,8 +1,9 @@
 import prisma from '@/lib/prismadb'
 import { EditMotosProps } from '@/types'
+import { DateTime } from 'luxon'
 import { NextResponse } from 'next/server'
 
-export async function GET(req: Request, state: { params: { id: string } }) {
+export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
@@ -24,9 +25,11 @@ export async function GET(req: Request, state: { params: { id: string } }) {
       ...rest,
       ...operativo,
       fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: operativo?.hora?.toLocaleTimeString(),
+      hora: DateTime.fromJSDate(operativo?.hora!)
+        .toUTC()
+        .toFormat('HH:mm'),
+      tipo_licencia: rest.tipo_licencias,
     }
-
     return NextResponse.json(
       JSON.parse(
         JSON.stringify(res, (_, value) =>
@@ -49,47 +52,42 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   // @ts-ignore
   _hora.setUTCHours(...body.hora.split(':'))
 
+  await prisma.motos_operativos.update({
+    where: { id_op: Number(body.id_op) },
+    data: {
+      fecha: new Date(body.fecha),
+      hora: _hora,
+      id_zona: Number(body.localidad?.id_barrio),
+      turno: body.turno,
+      legajo_a_cargo: Number(body.legajo_a_cargo),
+      legajo_planilla: Number(body.legajo_planilla),
+      qth: body.qth,
+      seguridad: body.seguridad,
+      direccion_full: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    },
+  })
+
+  await prisma.moto_motivo.deleteMany({
+    where: { id_registro: Number(id) },
+  })
+  for (const motivo of body.motivos) {
+    await prisma.moto_motivo.create({
+      data: {
+        id_registro: Number(id),
+        id_motivo: Number(motivo.id_motivo),
+      },
+    })
+  }
+
   const moto = await prisma.motos_registros.update({
     where: { id: Number(id) },
     data: {
-      acta: body.acta ? +body.acta : null,
+      acta: Number(body.acta) || null,
       dominio: body.dominio,
-      licencia: body.licencia ? +body.licencia : null,
+      licencia: Number(body.licencia) || null,
       resolucion: body.resolucion,
-      zona_infractor: {
-        connect: {
-          id_barrio: body.zona_infractor.id_barrio,
-        },
-      },
-      motivos: {
-        createMany: {
-          data: body.motivos.map((motivo: any) => ({
-            id_motivo: motivo.id_motivo,
-            id_operativo: body.id_op,
-          })),
-        },
-      },
-      tipo_licencias: {
-        connect: {
-          id_tipo: body.tipo_licencia?.id_tipo,
-        },
-      },
-      operativo: {
-        update: {
-          fecha: body.fecha,
-          hora: _hora,
-          legajo_a_cargo: +body.legajo_a_cargo,
-          legajo_planilla: +body.legajo_planilla,
-          qth: body.qth,
-          seguridad: body.seguridad,
-          turno: body.turno,
-          localidad: {
-            connect: {
-              id_barrio: body.localidad.id_barrio,
-            },
-          },
-        },
-      },
+      id_licencia: Number(body.tipo_licencia?.id_tipo) || null,
+      id_zona_infractor: Number(body.zona_infractor?.id_barrio) || null,
     },
     include: {
       motivos: true,
@@ -98,6 +96,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       zona_infractor: true,
     },
   })
+
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(moto, (_, value) =>

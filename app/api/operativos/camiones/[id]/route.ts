@@ -1,9 +1,10 @@
 import prisma from '@/lib/prismadb'
 import { EditCamionesProps } from '@/types'
 import { turnos } from '@prisma/client'
+import { DateTime } from 'luxon'
 import { NextResponse } from 'next/server'
 
-export async function GET(req: Request, state: { params: { id: string } }) {
+export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
@@ -26,7 +27,9 @@ export async function GET(req: Request, state: { params: { id: string } }) {
       ...operativo,
       qth: operativo?.direccion,
       fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: rest?.hora?.toLocaleTimeString(),
+      hora: DateTime.fromJSDate(rest?.hora!)
+        .toUTC()
+        .toFormat('HH:mm'),
     }
 
     return NextResponse.json(res)
@@ -40,6 +43,18 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   } = state
 
   const body: EditCamionesProps = await req.json()
+
+  await prisma.camiones_operativos.update({
+    where: { id_op: Number(body.id_op) },
+    data: {
+      fecha: new Date(body.fecha),
+      id_localidad: Number(body.localidad?.id_barrio),
+      turno: body.turno,
+      legajo: body.legajo,
+      direccion: body.qth,
+      direccion_full: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    },
+  })
 
   const _hora = new Date(body.fecha)
   // @ts-ignore

@@ -41,7 +41,6 @@ export function CreateFormLayout({
 }>) {
   const { activeStep, setActiveStep } = useStepForm()
   const { isLoading } = useSWR('/api/selects', getSelects)
-  const router = useRouter()
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === stepTitles.length - 1
 
@@ -200,7 +199,8 @@ export function EditFormLayout({
     e.preventDefault()
     !isLastStep && setActiveStep((cur) => cur + 1)
   }
-  const { isLoading } = useSWR(
+  const { isLoading } = useSWR('/api/selects', getSelects)
+  useSWR(
     data?.user?.role === Roles.ADMIN
       ? { route: `/${section}/${layoutSegment}/${id}` }
       : null,

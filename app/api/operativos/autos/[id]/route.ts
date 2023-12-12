@@ -1,5 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { EditAutosProps } from '@/types'
+import { DateTime } from 'luxon'
 import { NextResponse } from 'next/server'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
@@ -24,7 +25,9 @@ export async function GET(_: Request, state: { params: { id: string } }) {
       ...rest,
       ...operativo,
       fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: operativo?.hora?.toLocaleTimeString(),
+      hora: DateTime.fromJSDate(operativo?.hora!)
+        .toUTC()
+        .toFormat('HH:mm'),
     }
 
     return NextResponse.json(
@@ -69,6 +72,25 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       zona_infractor: true,
     },
   })
+
+  const operativos = await prisma.operativos_operativos.update({
+    where: { id_op: Number(body.id_op) },
+    data: {
+      fecha: new Date(body.fecha),
+      hora: _hora,
+      id_localidad: Number(body.localidad?.id_barrio),
+      turno: body.turno,
+      legajo_a_cargo: Number(body.legajo_a_cargo),
+      legajo_planilla: Number(body.legajo_planilla),
+      qth: body.qth,
+      seguridad: body.seguridad,
+      direccion_full: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    },
+    include: { localidad: true },
+  })
+
+  auto.operativo = operativos
+
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(auto, (_, value) =>

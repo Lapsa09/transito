@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["camiones", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze"]
+  schemas  = ["camiones", "examen", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze"]
 }
 
 model camiones_operativos {
@@ -630,6 +630,64 @@ model reporte {
   recorrido  recorrido[]
   dia        dia         @relation(fields: [id_dia], references: [id], onDelete: NoAction, onUpdate: NoAction)
   horarios   horarios    @relation(fields: [id_horario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("waze")
+}
+
+model examen {
+  id               Int                @id @default(autoincrement())
+  dni              Int?
+  nota             Int?
+  email            String?            @db.VarChar
+  tema             Int?
+  examen_preguntas examen_preguntas[]
+
+  @@schema("examen")
+}
+
+model examen_preguntas {
+  examen_id    Int
+  preguntas_id Int
+  examen       examen    @relation(fields: [examen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  preguntas    preguntas @relation(fields: [preguntas_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  elegida_id   Int?
+  elegida      opciones? @relation(fields: [elegida_id], references: [id])
+
+  @@id([examen_id, preguntas_id])
+  @@schema("examen")
+}
+
+model opciones {
+  id          Int                @id @default(autoincrement())
+  respuesta   String             @db.VarChar
+  id_pregunta Int
+  pregunta    preguntas          @relation("opciones_id_preguntaTopreguntas", fields: [id_pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  correctas   preguntas[]        @relation("preguntas_correctaToopciones")
+  elegidas    examen_preguntas[]
+
+  @@schema("examen")
+}
+
+model preguntas {
+  id               Int                @id @default(autoincrement())
+  pregunta         String             @db.VarChar
+  tema             Int
+  id_correcta      Int
+  examen_preguntas examen_preguntas[]
+  opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")
+  correcta         opciones           @relation("preguntas_correctaToopciones", fields: [id_correcta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("examen")
+}
+
+model baches {
+  id               Int       @id @default(autoincrement())
+  fecha            DateTime  @db.Timestamp(6)
+  qth              String    @db.VarChar
+  latitud          Float     @db.Real
+  longitud         Float     @db.Real
+  reparado         Boolean   @default(false)
+  fecha_reparacion DateTime? @db.Timestamp(6)
 
   @@schema("waze")
 }

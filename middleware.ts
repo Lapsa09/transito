@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  const publicPages = ['/login', '/register']
+  const publicPages = ['/login', '/register', '/invitados']
 
   const rolePages = {
     INSPECTOR: '/operativos',

@@ -6,7 +6,7 @@ export enum Roles {
   LOGISTICA = 'LOGISTICA',
 }
 
-export type User = {
+export type RegularUser = {
   id: string
   legajo?: number
   nombre: string
@@ -16,6 +16,16 @@ export type User = {
   role: Roles
   turno: 'MAÑANA' | 'TARDE' | 'NOCHE' | null
 }
+
+export type InvitedUser = {
+  id: string
+  dni: number
+  email?: string | null
+  nombre: string | null
+  apellido: string | null
+}
+
+export type User = RegularUser | InvitedUser
 
 export interface Links {
   link: string

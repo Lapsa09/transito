@@ -351,6 +351,19 @@ model VerificationToken {
   @@schema("public")
 }
 
+model Invitado {
+  id        String  @id @default(cuid())
+  nombre    String? @db.VarChar
+  apellido  String? @db.VarChar
+  email     String? @db.VarChar
+  dni       Int
+  clave     String  @db.VarChar
+  utilizado Boolean @default(false)
+
+  @@map("invitados")
+  @@schema("public")
+}
+
 model vicente_lopez {
   id_barrio Int                     @id @default(autoincrement())
   barrio    String                  @db.VarChar

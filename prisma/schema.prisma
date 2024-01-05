@@ -351,19 +351,6 @@ model VerificationToken {
   @@schema("public")
 }
 
-model Invitado {
-  id        String  @id @default(cuid())
-  nombre    String? @db.VarChar
-  apellido  String? @db.VarChar
-  email     String? @db.VarChar
-  dni       Int
-  clave     String  @db.VarChar
-  utilizado Boolean @default(false)
-
-  @@map("invitados")
-  @@schema("public")
-}
-
 model vicente_lopez {
   id_barrio Int                     @id @default(autoincrement())
   barrio    String                  @db.VarChar
@@ -648,23 +635,41 @@ model reporte {
 }
 
 model examen {
-  id               Int                @id @default(autoincrement())
-  dni              Int?
+  id         Int            @id @default(autoincrement())
+  fecha      DateTime?      @default(now()) @db.Date
+  hora       DateTime?      @default(now()) @db.Time(6)
+  clave      String?        @db.VarChar
+  habilitado Boolean        @default(false)
+  terminado  Boolean?       @default(false)
+  alumnos    rinde_examen[]
+
+  @@schema("examen")
+}
+
+model rinde_examen {
+  id               String             @id @default(cuid())
+  id_examen        Int
   nota             Int?
+  nombre           String?            @db.VarChar
+  apellido         String?            @db.VarChar
   email            String?            @db.VarChar
+  dni              Int
+  utilizado        Boolean            @default(false)
   tema             Int?
+  tipo_examen      tipo_examen
   examen_preguntas examen_preguntas[]
+  examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("examen")
 }
 
 model examen_preguntas {
-  examen_id    Int
+  examen_id    String
   preguntas_id Int
-  examen       examen    @relation(fields: [examen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  preguntas    preguntas @relation(fields: [preguntas_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  examen       rinde_examen @relation(fields: [examen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pregunta     preguntas    @relation(fields: [preguntas_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   elegida_id   Int?
-  elegida      opciones? @relation(fields: [elegida_id], references: [id])
+  elegida      opciones?    @relation(fields: [elegida_id], references: [id])
 
   @@id([examen_id, preguntas_id])
   @@schema("examen")
@@ -685,6 +690,7 @@ model preguntas {
   id               Int                @id @default(autoincrement())
   pregunta         String             @db.VarChar
   tema             Int
+  tipo_examen      String?            @db.VarChar
   id_correcta      Int
   examen_preguntas examen_preguntas[]
   opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")
@@ -776,4 +782,13 @@ enum turnos_old {
   OPERATIVO
 
   @@schema("public")
+}
+
+enum tipo_examen {
+  motos
+  autos
+  prof1
+  prof2
+
+  @@schema("examen")
 }

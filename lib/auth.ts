@@ -4,7 +4,6 @@ import prisma from '@/lib/prismadb'
 import bycript from 'bcrypt'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { signIn } from '@/services'
-import { InvitedUser } from '@/types'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -32,44 +31,6 @@ export const authOptions: NextAuthOptions = {
         if (!isPasswordValid) {
           throw new Error('Contraseña invalida')
         }
-        return user
-      },
-    }),
-    CredentialsContainer({
-      id: 'invited',
-      name: 'Invited',
-      credentials: {
-        dni: { label: 'DNI', type: 'number', placeholder: '12345678' },
-        clave: { label: 'Clave', type: 'password' },
-      },
-      async authorize(credentials) {
-        if (!credentials?.dni || !credentials?.clave) {
-          throw new Error('Credenciales invalidas')
-        }
-        const user: InvitedUser | null = await prisma.invitado.findFirst({
-          where: {
-            dni: +credentials.dni,
-            clave: credentials.clave,
-            utilizado: false,
-          },
-          select: {
-            apellido: true,
-            nombre: true,
-            dni: true,
-            email: true,
-            id: true,
-          },
-        })
-
-        if (!user) {
-          throw new Error('Usuario no encontrado o clave ya utlizada')
-        }
-
-        await prisma.invitado.update({
-          where: { id: user.id },
-          data: { utilizado: true },
-        })
-
         return user
       },
     }),

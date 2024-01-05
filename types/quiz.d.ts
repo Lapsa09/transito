@@ -11,9 +11,10 @@ export type QuestionState = {
 }
 
 export type QuizResponse = {
-  id: number
+  id: string
   dni: number
-  email: string
+  email?: string | null
   tema: number
+  tipo_examen: { id: number; tipo: string }
   preguntas: QuestionState[]
 }

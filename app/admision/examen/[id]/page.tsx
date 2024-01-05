@@ -4,19 +4,19 @@ import ListaAlumnos from './ListaAlumnos'
 import { redirect } from 'next/navigation'
 import { examen, rinde_examen } from '@prisma/client'
 import BeginButton from './BeginButton'
-// import QuitButton from './QuitButton'
+import QuitButton from './QuitButton'
+import { getter } from '@/services'
 
 const getExamen = async (id: string) => {
-  const examen: (examen & { alumnos: rinde_examen[] }) | null = await fetch(
-    `/api/admision/examen/${id}`,
-    {
-      next: { tags: [`examen/${id}`] },
-    },
-  ).then((res) => res.json())
+  const examen = await getter<(examen & { alumnos: rinde_examen[] }) | null>({
+    route: `admision/examen/${id}`,
+  })
+
   return examen
 }
 
-async function page({ params: { id } }: { params: { id: string } }) {
+async function page({ params }: { params: { id: string } }) {
+  const { id } = params
   const examen = await getExamen(id)
   if (!examen || examen.terminado) {
     redirect('/admision/examen')
@@ -28,7 +28,7 @@ async function page({ params: { id } }: { params: { id: string } }) {
       <NuevoAlumno id={id} />
       <span>Clave:{examen.clave}</span>
       <BeginButton id={id} />
-      {/* <QuitButton id={id} /> */}
+      <QuitButton id={id} />
     </div>
   )
 }

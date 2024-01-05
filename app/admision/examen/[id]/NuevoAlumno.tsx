@@ -6,7 +6,6 @@ import { RegularForm } from '@/components/forms/layout.form'
 import { setter } from '@/services'
 import Button from '@/components/Button'
 import { rinde_examen } from '@prisma/client'
-import { revalidateTag } from 'next/cache'
 import { FieldValues } from 'react-hook-form'
 import CustomSelect from '@/components/Select'
 
@@ -23,7 +22,6 @@ function NuevoAlumno({ id }: { id: string }) {
       route: '/admision/examen/' + id,
       body,
     })
-    revalidateTag(`examen/${id}`)
   }
 
   return (

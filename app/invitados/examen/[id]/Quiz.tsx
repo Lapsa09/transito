@@ -14,14 +14,10 @@ import { examen_preguntas, opciones, preguntas } from '@prisma/client'
 import Timer from '@/components/Timer'
 import { useCountdown } from 'usehooks-ts'
 import { Button } from '@nextui-org/react'
+import { useInvitado } from '@/hooks/useInvitado'
 
 type IPregunta = examen_preguntas & {
   pregunta: preguntas & { opciones: opciones[] }
-}
-
-type IExamen = {
-  examen: IPregunta[]
-  habilitado: boolean
 }
 
 const Quiz = ({ id }: { id?: string }) => {
@@ -30,12 +26,17 @@ const Quiz = ({ id }: { id?: string }) => {
   const [countdown, { startCountdown, stopCountdown }] = useCountdown({
     countStart: 1800,
   })
+  const { setUsuario } = useInvitado()
 
-  const { data } = useSWR<IExamen>({ route: '/examen/' + id }, getter)
+  const { data } = useSWR<IPregunta[]>(
+    { route: 'examen/' + id + '/preguntas' },
+    getter,
+  )
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     await setter({ route: `examen/${id}`, body })
-    router.push('/invitados/examen/resultado')
+    setUsuario(undefined)
+    router.push(`/invitados/examen/${id}/resultado`)
   }
 
   useEffect(() => {
@@ -58,7 +59,7 @@ const Quiz = ({ id }: { id?: string }) => {
       className="text-white text-center"
     >
       <Timer countdown={countdown} />
-      {data?.examen?.map(({ preguntas_id, pregunta }, index) => {
+      {data?.map(({ preguntas_id, pregunta }, index) => {
         return (
           <CustomRadioGroup
             key={preguntas_id}

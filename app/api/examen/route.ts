@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   const body = await req.json()
   const examen = await prisma.rinde_examen.findFirst({
     where: {
-      dni: body.dni,
+      dni: +body.dni,
       utilizado: false,
       examen: {
         clave: body.clave,

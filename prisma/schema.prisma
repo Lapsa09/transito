@@ -646,10 +646,18 @@ model examen {
   @@schema("examen")
 }
 
+model calificacion {
+  nota      String         @id
+  resultado String
+  alumnos   rinde_examen[]
+
+  @@schema("examen")
+}
+
 model rinde_examen {
   id               String             @id @default(cuid())
   id_examen        Int
-  nota             Int?
+  nota             String?
   nombre           String?            @db.VarChar
   apellido         String?            @db.VarChar
   email            String?            @db.VarChar
@@ -659,7 +667,9 @@ model rinde_examen {
   tipo_examen      tipo_examen
   examen_preguntas examen_preguntas[]
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
 
+  @@unique([id_examen, dni])
   @@schema("examen")
 }
 
@@ -690,11 +700,11 @@ model preguntas {
   id               Int                @id @default(autoincrement())
   pregunta         String             @db.VarChar
   tema             Int
-  tipo_examen      String?            @db.VarChar
-  id_correcta      Int
+  tipo_examen      tipo_examen?
+  id_correcta      Int?
   examen_preguntas examen_preguntas[]
   opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")
-  correcta         opciones           @relation("preguntas_correctaToopciones", fields: [id_correcta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  correcta         opciones?          @relation("preguntas_correctaToopciones", fields: [id_correcta], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("examen")
 }

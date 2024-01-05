@@ -4,7 +4,7 @@ import { customAlphabet } from 'nanoid'
 
 const nanoid = customAlphabet('1234567890abcdef', 7)
 
-export async function POST() {
+export async function GET() {
   try {
     const examen = await prisma.examen.create({
       data: {
@@ -12,7 +12,7 @@ export async function POST() {
       },
     })
 
-    return NextResponse.json(examen.clave)
+    return NextResponse.json(examen.id)
   } catch (error) {
     return NextResponse.json('Server error', { status: 500 })
   }

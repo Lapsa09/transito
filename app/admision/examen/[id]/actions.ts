@@ -1,10 +1,10 @@
 'use server'
 
 import prisma from '@/lib/prismadb'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 
 export const habilitarExamen = async (id: string) =>
-  prisma.examen
+  await prisma.examen
     .update({
       where: {
         id: parseInt(id),
@@ -14,16 +14,19 @@ export const habilitarExamen = async (id: string) =>
       },
     })
     .then(() => {
-      revalidateTag('examen/' + id)
+      revalidatePath('admision/examen/' + id)
     })
 
-export const terminarExamen = async (id: string) => {
-  await prisma.examen.update({
-    where: {
-      id: parseInt(id),
-    },
-    data: {
-      terminado: true,
-    },
-  })
-}
+export const terminarExamen = async (id: string) =>
+  await prisma.examen
+    .update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        terminado: true,
+      },
+    })
+    .then(() => {
+      revalidatePath('admision/examen/' + id)
+    })

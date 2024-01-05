@@ -1,11 +1,10 @@
 import React from 'react'
 import { examen } from '@prisma/client'
 import Waitzone from './Waitzone'
+import { getter } from '@/services'
 
 const getExamen = async (id: string) => {
-  const examen: examen | null = await fetch(`/api/examen/${id}`).then((res) =>
-    res.json(),
-  )
+  const examen = await getter<examen | null>({ route: `examen/${id}` })
   return examen
 }
 

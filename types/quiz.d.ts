@@ -16,5 +16,5 @@ export type QuizResponse = {
   email?: string | null
   tema: number
   tipo_examen: { id: number; tipo: string }
-  preguntas: QuestionState[]
+  preguntas: opciones[]
 }

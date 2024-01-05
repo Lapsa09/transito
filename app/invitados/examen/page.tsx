@@ -4,19 +4,16 @@ import Button from '@/components/Button'
 import CustomInput from '@/components/Input'
 import { RegularForm } from '@/components/forms/layout.form'
 import { toast } from '@/hooks'
+import { useInvitado } from '@/hooks/useInvitado'
 import { setter } from '@/services'
 import { rinde_examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { FieldValues } from 'react-hook-form'
-import { useSessionStorage } from 'usehooks-ts'
 
 function page() {
   const router = useRouter()
-  const [, setInvitado] = useSessionStorage<rinde_examen | undefined>(
-    'invitado',
-    undefined,
-  )
+  const { setUsuario } = useInvitado()
   const handleSubmit = async (body: FieldValues) => {
     const examen = await setter<rinde_examen | null>({ route: 'examen', body })
 
@@ -26,8 +23,8 @@ function page() {
         variant: 'destructive',
       })
     else {
-      setInvitado(examen)
-      router.push(`/invitados/examen/${examen.id}`)
+      setUsuario(examen)
+      router.push(`/invitados/examen/${examen.id_examen}`)
     }
   }
   return (

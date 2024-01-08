@@ -9,8 +9,8 @@ function CreateExamButton() {
   const router = useRouter()
   const onClick = async () => {
     try {
-      const clave = await getter({ route: 'admision/examen' })
-      router.push('/admision/examen/' + clave)
+      const examen = await getter({ route: 'admision/examen' })
+      router.push('/admision/examen/' + examen.clave)
     } catch (error: any) {
       console.log(error.response.data)
     }

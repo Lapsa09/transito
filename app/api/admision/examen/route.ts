@@ -12,7 +12,7 @@ export async function GET() {
       },
     })
 
-    return NextResponse.json(examen.id)
+    return NextResponse.json(examen)
   } catch (error) {
     return NextResponse.json('Server error', { status: 500 })
   }

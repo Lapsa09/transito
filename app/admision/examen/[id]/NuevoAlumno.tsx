@@ -10,16 +10,16 @@ import { FieldValues } from 'react-hook-form'
 import CustomSelect from '@/components/Select'
 
 const tipo_examen = [
-  { id: 'autos', label: 'AUTOS' },
-  { id: 'motos', label: 'MOTOVEHICULO Y PARTICULAR' },
-  { id: 'prof1', label: 'PROFESIONAL C1, C2, C3, D2, D3, E1, E2' },
-  { id: 'prof2', label: 'PROFESIONAL D1, TAXI - REMIS, D4 EMERGENCIAS' },
+  { id: 1, label: 'AUTOS' },
+  { id: 2, label: 'MOTOVEHICULO Y PARTICULAR' },
+  { id: 3, label: 'PROFESIONAL C1, C2, C3, D2, D3, E1, E2' },
+  { id: 4, label: 'PROFESIONAL D1, TAXI - REMIS, D4 EMERGENCIAS' },
 ]
 
-function NuevoAlumno({ id }: { id: string }) {
+function NuevoAlumno({ id }: { id: number }) {
   const onSubmit = async (body: FieldValues) => {
     await setter<rinde_examen>({
-      route: '/admision/examen/' + id,
+      route: 'admision/examen/' + id,
       body,
     })
   }

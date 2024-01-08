@@ -3,11 +3,11 @@
 import prisma from '@/lib/prismadb'
 import { revalidatePath } from 'next/cache'
 
-export const habilitarExamen = async (id: string) =>
+export const habilitarExamen = async (id: number) =>
   await prisma.examen
     .update({
       where: {
-        id: parseInt(id),
+        id,
       },
       data: {
         habilitado: true,
@@ -17,11 +17,11 @@ export const habilitarExamen = async (id: string) =>
       revalidatePath('admision/examen/' + id)
     })
 
-export const terminarExamen = async (id: string) =>
+export const terminarExamen = async (id: number) =>
   await prisma.examen
     .update({
       where: {
-        id: parseInt(id),
+        id,
       },
       data: {
         terminado: true,

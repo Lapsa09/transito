@@ -654,6 +654,17 @@ model calificacion {
   @@schema("examen")
 }
 
+model tipo_examen {
+  id                 Int            @id @default(autoincrement())
+  tipo               String?        @db.VarChar
+  preguntas          preguntas[]
+  rinde_examen       rinde_examen[]
+  cantidad_preguntas Int
+  cantidad_temas     Int
+
+  @@schema("examen")
+}
+
 model rinde_examen {
   id               String             @id @default(cuid())
   id_examen        Int
@@ -664,10 +675,11 @@ model rinde_examen {
   dni              Int
   utilizado        Boolean            @default(false)
   tema             Int?
-  tipo_examen      tipo_examen
+  tipo_examen      tipo_examen        @relation(fields: [tipo_examenId], references: [id])
   examen_preguntas examen_preguntas[]
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
   calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
+  tipo_examenId    Int
 
   @@unique([id_examen, dni])
   @@schema("examen")
@@ -700,11 +712,12 @@ model preguntas {
   id               Int                @id @default(autoincrement())
   pregunta         String             @db.VarChar
   tema             Int
-  tipo_examen      tipo_examen?
+  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
   id_correcta      Int?
   examen_preguntas examen_preguntas[]
   opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")
   correcta         opciones?          @relation("preguntas_correctaToopciones", fields: [id_correcta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipo_examenId    Int?
 
   @@schema("examen")
 }
@@ -792,13 +805,4 @@ enum turnos_old {
   OPERATIVO
 
   @@schema("public")
-}
-
-enum tipo_examen {
-  motos
-  autos
-  prof1
-  prof2
-
-  @@schema("examen")
 }

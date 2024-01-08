@@ -18,17 +18,17 @@ const getExamen = async (id: string) => {
 async function page({ params }: { params: { id: string } }) {
   const { id } = params
   const examen = await getExamen(id)
-  if (!examen || examen.terminado) {
+  if (!examen) {
     redirect('/admision/examen')
   }
   return (
     <div>
       <h1>Examen</h1>
       <ListaAlumnos alumnos={examen.alumnos} />
-      <NuevoAlumno id={id} />
+      <NuevoAlumno id={examen.id} />
       <span>Clave:{examen.clave}</span>
-      <BeginButton id={id} />
-      <QuitButton id={id} />
+      <BeginButton id={examen.id} />
+      <QuitButton id={examen.id} />
     </div>
   )
 }

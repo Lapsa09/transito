@@ -14,14 +14,14 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 }
 
 const notaFinal = (nota: number, tipo_examen: tipo_examen) => {
-  switch (tipo_examen) {
-    case 'autos':
+  switch (tipo_examen.id) {
+    case 1:
       return nota <= 24 ? 'C' : nota >= 25 && nota <= 31 ? 'B' : 'A'
-    case 'motos':
+    case 2:
       return nota <= 24 ? 'C' : nota >= 25 && nota <= 31 ? 'B' : 'A'
-    case 'prof1':
+    case 3:
       return nota <= 49 ? 'C' : nota >= 50 && nota <= 63 ? 'B' : 'A'
-    case 'prof2':
+    case 4:
       return nota <= 49 ? 'C' : nota >= 50 && nota <= 63 ? 'B' : 'A'
   }
 }
@@ -32,6 +32,9 @@ export async function POST(req: Request) {
   const examen = await prisma.rinde_examen.findUnique({
     where: {
       id: body.id,
+    },
+    include: {
+      tipo_examen: true,
     },
   })
 

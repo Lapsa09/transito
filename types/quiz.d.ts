@@ -1,4 +1,4 @@
-import type { opciones } from '@prisma/client'
+import type { opciones, tipo_examen } from '@prisma/client'
 
 export type Question = {
   id: number
@@ -12,9 +12,5 @@ export type QuestionState = {
 
 export type QuizResponse = {
   id: string
-  dni: number
-  email?: string | null
-  tema: number
-  tipo_examen: { id: number; tipo: string }
-  preguntas: opciones[]
+  preguntas: (opciones | null)[]
 }

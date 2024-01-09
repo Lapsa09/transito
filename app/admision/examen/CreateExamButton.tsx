@@ -12,7 +12,7 @@ function CreateExamButton() {
       const examen = await getter({ route: 'admision/examen' })
       router.push('/admision/examen/' + examen.clave)
     } catch (error: any) {
-      console.log(error.response.data)
+      console.log(error)
     }
   }
   return <Button onClick={onClick}>Crear examen</Button>

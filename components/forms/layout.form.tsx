@@ -334,7 +334,7 @@ const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
     mode: 'all',
     defaultValues,
   })
-  const { handleSubmit } = methods
+  const { handleSubmit, reset } = methods
   useEffect(() => {
     if (data) {
       data.forEach((item) => {
@@ -353,6 +353,7 @@ const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
         onSubmit={(e) => {
           e.stopPropagation()
           handleSubmit(onSubmit)(e)
+          reset()
         }}
         id={id}
       >

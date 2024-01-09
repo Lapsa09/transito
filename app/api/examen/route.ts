@@ -1,6 +1,16 @@
 import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 
+export async function GET() {
+  const examenes = await prisma.examen.findMany({
+    where: {
+      terminado: false,
+    },
+  })
+
+  return NextResponse.json(examenes)
+}
+
 export async function POST(req: Request) {
   const body = await req.json()
   const examen = await prisma.rinde_examen.findFirst({
@@ -10,6 +20,9 @@ export async function POST(req: Request) {
       examen: {
         clave: body.clave,
       },
+    },
+    include: {
+      examen: true,
     },
   })
 

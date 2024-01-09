@@ -13,7 +13,7 @@ async function page({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      <h1>Examen</h1>
+      <h1 className="text-center text-3xl font-bold">Examen</h1>
 
       <Waitzone examen={examen} />
     </div>

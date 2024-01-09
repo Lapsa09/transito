@@ -2,7 +2,7 @@
 
 import Button from '@/components/Button'
 import React from 'react'
-import { terminarExamen } from './actions'
+import { terminarExamen } from '@/services/actions'
 
 function QuitButton({ id }: { id: number }) {
   return (

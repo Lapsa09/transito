@@ -31,7 +31,11 @@ export default function CustomRadioGroup({ label, options, name }: Props) {
       onValueChange={handleChange}
     >
       {options.map((option) => {
-        return <Radio value={option.id.toString()}>{option.respuesta}</Radio>
+        return (
+          <Radio key={option.id} value={option.id.toString()}>
+            {option.respuesta}
+          </Radio>
+        )
       })}
     </RadioGroup>
   )

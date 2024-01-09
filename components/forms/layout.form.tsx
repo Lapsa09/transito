@@ -1,5 +1,11 @@
 'use client'
-import React, { FormEvent, PropsWithChildren, useEffect } from 'react'
+import React, {
+  FormEvent,
+  ForwardedRef,
+  PropsWithChildren,
+  forwardRef,
+  useEffect,
+} from 'react'
 import Button from '@/components/Button'
 import Stepper from '@/components/Stepper'
 import Loader from '@/components/Loader'
@@ -18,6 +24,7 @@ import {
   useSelectedLayoutSegments,
 } from 'next/navigation'
 import {
+  DefaultValues,
   FieldValues,
   FormProvider,
   SubmitHandler,
@@ -306,22 +313,28 @@ export function EditFormLayout({
   )
 }
 
-export const RegularForm = <T extends FieldValues, K extends FieldValues>({
-  onSubmit,
-  children,
-  className,
-  data,
-  id,
-}: PropsWithChildren<{
-  onSubmit: SubmitHandler<T>
-  className?: string
-  data?: K[]
-  id?: string
-}>) => {
+const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
+  {
+    onSubmit,
+    children,
+    className,
+    data,
+    id,
+    defaultValues,
+  }: PropsWithChildren<{
+    onSubmit: SubmitHandler<T>
+    className?: string
+    data?: K[]
+    id?: string
+    defaultValues?: DefaultValues<T>
+  }>,
+  ref?: ForwardedRef<HTMLFormElement>,
+) => {
   const methods = useForm<T>({
     mode: 'all',
+    defaultValues,
   })
-  const { handleSubmit } = methods
+  const { handleSubmit, reset } = methods
   useEffect(() => {
     if (data) {
       data.forEach((item) => {
@@ -336,9 +349,11 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
     <FormProvider {...methods}>
       <form
         className={cn('w-full', className)}
+        ref={ref}
         onSubmit={(e) => {
           e.stopPropagation()
           handleSubmit(onSubmit)(e)
+          reset()
         }}
         id={id}
       >
@@ -347,3 +362,5 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
     </FormProvider>
   )
 }
+
+export const RegularForm = forwardRef(RegularFormInner)

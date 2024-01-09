@@ -1,6 +1,6 @@
 import React from 'react'
-import CreateExamButton from './CreateExamButton'
-import CreatedExam from './CreatedExam'
+import CreateExamButton from '@/components/admision/CreateExamButton'
+import CreatedExam from '@/components/admision/CreatedExam'
 import { getter } from '@/services'
 import { examen } from '@prisma/client'
 

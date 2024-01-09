@@ -1,10 +1,10 @@
 import React from 'react'
-import NuevoAlumno from '@/components/admision/NuevoAlumno'
-import ListaAlumnos from '@/components/admision/ListaAlumnos'
+import NuevoAlumno from './NuevoAlumno'
+import ListaAlumnos from './ListaAlumnos'
 import { redirect } from 'next/navigation'
 import { examen, rinde_examen, tipo_examen } from '@prisma/client'
-import BeginButton from '@/components/admision/BeginButton'
-import QuitButton from '@/components/admision/QuitButton'
+import BeginButton from './BeginButton'
+import QuitButton from './QuitButton'
 import { getter } from '@/services'
 
 type Alumno = rinde_examen & { tipo_examen: tipo_examen }

@@ -1,14 +1,11 @@
 import React from 'react'
-import CreateExamButton from '@/components/admision/CreateExamButton'
-import CreatedExam from '@/components/admision/CreatedExam'
-import { getter } from '@/services'
+import CreateExamButton from './CreateExamButton'
+import CreatedExam from './CreatedExam'
 import { examen } from '@prisma/client'
 
 const getExamenes = async () => {
-  const examenes = await getter<examen[]>({
-    route: '/examen',
-  })
-
+  const response = await fetch(process.env.NEXT_PUBLIC_SERVER_URL + '/examen')
+  const examenes: examen[] = await response.json()
   return examenes
 }
 

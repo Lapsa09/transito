@@ -35,7 +35,7 @@ const Quiz = ({ id }: { id?: string }) => {
   const { setUsuario } = useInvitado()
 
   const { data = [] } = useSWR<IPregunta[]>(
-    { route: 'examen/' + id + '/preguntas' },
+    { route: '/examen/' + id + '/preguntas' },
     getter,
   )
 

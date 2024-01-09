@@ -6,7 +6,7 @@ import { examen } from '@prisma/client'
 
 const getExamenes = async () => {
   const examenes = await getter<examen[]>({
-    route: 'examen',
+    route: '/examen',
   })
 
   return examenes

@@ -1,15 +1,20 @@
 import React from 'react'
 import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
+import { getter } from '@/services'
 import { examen } from '@prisma/client'
 
-async function getExamenes() {
-  const response = await fetch('http://localhost:3000/api/examen')
-  const examenes: examen[] = await response.json()
+export const revalidate = 0
+
+const getExamenes = async () => {
+  const examenes = await getter<examen[]>({
+    route: 'examen',
+  })
+
   return examenes
 }
 
-export default async function page() {
+async function page() {
   const examenes = await getExamenes()
   return (
     <div className="flex">
@@ -34,3 +39,5 @@ export default async function page() {
     </div>
   )
 }
+
+export default page

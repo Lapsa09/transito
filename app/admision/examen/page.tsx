@@ -3,13 +3,13 @@ import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
 import { examen } from '@prisma/client'
 
-const getExamenes = async () => {
-  const response = await fetch(process.env.NEXT_PUBLIC_SERVER_URL + '/examen')
+async function getExamenes() {
+  const response = await fetch('http://localhost:3000/api/examen')
   const examenes: examen[] = await response.json()
   return examenes
 }
 
-async function page() {
+export default async function page() {
   const examenes = await getExamenes()
   return (
     <div className="flex">
@@ -34,5 +34,3 @@ async function page() {
     </div>
   )
 }
-
-export default page

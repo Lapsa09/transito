@@ -2,36 +2,46 @@ import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const examenes = await prisma.examen.findMany({
-    where: {
-      terminado: false,
-    },
-  })
+  try {
+    const examenes = await prisma.examen.findMany({
+      where: {
+        terminado: false,
+      },
+    })
 
-  return NextResponse.json(examenes)
+    return NextResponse.json(examenes)
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
+  }
 }
 
 export async function POST(req: Request) {
-  const body = await req.json()
-  const examen = await prisma.rinde_examen.findFirst({
-    where: {
-      dni: +body.dni,
-      utilizado: false,
-      examen: {
-        clave: body.clave,
+  try {
+    const body = await req.json()
+    const examen = await prisma.rinde_examen.findFirst({
+      where: {
+        dni: +body.dni,
+        utilizado: false,
+        examen: {
+          clave: body.clave,
+        },
       },
-    },
-    include: {
-      examen: true,
-    },
-  })
-
-  if (examen) {
-    await prisma.rinde_examen.update({
-      where: { id: examen.id },
-      data: { utilizado: true },
+      include: {
+        examen: true,
+      },
     })
-  }
 
-  return NextResponse.json(examen)
+    if (examen) {
+      await prisma.rinde_examen.update({
+        where: { id: examen.id },
+        data: { utilizado: true },
+      })
+    }
+
+    return NextResponse.json(examen)
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
+  }
 }

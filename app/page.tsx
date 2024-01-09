@@ -1,11 +1,11 @@
-'use client'
-import { useSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth/next'
 import { roles } from '@prisma/client'
+import { authOptions } from '@/lib/auth'
 
-export default function Home() {
-  const { data } = useSession()
+export default async function Home() {
+  const data = await getServerSession(authOptions)
 
-  const { user } = data || {}
+  const user = data?.user
 
   const fullName = user?.nombre + ' ' + user?.apellido
 

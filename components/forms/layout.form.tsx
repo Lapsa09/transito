@@ -350,9 +350,9 @@ const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
       <form
         className={cn('w-full', className)}
         ref={ref}
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.stopPropagation()
-          handleSubmit(onSubmit)(e)
+          await handleSubmit(onSubmit)(e)
           reset()
         }}
         id={id}

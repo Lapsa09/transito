@@ -62,7 +62,7 @@ export interface FormAutosProps extends FormInputProps {
 }
 
 export interface EditAutosProps extends EditInputProps {
-  graduacion_alcoholica: number
+  graduacion_alcoholica: string
   motivo?: motivos
 }
 

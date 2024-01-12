@@ -57,7 +57,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
     data: {
       acta: Number(body.acta) || null,
       dominio: body.dominio,
-      graduacion_alcoholica: body.graduacion_alcoholica,
+      graduacion_alcoholica: Number(body.graduacion_alcoholica) || null,
       licencia: Number(body.licencia) || null,
       resolucion: body.resolucion,
       id_licencia: body.tipo_licencia?.id_tipo,

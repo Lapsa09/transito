@@ -1,9 +1,10 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Header } from '@/components/header'
+import { Header } from './header'
 import Toaster from '@/components/Toaster'
 import AuthContext from '@/context/AuthContext'
 import { Metadata } from 'next'
+import Footer from '@/components/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,11 +19,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={inter.className}>
         <AuthContext>
-          <Header />
-          {children}
+          <section className="layout">
+            <Header />
+            <div className="main">{children}</div>
+            <Footer />
+          </section>
           <Toaster />
         </AuthContext>
       </body>

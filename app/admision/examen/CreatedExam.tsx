@@ -12,16 +12,27 @@ import {
 import { examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { terminarExamen } from '@/services/actions'
+import { DateTime } from 'luxon'
 
 function CreatedExam({ examen }: { examen: examen }) {
   const router = useRouter()
   return (
     <Card>
       <CardHeader>
-        <h1>Fecha: {new Date(examen.fecha!).toLocaleDateString()}</h1>
+        <h1>
+          Fecha:{' '}
+          {DateTime.fromISO(examen.fecha as unknown as string)
+            .toUTC()
+            .toLocaleString(DateTime.DATE_SHORT)}
+        </h1>
       </CardHeader>
       <CardBody>
-        <p>Hora: {new Date(examen.hora!).toLocaleTimeString()}</p>
+        <p>
+          Hora:{' '}
+          {DateTime.fromISO(examen.hora as unknown as string).toLocaleString(
+            DateTime.TIME_24_SIMPLE,
+          )}
+        </p>
         <p>Estado: {examen.habilitado ? 'Empezado' : 'Sin empezar'}</p>
       </CardBody>
       <CardFooter>

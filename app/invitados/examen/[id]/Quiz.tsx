@@ -2,47 +2,33 @@
 
 import React, { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-// Components
-import CustomRadioGroup from '@/components/RadioGroup'
 import { RegularForm } from '@/components/forms/layout.form'
-// Types
 import { SubmitHandler } from 'react-hook-form'
-import { QuizResponse } from '@/types/quiz'
-import useSWR from 'swr'
-import { getter, setter } from '@/services'
-import { examen_preguntas, opciones, preguntas } from '@prisma/client'
-import Timer from '@/components/Timer'
+import { IPregunta, QuizResponse } from '@/types/quiz'
+import { setter } from '@/services'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Button } from '@nextui-org/react'
 import { useInvitado } from '@/hooks/useInvitado'
-import { useLocalStorage } from 'usehooks-ts'
+import { useSessionStorage } from 'usehooks-ts'
+import CustomRadioGroup from '@/components/RadioGroup'
+import Timer from '@/components/Timer'
 import dynamic from 'next/dynamic'
 
-type IPregunta = examen_preguntas & {
-  pregunta: preguntas & { opciones: opciones[] }
-}
-
-const Quiz = ({ id }: { id?: string }) => {
+const Quiz = ({ preguntas }: { preguntas: IPregunta[] }) => {
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
-  const [contador, setContador] = useLocalStorage<number | undefined>(
-    'contador',
-    1800,
-  )
+  const [contador, setContador] = useSessionStorage<number>('contador', 1800)
   const { seconds } = useCountdown({
     initialSeconds: contador,
   })
-  const { setUsuario } = useInvitado()
-
-  const { data = [] } = useSWR<IPregunta[]>(
-    { route: '/examen/' + id + '/preguntas' },
-    getter,
-  )
+  const {
+    logout,
+    usuario: { id },
+  } = useInvitado()
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     await setter({ route: `examen/${id}`, body })
-    setUsuario(undefined)
-    setContador(undefined)
+    logout()
     router.push(`/invitados/examen/${id}/resultado`)
   }
 
@@ -57,10 +43,10 @@ const Quiz = ({ id }: { id?: string }) => {
     <RegularForm
       defaultValues={{ id, preguntas: [] }}
       onSubmit={onSubmit}
-      className="text-white gap-5 grid px-5"
+      className="text-white gap-5 grid px-5 max-h-screen overflow-y-auto"
     >
       <Timer countdown={seconds} />
-      {data?.map(({ preguntas_id, pregunta }, index) => {
+      {preguntas.map(({ preguntas_id, pregunta }, index) => {
         return (
           <CustomRadioGroup
             key={preguntas_id}

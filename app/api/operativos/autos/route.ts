@@ -1,32 +1,8 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormAutosProps } from '@/types'
-import { del, resolucion, resultado, turnos, seguridad } from '@prisma/client'
+import { resolucion } from '@prisma/client'
 import { geoLocation } from '@/services'
-
-const es_del = async (zona_infractor: string) => {
-  try {
-    await prisma.vicente_lopez.findFirstOrThrow({
-      select: { barrio: true },
-      where: { barrio: zona_infractor },
-    })
-    return del.VILO
-  } catch (error) {
-    return del.FUERA_DEL_MUNICIPIO
-  }
-}
-
-const alcoholemia = (graduacion_alcoholica: string): resultado => {
-  if (
-    +graduacion_alcoholica === 0 ||
-    !graduacion_alcoholica ||
-    +graduacion_alcoholica === 0.0
-  )
-    return resultado.NEGATIVA
-  else if (+graduacion_alcoholica > 0.05 && +graduacion_alcoholica < 0.5)
-    return resultado.NO_PUNITIVA
-  else return resultado.PUNITIVA
-}
 
 const operativoAlcoholemia = async (body: FormAutosProps) => {
   const {

@@ -52,12 +52,14 @@ function CustomInput({
       id={name}
       placeholder={placeholder ?? ' '}
       label={label}
-      inputRef={field.ref}
       className={twMerge('data-[has-helper=true]:pb-6 pb-6', className)}
       classNames={{
         inputWrapper: 'border border-gray-600',
         input: 'uppercase',
       }}
+      innerWrapperRef={field.ref}
+      baseRef={field.ref}
+      wrapperRef={field.ref}
       isInvalid={invalid}
       errorMessage={error?.message}
       size="md"

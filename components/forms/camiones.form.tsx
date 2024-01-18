@@ -1,23 +1,31 @@
 'use client'
 import React, { useEffect } from 'react'
-import Input from '../Input'
-import DatePicker from '../DatePicker'
-import TimePicker from '../TimePicker'
-import Autocomplete from '../Autocomplete'
-import Switch from '../Switch'
-import Select from '../Select'
-import useSWR from 'swr'
-import { getSelects } from '@/services'
+import Input from '@/components/Input'
+import DatePicker from '@/components/DatePicker'
+import TimePicker from '@/components/TimePicker'
+import Autocomplete from '@/components/Autocomplete'
+import Switch from '@/components/Switch'
+import Select from '@/components/Select'
 import { useFormContext } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
-import { resolucion as IResolucion } from '@prisma/client'
+import {
+  resolucion as IResolucion,
+  barrios,
+  motivos,
+  turnos,
+  vicente_lopez,
+} from '@prisma/client'
 import { FormCamionesProps, LocalOperativo } from '@/types'
 import { setExpiration } from '@/utils/misc'
 
-export const steps = [<FirstStep />, <SecondStep />]
-
-function FirstStep() {
-  const { data } = useSWR('/api/selects', getSelects)
+export function FirstStep({
+  selects,
+}: {
+  selects: {
+    vicenteLopez: vicente_lopez[]
+    turnos: { id: turnos; label: string }[]
+  }
+}) {
   const [, edit] = useLocalStorage<LocalOperativo>('camiones', {
     expiresAt: 0,
   })
@@ -30,7 +38,7 @@ function FirstStep() {
     }))
   }
 
-  const { vicenteLopez, turnos } = data!
+  const { vicenteLopez, turnos } = selects
   return (
     <div className="flex w-full justify-between flex-wrap">
       <DatePicker
@@ -87,15 +95,22 @@ function FirstStep() {
   )
 }
 
-function SecondStep() {
+export function SecondStep({
+  selects,
+}: {
+  selects: {
+    motivos: motivos[]
+    resolucion: { id: IResolucion; label: string }[]
+    zonas: barrios[]
+  }
+}) {
   const { watch, resetField } = useFormContext<FormCamionesProps>()
-  const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
     watch('resolucion') === IResolucion.ACTA ||
     watch('resolucion') === IResolucion.REMITIDO
 
-  const { motivos, resolucion, zonas } = data!
+  const { motivos, resolucion, zonas } = selects
 
   useEffect(() => {
     if (!esSancionable) {

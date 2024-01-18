@@ -1,3 +1,5 @@
+import CustomOperativoLink from './CustomLinks'
+
 interface OperativosLayoutProps {
   modal: React.ReactNode
   children: React.ReactNode
@@ -5,7 +7,8 @@ interface OperativosLayoutProps {
 
 export default function OperativosLayout(props: OperativosLayoutProps) {
   return (
-    <main>
+    <main className="flex flex-col items-center gap-3">
+      <CustomOperativoLink />
       {props.children}
       {props.modal}
     </main>

@@ -81,7 +81,6 @@ export default function MyCombobox<T extends FieldValues>({
       }}
       id={field.name}
       inputValue={inputValue}
-      onInputChange={setInputValue}
       isInvalid={invalid}
       radius="sm"
       className={cn(className)}

@@ -1,8 +1,41 @@
 import prisma from '@/lib/prismadb'
 import { NextResponse, NextRequest } from 'next/server'
 
+const prismaSueldo = prisma.$extends({
+  name: 'sueldo',
+  result: {
+    clientes: {
+      acopioPromise: {
+        needs: {
+          id_cliente: true,
+        },
+        compute: async ({ id_cliente }) => {
+          const recibos = await prisma.recibos.aggregate({
+            where: {
+              id_cliente,
+            },
+            _sum: {
+              acopio: true,
+            },
+          })
+          return recibos._sum.acopio ?? 0
+        },
+      },
+      acopio: {
+        compute: () => {
+          return 0
+        },
+      },
+    },
+  },
+})
+
 export async function GET() {
-  const clientes = await prisma.clientes.findMany()
+  const clientes = await prismaSueldo.clientes.findMany()
+
+  for (const cliente of clientes) {
+    cliente.acopio = await cliente.acopioPromise
+  }
 
   return NextResponse.json(clientes)
 }

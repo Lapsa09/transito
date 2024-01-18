@@ -1,5 +1,3 @@
-'use client'
-
 import { Card, CardBody, CardHeader } from '@nextui-org/react'
 import { rinde_examen, tipo_examen } from '@prisma/client'
 import React from 'react'

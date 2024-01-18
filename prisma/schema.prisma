@@ -158,7 +158,7 @@ model operativos_operativos {
   direccion_full  String?                @db.VarChar
   latitud         Float?                 @db.Real
   longitud        Float?                 @db.Real
-  turno           turnos_old?
+  turno           turnos?
   localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       operativos_registros[]
 
@@ -398,7 +398,7 @@ model operarios_servicios {
 
 model precios {
   id     String @id @db.VarChar
-  precio Int?
+  precio Int
 
   @@schema("sueldos")
 }

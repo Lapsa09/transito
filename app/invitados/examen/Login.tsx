@@ -13,7 +13,7 @@ import { FieldValues } from 'react-hook-form'
 
 function Login() {
   const router = useRouter()
-  const { setUsuario } = useInvitado()
+  const { setUsuario, token } = useInvitado()
   const handleSubmit = async (body: FieldValues) => {
     const examen = await setter<(rinde_examen & { examen: examen }) | null>({
       route: 'examen',
@@ -27,7 +27,7 @@ function Login() {
       })
     else {
       setUsuario(examen)
-      router.push(`/invitados/examen/${examen.examen.clave}`)
+      router.push(`/invitados/examen/${examen.examen.clave}?u=${token}`)
     }
   }
   return (

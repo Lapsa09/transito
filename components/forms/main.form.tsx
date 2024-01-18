@@ -3,7 +3,7 @@ import { useStepForm } from '@/hooks'
 import React, { useRef } from 'react'
 import { Variants, motion } from 'framer-motion'
 
-function MainForm({ steps }: { steps: React.ReactNode[] }) {
+function MainForm({ children }: { children: React.ReactNode[] }) {
   const { activeStep } = useStepForm()
   const refs = useRef<HTMLDivElement[]>([])
 
@@ -24,11 +24,11 @@ function MainForm({ steps }: { steps: React.ReactNode[] }) {
 
   return (
     <div className="flex w-full mx-auto my-4">
-      {steps.map((child, i) => (
+      {children.map((child, i) => (
         <motion.div
           variants={variant}
           key={i}
-          ref={(el) => refs.current.push(el!)}
+          ref={(el) => el && refs.current.push(el)}
           animate={
             activeStep === i ? 'open' : activeStep > i ? 'left' : 'right'
           }

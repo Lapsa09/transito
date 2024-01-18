@@ -10,9 +10,9 @@ export default async function Home() {
   const fullName = user?.nombre + ' ' + user?.apellido
 
   return (
-    <div className="flex flex-col min-h-max">
+    <div className="flex flex-col">
       <h1>
-        Bienvenido {fullName} Legajo {user?.legajo}
+        Bienvenido {fullName}. Legajo {user?.legajo}
       </h1>
       {user?.role === roles.ADMIN && (
         <iframe

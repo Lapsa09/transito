@@ -6,6 +6,7 @@ import {
   useReactTable,
   getPaginationRowModel,
   getFilteredRowModel,
+  getFacetedUniqueValues,
   ColumnFiltersState,
   Row,
   SortingState,
@@ -62,6 +63,10 @@ export function DataTable<TData>({
     },
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    defaultColumn: {
+      size: 200,
+    },
   })
   return (
     <div className="w-full">
@@ -166,7 +171,7 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
-      {data.length > 10 && <DataTablePagination table={table} />}
+      <DataTablePagination table={table} />
     </div>
   )
 }

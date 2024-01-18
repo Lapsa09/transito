@@ -5,7 +5,6 @@ import {
   useController,
   useFormContext,
 } from 'react-hook-form'
-import { opciones } from '@prisma/client'
 
 type Props = {
   label: string
@@ -26,14 +25,22 @@ export default function CustomRadioGroup({ label, options, name }: Props) {
 
   return (
     <RadioGroup
-      label={label}
+      label={<span dangerouslySetInnerHTML={{ __html: label }} />}
       value={field.value?.id?.toString()}
       onValueChange={handleChange}
     >
       {options.map((option) => {
         return (
           <Radio key={option.id} value={option.id.toString()}>
-            {option.respuesta}
+            {option.respuesta?.includes('http') ? (
+              <img
+                className="h-20 flex relative"
+                src={option.respuesta}
+                alt="señal de transito"
+              />
+            ) : (
+              option.respuesta
+            )}
           </Radio>
         )
       })}

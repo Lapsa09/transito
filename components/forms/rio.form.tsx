@@ -1,24 +1,25 @@
 'use client'
-import { getSelects } from '@/services'
-import React from 'react'
-import useSWR from 'swr'
-import DateField from '../DatePicker'
-import { useLocalStorage } from 'usehooks-ts'
+import AutoComplete from '@/components/Autocomplete'
+import DateField from '@/components/DatePicker'
+import Input from '@/components/Input'
+import Select from '@/components/Select'
+import TimeField from '@/components/TimePicker'
 import { LocalOperativo } from '@/types'
-import Input from '../Input'
 import { setExpiration } from '@/utils/misc'
-import Select from '../Select'
-import AutoComplete from '../Autocomplete'
-import TimeField from '../TimePicker'
+import { turnos, zonas } from '@prisma/client'
+import React from 'react'
+import { useLocalStorage } from 'usehooks-ts'
 
-export const steps = [<FirstStep />, <SecondStep />]
+export function FirstStep({
+  selects,
+}: {
+  selects: {
+    turnos: { id: turnos; label: string }[]
+  }
+}) {
+  const { turnos } = selects
 
-function FirstStep() {
-  const { data } = useSWR('/api/selects', getSelects)
-
-  const { turnos } = data!
-
-  const [op, edit] = useLocalStorage<LocalOperativo>('rio', {
+  const [, edit] = useLocalStorage<LocalOperativo>('rio', {
     expiresAt: 0,
   })
 
@@ -75,10 +76,14 @@ function FirstStep() {
   )
 }
 
-function SecondStep() {
-  const { data } = useSWR('/api/selects', getSelects)
-
-  const { zonasPaseo } = data!
+export function SecondStep({
+  selects,
+}: {
+  selects: {
+    zonasPaseo: zonas[]
+  }
+}) {
+  const { zonasPaseo } = selects
 
   return (
     <div className="flex w-full justify-between flex-wrap">

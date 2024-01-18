@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react'
-import AutoComplete from '@/components/Autocomplete'
-import Input from '@/components/Input'
+import AutoComplete from '../Autocomplete'
+import Input from '../Input'
 import DateField from '../DatePicker'
 import Switch from '../Switch'
 import {
@@ -12,17 +12,23 @@ import {
 import TimeField from '../TimePicker'
 import { IoMdRemove } from 'react-icons/io'
 import Button from '../Button'
-import useSWR from 'swr'
-import { getPrecios, getAcopioFromCliente, getSelects } from '@/services'
 import { ServiciosFormProps } from '@/types'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
 import { DateTime, Interval } from 'luxon'
-import Loader from '../Loader'
+import { clientes, operarios, precios } from '@prisma/client'
 
-function LayoutServiciosForm() {
+function LayoutServiciosForm({
+  selects,
+  precios,
+}: {
+  selects: {
+    clientes: Array<clientes & { acopio: number }>
+    operarios: operarios[]
+  }
+  precios: precios[]
+}) {
   const { control, setValue, watch, getValues, resetField } =
     useFormContext<ServiciosFormProps>()
-  const { data, isLoading } = useSWR('api/selects', getSelects)
 
   const { hay_recibo } = watch()
   const { cliente } = getValues()
@@ -39,9 +45,9 @@ function LayoutServiciosForm() {
 
   useEffect(() => {
     if (cliente) {
-      getAcopioFromCliente(cliente.id_cliente).then((res) => {
-        setValue('acopio', res)
-      })
+      setValue('acopio', cliente.acopio)
+    } else {
+      resetField('acopio')
     }
   }, [cliente])
 
@@ -53,14 +59,13 @@ function LayoutServiciosForm() {
     }
   }, [hay_recibo])
 
-  if (isLoading) return <Loader />
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="flex w-5/6 justify-between flex-wrap gap-1">
         <div className="flex w-full basis-5/12 items-end pb-6">
           <AutoComplete
             label="Cliente"
-            options={data?.clientes!}
+            options={selects.clientes}
             name="cliente"
             inputId="id_cliente"
             inputLabel="cliente"
@@ -144,7 +149,13 @@ function LayoutServiciosForm() {
           Agregar operario
         </Button>
         {fields.map((field, index) => (
-          <OperarioForm index={index} key={field.id} remove={remove} />
+          <OperarioForm
+            index={index}
+            key={field.id}
+            remove={remove}
+            operarios={selects.operarios}
+            precios={precios}
+          />
         ))}
       </div>
       <Input
@@ -163,16 +174,15 @@ function LayoutServiciosForm() {
 function OperarioForm({
   index,
   remove,
+  operarios,
+  precios,
 }: {
   index: number
   remove: UseFieldArrayRemove
+  operarios: operarios[]
+  precios: precios[]
 }) {
   const { setValue, watch } = useFormContext<ServiciosFormProps>()
-  const { data, isLoading } = useSWR('api/selects', getSelects)
-  const { data: precios, isLoading: loadingPrecios } = useSWR(
-    'precios',
-    getPrecios,
-  )
   const { feriado, fecha_servicio, operarios: watchOps = [] } = watch()
   const field = watchOps[index]
 
@@ -189,9 +199,9 @@ function OperarioForm({
     fin: string
     importe: number
     isFeriado?: boolean
-    precios?: { id: string; precio: number }[]
+    precios: { id: string; precio: number }[]
   }) => {
-    if (!dia || !inicio || !fin || !precios) {
+    if (!dia || !inicio || !fin) {
       return importe
     }
 
@@ -272,7 +282,6 @@ function OperarioForm({
     setValue('importe_servicio', importe_servicio)
   }, [field?.a_cobrar])
 
-  if (isLoading || loadingPrecios) return null
   return (
     <div
       className={`py-2 flex justify-evenly items-center w-full ${
@@ -287,7 +296,7 @@ function OperarioForm({
         <div className="flex w-full basis-5/12 items-end pb-6">
           <AutoComplete
             label="Operario"
-            options={data?.operarios!}
+            options={operarios}
             inputId="legajo"
             inputLabel="nombre"
             name={`operarios.${index}.operario`}

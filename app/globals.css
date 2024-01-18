@@ -82,7 +82,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }
 
@@ -92,4 +94,32 @@ input::-webkit-calendar-picker-indicator {
 
 input[type='date']::-webkit-input-placeholder {
   visibility: hidden !important;
+}
+/* 
+body {
+  min-height: 100dvh;
+} */
+
+.layout {
+  /* width: 100%; */
+
+  display: grid;
+  grid:
+    'header' auto
+    'main' 1fr
+    'footer' auto
+    / 1fr;
+  gap: 8px;
+  min-height: 100dvh;
+}
+
+.header {
+  grid-area: header;
+}
+.main {
+  grid-area: main;
+  overflow-x: auto;
+}
+.footer {
+  grid-area: footer;
 }

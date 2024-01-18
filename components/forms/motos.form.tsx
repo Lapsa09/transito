@@ -1,24 +1,34 @@
 'use client'
 import React, { useEffect } from 'react'
-import Input from '../Input'
-import DatePicker from '../DatePicker'
-import TimePicker from '../TimePicker'
-import Autocomplete from '../Autocomplete'
-import useSWR from 'swr'
-import { getSelects } from '@/services'
-import Select from '../Select'
+import Input from '@/components/Input'
+import DatePicker from '@/components/DatePicker'
+import TimePicker from '@/components/TimePicker'
+import Autocomplete from '@/components/Autocomplete'
+import Select from '@/components/Select'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { IoMdAdd, IoMdRemove } from 'react-icons/io'
 import { useLocalStorage } from 'usehooks-ts'
-import { resolucion as IResolucion } from '@prisma/client'
+import {
+  resolucion as IResolucion,
+  barrios,
+  motivos,
+  seguridad,
+  tipo_licencias,
+  turnos,
+  vicente_lopez,
+} from '@prisma/client'
 import { setExpiration } from '@/utils/misc'
 import { FormMotosProps, LocalOperativo } from '@/types'
 
-export const steps = [<FirstStep />, <SecondStep />]
-
-function FirstStep() {
-  const { data } = useSWR('/api/selects', getSelects)
-
+export function FirstStep({
+  selects,
+}: {
+  selects: {
+    vicenteLopez: vicente_lopez[]
+    turnos: { id: turnos; label: string }[]
+    seguridad: { id: seguridad; label: string }[]
+  }
+}) {
   const [, edit] = useLocalStorage<LocalOperativo>('motos', {
     expiresAt: 0,
   })
@@ -31,7 +41,7 @@ function FirstStep() {
     }))
   }
 
-  const { vicenteLopez, turnos, seguridad } = data!
+  const { vicenteLopez, turnos, seguridad } = selects
   return (
     <div className="flex w-full justify-between flex-wrap">
       <DatePicker
@@ -109,10 +119,18 @@ function FirstStep() {
   )
 }
 
-function SecondStep() {
+export function SecondStep({
+  selects,
+}: {
+  selects: {
+    licencias: tipo_licencias[]
+    motivos: motivos[]
+    resolucion: { id: IResolucion; label: string }[]
+    zonas: barrios[]
+  }
+}) {
   const { watch, resetField } = useFormContext<FormMotosProps>()
   const { fields, append, remove } = useFieldArray({ name: 'motivos' })
-  const { data } = useSWR('/api/selects', getSelects)
 
   const esSancionable =
     watch('resolucion') === IResolucion.ACTA ||
@@ -130,7 +148,7 @@ function SecondStep() {
     }
   }
 
-  const { licencias, motivos, resolucion, zonas } = data!
+  const { licencias, motivos, resolucion, zonas } = selects
 
   useEffect(() => {
     if (!esSancionable) {

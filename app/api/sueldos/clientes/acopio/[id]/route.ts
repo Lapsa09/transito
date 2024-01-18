@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: number } }
+  _: NextRequest,
+  { params }: { params: { id: string } },
 ) {
   const { id } = params
 

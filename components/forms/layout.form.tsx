@@ -1,16 +1,10 @@
 'use client'
-import React, {
-  FormEvent,
-  ForwardedRef,
-  PropsWithChildren,
-  forwardRef,
-  useEffect,
-} from 'react'
+import React, { FormEvent, PropsWithChildren, useEffect } from 'react'
 import Button from '@/components/Button'
 import Stepper from '@/components/Stepper'
 import Loader from '@/components/Loader'
 import { useStepForm, useToast } from '@/hooks'
-import { getSelects, getter, setter, updater } from '@/services'
+import { getter, setter, updater } from '@/services'
 import {
   EditInputProps,
   FormInputProps,
@@ -47,7 +41,6 @@ export function CreateFormLayout({
   section: string
 }>) {
   const { activeStep, setActiveStep } = useStepForm()
-  const { isLoading } = useSWR('/api/selects', getSelects)
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === stepTitles.length - 1
 
@@ -70,7 +63,7 @@ export function CreateFormLayout({
     setFocus,
     setValue,
     handleSubmit,
-    formState: { isValid, ...formState },
+    formState: { isValid },
   } = methods
   const layoutSegment = useSelectedLayoutSegment() as
     | 'autos'
@@ -96,8 +89,8 @@ export function CreateFormLayout({
             route: `/${section}/${layoutSegment}`,
             body,
           })
-          if (!data) return [post]
-          return [post, ...data]
+          data?.unshift(post)
+          return data
         },
         {
           revalidate: false,
@@ -112,7 +105,7 @@ export function CreateFormLayout({
       } else {
         reset(rest)
       }
-      setFocus('dominio')
+      setFocus('dominio', { shouldSelect: true })
     } catch (error: any) {
       toast({
         title: error.response?.data || error.message,
@@ -125,14 +118,7 @@ export function CreateFormLayout({
     setOperativo({
       expiresAt: 0,
     })
-    reset({
-      fecha: '',
-      hora: '',
-      qth: '',
-      localidad: undefined,
-      seguridad: undefined,
-      turno: undefined,
-    })
+    reset()
     setActiveStep(0)
   }
 
@@ -166,7 +152,7 @@ export function CreateFormLayout({
       >
         <FormProvider {...methods}>
           {stepTitles.length > 1 && <Stepper steps={stepTitles} />}
-          {isLoading ? <Loader /> : children}
+          {children}
         </FormProvider>
         <div className="flex justify-between w-full">
           {stepTitles.length > 1 && (
@@ -206,8 +192,7 @@ export function EditFormLayout({
     e.preventDefault()
     !isLastStep && setActiveStep((cur) => cur + 1)
   }
-  const { isLoading } = useSWR('/api/selects', getSelects)
-  useSWR(
+  const { isLoading } = useSWR(
     data?.user?.role === Roles.ADMIN
       ? { route: `/${section}/${layoutSegment}/${id}` }
       : null,
@@ -295,7 +280,7 @@ export function EditFormLayout({
       >
         <FormProvider {...methods}>
           {stepTitles.length > 1 && <Stepper steps={stepTitles} />}
-          {isLoading ? <Loader /> : children}
+          {children}
         </FormProvider>
         <div className="flex justify-between w-full">
           {stepTitles.length > 1 && (
@@ -313,23 +298,20 @@ export function EditFormLayout({
   )
 }
 
-const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
-  {
-    onSubmit,
-    children,
-    className,
-    data,
-    id,
-    defaultValues,
-  }: PropsWithChildren<{
-    onSubmit: SubmitHandler<T>
-    className?: string
-    data?: K[]
-    id?: string
-    defaultValues?: DefaultValues<T>
-  }>,
-  ref?: ForwardedRef<HTMLFormElement>,
-) => {
+export const RegularForm = <T extends FieldValues, K extends FieldValues>({
+  onSubmit,
+  children,
+  className,
+  data,
+  id,
+  defaultValues,
+}: PropsWithChildren<{
+  onSubmit: SubmitHandler<T>
+  className?: string
+  data?: K[]
+  id?: string
+  defaultValues?: DefaultValues<T>
+}>) => {
   const methods = useForm<T>({
     mode: 'all',
     defaultValues,
@@ -349,7 +331,6 @@ const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
     <FormProvider {...methods}>
       <form
         className={cn('w-full', className)}
-        ref={ref}
         onSubmit={async (e) => {
           e.stopPropagation()
           await handleSubmit(onSubmit)(e)
@@ -362,5 +343,3 @@ const RegularFormInner = <T extends FieldValues, K extends FieldValues>(
     </FormProvider>
   )
 }
-
-export const RegularForm = forwardRef(RegularFormInner)

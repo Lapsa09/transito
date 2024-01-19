@@ -20,9 +20,9 @@ export const columns: ColumnDef<Registro>[] = [
   },
   {
     header: 'Fecha',
-    accessorFn: ({ operativo: { fecha } }) =>
-      fecha &&
-      DateTime.fromISO(fecha, { setZone: true }).toLocaleString(
+    accessorFn: ({ operativo }) =>
+      operativo?.fecha &&
+      DateTime.fromISO(operativo?.fecha, { setZone: true }).toLocaleString(
         DateTime.DATE_SHORT,
       ),
     id: 'fecha',

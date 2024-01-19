@@ -35,7 +35,7 @@ function Menu() {
 
   const { data, status } = useSession()
 
-  if (status === 'unauthenticated') return null
+  if (status !== 'authenticated') return null
 
   const user = data?.user
 
@@ -63,23 +63,18 @@ function Menu() {
               ),
             )
           ) : (
-            <>
-              <div className="flex justify-between">
-                <h3 className="capitalize">
-                  {fullName} Legajo {user?.legajo}
-                </h3>
-              </div>
-              <Button
-                variant="text"
-                className="text-gray-700 hover:text-green-400"
-              >
-                <Typography className="px-3 py-2 md:hidden">
-                  Cerrar sesion
-                </Typography>
-                <FiLogOut className="cursor-pointer text-xl" onClick={logout} />
-              </Button>
-            </>
+            <div className="flex justify-between">
+              <h3 className="capitalize">
+                {fullName} Legajo {user?.legajo}
+              </h3>
+            </div>
           )}
+          <Button variant="text" className="text-gray-700 hover:text-green-400">
+            <Typography className="px-3 py-2 md:hidden">
+              Cerrar sesion
+            </Typography>
+            <FiLogOut className="cursor-pointer text-xl" onClick={logout} />
+          </Button>
         </ul>
       </div>
     </>

@@ -116,6 +116,9 @@ export async function GET() {
       tipo_licencias: true,
       zona_infractor: true,
     },
+    orderBy: {
+      id: 'desc',
+    },
   })
 
   return NextResponse.json(

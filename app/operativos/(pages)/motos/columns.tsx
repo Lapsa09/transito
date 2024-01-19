@@ -17,19 +17,21 @@ export const columns: ColumnDef<Registro>[] = [
     filterFn: (row, column, value) => {
       return row.getValue(column) == value
     },
+    enableColumnFilter: false,
   },
   {
     header: 'Fecha',
-    accessorFn: ({ operativo: { fecha } }) =>
-      fecha &&
-      DateTime.fromISO(fecha, {
+    accessorFn: (row) =>
+      row?.operativo?.fecha &&
+      DateTime.fromISO(row.operativo.fecha, {
         setZone: true,
       }).toLocaleString(DateTime.DATE_SHORT),
   },
   {
     header: 'Hora',
-    accessorFn: ({ operativo: { hora } }) =>
-      DateTime.fromISO(hora, {
+    accessorFn: ({ operativo }) =>
+      operativo?.hora &&
+      DateTime.fromISO(operativo.hora, {
         setZone: true,
       }).toLocaleString(DateTime.TIME_24_SIMPLE),
   },
@@ -44,6 +46,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.qth,
     header: 'QTH',
+    size: 350,
   },
   {
     accessorFn: (row) => row.operativo?.localidad?.barrio,

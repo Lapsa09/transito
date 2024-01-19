@@ -21,7 +21,7 @@ export const columns: ColumnDef<Registro>[] = [
   },
   {
     accessorFn: (row) =>
-      row.operativo.fecha &&
+      row.operativo?.fecha &&
       DateTime.fromISO(row.operativo.fecha, { setZone: true }).toLocaleString(
         DateTime.DATE_SHORT,
       ),
@@ -30,6 +30,7 @@ export const columns: ColumnDef<Registro>[] = [
   },
   {
     accessorFn: (row) =>
+      row.operativo?.hora &&
       DateTime.fromISO(row.operativo.hora, {
         setZone: true,
       }).toLocaleString(DateTime.TIME_24_SIMPLE),

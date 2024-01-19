@@ -35,7 +35,7 @@ export const NuevoCliente = () => {
       await mutate<Data>(
         'api/selects',
         (data) => {
-          data?.clientes.push(req)
+          data?.clientes.push({ ...req, acopio: 0 })
 
           return data
         },

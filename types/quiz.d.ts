@@ -2,6 +2,7 @@ import type {
   examen_preguntas,
   opciones,
   preguntas,
+  rinde_examen,
   tipo_examen,
 } from '@prisma/client'
 
@@ -20,6 +21,8 @@ export type QuizResponse = {
   preguntas: (opciones | null)[]
 }
 
-export type IPregunta = examen_preguntas & {
-  pregunta: preguntas & { opciones: opciones[] }
+export type IPregunta = rinde_examen & {
+  examen_preguntas: (examen_preguntas & {
+    pregunta: preguntas & { opciones: opciones[] }
+  })[]
 }

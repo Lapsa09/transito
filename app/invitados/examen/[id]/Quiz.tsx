@@ -14,22 +14,19 @@ import CustomRadioGroup from '@/components/RadioGroup'
 import Timer from '@/components/Timer'
 import dynamic from 'next/dynamic'
 
-const Quiz = ({ preguntas }: { preguntas: IPregunta[] }) => {
+const Quiz = ({ preguntas }: { preguntas: IPregunta['examen_preguntas'] }) => {
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
   const [contador, setContador] = useSessionStorage<number>('contador', 1800)
   const { seconds } = useCountdown({
     initialSeconds: contador,
   })
-  const {
-    logout,
-    usuario: { id },
-  } = useInvitado()
+  const { logout, usuario } = useInvitado()
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
-    await setter({ route: `examen/${id}`, body })
+    await setter({ route: `examen/${usuario?.id}`, body })
     logout()
-    router.push(`/invitados/examen/${id}/resultado`)
+    router.push(`/invitados/examen/${usuario?.id}/resultado`)
   }
 
   useEffect(() => {
@@ -41,21 +38,23 @@ const Quiz = ({ preguntas }: { preguntas: IPregunta[] }) => {
 
   return (
     <RegularForm
-      defaultValues={{ id, preguntas: [] }}
+      defaultValues={{ id: usuario?.id, preguntas: [] }}
       onSubmit={onSubmit}
-      className="text-white gap-5 grid px-5 max-h-screen overflow-y-auto"
+      className="gap-5 grid px-5"
     >
       <Timer countdown={seconds} />
-      {preguntas.map(({ preguntas_id, pregunta }, index) => {
-        return (
-          <CustomRadioGroup
-            key={preguntas_id}
-            label={`${index + 1}- ${pregunta.pregunta}`}
-            options={pregunta.opciones}
-            name={'preguntas.' + index}
-          />
-        )
-      })}
+      <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
+        {preguntas.map(({ preguntas_id, pregunta }, index) => {
+          return (
+            <CustomRadioGroup
+              key={preguntas_id}
+              label={`${index + 1}- ${pregunta.pregunta}`}
+              options={pregunta.opciones}
+              name={'preguntas.' + index}
+            />
+          )
+        })}
+      </section>
       <Button ref={ref} type="submit">
         Finalizar examen
       </Button>

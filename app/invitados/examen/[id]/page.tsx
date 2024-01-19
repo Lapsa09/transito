@@ -1,9 +1,8 @@
 import React from 'react'
-import { examen, rinde_examen } from '@prisma/client'
+import { examen } from '@prisma/client'
 import Waitzone from './Waitzone'
 import { getter } from '@/services'
 import { redirect } from 'next/navigation'
-import { jwtDecode } from 'jwt-decode'
 import Quiz from './Quiz'
 import { IPregunta } from '@/types/quiz'
 
@@ -13,7 +12,7 @@ const getExamen = async (id: string) => {
 }
 
 const getPreguntas = async (id: string) => {
-  const preguntas = await getter<IPregunta[]>({
+  const preguntas = await getter<IPregunta>({
     route: `examen/${id}/preguntas`,
   })
   return preguntas
@@ -24,26 +23,27 @@ async function page({
   searchParams,
 }: {
   params: { id: string }
-  searchParams: URLSearchParams
+  searchParams: Record<any, any>
 }) {
   const examen = await getExamen(params.id)
-  const token = searchParams.get('u')
+
+  const token: string = searchParams.u
 
   if (!token || !examen) redirect('/invitados/examen')
   try {
-    const usuario: rinde_examen & { examen: examen } = jwtDecode(token)
-    const preguntas = await getPreguntas(usuario.id)
+    const usuario = await getPreguntas(token)
     return (
       <div>
         <h1 className="text-center text-3xl font-bold">Examen</h1>
-        {!usuario.examen.habilitado ? (
+        {!examen.habilitado ? (
           <Waitzone />
         ) : (
-          <Quiz preguntas={preguntas} />
+          <Quiz preguntas={usuario.examen_preguntas} />
         )}
       </div>
     )
   } catch (error) {
+    console.log(error)
     redirect('/invitados/examen')
   }
 }

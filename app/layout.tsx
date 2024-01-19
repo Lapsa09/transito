@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Header } from './header'
+import Header from './header/Header'
 import Toaster from '@/components/Toaster'
 import AuthContext from '@/context/AuthContext'
 import { Metadata } from 'next'

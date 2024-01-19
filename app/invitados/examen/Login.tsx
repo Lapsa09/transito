@@ -6,16 +6,15 @@ import { RegularForm } from '@/components/forms/layout.form'
 import { toast } from '@/hooks'
 import { useInvitado } from '@/hooks/useInvitado'
 import { setter } from '@/services'
-import { examen, rinde_examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { FieldValues } from 'react-hook-form'
 
 function Login() {
   const router = useRouter()
-  const { setUsuario, token } = useInvitado()
+  const { setUsuario } = useInvitado()
   const handleSubmit = async (body: FieldValues) => {
-    const examen = await setter<(rinde_examen & { examen: examen }) | null>({
+    const examen = await setter<string | null>({
       route: 'examen',
       body,
     })
@@ -26,8 +25,9 @@ function Login() {
         variant: 'destructive',
       })
     else {
-      setUsuario(examen)
-      router.push(`/invitados/examen/${examen.examen.clave}?u=${token}`)
+      const usuario = setUsuario(examen)
+
+      router.push(`/invitados/examen/${usuario.examen.clave}?u=${examen}`)
     }
   }
   return (

@@ -32,15 +32,10 @@ export default function CustomRadioGroup({ label, options, name }: Props) {
       {options.map((option) => {
         return (
           <Radio key={option.id} value={option.id.toString()}>
-            {option.respuesta?.includes('http') ? (
-              <img
-                className="h-20 flex relative"
-                src={option.respuesta}
-                alt="señal de transito"
-              />
-            ) : (
-              option.respuesta
-            )}
+            <p
+              className="flex items-center"
+              dangerouslySetInnerHTML={{ __html: option.respuesta }}
+            />
           </Radio>
         )
       })}

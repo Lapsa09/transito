@@ -71,6 +71,7 @@ export default function MyCombobox<T extends FieldValues>({
       size="md"
       isRequired={!!rules?.required}
       defaultItems={options}
+      onInputChange={setInputValue}
       labelPlacement="outside"
       placeholder="Elija una opcion..."
       errorMessage={error?.message}

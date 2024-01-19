@@ -101,7 +101,7 @@ export const getZonasPaseo = async () => {
 }
 
 export const getListaClientes = async () => {
-  const data = await getter<clientes[]>({
+  const data = await getter<Array<clientes & { acopio: number }>>({
     route: 'clientes',
   })
   return data

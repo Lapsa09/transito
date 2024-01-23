@@ -43,7 +43,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Hora',
   },
   {
-    accessorFn: (registro) => registro.dominio.toUpperCase(),
+    accessorFn: (registro) => registro.dominio?.toUpperCase(),
     header: 'Dominio',
   },
   {

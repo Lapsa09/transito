@@ -21,7 +21,7 @@ function CreatedExam({ examen }: { examen: examen }) {
       <CardHeader>
         <h1>
           Fecha:{' '}
-          {DateTime.fromISO(examen.fecha as unknown as string)
+          {DateTime.fromISO(`${examen.fecha}`)
             .toUTC()
             .toLocaleString(DateTime.DATE_SHORT)}
         </h1>
@@ -29,9 +29,12 @@ function CreatedExam({ examen }: { examen: examen }) {
       <CardBody>
         <p>
           Hora:{' '}
-          {DateTime.fromISO(examen.hora as unknown as string).toLocaleString(
-            DateTime.TIME_24_SIMPLE,
-          )}
+          {DateTime.fromISO(`${examen.hora}`).toUTC().toISOTime({
+            extendedZone: false,
+            suppressSeconds: true,
+            suppressMilliseconds: true,
+            includeOffset: false,
+          })}
         </p>
         <p>Estado: {examen.habilitado ? 'Empezado' : 'Sin empezar'}</p>
       </CardBody>

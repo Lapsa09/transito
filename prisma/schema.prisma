@@ -158,7 +158,7 @@ model operativos_operativos {
   direccion_full  String?                @db.VarChar
   latitud         Float?                 @db.Real
   longitud        Float?                 @db.Real
-  turno           turnos?
+  turno           turnos_old?
   localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       operativos_registros[]
 
@@ -643,6 +643,7 @@ model examen {
   terminado  Boolean?       @default(false)
   alumnos    rinde_examen[]
 
+  @@unique([fecha, hora])
   @@schema("examen")
 }
 
@@ -675,11 +676,11 @@ model rinde_examen {
   dni              Int
   utilizado        Boolean            @default(false)
   tema             Int?
-  tipo_examen      tipo_examen        @relation(fields: [tipo_examenId], references: [id])
+  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
   examen_preguntas examen_preguntas[]
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
   calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
-  tipo_examenId    Int
+  tipo_examenId    Int?
 
   @@unique([id_examen, dni])
   @@schema("examen")
@@ -797,12 +798,9 @@ enum turnos {
 }
 
 enum turnos_old {
-  MA_ANA       @map("MAÑANA")
+  MA_ANA @map("MAÑANA")
   TARDE
   NOCHE
-  ADMIN
-  SE_ALAMIENTO @map("SEÑALAMIENTO")
-  OPERATIVO
 
   @@schema("public")
 }

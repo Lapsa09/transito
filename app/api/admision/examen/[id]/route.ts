@@ -1,6 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { shuffle } from '@/utils/misc'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
@@ -36,32 +36,12 @@ export async function POST(
       apellido,
       email,
       dni,
-      tipo_examen,
     }: {
       nombre: string
       apellido: string
       email: string
       dni: string
-      tipo_examen: string
     } = await req.json()
-
-    const tipo = await prisma.tipo_examen.findUnique({
-      where: {
-        id: +tipo_examen,
-      },
-    })
-    const tema = Math.floor(Math.random() * tipo?.cantidad_temas!) + 1
-    const preguntas = await prisma.preguntas.findMany({
-      where: {
-        tema,
-        tipo_examen: {
-          id: +tipo_examen,
-        },
-      },
-      include: {
-        opciones: true,
-      },
-    })
 
     const examen = await prisma.rinde_examen.create({
       data: {
@@ -69,17 +49,11 @@ export async function POST(
         apellido,
         email,
         dni: +dni,
-        tipo_examen: {
-          connect: {
-            id: +tipo_examen,
-          },
-        },
         examen: {
           connect: {
             id: parseInt(id),
           },
         },
-        tema,
       },
       include: {
         examen_preguntas: {
@@ -96,15 +70,85 @@ export async function POST(
       },
     })
 
-    for (const pregunta of shuffle(preguntas).slice(
-      0,
-      tipo?.cantidad_preguntas,
-    )) {
+    return NextResponse.json(examen)
+  } catch (error: any) {
+    if (error.name === 'PrismaClientKnownRequestError') {
+      return NextResponse.json('El alumno ya fue ingresado', { status: 403 })
+    }
+    console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
+  }
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const { id } = params
+
+    const { tipo_examen } = await req.json()
+    const tipo = await prisma.tipo_examen.findUniqueOrThrow({
+      where: {
+        id: +tipo_examen,
+      },
+    })
+    const examinado = await prisma.rinde_examen.findUniqueOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        examen: true,
+      },
+    })
+
+    const rindioAlgunaVez = await prisma.rinde_examen.findFirst({
+      where: {
+        dni: examinado.dni,
+        examen: {
+          fecha: examinado.examen.fecha,
+        },
+      },
+    })
+
+    let tema = Math.floor(Math.random() * tipo.cantidad_temas) + 1
+
+    while (rindioAlgunaVez && rindioAlgunaVez.tema === tema) {
+      tema = Math.floor(Math.random() * tipo.cantidad_temas) + 1
+    }
+
+    const preguntas = await prisma.preguntas.findMany({
+      where: {
+        tema,
+        tipo_examen: {
+          id: +tipo_examen,
+        },
+      },
+      include: {
+        opciones: true,
+      },
+    })
+
+    const examen = await prisma.rinde_examen.update({
+      where: {
+        id,
+      },
+      data: {
+        tipo_examen: {
+          connect: {
+            id: +tipo_examen,
+          },
+        },
+        tema,
+      },
+    })
+
+    for (const pregunta of preguntas) {
       await prisma.examen_preguntas.create({
         data: {
           examen: {
             connect: {
-              id: examen.id,
+              id,
             },
           },
           pregunta: {
@@ -123,11 +167,8 @@ export async function POST(
       })
     }
     return NextResponse.json(examen)
-  } catch (error: any) {
+  } catch (error) {
     console.log(error)
-    if (error.name === 'PrismaClientKnownRequestError') {
-      return NextResponse.json('El alumno ya fue ingresado', { status: 403 })
-    }
     return NextResponse.json('Server error', { status: 500 })
   }
 }

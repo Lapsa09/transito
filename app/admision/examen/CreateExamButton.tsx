@@ -9,7 +9,7 @@ function CreateExamButton() {
   const router = useRouter()
   const onClick = async () => {
     try {
-      const examen = await setter({ route: 'admision/examen' })
+      const examen = await setter({ route: 'admision/examen', body: {} })
       router.push('/admision/examen/' + examen.clave)
     } catch (error: any) {
       console.log(error)

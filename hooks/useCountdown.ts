@@ -15,7 +15,7 @@ export const useCountdown = ({
     const timer = setInterval(() => {
       setSeconds((prevSeconds) => (prevSeconds ? prevSeconds - 1 : prevSeconds))
     }, 1000)
-
+    if (seconds === 0) clearInterval(timer)
     // Clean up the timer
     return () => clearInterval(timer)
   }, [seconds])

@@ -1,16 +1,13 @@
 import React from 'react'
 import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
-import { getter } from '@/services'
 import { examen } from '@prisma/client'
 
-export const revalidate = 0
-
 const getExamenes = async () => {
-  const examenes = await getter<examen[]>({
-    route: 'examen',
+  const response = await fetch(process.env.NEXT_PUBLIC_SERVER_URL + '/examen', {
+    next: { revalidate: 3600 * 24 },
   })
-
+  const examenes: examen[] = await response.json()
   return examenes
 }
 
@@ -32,7 +29,7 @@ async function page() {
               <CreatedExam key={examen.id} examen={examen} />
             ))
           ) : (
-            <span className="text-gray-400">No hay examenes sin terminar</span>
+            <span className="text-gray-400">No hay examenes agendados</span>
           )}
         </div>
       </div>

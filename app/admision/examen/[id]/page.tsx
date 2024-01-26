@@ -28,8 +28,8 @@ async function page({ params }: { params: { id: string } }) {
     redirect('/admision/examen')
   }
   return (
-    <div>
-      <div className="flex mx-5">
+    <section className="grid gap-5">
+      <div className="grid grid-flow-col gap-5">
         <ListaAlumnos alumnos={examen.alumnos} />
 
         <NuevoAlumno id={examen.id} />
@@ -39,7 +39,7 @@ async function page({ params }: { params: { id: string } }) {
         <span>Clave: {examen.clave}</span>
         <QuitButton id={examen.id} />
       </div>
-    </div>
+    </section>
   )
 }
 

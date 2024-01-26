@@ -28,5 +28,5 @@ export const terminarExamen = async (id: number) =>
       },
     })
     .then(() => {
-      revalidatePath('admision/examen/' + id)
+      revalidatePath('admision/examen')
     })

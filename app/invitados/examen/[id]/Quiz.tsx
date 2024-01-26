@@ -8,25 +8,28 @@ import { IPregunta, QuizResponse } from '@/types/quiz'
 import { setter } from '@/services'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Button } from '@nextui-org/react'
-import { useInvitado } from '@/hooks/useInvitado'
 import { useSessionStorage } from 'usehooks-ts'
 import CustomRadioGroup from '@/components/RadioGroup'
 import Timer from '@/components/Timer'
 import dynamic from 'next/dynamic'
 
-const Quiz = ({ preguntas }: { preguntas: IPregunta['examen_preguntas'] }) => {
+const Quiz = ({
+  preguntas,
+  id,
+}: {
+  preguntas: IPregunta['examen_preguntas']
+  id: string
+}) => {
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
   const [contador, setContador] = useSessionStorage<number>('contador', 1800)
   const { seconds } = useCountdown({
     initialSeconds: contador,
   })
-  const { logout, usuario } = useInvitado()
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
-    await setter({ route: `examen/${usuario?.id}`, body })
-    logout()
-    router.push(`/invitados/examen/${usuario?.id}/resultado`)
+    await setter({ route: `examen/${id}`, body })
+    router.push(`/invitados/examen/${id}/resultado`)
   }
 
   useEffect(() => {
@@ -38,7 +41,7 @@ const Quiz = ({ preguntas }: { preguntas: IPregunta['examen_preguntas'] }) => {
 
   return (
     <RegularForm
-      defaultValues={{ id: usuario?.id, preguntas: [] }}
+      defaultValues={{ id, preguntas: [] }}
       onSubmit={onSubmit}
       className="gap-5 grid px-5"
     >

@@ -1,6 +1,6 @@
-import { Card, CardBody, CardHeader } from '@nextui-org/react'
 import { rinde_examen, tipo_examen } from '@prisma/client'
 import React from 'react'
+import AlumnoCard from './AlumnoCard'
 
 function ListaAlumnos({
   alumnos,
@@ -8,20 +8,11 @@ function ListaAlumnos({
   alumnos: Array<rinde_examen & { tipo_examen: tipo_examen }>
 }) {
   return (
-    <div className="flex-1 my-2">
-      <h1>Lista de alumnos</h1>
-      <div className="flex flex-wrap mt-3 gap-3">
+    <div className="my-2 col-span-3">
+      <h1 className="ml-5">Lista de alumnos</h1>
+      <div className="grid grid-cols-3 max-h-unit-9xl p-3 gap-3 overflow-y-auto">
         {alumnos.map((alumno) => (
-          <Card key={alumno.id}>
-            <CardHeader>
-              <h1>{alumno.nombre + ' ' + alumno.apellido}</h1>
-            </CardHeader>
-            <CardBody>
-              <p>Email: {alumno.email}</p>
-              <p>DNI: {alumno.dni}</p>
-              <p>Rinde examen de: {alumno.tipo_examen.tipo}</p>
-            </CardBody>
-          </Card>
+          <AlumnoCard key={alumno.id} alumno={alumno} />
         ))}
       </div>
     </div>

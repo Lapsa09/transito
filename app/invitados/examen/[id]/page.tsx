@@ -23,11 +23,11 @@ async function page({
   searchParams,
 }: {
   params: { id: string }
-  searchParams: Record<any, any>
+  searchParams: { u?: string }
 }) {
   const examen = await getExamen(params.id)
 
-  const token: string = searchParams.u
+  const token = searchParams.u
 
   if (!token || !examen) redirect('/invitados/examen')
   try {
@@ -38,12 +38,12 @@ async function page({
         {!examen.habilitado ? (
           <Waitzone />
         ) : (
-          <Quiz preguntas={usuario.examen_preguntas} />
+          <Quiz preguntas={usuario.examen_preguntas} id={usuario.id} />
         )}
       </div>
     )
   } catch (error) {
-    console.log(error)
+    console.error(error)
     redirect('/invitados/examen')
   }
 }

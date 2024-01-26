@@ -37,7 +37,7 @@ function Menu() {
 
   if (status !== 'authenticated') return null
 
-  const user = data?.user
+  const { user } = data
 
   const fullName = user?.nombre + ' ' + user?.apellido
 

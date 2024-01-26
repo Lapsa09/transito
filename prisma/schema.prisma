@@ -798,9 +798,12 @@ enum turnos {
 }
 
 enum turnos_old {
-  MA_ANA @map("MAÑANA")
+  MA_ANA       @map("MAÑANA")
   TARDE
   NOCHE
+  ADMIN
+  SE_ALAMIENTO @map("SEÑALAMIENTO")
+  OPERATIVO
 
   @@schema("public")
 }

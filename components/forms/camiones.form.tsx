@@ -29,7 +29,6 @@ export function FirstStep({
   const [, edit] = useLocalStorage<LocalOperativo>('camiones', {
     expiresAt: 0,
   })
-
   const setOperativo = (value: any) => {
     edit((state) => ({
       ...state,
@@ -105,7 +104,7 @@ export function SecondStep({
   }
 }) {
   const { watch, resetField } = useFormContext<FormCamionesProps>()
-
+  console.log(selects)
   const esSancionable =
     watch('resolucion') === IResolucion.ACTA ||
     watch('resolucion') === IResolucion.REMITIDO

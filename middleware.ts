@@ -1,11 +1,11 @@
 import { getToken } from 'next-auth/jwt'
+
 import { NextRequest, NextResponse } from 'next/server'
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   const publicPages = ['/login', '/register', '/invitados']
-
   const rolePages = {
     INSPECTOR: '/operativos',
     TRAFICO: '/waze',
@@ -14,20 +14,18 @@ export default async function middleware(req: NextRequest) {
     LOGISTICA: '/logistica',
     PROFESOR: '/admision/examen',
   }
-
   const isProtectedPath = !publicPages.some((page) => pathname.startsWith(page))
 
   const token = await getToken({ req })
 
   if (!token && isProtectedPath) {
+    if (pathname.startsWith('/api')) return NextResponse.next()
     const url = new URL('/login', req.url)
     url.searchParams.set('callbackUrl', encodeURI(req.url))
     return NextResponse.redirect(url)
   }
-
   if (token) {
     const { role } = token
-    if (pathname.startsWith('/api')) return NextResponse.next()
     const rolePage = rolePages[role]
     const iAmAllowed = pathname.startsWith(rolePage)
     if (!isProtectedPath || !iAmAllowed) {

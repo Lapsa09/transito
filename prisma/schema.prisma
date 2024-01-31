@@ -158,7 +158,7 @@ model operativos_operativos {
   direccion_full  String?                @db.VarChar
   latitud         Float?                 @db.Real
   longitud        Float?                 @db.Real
-  turno           turnos?
+  turno           turnos_old?
   localidad       vicente_lopez?         @relation(fields: [id_localidad], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction)
   registros       operativos_registros[]
 
@@ -675,6 +675,8 @@ model rinde_examen {
   email            String?            @db.VarChar
   dni              Int
   utilizado        Boolean            @default(false)
+  hora_ingresado   DateTime?          @db.Timestamp(6)
+  hora_finalizado  DateTime?          @db.Timestamp(6)
   tema             Int?
   tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
   examen_preguntas examen_preguntas[]

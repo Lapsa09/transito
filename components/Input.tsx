@@ -1,7 +1,7 @@
 'use client'
 import { DOMINIO_PATTERN, LEGAJO_PATTERN } from '@/utils/validations'
 import { Checkbox, Input, InputProps } from '@nextui-org/react'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   UseControllerProps,
   useController,
@@ -28,6 +28,7 @@ function CustomInput({
   ...props
 }: Props) {
   const { control } = useFormContext()
+  const ref = useRef<HTMLInputElement>(null)
   const {
     field,
     fieldState: { invalid, error },
@@ -43,11 +44,16 @@ function CustomInput({
     if (persist) persist({ [name]: e.target.value })
   }
 
+  useEffect(() => {
+    field.ref(ref)
+  }, [ref])
+
   return (
     <Input
       {...props}
       {...field}
       onChange={onChange}
+      ref={ref}
       type={type}
       id={name}
       placeholder={placeholder ?? ' '}
@@ -57,9 +63,6 @@ function CustomInput({
         inputWrapper: 'border border-gray-600',
         input: 'uppercase',
       }}
-      innerWrapperRef={field.ref}
-      baseRef={field.ref}
-      wrapperRef={field.ref}
       isInvalid={invalid}
       errorMessage={error?.message}
       size="md"

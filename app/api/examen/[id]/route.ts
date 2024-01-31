@@ -53,6 +53,7 @@ export async function POST(req: Request) {
     const resultado = await prisma.rinde_examen.update({
       data: {
         nota: notaFinal(nota, examen!.tipo_examen!),
+        hora_finalizado: body.tiempo,
       },
       where: {
         id: body.id,

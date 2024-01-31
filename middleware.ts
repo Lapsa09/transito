@@ -27,6 +27,7 @@ export default async function middleware(req: NextRequest) {
 
   if (token) {
     const { role } = token
+    if (pathname.startsWith('/api')) return NextResponse.next()
     const rolePage = rolePages[role]
     const iAmAllowed = pathname.startsWith(rolePage)
     if (!isProtectedPath || !iAmAllowed) {
@@ -39,5 +40,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|setran).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|setran).*)'],
 }

@@ -19,6 +19,7 @@ export type QuestionState = {
 export type QuizResponse = {
   id: string
   preguntas: (opciones | null)[]
+  tiempo: Date
 }
 
 export type IPregunta = rinde_examen & {

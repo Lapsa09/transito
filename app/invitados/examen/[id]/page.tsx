@@ -32,6 +32,7 @@ async function page({
   if (!token || !examen) redirect('/invitados/examen')
   try {
     const usuario = await getPreguntas(token)
+    if (usuario.nota) redirect(`/invitados/examen/${usuario.id}/resultado`)
     return (
       <div>
         <h1 className="text-center text-3xl font-bold">Examen</h1>

@@ -89,8 +89,8 @@ export function CreateFormLayout({
             route: `/${section}/${layoutSegment}`,
             body,
           })
-          data?.unshift(post)
-          return data
+
+          return data ? [post, ...data] : [post]
         },
         {
           revalidate: false,

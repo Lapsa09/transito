@@ -9,8 +9,7 @@ import { ScheduleList } from '@/types/citymis.examen'
 const getFromCitymis = async () => {
   try {
     const schedule_list = await getter<ScheduleList[]>({
-      route:
-        'examen/citymis?page_number=1&tos_id=10&status_id=1&due_status=&date_type=schedule_date&date_range=today&process_type_id=12&',
+      route: 'examen/citymis',
     })
     for (const examen of schedule_list) {
       const regex = /(.+?)\s+\((.+?)\)/
@@ -85,7 +84,7 @@ export async function POST(req: Request) {
     if (examen) {
       await prisma.rinde_examen.update({
         where: { id: examen.id },
-        data: { utilizado: true },
+        data: { utilizado: true, hora_ingresado: new Date() },
       })
       const token = jwt.sign(examen, 'delanflash16')
       return NextResponse.json(token)

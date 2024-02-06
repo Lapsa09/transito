@@ -86,8 +86,8 @@ model motos_operativos {
 
 model motos_registros {
   dominio           String?           @db.VarChar
-  licencia          BigInt?
-  acta              BigInt?
+  licencia          Int?
+  acta              Int?
   resolucion        resolucion?
   fechacarga        DateTime?         @db.Timestamp(6)
   lpcarga           Int?
@@ -168,9 +168,8 @@ model operativos_operativos {
 
 model operativos_registros {
   dominio               String                @db.VarChar
-  licencia              BigInt?
-  acta                  BigInt?
-  graduacion_alcoholica Float?                @default(0) @db.Real
+  licencia              Int?
+  acta                  Int?
   resolucion            resolucion?           @default(PREVENCION)
   fechacarga            DateTime?             @default(now()) @db.Timestamp(6)
   lpcarga               Int?
@@ -183,6 +182,7 @@ model operativos_registros {
   id_zona_infractor     Int
   id_operativo          Int
   id_motivo             Int?
+  graduacion_alcoholica Float?                @default(0) @db.Real
   tipo_licencia         tipo_licencias?       @relation(fields: [id_licencia], references: [id_tipo], onDelete: NoAction, onUpdate: NoAction, map: "fk_licencia")
   zona_infractor        barrios               @relation(fields: [id_zona_infractor], references: [id_barrio], onDelete: NoAction, onUpdate: NoAction, map: "fk_zona_infractor")
   motivo                motivos?              @relation(fields: [id_motivo], references: [id_motivo], onDelete: NoAction, onUpdate: NoAction)
@@ -504,8 +504,8 @@ model reparaciones {
   patente     String    @db.VarChar
   retira      String?   @db.VarChar
   observacion String?   @db.VarChar
+  repuesto    repuesto  @relation(fields: [articulo], references: [id])
   movil       movil     @relation(fields: [patente], references: [patente])
-  repuesto    repuesto? @relation(fields: [articulo], references: [id])
 
   @@schema("logistica")
 }
@@ -522,10 +522,10 @@ model uso {
 
 model pedido_repuesto {
   id            Int        @id @default(autoincrement())
-  orden_compra  String     @db.VarChar
   fecha_pedido  DateTime?  @db.Date
   fecha_entrega DateTime?  @db.Date
   id_proveedor  Int
+  orden_compra  String     @db.VarChar
   proveedor     proveedor  @relation(fields: [id_proveedor], references: [id])
   repuestos     repuesto[]
 
@@ -538,8 +538,8 @@ model repuesto {
   item             String          @db.VarChar
   id_pedido        Int
   reparacion       reparaciones?
-  tipo_repuesto    tipo_repuesto   @relation(fields: [id_tipo_repuesto], references: [id_tipo_repuesto])
   pedido_repuesto  pedido_repuesto @relation(fields: [id_pedido], references: [id], map: "repuesto_id_pedido_fkey")
+  tipo_repuesto    tipo_repuesto   @relation(fields: [id_tipo_repuesto], references: [id_tipo_repuesto])
 
   @@schema("logistica")
 }
@@ -636,10 +636,10 @@ model reporte {
 
 model examen {
   id         Int            @id @default(autoincrement())
-  fecha      DateTime?      @default(now()) @db.Date
-  hora       DateTime?      @default(now()) @db.Time(6)
   clave      String?        @db.VarChar
+  fecha      DateTime?      @default(now()) @db.Date
   habilitado Boolean        @default(false)
+  hora       DateTime?      @default(now()) @db.Time(6)
   terminado  Boolean?       @default(false)
   alumnos    rinde_examen[]
 
@@ -658,10 +658,10 @@ model calificacion {
 model tipo_examen {
   id                 Int            @id @default(autoincrement())
   tipo               String?        @db.VarChar
-  preguntas          preguntas[]
-  rinde_examen       rinde_examen[]
   cantidad_preguntas Int
   cantidad_temas     Int
+  preguntas          preguntas[]
+  rinde_examen       rinde_examen[]
 
   @@schema("examen")
 }
@@ -675,14 +675,14 @@ model rinde_examen {
   email            String?            @db.VarChar
   dni              Int
   utilizado        Boolean            @default(false)
-  hora_ingresado   DateTime?          @db.Timestamp(6)
-  hora_finalizado  DateTime?          @db.Timestamp(6)
   tema             Int?
-  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
+  tipo_examenId    Int?
+  hora_finalizado  DateTime?          @db.Timestamp(6)
+  hora_ingresado   DateTime?          @db.Timestamp(6)
   examen_preguntas examen_preguntas[]
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
   calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
-  tipo_examenId    Int?
+  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
 
   @@unique([id_examen, dni])
   @@schema("examen")
@@ -691,10 +691,10 @@ model rinde_examen {
 model examen_preguntas {
   examen_id    String
   preguntas_id Int
-  examen       rinde_examen @relation(fields: [examen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  pregunta     preguntas    @relation(fields: [preguntas_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   elegida_id   Int?
   elegida      opciones?    @relation(fields: [elegida_id], references: [id])
+  examen       rinde_examen @relation(fields: [examen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pregunta     preguntas    @relation(fields: [preguntas_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([examen_id, preguntas_id])
   @@schema("examen")
@@ -704,9 +704,9 @@ model opciones {
   id          Int                @id @default(autoincrement())
   respuesta   String             @db.VarChar
   id_pregunta Int
+  elegidas    examen_preguntas[]
   pregunta    preguntas          @relation("opciones_id_preguntaTopreguntas", fields: [id_pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction)
   correctas   preguntas[]        @relation("preguntas_correctaToopciones")
-  elegidas    examen_preguntas[]
 
   @@schema("examen")
 }
@@ -714,13 +714,13 @@ model opciones {
 model preguntas {
   id               Int                @id @default(autoincrement())
   pregunta         String             @db.VarChar
-  tema             Int
-  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
   id_correcta      Int?
+  tema             Int
+  tipo_examenId    Int?
   examen_preguntas examen_preguntas[]
   opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")
   correcta         opciones?          @relation("preguntas_correctaToopciones", fields: [id_correcta], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tipo_examenId    Int?
+  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
 
   @@schema("examen")
 }

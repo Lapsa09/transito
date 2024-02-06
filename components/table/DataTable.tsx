@@ -12,6 +12,9 @@ import {
   SortingState,
   getSortedRowModel,
   RowSelectionState,
+  TableOptions,
+  PaginationState,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import {
   Table,
@@ -24,14 +27,12 @@ import {
 import { DataTablePagination } from './DataTablePagination'
 import { ComponentType, Fragment, useState } from 'react'
 import Filter from './DataTableFilters'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-interface DataTableProps<TData> {
+interface DataTableProps<TData> extends Partial<TableOptions<TData>> {
   columns: ColumnDef<TData>[]
-  data?: TData[]
-  getRowCanExpand?: (row: Row<TData>) => boolean
   expand?: ComponentType<{ data: TData }>
   rowClassName?: (row: Row<TData>) => string
-  enableRowSelection?: boolean
 }
 
 export function DataTable<TData>({
@@ -41,10 +42,23 @@ export function DataTable<TData>({
   expand: Expand,
   rowClassName,
   enableRowSelection = false,
+  ...props
 }: DataTableProps<TData>) {
+  const router = useRouter()
+  const queryParams = useSearchParams()
+  const pageIndex = parseInt(queryParams.get('page') || '0')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+  const onPaginationChange: OnChangeFn<PaginationState> = (updater) => {
+    const newPage =
+      typeof updater === 'function'
+        ? updater({ pageIndex, pageSize: 10 })
+        : updater
+    router.replace(`?page=${newPage.pageIndex}`)
+  }
+
   const table = useReactTable({
     data,
     columns,
@@ -60,6 +74,10 @@ export function DataTable<TData>({
       columnFilters,
       sorting,
       rowSelection,
+      pagination: {
+        pageIndex,
+        pageSize: 10,
+      },
     },
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
@@ -67,6 +85,8 @@ export function DataTable<TData>({
     defaultColumn: {
       size: 200,
     },
+    onPaginationChange,
+    ...props,
   })
   return (
     <div className="w-full">

@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormMotosProps } from '@/types'
-import { resolucion, seguridad, turnos } from '@prisma/client'
+import { resolucion } from '@prisma/client'
 import { geoLocation } from '@/services'
 
 const operativoMotos = async (body: FormMotosProps) => {
@@ -108,26 +108,31 @@ const operativoMotos = async (body: FormMotosProps) => {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
+  const total = await prisma.motos_registros.count()
   const motos = await prisma.motos_registros.findMany({
     include: {
       operativo: { include: { localidad: true } },
-      motivos: true,
+      motivos: {
+        include: {
+          motivo: true,
+        },
+      },
       tipo_licencias: true,
       zona_infractor: true,
     },
     orderBy: {
       id: 'desc',
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(motos, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+  return NextResponse.json({
+    data: motos,
+    pages: Math.ceil(total / 10),
+  })
 }
 
 export async function POST(req: Request) {

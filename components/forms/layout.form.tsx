@@ -65,32 +65,44 @@ export function CreateFormLayout({
     handleSubmit,
     formState: { isValid },
   } = methods
-  const layoutSegment = useSelectedLayoutSegment() as
-    | 'autos'
-    | 'motos'
-    | 'camiones'
-    | 'rio'
+  const layoutSegment = useSelectedLayoutSegment()
   const { toast } = useToast()
   const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
-    layoutSegment,
+    layoutSegment as string,
     {
       expiresAt: 0,
     },
   )
+  type MutateProps = {
+    pages: number
+    data: Registro[]
+  }
 
   const onSubmit: SubmitHandler<FormInputProps | RioFormProps> = async (
     body,
   ) => {
     try {
-      await mutate<Registro[]>(
-        layoutSegment,
+      await mutate<MutateProps>(
+        { route: `${section}/${layoutSegment}?page=0` },
         async (data) => {
           const post = await setter<Registro>({
             route: `/${section}/${layoutSegment}`,
             body,
           })
 
-          return data ? [post, ...data] : [post]
+          if (data) {
+            if (data.data?.length === 10) {
+              data.data?.pop()
+            }
+            return {
+              pages: data.pages,
+              data: [post, ...(data.data || [])],
+            }
+          }
+          return {
+            pages: 1,
+            data: [post],
+          }
         },
         {
           revalidate: false,

@@ -2,7 +2,6 @@ import prisma from '@/lib/prismadb'
 import { RioFormProps } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { DateTime } from 'luxon'
-import { turnos } from '@prisma/client'
 import { load } from 'cheerio'
 
 const operativoPaseo = async (body: RioFormProps) => {
@@ -110,7 +109,9 @@ const radicacion = async (body: RioFormProps) => {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
+  const total = await prisma.nuevo_control_registros.count()
   const res = await prisma.nuevo_control_registros.findMany({
     include: {
       operativo: true,
@@ -120,9 +121,14 @@ export async function GET() {
     orderBy: {
       id: 'desc',
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(res)
+  return NextResponse.json({
+    data: res,
+    pages: Math.ceil(total / 10),
+  })
 }
 
 export async function POST(req: NextRequest) {

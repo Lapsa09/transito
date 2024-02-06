@@ -35,7 +35,6 @@ function ListaAlumnos({
         {alumnos.filter(filterAlumnos).map((alumno) => (
           <AlumnoCard key={alumno.id} alumno={alumno} />
         ))}
-        I
       </div>
     </div>
   )

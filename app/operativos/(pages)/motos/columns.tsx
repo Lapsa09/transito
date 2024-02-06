@@ -90,7 +90,7 @@ export const columns: ColumnDef<Registro>[] = [
     header: 'Resolución',
   },
   {
-    accessorFn: (row) => row.motivos.map((m) => m.motivo).join(', '),
+    accessorFn: (row) => row.motivos.map((m) => m.motivo.motivo).join(', '),
     header: 'Motivos',
   },
   {

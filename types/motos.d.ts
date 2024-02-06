@@ -6,6 +6,7 @@ import {
   barrios,
   motivos,
   vicente_lopez,
+  moto_motivo,
 } from '@prisma/client'
 
 export type Registro = {
@@ -24,7 +25,7 @@ export type Registro = {
   id_licencia: number | null
   id_zona_infractor: number | null
   id_operativo: number | null
-  motivos: motivos[]
+  motivos: Array<moto_motivo & { motivo: motivos }>
   tipo_licencias: tipo_licencias | null
   zona_infractor: barrios | null
   operativo: Operativo

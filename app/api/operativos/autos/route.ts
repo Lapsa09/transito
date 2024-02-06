@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormAutosProps } from '@/types'
 import { resolucion } from '@prisma/client'
@@ -100,7 +100,9 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') ?? '0')
+  const total = await prisma.operativos_registros.count()
   const autos = await prisma.operativos_registros.findMany({
     include: {
       motivo: { select: { motivo: true } },
@@ -111,15 +113,11 @@ export async function GET() {
       },
     },
     orderBy: { id: 'desc' },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(autos, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+  return NextResponse.json({ data: autos, pages: Math.ceil(total / 10) })
 }
 
 export async function POST(req: Request) {
@@ -164,13 +162,7 @@ export async function POST(req: Request) {
       },
     })
 
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(auto, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+    return NextResponse.json(auto)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

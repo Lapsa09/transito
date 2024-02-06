@@ -1,17 +1,30 @@
 'use client'
 
 import { DataTable } from '@/components/table'
-import { getPaseo } from '@/services'
+import { getter } from '@/services'
 import React from 'react'
 import useSWR from 'swr'
 import { columns } from './columns'
 import Loader from '@/components/Loader'
+import { useSearchParams } from 'next/navigation'
+import { Registro } from '@/types/rio'
 
 function page() {
-  const { data, isLoading } = useSWR('rio', getPaseo)
+  const queryParams = useSearchParams()
+  const { data, isLoading } = useSWR<{ data: Registro[]; pages: number }>(
+    { route: `operativos/rio?page=${queryParams.toString()}` },
+    getter,
+  )
   if (isLoading) return <Loader />
 
-  return <DataTable columns={columns} data={data!} />
+  return (
+    <DataTable
+      columns={columns}
+      data={data?.data}
+      pageCount={data?.pages}
+      manualPagination
+    />
+  )
 }
 
 export default page

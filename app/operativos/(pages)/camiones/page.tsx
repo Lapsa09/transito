@@ -13,7 +13,7 @@ function ClientTable() {
   const queryParams = useSearchParams()
 
   const { data, isLoading } = useSWR<{ data: Registro[]; pages: number }>(
-    { route: `operativos/camiones?page=${queryParams.toString()}` },
+    { route: `operativos/camiones?${queryParams.toString()}` },
     getter,
   )
 

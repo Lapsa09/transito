@@ -12,7 +12,7 @@ import { Registro } from '@/types/rio'
 function page() {
   const queryParams = useSearchParams()
   const { data, isLoading } = useSWR<{ data: Registro[]; pages: number }>(
-    { route: `operativos/rio?page=${queryParams.toString()}` },
+    { route: `operativos/rio?${queryParams.toString()}` },
     getter,
   )
   if (isLoading) return <Loader />

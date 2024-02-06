@@ -12,7 +12,7 @@ import { useSearchParams } from 'next/navigation'
 function ClientTable() {
   const queryParams = useSearchParams()
   const { data, isLoading } = useSWR<{ data: Registro[]; pages: number }>(
-    { route: `operativos/motos?page=${queryParams.toString()}` },
+    { route: `operativos/motos?${queryParams.toString()}` },
     getter,
   )
 

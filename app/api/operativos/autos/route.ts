@@ -220,7 +220,10 @@ export async function GET(req: NextRequest) {
 
   const [autos, total] = await Promise.all([autosPromise, totalPromise])
 
-  return Response.json({ data: autos, pages: Math.ceil(total / 10).toString() })
+  return NextResponse.json({
+    data: autos,
+    pages: Math.ceil(total / 10).toString(),
+  })
 }
 
 export async function POST(req: NextRequest) {

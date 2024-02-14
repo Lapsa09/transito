@@ -30,7 +30,7 @@ const Quiz = ({
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     await setter({
       route: `examen/${id}`,
-      body: { ...body, tiempo: new Date(1800 * 1000 - seconds * 1000) },
+      body: { ...body, tiempo: new Date() },
     })
     router.push(`/invitados/examen/${id}/resultado`)
   }

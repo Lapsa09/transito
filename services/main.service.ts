@@ -28,6 +28,9 @@ const axios = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
 })
 
+export const fetcher = (route: string, init?: RequestInit) =>
+  fetch(new URL(route, process.env.NEXT_PUBLIC_SERVER_URL), init)
+
 export const getter = async <T = any>({ route, config }: Props) => {
   const { data } = await axios.get<T>(route, config)
 

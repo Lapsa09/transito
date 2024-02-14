@@ -15,9 +15,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.id,
     id: 'id',
-    filterFn: (row, column, value) => {
-      return row.getValue(column) == value
-    },
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) =>
@@ -31,10 +29,11 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) =>
       row.operativo?.hora &&
-      DateTime.fromISO(row.operativo.hora, {
-        setZone: true,
-      }).toLocaleString(DateTime.TIME_24_SIMPLE),
+      DateTime.fromISO(row.operativo.hora, { setZone: true }).toLocaleString(
+        DateTime.TIME_24_SIMPLE,
+      ),
     id: 'hora',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.operativo?.qth?.toLocaleUpperCase(),
@@ -48,6 +47,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.localidad?.cp,
     id: 'cp',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) =>
@@ -57,6 +57,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.seguridad,
     id: 'seguridad',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.dominio?.toLocaleUpperCase(),
@@ -65,6 +66,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.licencia,
     id: 'licencia',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.tipo_licencia?.tipo,
@@ -73,14 +75,17 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.tipo_licencia?.vehiculo,
     id: 'tipo_vehiculo',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.graduacion_alcoholica,
     id: 'graduacion_alcoholica',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.resultado,
     id: 'resultado_alcoholemia',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.zona_infractor?.barrio,
@@ -90,30 +95,37 @@ export const columns: ColumnDef<Registro>[] = [
     accessorFn: (row) => row.es_del,
     id: 'vecino',
     cell: ({ getValue }) => (getValue() === 'VILO' ? 'SI' : 'NO'),
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.resolucion,
     id: 'resolucion',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.acta,
     id: 'acta',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.motivo?.motivo,
     id: 'motivo',
+    size: 400,
   },
   {
     accessorFn: (row) => row.operativo?.direccion_full?.toLocaleUpperCase(),
     id: 'direccion_full',
     size: 800,
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.operativo?.latitud,
     id: 'latitud',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.operativo?.longitud,
     id: 'longitud',
+    enableColumnFilter: false,
   },
 ]

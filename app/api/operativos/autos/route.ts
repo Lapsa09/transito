@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormAutosProps } from '@/types'
-import { resolucion } from '@prisma/client'
+import { resolucion, Prisma } from '@prisma/client'
 import { geoLocation } from '@/services'
+import { revalidateTag } from 'next/cache'
 
 const operativoAlcoholemia = async (body: FormAutosProps) => {
   const {
@@ -101,9 +102,104 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
 }
 
 export async function GET(req: NextRequest) {
-  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') ?? '0')
-  const total = await prisma.operativos_registros.count()
-  const autos = await prisma.operativos_registros.findMany({
+  const { searchParams } = req.nextUrl
+  const filterParams: Record<string, string> = [
+    ...searchParams.getAll('filter'),
+  ].reduce((acc, curr) => {
+    const [id, value] = curr.split('=')
+    return { ...acc, [id]: value }
+  }, {})
+
+  const where: Prisma.operativos_registrosWhereInput = {
+    dominio: filterParams.dominio
+      ? {
+          contains: filterParams.dominio,
+          mode: 'insensitive',
+        }
+      : undefined,
+    operativo:
+      filterParams.qth || filterParams.localidad || filterParams.fecha
+        ? {
+            qth: filterParams.qth
+              ? {
+                  contains: filterParams.qth,
+                  mode: 'insensitive',
+                }
+              : undefined,
+            localidad: filterParams.barrio
+              ? {
+                  barrio: {
+                    contains: filterParams.barrio,
+                    mode: 'insensitive',
+                  },
+                }
+              : undefined,
+            fecha:
+              filterParams.fecha && new Date(filterParams.fecha).getDate()
+                ? {
+                    equals: new Date(filterParams.fecha),
+                  }
+                : undefined,
+          }
+        : undefined,
+    motivo: filterParams.motivo
+      ? {
+          motivo: {
+            contains: filterParams.motivo,
+            mode: 'insensitive',
+          },
+        }
+      : undefined,
+    tipo_licencia: filterParams.tipo_licencia
+      ? {
+          tipo: {
+            contains: filterParams.tipo_licencia,
+            mode: 'insensitive',
+          },
+        }
+      : undefined,
+    zona_infractor: filterParams.zona_infractor
+      ? {
+          barrio: {
+            contains: filterParams.zona_infractor,
+            mode: 'insensitive',
+          },
+        }
+      : undefined,
+  }
+  const pageIndex = parseInt(searchParams.get('page') ?? '0')
+
+  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
+    '=',
+  ) as [string, Prisma.SortOrder]
+  const orderBy: Prisma.operativos_registrosOrderByWithRelationInput =
+    sortBy in prisma.operativos_operativos.fields
+      ? {
+          operativo: {
+            [sortBy]: sort,
+          },
+        }
+      : sortBy === 'zona_infractor'
+      ? {
+          zona_infractor: {
+            barrio: sort,
+          },
+        }
+      : sortBy === 'motivo'
+      ? {
+          motivo: {
+            motivo: sort,
+          },
+        }
+      : sortBy === 'tipo_licencia'
+      ? {
+          tipo_licencia: {
+            tipo: sort,
+          },
+        }
+      : { [sortBy]: sort }
+
+  const autosPromise = prisma.operativos_registros.findMany({
     include: {
       motivo: { select: { motivo: true } },
       tipo_licencia: { select: { tipo: true, vehiculo: true } },
@@ -112,15 +208,22 @@ export async function GET(req: NextRequest) {
         include: { localidad: { select: { barrio: true, cp: true } } },
       },
     },
-    orderBy: { id: 'desc' },
+    where: Object.keys(filterParams).length ? where : undefined,
+    orderBy,
     skip: pageIndex * 10,
     take: 10,
   })
 
-  return NextResponse.json({ data: autos, pages: Math.ceil(total / 10) })
+  const totalPromise = prisma.operativos_registros.count({
+    where: Object.keys(filterParams).length ? where : undefined,
+  })
+
+  const [autos, total] = await Promise.all([autosPromise, totalPromise])
+
+  return Response.json({ data: autos, pages: Math.ceil(total / 10).toString() })
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body: FormAutosProps = await req.json()
 
@@ -161,7 +264,7 @@ export async function POST(req: Request) {
         zona_infractor: { select: { barrio: true } },
       },
     })
-
+    revalidateTag('autos')
     return NextResponse.json(auto)
   } catch (error) {
     console.log(error)

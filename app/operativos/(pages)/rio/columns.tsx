@@ -13,9 +13,8 @@ export const columns: ColumnDef<Registro>[] = [
   {
     id: 'id',
     accessorFn: (registro) => registro.id,
-    filterFn: (row, column, value) => {
-      return row.getValue(column) == value
-    },
+    enableColumnFilter: false,
+    size: 100,
   },
   {
     accessorFn: ({ operativo: { fecha } }) =>
@@ -34,6 +33,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (registro) => registro.operativo.lp,
     header: 'Legajo',
+    enableColumnFilter: false,
   },
   {
     accessorFn: ({ hora }) =>
@@ -41,6 +41,7 @@ export const columns: ColumnDef<Registro>[] = [
         setZone: true,
       }).toLocaleString(DateTime.TIME_24_SIMPLE),
     header: 'Hora',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (registro) => registro.dominio?.toUpperCase(),

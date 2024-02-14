@@ -1,55 +1,41 @@
-import { Autocomplete, AutocompleteItem } from '@nextui-org/react'
+import { Input } from '@nextui-org/react'
 import { Column } from '@tanstack/react-table'
-import { Key, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDebounceCallback } from 'usehooks-ts'
 
 function Filter<T, K>({ column }: { column: Column<T, K> }) {
-  const columnsFilterValue = column.getFilterValue() as Key
-  const [value, setValue] = useState(columnsFilterValue ?? '')
-
-  const sortedUniqueValues = useMemo(() => {
-    const arr = column.getFacetedUniqueValues()
-      ? [...column.getFacetedUniqueValues().keys()].sort((a, b) => {
-          if (Number(a) || new Date(a)) {
-            return a - b
-          }
-          return a.localeCompare(b)
-        })
-      : []
-    return arr
-  }, [column.getFacetedUniqueValues()])
+  const columnsFilterValue = column.getFilterValue() as string
+  const [filter, setFilter] = useState(columnsFilterValue)
+  const debouncedSetFilterValue = useDebounceCallback(
+    column.setFilterValue,
+    1000,
+  )
 
   useEffect(() => {
-    setValue(columnsFilterValue)
-  }, [columnsFilterValue])
+    debouncedSetFilterValue(filter)
+  }, [filter])
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      column.setFilterValue(value)
-    }, 500)
-
-    return () => clearTimeout(timeout)
-  }, [value])
+  if (column.id === 'fecha')
+    return (
+      <Input
+        type="date"
+        value={filter}
+        onValueChange={setFilter}
+        size="sm"
+        isClearable
+        className="mb-1"
+      />
+    )
 
   return (
-    <Autocomplete
-      selectedKey={columnsFilterValue}
-      onSelectionChange={setValue}
-      inputValue={value?.toString()}
-      onInputChange={setValue}
-      placeholder={`Buscar... (${column.getFacetedUniqueValues()?.size || 0})`}
-      clearButtonProps={{
-        onClick: () => {
-          setValue('')
-        },
-      }}
+    <Input
+      value={filter}
+      onValueChange={setFilter}
+      placeholder={`Buscar...`}
       size="sm"
       isClearable
       className="mb-1"
-    >
-      {sortedUniqueValues.slice(0, 5000).map((value, index) => (
-        <AutocompleteItem key={value ?? index}>{value}</AutocompleteItem>
-      ))}
-    </Autocomplete>
+    />
   )
 }
 

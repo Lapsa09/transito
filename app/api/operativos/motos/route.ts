@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormMotosProps } from '@/types'
-import { resolucion } from '@prisma/client'
+import { resolucion, Prisma } from '@prisma/client'
 import { geoLocation } from '@/services'
+import { revalidateTag } from 'next/cache'
 
 const operativoMotos = async (body: FormMotosProps) => {
   const {
@@ -109,9 +110,86 @@ const operativoMotos = async (body: FormMotosProps) => {
 }
 
 export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const filterParams: Record<string, string> = [
+    ...searchParams.getAll('filter'),
+  ].reduce((acc, curr) => {
+    const [id, value] = curr.split('=')
+    return { ...acc, [id]: value }
+  }, {})
+  const where: Prisma.motos_registrosWhereInput = {
+    dominio: {
+      contains: filterParams.dominio ?? '',
+      mode: 'insensitive',
+    },
+    operativo: {
+      qth: {
+        contains: filterParams.qth ?? '',
+        mode: 'insensitive',
+      },
+      localidad: {
+        barrio: {
+          contains: filterParams.localidad ?? '',
+          mode: 'insensitive',
+        },
+      },
+      fecha:
+        filterParams.fecha && new Date(filterParams.fecha).getDate()
+          ? {
+              equals: new Date(filterParams.fecha),
+            }
+          : undefined,
+    },
+    motivos: {
+      some: {
+        motivo: {
+          motivo: {
+            contains: filterParams.motivo ?? '',
+            mode: 'insensitive',
+          },
+        },
+      },
+    },
+    tipo_licencias: {
+      tipo: {
+        contains: filterParams.tipo_licencias ?? '',
+        mode: 'insensitive',
+      },
+    },
+    zona_infractor: {
+      barrio: {
+        contains: filterParams.zona_infractor ?? '',
+        mode: 'insensitive',
+      },
+    },
+  }
   const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
-  const total = await prisma.motos_registros.count()
-  const motos = await prisma.motos_registros.findMany({
+
+  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
+    '=',
+  ) as [string, Prisma.SortOrder]
+  const orderBy: Prisma.motos_registrosOrderByWithRelationInput =
+    sortBy in prisma.operativos_operativos.fields
+      ? {
+          operativo: {
+            [sortBy]: sort,
+          },
+        }
+      : sortBy === 'zona_infractor'
+      ? {
+          zona_infractor: {
+            barrio: sort,
+          },
+        }
+      : sortBy === 'tipo_licencia'
+      ? {
+          tipo_licencias: {
+            tipo: sort,
+          },
+        }
+      : { [sortBy]: sort }
+
+  const motosPromise = prisma.motos_registros.findMany({
     include: {
       operativo: { include: { localidad: true } },
       motivos: {
@@ -122,16 +200,20 @@ export async function GET(req: NextRequest) {
       tipo_licencias: true,
       zona_infractor: true,
     },
-    orderBy: {
-      id: 'desc',
-    },
+    orderBy,
     skip: pageIndex * 10,
     take: 10,
+    where: Object.keys(filterParams).length ? where : undefined,
   })
 
+  const totalPromise = prisma.motos_registros.count({
+    where: Object.keys(filterParams).length ? where : undefined,
+  })
+
+  const [motos, total] = await Promise.all([motosPromise, totalPromise])
   return NextResponse.json({
     data: motos,
-    pages: Math.ceil(total / 10),
+    pages: Math.ceil(total / 10).toString(),
   })
 }
 
@@ -191,12 +273,6 @@ export async function POST(req: Request) {
 
     moto.motivos = motivos
   }
-
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(moto, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+  revalidateTag('motos')
+  return NextResponse.json(moto)
 }

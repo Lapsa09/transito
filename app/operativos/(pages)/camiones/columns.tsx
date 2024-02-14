@@ -14,9 +14,8 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
-    filterFn: (row, column, value) => {
-      return row.getValue(column) == value
-    },
+    enableColumnFilter: false,
+    size: 100,
   },
   {
     header: 'Fecha',
@@ -30,6 +29,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.legajo,
     header: 'Legajo',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.operativo?.direccion,
@@ -42,6 +42,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.localidad?.cp,
     header: 'CP',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) =>
@@ -54,6 +55,7 @@ export const columns: ColumnDef<Registro>[] = [
       DateTime.fromISO(hora, { setZone: true }).toLocaleString(
         DateTime.TIME_24_SIMPLE,
       ),
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'dominio',
@@ -62,10 +64,12 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'licencia',
     header: 'Licencia',
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'origen',
     header: 'Origen',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.localidad_origen?.barrio,
@@ -74,6 +78,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'destino',
     header: 'Destino',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.localidad_destino?.barrio,
@@ -83,22 +88,27 @@ export const columns: ColumnDef<Registro>[] = [
     accessorKey: 'remito',
     header: 'Remito',
     cell: ({ row }) => (row.getValue('remito') ? 'Si' : 'No'),
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'carga',
     header: 'Carga',
     cell: ({ row }) => (row.getValue('carga') ? 'Si' : 'No'),
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'acta',
     header: 'Acta',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.motivo?.motivo,
     header: 'Motivo',
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'resolucion',
     header: 'Resolucion',
+    enableColumnFilter: false,
   },
 ]

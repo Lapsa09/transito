@@ -3,6 +3,8 @@ import { RioFormProps } from '@/types'
 import { NextRequest, NextResponse } from 'next/server'
 import { DateTime } from 'luxon'
 import { load } from 'cheerio'
+import { Prisma } from '@prisma/client'
+import { revalidateTag } from 'next/cache'
 
 const operativoPaseo = async (body: RioFormProps) => {
   const { fecha, turno, lp } = body
@@ -110,24 +112,85 @@ const radicacion = async (body: RioFormProps) => {
 }
 
 export async function GET(req: NextRequest) {
-  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
-  const total = await prisma.nuevo_control_registros.count()
-  const res = await prisma.nuevo_control_registros.findMany({
+  const { searchParams } = req.nextUrl
+  const filterParams: Record<string, string> = [
+    ...searchParams.getAll('filter'),
+  ].reduce((acc, curr) => {
+    const [id, value] = curr.split('=')
+    return { ...acc, [id]: value }
+  }, {})
+  const where: Prisma.nuevo_control_registrosWhereInput = {
+    dominio: {
+      contains: filterParams.dominio ?? '',
+      mode: 'insensitive',
+    },
+    operativo: {
+      fecha:
+        filterParams.fecha && new Date(filterParams.fecha).getDate()
+          ? {
+              equals: new Date(filterParams.fecha),
+            }
+          : undefined,
+    },
+    zona: {
+      zona: {
+        contains: filterParams.zona ?? '',
+        mode: 'insensitive',
+      },
+    },
+    barrio: {
+      barrio: {
+        contains: filterParams.barrio ?? '',
+        mode: 'insensitive',
+      },
+    },
+  }
+  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') ?? '0')
+
+  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
+    '=',
+  ) as [string, Prisma.SortOrder]
+  const orderBy: Prisma.nuevo_control_registrosOrderByWithRelationInput =
+    sortBy in prisma.operativos_operativos.fields
+      ? {
+          operativo: {
+            [sortBy]: sort,
+          },
+        }
+      : sortBy === 'zona_infractor'
+      ? {
+          barrio: {
+            barrio: sort,
+          },
+        }
+      : sortBy === 'zona'
+      ? {
+          zona: {
+            zona: sort,
+          },
+        }
+      : { [sortBy]: sort }
+  const rioPromise = prisma.nuevo_control_registros.findMany({
     include: {
       operativo: true,
       zona: true,
       barrio: true,
     },
-    orderBy: {
-      id: 'desc',
-    },
+    orderBy,
     skip: pageIndex * 10,
     take: 10,
+    where: Object.keys(filterParams).length ? where : undefined,
   })
 
+  const totalPromise = prisma.nuevo_control_registros.count({
+    where: Object.keys(filterParams).length ? where : undefined,
+  })
+
+  const [data, total] = await Promise.all([rioPromise, totalPromise])
+
   return NextResponse.json({
-    data: res,
-    pages: Math.ceil(total / 10),
+    data,
+    pages: Math.ceil(total / 10).toString(),
   })
 }
 
@@ -167,6 +230,6 @@ export async function POST(req: NextRequest) {
       operativo: true,
     },
   })
-
+  revalidateTag('rio')
   return NextResponse.json(res)
 }

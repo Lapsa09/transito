@@ -73,41 +73,15 @@ export function CreateFormLayout({
       expiresAt: 0,
     },
   )
-  type MutateProps = {
-    pages: number
-    data: Registro[]
-  }
 
   const onSubmit: SubmitHandler<FormInputProps | RioFormProps> = async (
     body,
   ) => {
     try {
-      await mutate<MutateProps>(
-        { route: `${section}/${layoutSegment}?page=0` },
-        async (data) => {
-          const post = await setter<Registro>({
-            route: `/${section}/${layoutSegment}`,
-            body,
-          })
-
-          if (data) {
-            if (data.data?.length === 10) {
-              data.data?.pop()
-            }
-            return {
-              pages: data.pages,
-              data: [post, ...(data.data || [])],
-            }
-          }
-          return {
-            pages: 1,
-            data: [post],
-          }
-        },
-        {
-          revalidate: false,
-        },
-      )
+      const post = await setter<Registro>({
+        route: `/${section}/${layoutSegment}`,
+        body,
+      })
       toast({ title: 'Operativo creado con exito', variant: 'success' })
       const { expiresAt, ...rest } = operativo
       if (layoutSegment === 'camiones') {
@@ -239,21 +213,10 @@ export function EditFormLayout({
     body,
   ) => {
     try {
-      await mutate<Registro[]>(
-        layoutSegment,
-        async (data) => {
-          const registro = await updater<Registro>({
-            route: `/${section}/${layoutSegment}/${id}`,
-            body,
-          })
-          return data?.map((item) =>
-            item.id === registro.id ? registro : item,
-          )
-        },
-        {
-          revalidate: false,
-        },
-      )
+      const registro = await updater<Registro>({
+        route: `/${section}/${layoutSegment}/${id}`,
+        body,
+      })
       toast({ title: 'Operativo editado con exito', variant: 'success' })
       router.back()
     } catch (error: any) {

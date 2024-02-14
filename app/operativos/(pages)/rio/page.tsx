@@ -1,30 +1,29 @@
-'use client'
-
-import { DataTable } from '@/components/table'
-import { getter } from '@/services'
-import React from 'react'
-import useSWR from 'swr'
-import { columns } from './columns'
-import Loader from '@/components/Loader'
-import { useSearchParams } from 'next/navigation'
 import { Registro } from '@/types/rio'
+import PageClient from './page.client'
+import { fetcher } from '@/services'
 
-function page() {
-  const queryParams = useSearchParams()
-  const { data, isLoading } = useSWR<{ data: Registro[]; pages: number }>(
-    { route: `operativos/rio?${queryParams.toString()}` },
-    getter,
+const getRio = async (searchParams: string) => {
+  const res = await fetcher(
+    `/operativos/rio${searchParams ? `?${searchParams}` : ''}`,
+    {
+      next: {
+        tags: ['operativos', 'rio'],
+      },
+    },
   )
-  if (isLoading) return <Loader />
+  const data: { data: Registro[]; pages: number } = await res.json()
+  return data
+}
 
-  return (
-    <DataTable
-      columns={columns}
-      data={data?.data}
-      pageCount={data?.pages}
-      manualPagination
-    />
+async function page({
+  searchParams,
+}: {
+  searchParams: Record<string, string>
+}) {
+  const { data, pages } = await getRio(
+    new URLSearchParams(searchParams).toString(),
   )
+  return <PageClient data={data} pages={pages} />
 }
 
 export default page

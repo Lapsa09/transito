@@ -14,10 +14,8 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
-    filterFn: (row, column, value) => {
-      return row.getValue(column) == value
-    },
     enableColumnFilter: false,
+    size: 100,
   },
   {
     header: 'Fecha',
@@ -38,10 +36,12 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.legajo_a_cargo,
     header: 'Legajo a cargo',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.operativo?.legajo_planilla,
     header: 'Legajo planilla',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.operativo?.qth,
@@ -55,6 +55,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.localidad?.cp,
     header: 'CP',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) =>
@@ -64,6 +65,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.seguridad,
     header: 'Seguridad',
+    enableColumnFilter: false,
   },
   {
     accessorKey: 'dominio',
@@ -72,6 +74,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'licencia',
     header: 'Licencia',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.tipo_licencias?.tipo,
@@ -80,6 +83,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.tipo_licencias?.vehiculo,
     header: 'Tipo de vehículo',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.zona_infractor?.barrio,
@@ -88,6 +92,7 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'resolucion',
     header: 'Resolución',
+    enableColumnFilter: false,
   },
   {
     accessorFn: (row) => row.motivos.map((m) => m.motivo.motivo).join(', '),
@@ -96,5 +101,6 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorKey: 'acta',
     header: 'Acta',
+    enableColumnFilter: false,
   },
 ]

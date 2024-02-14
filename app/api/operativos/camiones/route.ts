@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormCamionesProps } from '@/types'
-import { resolucion, turnos } from '@prisma/client'
+import { resolucion, Prisma } from '@prisma/client'
 import { geoLocation } from '@/services'
+import { revalidateTag } from 'next/cache'
 
 const operativoCamiones = async (body: FormCamionesProps) => {
   const { fecha, qth, turno, legajo, localidad } = body
@@ -90,9 +91,87 @@ const operativoCamiones = async (body: FormCamionesProps) => {
 }
 
 export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const filterParams: Record<string, string> = [
+    ...searchParams.getAll('filter'),
+  ].reduce((acc, curr) => {
+    const [id, value] = curr.split('=')
+    return { ...acc, [id]: value }
+  }, {})
+  const where: Prisma.camiones_registrosWhereInput = {
+    dominio: {
+      contains: filterParams.dominio ?? '',
+      mode: 'insensitive',
+    },
+    operativo: {
+      direccion: {
+        contains: filterParams.direccion ?? '',
+        mode: 'insensitive',
+      },
+      localidad: {
+        barrio: {
+          contains: filterParams.localidad ?? '',
+          mode: 'insensitive',
+        },
+      },
+      fecha:
+        filterParams.fecha && new Date(filterParams.fecha).getDate()
+          ? {
+              equals: new Date(filterParams.fecha),
+            }
+          : undefined,
+    },
+    motivo: {
+      motivo: {
+        contains: filterParams.motivo ?? '',
+        mode: 'insensitive',
+      },
+    },
+    localidad_origen: {
+      barrio: {
+        contains: filterParams.localidad_origen ?? '',
+        mode: 'insensitive',
+      },
+    },
+    localidad_destino: {
+      barrio: {
+        contains: filterParams.localidad_destino ?? '',
+        mode: 'insensitive',
+      },
+    },
+  }
   const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
-  const total = await prisma.camiones_registros.count()
-  const camiones = await prisma.camiones_registros.findMany({
+
+  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
+    '=',
+  ) as [string, Prisma.SortOrder]
+  const orderBy: Prisma.camiones_registrosOrderByWithRelationInput =
+    sortBy in prisma.operativos_operativos.fields
+      ? {
+          operativo: {
+            [sortBy]: sort,
+          },
+        }
+      : sortBy === 'localidad_origen'
+      ? {
+          localidad_origen: {
+            barrio: sort,
+          },
+        }
+      : sortBy === 'motivo'
+      ? {
+          motivo: {
+            motivo: sort,
+          },
+        }
+      : sortBy === 'localidad_destino'
+      ? {
+          localidad_destino: {
+            barrio: sort,
+          },
+        }
+      : { [sortBy]: sort }
+  const camionesPromise = prisma.camiones_registros.findMany({
     include: {
       motivo: { select: { motivo: true } },
       localidad_destino: true,
@@ -101,14 +180,20 @@ export async function GET(req: NextRequest) {
         include: { localidad: { select: { barrio: true, cp: true } } },
       },
     },
-    orderBy: { id: 'desc' },
+    orderBy,
     skip: pageIndex * 10,
     take: 10,
+    where: Object.keys(filterParams).length ? where : undefined,
   })
 
+  const totalPromise = prisma.camiones_registros.count({
+    where: Object.keys(filterParams).length ? where : undefined,
+  })
+
+  const [camiones, total] = await Promise.all([camionesPromise, totalPromise])
   return NextResponse.json({
     data: camiones,
-    pages: Math.ceil(total / 10),
+    pages: Math.ceil(total / 10).toString(),
   })
 }
 
@@ -161,14 +246,8 @@ export async function POST(req: Request) {
         localidad_destino: { select: { barrio: true } },
       },
     })
-
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(camion, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+    revalidateTag('camiones')
+    return NextResponse.json(camion)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

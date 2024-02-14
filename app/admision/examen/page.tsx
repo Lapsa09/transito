@@ -2,9 +2,10 @@ import React from 'react'
 import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
 import { examen } from '@prisma/client'
+import { fetcher } from '@/services'
 
 const getExamenes = async () => {
-  const response = await fetch(process.env.NEXT_PUBLIC_SERVER_URL + '/examen', {
+  const response = await fetcher('/api/examen', {
     next: { revalidate: 3600 * 24 },
   })
   const examenes: examen[] = await response.json()

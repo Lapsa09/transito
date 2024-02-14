@@ -17,8 +17,8 @@ function ListaAlumnos({
   ) => {
     if (inputValue === '') return true
     return (
-      alumno.apellido?.includes(inputValue) ||
-      alumno.nombre?.includes(inputValue) ||
+      alumno.apellido?.toLowerCase().includes(inputValue.toLowerCase()) ||
+      alumno.nombre?.toLowerCase().includes(inputValue.toLowerCase()) ||
       alumno.dni.toString().includes(inputValue)
     )
   }

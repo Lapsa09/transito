@@ -5,8 +5,6 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  getFilteredRowModel,
-  getFacetedUniqueValues,
   ColumnFiltersState,
   Row,
   SortingState,
@@ -28,6 +26,7 @@ import { DataTablePagination } from './DataTablePagination'
 import { ComponentType, Fragment, useState } from 'react'
 import Filter from './DataTableFilters'
 import { useRouter, useSearchParams } from 'next/navigation'
+import DataTableSorter from './DataTableSorter'
 
 interface DataTableProps<TData> extends Partial<TableOptions<TData>> {
   columns: ColumnDef<TData>[]
@@ -46,17 +45,64 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
   const router = useRouter()
   const queryParams = useSearchParams()
-  const pageIndex = parseInt(queryParams.get('page') || '0')
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
+  const pageIndex = parseInt(queryParams.get('page') ?? '0')
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const findFilter = (id: string) =>
+    queryParams.getAll('filter').find((f) => f.startsWith(id))
+  const findSort = (id: string) =>
+    queryParams.getAll('sortBy').find((f) => f.startsWith(id))
+
+  const columnFilters: ColumnFiltersState = [
+    ...queryParams.getAll('filter'),
+  ].map((param) => {
+    const [id, value] = param.split('=')
+    return {
+      id,
+      value,
+    }
+  })
+  const sorting: SortingState = [...queryParams.getAll('sortBy')].map(
+    (param) => {
+      const [id, value] = param.split('=')
+      return {
+        id,
+        desc: value === 'desc',
+      }
+    },
+  )
 
   const onPaginationChange: OnChangeFn<PaginationState> = (updater) => {
     const newPage =
       typeof updater === 'function'
         ? updater({ pageIndex, pageSize: 10 })
         : updater
-    router.replace(`?page=${newPage.pageIndex}`)
+    const newSearchParams = new URLSearchParams(queryParams)
+    newSearchParams.set('page', newPage.pageIndex.toString())
+    router.replace(`?${newSearchParams.toString()}`)
+  }
+
+  const onColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (updater) => {
+    const newColumnFilters =
+      typeof updater === 'function' ? updater(columnFilters) : updater
+    const newSearchParams = new URLSearchParams(queryParams)
+    if (newColumnFilters.length === 0) newSearchParams.delete('filter')
+    newColumnFilters.forEach((filter) => {
+      newSearchParams.delete('filter', findFilter(filter.id))
+      newSearchParams.append('filter', `${filter.id}=${filter.value}`)
+    })
+    router.replace(`?${newSearchParams.toString()}`)
+  }
+
+  const onSortingChange: OnChangeFn<SortingState> = (updater) => {
+    const newSorting =
+      typeof updater === 'function' ? updater(sorting) : updater
+    const newSearchParams = new URLSearchParams(queryParams)
+    if (newSorting.length === 0) newSearchParams.delete('sortBy')
+    newSorting.forEach((sort) => {
+      newSearchParams.delete('sortBy', findSort(sort.id))
+      newSearchParams.set('sortBy', `${sort.id}=${sort.desc ? 'desc' : 'asc'}`)
+    })
+    router.replace(`?${newSearchParams.toString()}`)
   }
 
   const table = useReactTable({
@@ -66,10 +112,9 @@ export function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     columnResizeMode: 'onChange',
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
+    onColumnFiltersChange,
+    onSortingChange,
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnFilters,
       sorting,
@@ -81,11 +126,13 @@ export function DataTable<TData>({
     },
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     defaultColumn: {
       size: 200,
     },
     onPaginationChange,
+    manualFiltering: true,
+    manualSorting: true,
+    manualPagination: true,
     ...props,
   })
   return (
@@ -104,23 +151,7 @@ export function DataTable<TData>({
                   >
                     {header.isPlaceholder ? null : (
                       <>
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : '',
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                          {{
-                            asc: ' 🔼',
-                            desc: ' 🔽',
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
+                        <DataTableSorter header={header} />
                         {header.column.getCanFilter() ? (
                           <div>
                             <Filter column={header.column} />
@@ -146,6 +177,7 @@ export function DataTable<TData>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel()?.rows?.length ? (
               table.getRowModel().rows.map((row) => (

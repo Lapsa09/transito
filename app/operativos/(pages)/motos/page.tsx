@@ -5,7 +5,7 @@ import { fetcher } from '@/services'
 
 const getMotos = async (searchParams: string) => {
   const res = await fetcher(
-    `/operativos/motos${searchParams ? `?${searchParams}` : ''}`,
+    `/api/operativos/motos${searchParams ? `?${searchParams}` : ''}`,
     {
       next: {
         tags: ['operativos', 'motos'],

@@ -4,7 +4,7 @@ import { fetcher } from '@/services'
 
 const getRio = async (searchParams: string) => {
   const res = await fetcher(
-    `/operativos/rio${searchParams ? `?${searchParams}` : ''}`,
+    `/api/operativos/rio${searchParams ? `?${searchParams}` : ''}`,
     {
       next: {
         tags: ['operativos', 'rio'],

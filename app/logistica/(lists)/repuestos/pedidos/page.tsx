@@ -11,7 +11,8 @@ import { Repuestos } from './expansions'
 function page() {
   const { data, isLoading } = useSWR<PedidoRepuesto[]>(
     { route: 'logistica/repuestos/pedidos' },
-    (params: Record<'route', string>) => getter(params),
+    getter,
+    {},
   )
 
   if (isLoading) return null

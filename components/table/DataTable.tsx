@@ -47,10 +47,6 @@ export function DataTable<TData>({
   const queryParams = useSearchParams()
   const pageIndex = parseInt(queryParams.get('page') ?? '0')
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  const findFilter = (id: string) =>
-    queryParams.getAll('filter').find((f) => f.startsWith(id))
-  const findSort = (id: string) =>
-    queryParams.getAll('sortBy').find((f) => f.startsWith(id))
 
   const columnFilters: ColumnFiltersState = [
     ...queryParams.getAll('filter'),
@@ -85,9 +81,8 @@ export function DataTable<TData>({
     const newColumnFilters =
       typeof updater === 'function' ? updater(columnFilters) : updater
     const newSearchParams = new URLSearchParams(queryParams)
-    if (newColumnFilters.length === 0) newSearchParams.delete('filter')
+    newSearchParams.delete('filter')
     newColumnFilters.forEach((filter) => {
-      newSearchParams.delete('filter', findFilter(filter.id))
       newSearchParams.append('filter', `${filter.id}=${filter.value}`)
     })
     router.replace(`?${newSearchParams.toString()}`)
@@ -97,9 +92,8 @@ export function DataTable<TData>({
     const newSorting =
       typeof updater === 'function' ? updater(sorting) : updater
     const newSearchParams = new URLSearchParams(queryParams)
-    if (newSorting.length === 0) newSearchParams.delete('sortBy')
+    newSearchParams.delete('sortBy')
     newSorting.forEach((sort) => {
-      newSearchParams.delete('sortBy', findSort(sort.id))
       newSearchParams.set('sortBy', `${sort.id}=${sort.desc ? 'desc' : 'asc'}`)
     })
     router.replace(`?${newSearchParams.toString()}`)

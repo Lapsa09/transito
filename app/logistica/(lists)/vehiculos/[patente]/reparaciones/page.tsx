@@ -12,7 +12,8 @@ function page({ params }: { params: { patente: string } }) {
 
   const { data, isLoading } = useSWR<Reparacion[]>(
     { route: `logistica/vehiculos/${patente}/reparaciones` },
-    (params: Record<'route', string>) => getter(params),
+    getter,
+    {},
   )
 
   if (isLoading) return null

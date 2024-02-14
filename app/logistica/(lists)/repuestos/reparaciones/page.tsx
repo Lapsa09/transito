@@ -10,7 +10,7 @@ import { columns } from './columns'
 function page() {
   const { data, isLoading } = useSWR<Reparacion[]>(
     { route: '/logistica/repuestos/reparaciones' },
-    getter,
+    (params: Record<'route', string>) => getter(params),
   )
 
   if (isLoading) return null

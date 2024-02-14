@@ -10,7 +10,7 @@ import { proveedor } from '@prisma/client'
 function page() {
   const { data, isLoading } = useSWR<proveedor[]>(
     { route: '/logistica/repuestos/proveedores' },
-    getter,
+    (params: Record<'route', string>) => getter(params),
   )
 
   if (isLoading) return null

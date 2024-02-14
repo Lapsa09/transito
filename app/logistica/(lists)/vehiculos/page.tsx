@@ -10,7 +10,7 @@ import { Vehiculo } from '@/types/logistica'
 function page() {
   const { data, isLoading } = useSWR<Vehiculo[]>(
     { route: 'logistica/vehiculos' },
-    getter,
+    (params: Record<'route', string>) => getter(params),
   )
   if (isLoading) return null
   return <DataTable data={data} columns={columns} />

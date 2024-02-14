@@ -12,7 +12,7 @@ function page({ params }: { params: { patente: string } }) {
 
   const { data, isLoading } = useSWR<VTV[]>(
     { route: `logistica/vehiculos/${patente}/vtv` },
-    getter,
+    (params: Record<'route', string>) => getter(params),
   )
 
   if (isLoading) return null

@@ -29,7 +29,12 @@ function ListaAlumnos({
       <Input
         value={inputValue}
         onValueChange={setInputValue}
+        isClearable
         placeholder="Buscar alumno"
+        className="px-3"
+        classNames={{
+          input: 'uppercase',
+        }}
       />
       <div className="grid grid-cols-3 max-h-unit-9xl p-3 gap-3 overflow-y-auto">
         {alumnos.filter(filterAlumnos).map((alumno) => (

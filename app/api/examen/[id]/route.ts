@@ -23,7 +23,7 @@ const notaFinal = (nota: number, tipo_examen: tipo_examen) => {
 export async function POST(req: Request) {
   try {
     const body: QuizResponse = await req.json()
-    const examen = await prisma.rinde_examen.findUnique({
+    const examen = await prisma.rinde_examen.findUniqueOrThrow({
       where: {
         id: body.id,
       },
@@ -34,25 +34,22 @@ export async function POST(req: Request) {
 
     const respuestas = await prisma.preguntas.findMany({
       where: {
-        tema: examen?.tema!,
+        tema: examen.tema!,
       },
       orderBy: {
         id: 'asc',
-      },
-      include: {
-        correcta: true,
       },
     })
 
     const nota = body.preguntas.filter(Boolean).reduce((acc, pregunta) => {
       const respuesta = respuestas.find((r) => r.id === pregunta?.id_pregunta)
-      if (pregunta?.id === respuesta?.correcta?.id) acc++
+      if (pregunta?.id === respuesta?.id_correcta) acc++
 
       return acc
     }, 0)
     const resultado = await prisma.rinde_examen.update({
       data: {
-        nota: notaFinal(nota, examen!.tipo_examen!),
+        nota: notaFinal(nota, examen.tipo_examen!),
         hora_finalizado: body.tiempo,
       },
       where: {

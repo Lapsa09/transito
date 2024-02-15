@@ -1,19 +1,20 @@
 'use client'
-import Button from '@/components/Button'
-import CustomSelect from '@/components/Select'
-import { RegularForm } from '@/components/forms/layout.form'
-import { updater } from '@/services'
 import {
   Accordion,
   AccordionItem,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
 } from '@nextui-org/react'
+import { IoIosRefresh } from 'react-icons/io'
+import { RegularForm } from '@/components/forms/layout.form'
 import { rinde_examen, tipo_examen } from '@prisma/client'
+import { updater } from '@/services'
 import { useRouter } from 'next/navigation'
+import Button from '@/components/Button'
+import CustomSelect from '@/components/Select'
 import React, { Key } from 'react'
+import RespuestasAlumnoCard from './RespuestasAlumno'
 
 const tipos_examen = [
   { id: 1, label: 'AUTOS' },
@@ -32,21 +33,24 @@ function AlumnoCard({
     await updater({
       route: `admision/examen/${alumno.id}`,
       body: { tipo_examen },
-    }).then(() => router.refresh())
+    }).then(router.refresh)
 
   return (
     <Card>
       <CardHeader>
         <h1>{alumno.nombre + ' ' + alumno.apellido}</h1>
+        <IoIosRefresh
+          onClick={router.refresh}
+          className="cursor-pointer ml-3"
+        />
       </CardHeader>
       <CardBody>
         <p>DNI: {alumno.dni}</p>
-
-        {alumno.tipo_examen ? (
-          <p>Rinde examen de: {alumno.tipo_examen.tipo}</p>
-        ) : (
-          <Accordion isCompact>
-            <AccordionItem title="Elegir que examen va a rendir">
+        <Accordion isCompact>
+          <AccordionItem title="Mas informacion">
+            {alumno.tipo_examen ? (
+              <p>Rinde examen de: {alumno.tipo_examen.tipo}</p>
+            ) : (
               <RegularForm onSubmit={editarTipoExamen}>
                 <CustomSelect
                   label="Tipo de examen"
@@ -55,9 +59,32 @@ function AlumnoCard({
                 />
                 <Button type="submit">Guardar</Button>
               </RegularForm>
-            </AccordionItem>
-          </Accordion>
-        )}
+            )}
+
+            <p>
+              Estado del examen:
+              {!alumno.utilizado
+                ? 'No ingresado'
+                : !alumno.hora_finalizado && !alumno.nota
+                  ? 'Ingresado'
+                  : 'Finalizado'}
+            </p>
+            <p>
+              Hora de ingreso:
+              {alumno.hora_ingresado
+                ? new Date(alumno.hora_ingresado).toLocaleString()
+                : ''}
+            </p>
+            <p>
+              Hora de finalizado:
+              {alumno.hora_finalizado
+                ? new Date(alumno.hora_finalizado).toLocaleString()
+                : ''}
+            </p>
+            <p>Nota: {alumno.nota || ''}</p>
+            {alumno.nota && <RespuestasAlumnoCard id={alumno.id} />}
+          </AccordionItem>
+        </Accordion>
       </CardBody>
     </Card>
   )

@@ -1,6 +1,9 @@
 import { getServerSession } from 'next-auth/next'
 import { roles } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { dashboards } from '@/lib/dashboards'
+import { LogoOVT } from '@/components/Logos'
 
 export default async function Home() {
   const data = await getServerSession(authOptions)
@@ -15,13 +18,30 @@ export default async function Home() {
         Bienvenido {fullName}. Legajo {user?.legajo}
       </h1>
       {user?.role === roles.ADMIN && (
-        <iframe
-          title="Tablero de Control OVT"
-          width="100%"
-          height="750"
-          src="https://app.powerbi.com/reportEmbed?reportId=d984fd02-53ef-46b0-a1f1-98c4d9c6f510&autoAuth=true&ctid=4d5bce01-0858-4559-ab59-4a838e82866b"
-          allowFullScreen={true}
-        />
+        <Tabs
+          orientation="vertical"
+          defaultValue="Control Vehicular y Denuncias"
+        >
+          <TabsList>
+            <LogoOVT className="mx-auto" />
+            {dashboards.map((dashboard) => (
+              <TabsTrigger key={dashboard.name} value={dashboard.name}>
+                {dashboard.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {dashboards.map((dashboard) => (
+            <TabsContent key={dashboard.name} value={dashboard.name}>
+              <iframe
+                title={dashboard.name}
+                width="100%"
+                height="700"
+                src={dashboard.url}
+                allowFullScreen={true}
+              />
+            </TabsContent>
+          ))}
+        </Tabs>
       )}
     </div>
   )

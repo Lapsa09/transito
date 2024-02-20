@@ -24,10 +24,10 @@ const Quiz = ({
   const ref = useRef<HTMLFormElement>(null)
   const documentRef = useRef<Document>(document)
   const [contador, setContador] = useSessionStorage<number>('contador', 1800)
-  useEventListener('pagehide', ref.current!.submit)
+  useEventListener('pagehide', () => ref.current?.requestSubmit())
   useEventListener(
     'visibilitychange',
-    () => document.hidden && ref.current?.submit(),
+    () => document.hidden && ref.current?.requestSubmit(),
     documentRef,
   )
   const methods = useForm<QuizResponse>({

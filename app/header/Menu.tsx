@@ -1,13 +1,12 @@
 'use client'
 import React from 'react'
-import { Links, Roles } from '@/types'
+import { InvitedUser, Links, Roles, User } from '@/types'
 import Link from 'next/link'
 import MenuButton from './MenuButton'
 import { FiLogOut } from 'react-icons/fi'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { Button, Typography } from '@material-tailwind/react'
 import Dropdown from './Dropdown'
-import { User } from 'next-auth'
 
 const operativos: Links[] = [
   { link: '/operativos/autos', name: 'Autos' },
@@ -29,13 +28,17 @@ const pages: Links[] = [
   { name: 'Logistica', permission: Roles.LOGISTICA, link: '/logistica' },
 ]
 
-function Menu({ user }: { user?: User }) {
+function Menu() {
+  const { data } = useSession()
+
+  const user = data?.user as User & InvitedUser
   const logout = () => {
     signOut({ callbackUrl: '/login' })
   }
 
   const fullName = user?.nombre + ' ' + user?.apellido
 
+  if (!user) return null
   return (
     <>
       <MenuButton />
@@ -60,7 +63,8 @@ function Menu({ user }: { user?: User }) {
           ) : (
             <div className="flex justify-between">
               <h3 className="capitalize">
-                {fullName} Legajo {user?.legajo}
+                {fullName}{' '}
+                {user?.legajo ? 'Legajo ' + user?.legajo : 'DNI ' + user?.dni}
               </h3>
             </div>
           )}

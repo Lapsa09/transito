@@ -5,8 +5,6 @@ import Toaster from '@/components/Toaster'
 import AuthContext from '@/context/AuthContext'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,13 +18,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
   return (
     <html lang="es">
       <body className={inter.className}>
         <AuthContext>
           <section className="layout">
-            <Header user={session?.user} />
+            <Header />
             <div className="main">{children}</div>
             <Footer />
           </section>

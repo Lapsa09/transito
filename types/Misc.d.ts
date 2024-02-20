@@ -1,3 +1,5 @@
+import { examen, rinde_examen } from '@prisma/client'
+
 export enum Roles {
   ADMIN = 'ADMIN',
   INSPECTOR = 'INSPECTOR',
@@ -22,6 +24,10 @@ export interface Links {
   name: string
   permission?: Roles
   links?: Links[]
+}
+
+export interface InvitedUser extends rinde_examen {
+  examen: examen
 }
 
 export enum Meses {

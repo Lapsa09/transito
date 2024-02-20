@@ -1,8 +1,7 @@
 'use client'
 
-import React, { use, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { RegularForm } from '@/components/forms/layout.form'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { IPregunta, QuizResponse } from '@/types/quiz'
 import { setter } from '@/services'
@@ -42,13 +41,13 @@ const Quiz = ({
       route: `examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
-    router.push(`/invitados/examen/${id}/resultado`)
+    router.push(`/invitados/examen/resultado`)
   }
 
   useEffect(() => {
     setContador(seconds)
     if (!seconds) {
-      ref.current?.submit()
+      ref.current?.requestSubmit()
     }
   }, [seconds])
 

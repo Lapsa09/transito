@@ -6,7 +6,13 @@ import logoOVT from '@/assets/imgs/OVT_LETRAS_NEGRAS.png'
 import { useRouter } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 
-export const LogoVL = ({ link = false }: { link?: boolean }) => {
+export const LogoVL = ({
+  link = false,
+  className,
+}: {
+  link?: boolean
+  className?: string
+}) => {
   const router = useRouter()
 
   const onClick = () => {
@@ -19,9 +25,12 @@ export const LogoVL = ({ link = false }: { link?: boolean }) => {
     <Image
       src={logoVL}
       onClick={onClick}
-      className={`${
-        link ? 'cursor-pointer' : ''
-      } object-contain sm:h-20 sm:w-64 h-14 w-40`}
+      className={twMerge(
+        `${
+          link ? 'cursor-pointer' : ''
+        } object-contain sm:h-20 sm:w-64 h-14 w-40`,
+        className,
+      )}
       alt="Logo Vicente Lopez"
       sizes="(max-width: 540px) 10rem, 16rem"
     />

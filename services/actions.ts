@@ -11,6 +11,7 @@ export const habilitarExamen = async (id: number) =>
       },
       data: {
         habilitado: true,
+        hora_iniciado: new Date(),
       },
     })
     .then(() => {

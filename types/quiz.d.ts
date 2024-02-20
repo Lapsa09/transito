@@ -1,4 +1,5 @@
 import type {
+  examen,
   examen_preguntas,
   opciones,
   preguntas,
@@ -26,4 +27,5 @@ export type IPregunta = rinde_examen & {
   examen_preguntas: (examen_preguntas & {
     pregunta: preguntas & { opciones: opciones[] }
   })[]
+  examen: examen
 }

@@ -635,13 +635,14 @@ model reporte {
 }
 
 model examen {
-  id         Int            @id @default(autoincrement())
-  clave      String?        @db.VarChar
-  fecha      DateTime?      @default(now()) @db.Date
-  habilitado Boolean        @default(false)
-  hora       DateTime?      @default(now()) @db.Time(6)
-  terminado  Boolean?       @default(false)
-  alumnos    rinde_examen[]
+  id            Int            @id @default(autoincrement())
+  clave         String         @db.VarChar
+  fecha         DateTime?      @default(now()) @db.Date
+  habilitado    Boolean        @default(false)
+  hora          DateTime?      @default(now()) @db.Time(6)
+  terminado     Boolean?       @default(false)
+  alumnos       rinde_examen[]
+  hora_iniciado DateTime?      @db.Timestamp(6)
 
   @@unique([fecha, hora])
   @@schema("examen")

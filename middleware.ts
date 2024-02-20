@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  const publicPages = ['/login', '/register', '/invitados']
+  const publicPages = ['/login', '/register']
   const rolePages = {
     INSPECTOR: '/operativos',
     TRAFICO: '/waze',
@@ -19,13 +19,15 @@ export default async function middleware(req: NextRequest) {
   const token = await getToken({ req })
 
   if (!token && isProtectedPath) {
-    if (pathname.startsWith('/api')) return NextResponse.next()
     const url = new URL('/login', req.url)
     url.searchParams.set('callbackUrl', encodeURI(req.url))
     return NextResponse.redirect(url)
   }
   if (token) {
     const { role } = token
+    if (!role) {
+      return NextResponse.next()
+    }
     const rolePage = rolePages[role]
     const iAmAllowed = pathname.startsWith(rolePage)
     if (!isProtectedPath || !iAmAllowed) {
@@ -38,5 +40,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|setran).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|setran|api).*)'],
 }

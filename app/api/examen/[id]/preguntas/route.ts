@@ -1,15 +1,13 @@
 import prisma from '@/lib/prismadb'
-import { examen, rinde_examen } from '@prisma/client'
-import { jwtDecode } from 'jwt-decode'
 import { NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
-    const usuario = jwtDecode<rinde_examen & { examen: examen }>(params.id)
+    const id = params.id
 
     const examen = await prisma.rinde_examen.findUnique({
       where: {
-        id: usuario.id,
+        id,
       },
       include: {
         examen_preguntas: {

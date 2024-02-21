@@ -1,5 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { Vehiculo } from '@/types/logistica'
+import { revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
         tipo_vehiculo: true,
       },
     })
-
+    revalidateTag('vehiculos')
     return NextResponse.json(vehiculo)
   } catch (error) {
     console.log(error)

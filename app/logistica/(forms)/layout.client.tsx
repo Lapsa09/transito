@@ -13,7 +13,7 @@ function layout({ children }: React.PropsWithChildren) {
   const layoutSegment = useSelectedLayoutSegments()
   const { toast } = useToast()
   const router = useRouter()
-  const route = layoutSegment.join('/')
+  const route = layoutSegment.at(-2)
   const onSubmit: SubmitHandler<LogisticaForms> = async (body) => {
     try {
       await setter<LogisticaForms>({

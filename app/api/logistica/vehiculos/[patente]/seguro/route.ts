@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import * as fs from 'fs'
+import { revalidateTag } from 'next/cache'
 
 const decode = async (id: string, archivo: File) => {
   const LINKPATH = '/logistica/vehiculos/seguros'
@@ -34,6 +35,6 @@ export async function POST(
       seguro: link,
     },
   })
-
+  revalidateTag('vehiculos')
   return NextResponse.json(movil)
 }

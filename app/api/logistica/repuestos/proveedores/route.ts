@@ -1,5 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { proveedor } from '@prisma/client'
+import { revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -22,6 +23,6 @@ export async function POST(req: NextRequest) {
   const pedido = await prisma.proveedor.create({
     data: body,
   })
-
+  revalidateTag('proveedores')
   return NextResponse.json(pedido)
 }

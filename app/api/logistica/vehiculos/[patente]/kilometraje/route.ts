@@ -1,6 +1,7 @@
 import prisma from '@/lib/prismadb'
 import { KilometrajeVehiculo } from '@/types/logistica'
 import { DateTime } from 'luxon'
+import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -62,6 +63,6 @@ export async function POST(
       movil: true,
     },
   })
-
+  revalidateTag('kilometraje')
   return NextResponse.json(vehiculo)
 }

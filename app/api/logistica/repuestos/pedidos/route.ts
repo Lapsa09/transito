@@ -2,6 +2,7 @@ import prisma from '@/lib/prismadb'
 import { PedidoRepuesto } from '@/types/logistica'
 import { tipo_repuesto } from '@prisma/client'
 import { DateTime } from 'luxon'
+import { revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -116,6 +117,6 @@ export async function POST(req: NextRequest) {
         },
       })
   }
-
+  revalidateTag('pedidos')
   return NextResponse.json(pedido)
 }

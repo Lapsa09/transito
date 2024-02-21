@@ -34,13 +34,19 @@ export default function MyCombobox<T extends FieldValues>({
   className,
   persist,
   rules,
+  defaultValue,
   ...props
 }: Props<T>) {
   const { control } = useFormContext()
   const {
     field: { value, onChange, ...field },
     fieldState: { invalid, error },
-  } = useController({ name, control, rules })
+  } = useController({
+    name,
+    control,
+    rules,
+    defaultValue: defaultValue ?? null,
+  })
 
   const [inputValue, setInputValue] = useState('')
 

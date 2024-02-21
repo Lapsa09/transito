@@ -4,11 +4,12 @@ import { DateTime } from 'luxon'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  _: NextRequest,
+  req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
   const { patente } = params
-
+  const { searchParams } = req.nextUrl
+  const pageIndex = parseInt(searchParams.get('page') ?? '0')
   const reparaciones = await prisma.reparaciones.findMany({
     where: {
       patente,
@@ -25,9 +26,16 @@ export async function GET(
       },
       movil: true,
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(reparaciones)
+  const total = await prisma.reparaciones.count({ where: { patente } })
+
+  return NextResponse.json({
+    data: reparaciones,
+    pages: Math.ceil(total / 10).toString(),
+  })
 }
 
 export async function POST(

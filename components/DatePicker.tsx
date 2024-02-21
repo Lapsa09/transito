@@ -32,7 +32,7 @@ export function DateField({
   } = useController({
     control,
     name,
-    defaultValue: '',
+    defaultValue: null,
     rules: {
       ...rules,
       validate: {

@@ -15,7 +15,7 @@ function layout({ children }: PropsWithChildren) {
         Atras
       </h1>
       {!(title[0].includes('repuestos') && title.length === 1) && (
-        <Link href={`/logistica/create/${title.join('/')}`}>
+        <Link href={`/logistica/${title.join('/')}/create`}>
           Nuevo {title.at(-1)}
         </Link>
       )}

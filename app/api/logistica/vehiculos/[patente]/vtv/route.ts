@@ -4,10 +4,13 @@ import { DateTime } from 'luxon'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  _: NextRequest,
+  req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
   const { patente } = params
+
+  const { searchParams } = req.nextUrl
+  const pageIndex = parseInt(searchParams.get('page') ?? '0')
 
   const vehiculo = await prisma.vtv.findMany({
     where: {
@@ -19,9 +22,16 @@ export async function GET(
     orderBy: {
       fecha_emision: 'desc',
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(vehiculo)
+  const total = await prisma.vtv.count({ where: { patente } })
+
+  return NextResponse.json({
+    data: vehiculo,
+    pages: Math.ceil(total / 10).toString(),
+  })
 }
 
 export async function POST(

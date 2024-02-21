@@ -28,7 +28,7 @@ function CustomSelect({
   const {
     field,
     fieldState: { invalid, error },
-  } = useController({ name, control, rules, defaultValue: '' })
+  } = useController({ name, control, rules, defaultValue: null })
 
   const onChange = (value: any) => {
     field.onChange(value.currentKey)

@@ -1,7 +1,9 @@
 import prisma from '@/lib/prismadb'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const pageIndex = parseInt(searchParams.get('page') ?? '0')
   const pedidos = await prisma.reparaciones.findMany({
     include: {
       movil: true,
@@ -11,7 +13,12 @@ export async function GET() {
         },
       },
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(pedidos)
+  return NextResponse.json({
+    data: pedidos,
+    pages: pedidos.length.toString(),
+  })
 }

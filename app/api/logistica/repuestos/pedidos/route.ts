@@ -1,9 +1,12 @@
 import prisma from '@/lib/prismadb'
+import { PedidoRepuesto } from '@/types/logistica'
 import { tipo_repuesto } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { NextResponse, NextRequest } from 'next/server'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const pageIndex = parseInt(searchParams.get('page') ?? '0')
   const pedidos = await prisma.pedido_repuesto.findMany({
     include: {
       repuestos: {
@@ -13,33 +16,44 @@ export async function GET() {
       },
       proveedor: true,
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
-  const res = []
+  const res: PedidoRepuesto[] = []
   for (const pedido of pedidos) {
-    const repuestos = pedido.repuestos.reduce<any[]>((acc, repuesto) => {
-      const item = acc.find(
-        (r) =>
-          r.item === repuesto.item &&
-          r.tipo_repuesto.id_tipo_repuesto ===
-            repuesto.tipo_repuesto.id_tipo_repuesto,
-      )
+    const repuestos = pedido.repuestos.reduce<PedidoRepuesto['repuestos']>(
+      (acc, repuesto) => {
+        const item = acc.find(
+          (r) =>
+            r.item === repuesto.item &&
+            r.tipo_repuesto.id_tipo_repuesto ===
+              repuesto.tipo_repuesto.id_tipo_repuesto,
+        )
 
-      if (item) {
-        item.cantidad++
-      } else {
-        acc.push({
-          item: repuesto.item,
-          cantidad: 1,
-          tipo_repuesto: repuesto.tipo_repuesto,
-        })
-      }
+        if (item) {
+          item.cantidad++
+        } else {
+          acc.push({
+            item: repuesto.item,
+            cantidad: 1,
+            tipo_repuesto: repuesto.tipo_repuesto,
+            id: repuesto.id,
+            id_pedido: repuesto.id_pedido,
+            id_tipo_repuesto: repuesto.id_tipo_repuesto,
+          })
+        }
 
-      return acc
-    }, [])
+        return acc
+      },
+      [],
+    )
     res.push({ ...pedido, repuestos })
   }
 
-  return NextResponse.json(res)
+  return NextResponse.json({
+    data: res,
+    pages: res.length.toString(),
+  })
 }
 
 export async function POST(req: NextRequest) {

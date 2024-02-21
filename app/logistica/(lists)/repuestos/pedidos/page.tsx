@@ -1,32 +1,31 @@
-'use client'
-
-import { DataTable } from '@/components/table'
-import { getter } from '@/services'
-import { PedidoRepuesto } from '@/types/logistica'
 import React from 'react'
-import useSWR from 'swr'
-import { columns } from './columns'
-import { Repuestos } from './expansions'
+import PageClient from './page.client'
+import { fetcher } from '@/services'
+import { PedidoRepuesto } from '@/types/logistica'
 
-function page() {
-  const { data, isLoading } = useSWR<PedidoRepuesto[]>(
-    { route: 'logistica/repuestos/pedidos' },
-    getter,
-    {},
+const getAutos = async (searchParams: string) => {
+  const res = await fetcher(
+    `api/logistica/repuestos/pedidos${searchParams ? `?${searchParams}` : ''}`,
+    {
+      next: {
+        tags: ['logistica', 'repuestos', 'pedidos'],
+      },
+    },
+  )
+  const data: { data: PedidoRepuesto[]; pages: number } = await res.json()
+  return data
+}
+
+async function page({
+  searchParams,
+}: {
+  searchParams: Record<string, string>
+}) {
+  const { data, pages } = await getAutos(
+    new URLSearchParams(searchParams).toString(),
   )
 
-  if (isLoading) return null
-  return (
-    <div>
-      <h1 className="mb-5 text-center">Historial de pedidos de repuestos</h1>
-      <DataTable
-        data={data}
-        columns={columns}
-        expand={Repuestos}
-        getRowCanExpand={() => true}
-      />
-    </div>
-  )
+  return <PageClient data={data} pages={pages} />
 }
 
 export default page

@@ -1,26 +1,31 @@
-'use client'
-
-import { DataTable } from '@/components/table'
-import { getter } from '@/services'
 import React from 'react'
-import useSWR from 'swr'
-import { columns } from './columns'
+import PageClient from './page.client'
+import { fetcher } from '@/services'
 import { proveedor } from '@prisma/client'
 
-function page() {
-  const { data, isLoading } = useSWR<proveedor[]>(
-    { route: '/logistica/repuestos/proveedores' },
-    getter,
-    {},
+const getAutos = async (searchParams: string) => {
+  const res = await fetcher(
+    `api/logistica/repuestos/proveedores${searchParams ? `?${searchParams}` : ''}`,
+    {
+      next: {
+        tags: ['logistica', 'repuestos', 'proveedores'],
+      },
+    },
+  )
+  const data: { data: proveedor[]; pages: number } = await res.json()
+  return data
+}
+
+async function page({
+  searchParams,
+}: {
+  searchParams: Record<string, string>
+}) {
+  const { data, pages } = await getAutos(
+    new URLSearchParams(searchParams).toString(),
   )
 
-  if (isLoading) return null
-  return (
-    <div>
-      <h1 className="mb-5 text-center">Lista de proveedores</h1>
-      <DataTable data={data} columns={columns} />
-    </div>
-  )
+  return <PageClient data={data} pages={pages} />
 }
 
 export default page

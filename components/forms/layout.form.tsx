@@ -78,7 +78,7 @@ export function CreateFormLayout({
     body,
   ) => {
     try {
-      const post = await setter<Registro>({
+      await setter<Registro>({
         route: `/${section}/${layoutSegment}`,
         body,
       })
@@ -213,7 +213,7 @@ export function EditFormLayout({
     body,
   ) => {
     try {
-      const registro = await updater<Registro>({
+      await updater<Registro>({
         route: `/${section}/${layoutSegment}/${id}`,
         body,
       })
@@ -239,14 +239,9 @@ export function EditFormLayout({
   return (
     <div className={className}>
       {nuevoOperativo && (
-        <div className="flex justify-between w-full">
-          <Button onClick={nuevoOperativo} variant="text">
-            Nuevo Operativo
-          </Button>
-          <Button onClick={router.back} variant="text">
-            Salir
-          </Button>
-        </div>
+        <Button onClick={nuevoOperativo} variant="text">
+          Nuevo Operativo
+        </Button>
       )}
       <form
         className="overflow-x-hidden"

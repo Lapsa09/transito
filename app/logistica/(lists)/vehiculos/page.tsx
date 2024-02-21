@@ -1,20 +1,31 @@
-'use client'
-
 import React from 'react'
-import { DataTable } from '@/components/table'
-import { getter } from '@/services'
-import useSWR from 'swr'
-import { columns } from './columns'
+import PageClient from './page.client'
+import { fetcher } from '@/services'
 import { Vehiculo } from '@/types/logistica'
 
-function page() {
-  const { data, isLoading } = useSWR<Vehiculo[]>(
-    { route: 'logistica/vehiculos' },
-    getter,
-    {},
+const getAutos = async (searchParams: string) => {
+  const res = await fetcher(
+    `api/logistica/vehiculos${searchParams ? `?${searchParams}` : ''}`,
+    {
+      next: {
+        tags: ['logistica', 'vehiculos'],
+      },
+    },
   )
-  if (isLoading) return null
-  return <DataTable data={data} columns={columns} />
+  const data: { data: Vehiculo[]; pages: number } = await res.json()
+  return data
+}
+
+async function page({
+  searchParams,
+}: {
+  searchParams: Record<string, string>
+}) {
+  const { data, pages } = await getAutos(
+    new URLSearchParams(searchParams).toString(),
+  )
+
+  return <PageClient data={data} pages={pages} />
 }
 
 export default page

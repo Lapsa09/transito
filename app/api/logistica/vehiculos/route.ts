@@ -2,16 +2,27 @@ import prisma from '@/lib/prismadb'
 import { Vehiculo } from '@/types/logistica'
 import { NextResponse, NextRequest } from 'next/server'
 
-export async function GET() {
-  const vehiculos = await prisma.movil.findMany({
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const pageIndex = parseInt(searchParams.get('page') ?? '0')
+  const vehiculosPromise = prisma.movil.findMany({
     include: {
       uso: true,
       dependencia: true,
       tipo_vehiculo: true,
     },
+    skip: pageIndex * 10,
+    take: 10,
   })
 
-  return NextResponse.json(vehiculos)
+  const totalPromise = prisma.movil.count()
+
+  const [vehiculos, total] = await Promise.all([vehiculosPromise, totalPromise])
+
+  return NextResponse.json({
+    data: vehiculos,
+    pages: Math.ceil(total / 10).toString(),
+  })
 }
 
 export async function POST(req: NextRequest) {

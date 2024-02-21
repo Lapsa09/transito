@@ -29,7 +29,7 @@ export function TimeField({
   } = useController({
     control,
     name,
-    defaultValue: '',
+    defaultValue: null,
     rules,
   })
 

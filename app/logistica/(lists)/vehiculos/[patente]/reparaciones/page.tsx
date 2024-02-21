@@ -1,26 +1,38 @@
-'use client'
-
-import { DataTable } from '@/components/table'
-import { getter } from '@/services'
-import { Reparacion } from '@/types/logistica'
 import React from 'react'
-import useSWR from 'swr'
-import { columns } from './columns'
+import { fetcher } from '@/services'
+import { Reparacion } from '@/types/logistica'
+import PageClient from './page.client'
 
-function page({ params }: { params: { patente: string } }) {
+const getKilometraje = async (patente: string, searchParams: string) => {
+  const res = await fetcher(
+    `api/logistica/vehiculos/${patente}/reparaciones${searchParams ? `?${searchParams}` : ''}`,
+    {
+      next: {
+        tags: ['logistica', 'vehiculos', patente, 'reparaciones'],
+      },
+    },
+  )
+  const data: { data: Reparacion[]; pages: number } = await res.json()
+  return data
+}
+
+async function page({
+  params,
+  searchParams,
+}: {
+  params: { patente: string }
+  searchParams: Record<string, string>
+}) {
   const { patente } = params
 
-  const { data, isLoading } = useSWR<Reparacion[]>(
-    { route: `logistica/vehiculos/${patente}/reparaciones` },
-    getter,
-    {},
+  const data = await getKilometraje(
+    patente,
+    new URLSearchParams(searchParams).toString(),
   )
-
-  if (isLoading) return null
   return (
     <div>
-      <h1 className="mb-5 text-center uppercase">{patente}</h1>
-      <DataTable data={data} columns={columns} />
+      <h1 className="text-center mb-5 uppercase">{patente}</h1>
+      <PageClient data={data.data} pages={data.pages} />
     </div>
   )
 }

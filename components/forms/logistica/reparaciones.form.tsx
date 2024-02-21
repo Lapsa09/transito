@@ -1,16 +1,16 @@
-'use client'
-
 import React from 'react'
 import Autocomplete from '@/components/Autocomplete'
-import useSWR from 'swr'
-import { getSelects } from '@/services'
 import DateField from '@/components/DatePicker'
 import CustomInput from '@/components/Input'
+import { repuesto } from '@prisma/client'
 
-function ReparacionesForm({ patente }: { patente: string }) {
-  const { data, isLoading } = useSWR('api/selects', getSelects)
-
-  if (isLoading) return null
+function ReparacionesForm<T>({
+  patente,
+  selects,
+}: {
+  patente: string
+  selects: { repuestos: repuesto[] }
+}) {
   return (
     <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput
@@ -21,7 +21,7 @@ function ReparacionesForm({ patente }: { patente: string }) {
         isDisabled
       />
       <Autocomplete
-        options={data?.repuestos}
+        options={selects.repuestos}
         label="Repuesto"
         name="repuesto"
         className="w-full basis-5/12"

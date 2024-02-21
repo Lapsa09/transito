@@ -1,29 +1,31 @@
 'use client'
 
-import useSWR from 'swr'
 import CustomInput from '../../Input'
 import CustomSwitch from '../../Switch'
-import { getSelects } from '@/services'
 import Autocomplete from '../../Autocomplete'
 import { useFormContext } from 'react-hook-form'
 import { Vehiculo } from '@/types/logistica'
 import { useMemo } from 'react'
-import Loader from '@/components/Loader'
-import FileInput from '@/components/FileInput'
+import { dependencia, logistica_tipo_vehiculo, uso } from '@prisma/client'
 
-function VehiculosForm() {
-  const { data, isLoading } = useSWR('api/selects', getSelects)
-
+function VehiculosForm({
+  selects,
+}: {
+  selects: {
+    usos: uso[]
+    tipoMoviles: logistica_tipo_vehiculo[]
+    dependencias: dependencia[]
+  }
+}) {
   const { watch } = useFormContext<Vehiculo>()
 
   const usos = useMemo(() => {
-    if (!data?.dependencias) return []
-    return data.usos.filter(
+    if (!selects?.dependencias) return []
+    return selects.usos.filter(
       (uso) => uso.id_dependencia === watch('dependencia')?.id_dependencia,
     )
   }, [watch('dependencia')])
 
-  if (isLoading) return <Loader />
   return (
     <div className="flex w-full px-10 justify-between flex-wrap">
       <CustomInput.Dominio
@@ -48,7 +50,7 @@ function VehiculosForm() {
         name="tipo_vehiculo"
         label="Tipo de vehiculo"
         className="w-full basis-5/12"
-        options={data?.tipoMoviles}
+        options={selects.tipoMoviles}
         inputId="id_tipo"
         inputLabel="tipo"
       />
@@ -56,7 +58,7 @@ function VehiculosForm() {
         name="dependencia"
         label="Dependencia"
         className="w-full basis-5/12"
-        options={data?.dependencias}
+        options={selects.dependencias}
       />
       <Autocomplete
         name="uso"

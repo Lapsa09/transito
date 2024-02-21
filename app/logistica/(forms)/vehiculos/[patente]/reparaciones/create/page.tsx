@@ -1,10 +1,12 @@
 import React from 'react'
 
 import ReparacionesForm from '@/components/forms/logistica/reparaciones.form'
+import { getSelects } from '@/services'
 
-function page({ params }: { params: { patente: string } }) {
+async function page({ params }: { params: { patente: string } }) {
   const { patente } = params
-  return <ReparacionesForm patente={patente} />
+  const { repuestos } = await getSelects()
+  return <ReparacionesForm patente={patente} selects={{ repuestos }} />
 }
 
 export default page

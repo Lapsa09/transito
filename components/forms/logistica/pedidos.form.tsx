@@ -4,14 +4,16 @@ import DateField from '@/components/DatePicker'
 import CustomInput from '@/components/Input'
 import React from 'react'
 import Autocomplete from '@/components/Autocomplete'
-import useSWR from 'swr'
-import { getSelects } from '@/services'
 import { useFieldArray } from 'react-hook-form'
 import { PedidoForm } from '@/types/logistica'
 import Button from '@/components/Button'
+import { proveedor, tipo_repuesto } from '@prisma/client'
 
-function PedidosForm() {
-  const { data } = useSWR('api/selects', getSelects)
+function PedidosForm({
+  selects,
+}: {
+  selects: { proveedores: proveedor[]; tipoRepuestos: tipo_repuesto[] }
+}) {
   const { append, fields, remove } = useFieldArray<PedidoForm>({
     name: 'repuestos',
   })
@@ -47,7 +49,7 @@ function PedidosForm() {
       <Autocomplete
         label="Proveedor"
         name="proveedor"
-        options={data?.proveedores}
+        options={selects.proveedores}
         className="w-full basis-5/12"
         inputId="id"
         inputLabel="nombre"
@@ -71,7 +73,7 @@ function PedidosForm() {
               <Autocomplete
                 label="Tipo de repuesto"
                 name={`repuestos[${index}].tipo_repuesto`}
-                options={data?.tipoRepuestos}
+                options={selects.tipoRepuestos}
                 inputId="id_tipo_repuesto"
                 inputLabel="tipo"
                 className="w-full basis-5/12"

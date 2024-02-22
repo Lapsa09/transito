@@ -11,9 +11,11 @@ export async function GET(req: NextRequest) {
     take: 10,
   })
 
+  const total = await prisma.proveedor.count()
+
   return NextResponse.json({
     data: pedidos,
-    pages: pedidos.length.toString(),
+    pages: Math.ceil(total / 10).toString(),
   })
 }
 

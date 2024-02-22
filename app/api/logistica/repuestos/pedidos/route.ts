@@ -118,5 +118,6 @@ export async function POST(req: NextRequest) {
       })
   }
   revalidateTag('pedidos')
+  revalidateTag('repuestos')
   return NextResponse.json(pedido)
 }

@@ -4,7 +4,6 @@ import { RegularForm } from '@/components/forms/layout.form'
 import { SubmitHandler } from 'react-hook-form'
 import { type LogisticaForms } from '@/types/logistica'
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
-import { mutate } from 'swr'
 import { setter } from '@/services'
 import { useToast } from '@/hooks'
 import Button from '@/components/Button'
@@ -13,7 +12,7 @@ function layout({ children }: React.PropsWithChildren) {
   const layoutSegment = useSelectedLayoutSegments()
   const { toast } = useToast()
   const router = useRouter()
-  const route = layoutSegment.at(-2)
+  const route = layoutSegment.slice(0, -1).join('/')
   const onSubmit: SubmitHandler<LogisticaForms> = async (body) => {
     try {
       await setter<LogisticaForms>({

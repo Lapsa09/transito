@@ -1,6 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { proveedor } from '@prisma/client'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -26,5 +26,6 @@ export async function POST(req: NextRequest) {
     data: body,
   })
   revalidateTag('proveedores')
+  revalidatePath('/logistica/repuestos/pedidos/create')
   return NextResponse.json(pedido)
 }

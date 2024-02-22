@@ -9,6 +9,7 @@ const getKilometraje = async (patente: string, searchParams: string) => {
     {
       next: {
         tags: ['logistica', 'vehiculos', patente, 'kilometraje'],
+        revalidate: 3600 * 24,
       },
     },
   )

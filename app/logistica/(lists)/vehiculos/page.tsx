@@ -9,6 +9,7 @@ const getAutos = async (searchParams: string) => {
     {
       next: {
         tags: ['logistica', 'vehiculos'],
+        revalidate: 3600 * 24,
       },
     },
   )

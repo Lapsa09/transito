@@ -5,6 +5,7 @@ import { useSelectedLayoutSegments } from 'next/navigation'
 import React, { PropsWithChildren } from 'react'
 import { useRouter } from 'next/navigation'
 import { IoReload } from 'react-icons/io5'
+import Button from '@/components/Button'
 
 function LayoutClient({ children }: PropsWithChildren) {
   const title = useSelectedLayoutSegments()
@@ -12,10 +13,10 @@ function LayoutClient({ children }: PropsWithChildren) {
   return (
     <div>
       <h1 className="text-center mb-5 capitalize">
-        {title.at(-1)}{' '}
-        <span onClick={router.refresh}>
+        {title.at(-1)}
+        <Button variant="text" onClick={router.refresh}>
           <IoReload />
-        </span>
+        </Button>
       </h1>
       <h1 className="cursor-pointer w-fit" onClick={router.back}>
         Atras

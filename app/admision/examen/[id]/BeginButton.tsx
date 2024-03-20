@@ -9,8 +9,12 @@ function BeginButton({ id }: { id: number }) {
   return (
     <Button
       onClick={async () => {
-        await habilitarExamen(id)
-        toast({ title: 'El examen comenzo', variant: 'success' })
+        try {
+          await habilitarExamen(id)
+          toast({ title: 'El examen comenzo', variant: 'success' })
+        } catch (error: any) {
+          toast({ title: error.message, variant: 'destructive' })
+        }
       }}
     >
       Comenzar examen

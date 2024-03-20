@@ -13,8 +13,16 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         examen_preguntas: {
           include: {
             pregunta: {
-              include: {
-                opciones: true,
+              select: {
+                id: true,
+                pregunta: true,
+                opciones: {
+                  select: {
+                    id: true,
+                    respuesta: true,
+                    id_pregunta: true,
+                  },
+                },
               },
             },
           },

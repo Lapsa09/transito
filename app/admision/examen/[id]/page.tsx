@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { examen, rinde_examen, tipo_examen } from '@prisma/client'
 import BeginButton from './BeginButton'
 import QuitButton from './QuitButton'
-import { getter } from '@/services'
+import { fetcher } from '@/services'
 
 type Alumno = rinde_examen & { tipo_examen: tipo_examen }
 
@@ -14,9 +14,13 @@ type Examen = examen & {
 }
 
 const getExamen = async (id: string) => {
-  const examen = await getter<Examen | null>({
-    route: `admision/examen/${id}`,
+  const res = await fetcher(`api/admision/examen/${id}`, {
+    next: {
+      tags: ['examen'],
+    },
   })
+
+  const examen: Examen | null = await res.json()
 
   return examen
 }
@@ -25,7 +29,7 @@ async function page({ params }: { params: { id: string } }) {
   const { id } = params
   const examen = await getExamen(id)
   if (!examen) {
-    redirect('/admision/examen')
+    return redirect('/admision/examen')
   }
   return (
     <section className="grid gap-5">

@@ -2,16 +2,17 @@
 
 import { calificacion, rinde_examen } from '@prisma/client'
 import { signOut } from 'next-auth/react'
-import React, { useEffect } from 'react'
+import React, { useRef } from 'react'
+import { useEventListener } from 'usehooks-ts'
 
 function Resultado({
   examen,
 }: {
   examen: rinde_examen & { calificacion: calificacion }
 }) {
-  useEffect(() => {
-    signOut({ redirect: false })
-  }, [])
+  const documentRef = useRef<Document>(document)
+
+  useEventListener('visibilitychange', () => signOut(), documentRef)
 
   return (
     <div>

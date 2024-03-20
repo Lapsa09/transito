@@ -4,11 +4,12 @@ import { authOptions } from '@/lib/auth'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { dashboards } from '@/lib/dashboards'
 import { LogoOVT } from '@/components/Logos'
+import { User } from '@/types'
 
 export default async function Home() {
   const data = await getServerSession(authOptions)
 
-  const user = data?.user
+  const user = data?.user as User
 
   const fullName = user?.nombre + ' ' + user?.apellido
 

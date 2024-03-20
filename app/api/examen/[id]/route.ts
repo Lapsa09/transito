@@ -41,9 +41,11 @@ export async function POST(req: Request) {
       },
     })
 
-    const nota = body.preguntas.filter(Boolean).reduce((acc, pregunta) => {
-      const respuesta = respuestas.find((r) => r.id === pregunta?.id_pregunta)
-      if (pregunta?.id === respuesta?.id_correcta) acc++
+    const nota = body.preguntas.reduce((acc, pregunta) => {
+      if (pregunta) {
+        const respuesta = respuestas.find((r) => r.id === pregunta.id_pregunta)
+        if (pregunta.id === respuesta?.id_correcta) acc++
+      }
 
       return acc
     }, 0)

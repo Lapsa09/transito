@@ -4,6 +4,7 @@ import prisma from '@/lib/prismadb'
 import bycript from 'bcrypt'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { invitedSignIn, signIn } from '@/services'
+import { InvitedUser, User } from '@/types'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -76,7 +77,7 @@ export const authOptions: NextAuthOptions = {
       return { ...token, ...user }
     },
     session({ session, token }) {
-      session.user = token
+      session.user = token as User | InvitedUser
 
       return session
     },

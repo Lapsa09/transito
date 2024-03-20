@@ -15,6 +15,7 @@ import Button from '@/components/Button'
 import CustomSelect from '@/components/Select'
 import React, { Key } from 'react'
 import RespuestasAlumnoCard from './RespuestasAlumno'
+import { rehabilitarExamen, revalidar } from '@/services/actions'
 
 const tipos_examen = [
   { id: 1, label: 'AUTOS' },
@@ -40,7 +41,10 @@ function AlumnoCard({
       <CardHeader>
         <h1>{alumno.nombre + ' ' + alumno.apellido}</h1>
         <IoIosRefresh
-          onClick={router.refresh}
+          onClick={() => {
+            revalidar('examen')
+            router.refresh()
+          }}
           className="cursor-pointer ml-3"
         />
       </CardHeader>
@@ -68,6 +72,18 @@ function AlumnoCard({
                 : !alumno.hora_finalizado && !alumno.nota
                   ? 'Ingresado'
                   : 'Finalizado'}
+            </p>
+            <p>
+              {alumno.utilizado && alumno.hora_finalizado && (
+                <Button
+                  onClick={async () => {
+                    await rehabilitarExamen(alumno.id)
+                    router.refresh()
+                  }}
+                >
+                  Rehabilitar alumno
+                </Button>
+              )}
             </p>
             <p>
               Hora de ingreso:

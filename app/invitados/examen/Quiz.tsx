@@ -1,8 +1,7 @@
 'use client'
 
-import React, { use, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { RegularForm } from '@/components/forms/layout.form'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { IPregunta, QuizResponse } from '@/types/quiz'
 import { setter } from '@/services'
@@ -23,12 +22,13 @@ const Quiz = ({
   const router = useRouter()
   const ref = useRef<HTMLFormElement>(null)
   const documentRef = useRef<Document>(document)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const [contador, setContador] = useSessionStorage<number>('contador', 1800)
-  useEventListener('pagehide', () => ref.current?.requestSubmit())
-  useEventListener(
-    'visibilitychange',
-    () => document.hidden && ref.current?.requestSubmit(),
-    documentRef,
+  useEventListener('pagehide', () =>
+    ref.current?.requestSubmit(buttonRef.current),
+  )
+  useEventListener('beforeunload', () =>
+    ref.current?.requestSubmit(buttonRef.current),
   )
   const methods = useForm<QuizResponse>({
     defaultValues: { id, preguntas: [] },
@@ -37,18 +37,29 @@ const Quiz = ({
     initialSeconds: contador,
   })
 
+  useEventListener(
+    'visibilitychange',
+    () => {
+      if (document.hidden) {
+        ref.current?.requestSubmit(buttonRef.current)
+      }
+    },
+    documentRef,
+  )
+
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     await setter({
       route: `examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
-    router.push(`/invitados/examen/${id}/resultado`)
+    sessionStorage.removeItem('contador')
+    router.push(`/invitados/examen/resultado`)
   }
 
   useEffect(() => {
     setContador(seconds)
     if (!seconds) {
-      ref.current?.submit()
+      ref.current?.requestSubmit(buttonRef.current)
     }
   }, [seconds])
 
@@ -60,6 +71,14 @@ const Quiz = ({
         className="gap-5 grid px-5"
       >
         <Timer countdown={seconds} />
+        <div className="bg-warning-200 text-white">
+          <h4 className="text-lg">AVISO</h4>
+          <p>
+            Si cierras esta ventana o cambias de pestaña, el examen se entregara
+            automaticamente con lo que hayas realizado hasta el momento, y no
+            podras volver a realizarlo.
+          </p>
+        </div>
         <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
           {preguntas.map(({ preguntas_id, pregunta }, index) => {
             return (
@@ -72,7 +91,9 @@ const Quiz = ({
             )
           })}
         </section>
-        <Button type="submit">Finalizar examen</Button>
+        <Button ref={buttonRef} type="submit">
+          Finalizar examen
+        </Button>
       </form>
     </FormProvider>
   )

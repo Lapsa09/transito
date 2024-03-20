@@ -1,13 +1,12 @@
 'use client'
 import React from 'react'
-import { Links, Roles } from '@/types'
+import { InvitedUser, Links, Roles, User } from '@/types'
 import Link from 'next/link'
 import MenuButton from './MenuButton'
 import { FiLogOut } from 'react-icons/fi'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { Button, Typography } from '@material-tailwind/react'
 import Dropdown from './Dropdown'
-import { User } from 'next-auth'
 
 const operativos: Links[] = [
   { link: '/operativos/autos', name: 'Autos' },
@@ -23,25 +22,40 @@ const pages: Links[] = [
     links: operativos,
     permission: Roles.INSPECTOR,
   },
+  {
+    name: 'Admision',
+    permission: Roles.PROFESOR,
+    link: '/',
+    links: [{ link: '/admision/examen', name: 'Examen' }],
+  },
   { name: 'Sueldos', permission: Roles.ADMINISTRATIVO, link: '/sueldos' },
-  // { name: 'Waze', permission: Roles.WAZE, link: '/waze' },
-  // { name: 'Radio', permission: Roles.INSPECTOR, link: '/radio' },
   { name: 'Logistica', permission: Roles.LOGISTICA, link: '/logistica' },
 ]
 
-function Menu({ user }: { user?: User }) {
+function Menu() {
+  const { data } = useSession()
+
+  const user = data?.user
   const logout = () => {
     signOut({ callbackUrl: '/login' })
   }
 
-  const fullName = user?.nombre + ' ' + user?.apellido
+  if (!user) return null
+  const fullName = user.nombre + ' ' + user.apellido
+
+  const credentials = (user: User | InvitedUser) => {
+    if ('examen' in user) {
+      return 'DNI ' + user.dni
+    }
+    return 'Legajo ' + user.legajo
+  }
 
   return (
     <>
-      <MenuButton />
+      {'role' in user && <MenuButton />}
       <div className="hidden lg:block w-full md:w-1/2">
         <ul className="flex-col md:flex-row flex md:space-x-8 mt-4 md:mt-0 md:text-md md:font-medium md:justify-between items-center">
-          {user?.role === Roles.ADMIN ? (
+          {'role' in user && user.role === Roles.ADMIN ? (
             pages.map((page) =>
               page.links ? (
                 <Dropdown key={page.name} page={page} />
@@ -60,7 +74,7 @@ function Menu({ user }: { user?: User }) {
           ) : (
             <div className="flex justify-between">
               <h3 className="capitalize">
-                {fullName} Legajo {user?.legajo}
+                {fullName} {credentials(user)}
               </h3>
             </div>
           )}

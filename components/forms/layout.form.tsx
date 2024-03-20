@@ -11,6 +11,7 @@ import {
   LocalOperativo,
   RioFormProps,
   Roles,
+  User,
 } from '@/types'
 import {
   useRouter,
@@ -29,6 +30,7 @@ import { cn } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { Registro } from '@/types/camiones'
+import { m } from 'framer-motion'
 
 export function CreateFormLayout({
   children,
@@ -51,11 +53,12 @@ export function CreateFormLayout({
   }
 
   const { data } = useSession({ required: true })
+  const user = data?.user as User | undefined
   const methods = useForm<FormInputProps | RioFormProps>({
     mode: 'all',
     resetOptions: { keepDefaultValues: true },
     defaultValues: {
-      lpcarga: data?.user?.legajo,
+      lpcarga: user?.legajo,
     },
   })
   const {
@@ -109,8 +112,8 @@ export function CreateFormLayout({
   }
 
   useEffect(() => {
-    if (data?.user?.legajo) {
-      setValue('lpcarga', data.user.legajo)
+    if (user?.legajo) {
+      setValue('lpcarga', user.legajo)
     }
   }, [data])
 
@@ -171,6 +174,7 @@ export function EditFormLayout({
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === stepTitles.length - 1
   const { data } = useSession({ required: true })
+  const user = data?.user as User | undefined
   const router = useRouter()
   const [layoutSegment, id] = useSelectedLayoutSegments()
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1)
@@ -179,7 +183,7 @@ export function EditFormLayout({
     !isLastStep && setActiveStep((cur) => cur + 1)
   }
   const { isLoading } = useSWR(
-    data?.user?.role === Roles.ADMIN
+    user?.role === Roles.ADMIN
       ? { route: `/${section}/${layoutSegment}/${id}` }
       : null,
     getter,
@@ -199,7 +203,7 @@ export function EditFormLayout({
   const methods = useForm<EditInputProps | RioFormProps>({
     mode: 'all',
     defaultValues: {
-      lpcarga: data?.user?.legajo,
+      lpcarga: user?.legajo,
     },
   })
   const {
@@ -286,7 +290,7 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
     mode: 'all',
     defaultValues,
   })
-  const { handleSubmit, reset } = methods
+  const { handleSubmit } = methods
   useEffect(() => {
     if (data) {
       data.forEach((item) => {
@@ -304,7 +308,6 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
         onSubmit={async (e) => {
           e.stopPropagation()
           await handleSubmit(onSubmit)(e)
-          reset()
         }}
         id={id}
       >

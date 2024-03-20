@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const examen = await prisma.rinde_examen.findFirst({
       where: {
-        dni: +body.dni,
+        dni: body.dni,
         utilizado: false,
         examen: {
           clave: body.clave,
@@ -86,8 +86,8 @@ export async function POST(req: Request) {
         where: { id: examen.id },
         data: { utilizado: true, hora_ingresado: new Date() },
       })
-      const token = jwt.sign(examen, 'delanflash16')
-      return NextResponse.json(token)
+
+      return NextResponse.json(examen)
     }
     return NextResponse.json(null)
   } catch (error) {

@@ -1,4 +1,5 @@
 import type {
+  examen,
   examen_preguntas,
   opciones,
   preguntas,
@@ -24,6 +25,8 @@ export type QuizResponse = {
 
 export type IPregunta = rinde_examen & {
   examen_preguntas: (examen_preguntas & {
-    pregunta: preguntas & { opciones: opciones[] }
+    pregunta: Omit<preguntas, 'id_correcta'> & { opciones: opciones[] }
+    elegida?: opciones
   })[]
+  examen: examen
 }

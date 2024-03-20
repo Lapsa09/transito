@@ -70,7 +70,6 @@ export default function MyCombobox<T extends FieldValues>({
       {...field}
       {...props}
       selectedKey={selected}
-      allowsCustomValue
       onSelectionChange={handleChange}
       label={label}
       variant="bordered"

@@ -3,13 +3,14 @@ import CredentialsContainer from 'next-auth/providers/credentials'
 import prisma from '@/lib/prismadb'
 import bycript from 'bcrypt'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { signIn } from '@/services'
+import { invitedSignIn, signIn } from '@/services'
+import { InvitedUser, User } from '@/types'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsContainer({
-      id: 'credentials',
+      id: 'legajo',
       name: 'Credentials',
       credentials: {
         legajo: { label: 'Legajo', type: 'number', placeholder: '12345' },
@@ -34,12 +35,40 @@ export const authOptions: NextAuthOptions = {
         return user
       },
     }),
+    CredentialsContainer({
+      id: 'dni',
+      name: 'DNI',
+      credentials: {
+        dni: { label: 'DNI', type: 'number', placeholder: '12345678' },
+        clave: { label: 'Contraseña', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.dni || !credentials?.clave) {
+          throw new Error('Credenciales invalidas')
+        }
+        const user = await invitedSignIn({
+          dni: +credentials.dni,
+          password: credentials.clave,
+        })
+        if (!user) {
+          throw new Error(
+            'Su DNI no esta registrado o la clave ya fue utilizada',
+          )
+        }
+        const isPasswordValid = credentials.clave === user.examen.clave
+
+        if (!isPasswordValid) {
+          throw new Error('Contraseña invalida')
+        }
+        return user
+      },
+    }),
   ],
   session: {
     strategy: 'jwt',
   },
   pages: {
-    signIn: '/login',
+    signIn: 'invitados/examen',
   },
   secret: process.env.NEXTAUTH_SECRET,
 
@@ -48,7 +77,7 @@ export const authOptions: NextAuthOptions = {
       return { ...token, ...user }
     },
     session({ session, token }) {
-      session.user = token
+      session.user = token as User | InvitedUser
 
       return session
     },

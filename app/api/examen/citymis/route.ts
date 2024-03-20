@@ -2,6 +2,7 @@ import { CitymisResponse } from '@/types/citymis.examen'
 import { NextResponse } from 'next/server'
 import puppeteer from 'puppeteer'
 import { ScheduleList } from '@/types/citymis.examen'
+import { revalidatePath } from 'next/cache'
 
 export async function GET() {
   try {
@@ -31,9 +32,10 @@ export async function GET() {
 
       parsedData = JSON.parse(data) as CitymisResponse
       res.push(...parsedData.content.schedule_list)
+      page_number++
     } while (parsedData.content.schedule_list.length > 0)
     await browser.close()
-
+    revalidatePath('/admision/examen')
     return NextResponse.json(res)
   } catch (error) {
     console.log(error)

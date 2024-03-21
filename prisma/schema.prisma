@@ -676,7 +676,6 @@ model rinde_examen {
   email            String?            @db.VarChar
   dni              Int
   utilizado        Boolean            @default(false)
-  tema             Int?
   tipo_examenId    Int?
   hora_finalizado  DateTime?          @db.Timestamp(6)
   hora_ingresado   DateTime?          @db.Timestamp(6)
@@ -716,7 +715,6 @@ model preguntas {
   id               Int                @id @default(autoincrement())
   pregunta         String             @db.VarChar
   id_correcta      Int?
-  tema             Int
   tipo_examenId    Int?
   examen_preguntas examen_preguntas[]
   opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")

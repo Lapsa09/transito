@@ -33,9 +33,6 @@ export async function POST(req: Request) {
     })
 
     const respuestas = await prisma.preguntas.findMany({
-      where: {
-        tema: examen.tema!,
-      },
       orderBy: {
         id: 'asc',
       },

@@ -640,6 +640,7 @@ model examen {
   fecha         DateTime?      @default(now()) @db.Date
   habilitado    Boolean        @default(false)
   hora_iniciado DateTime?      @default(now()) @db.Time(6)
+  hora          DateTime?      @db.Timestamp(6)
   terminado     Boolean?       @default(false)
   alumnos       rinde_examen[]
 

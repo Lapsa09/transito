@@ -94,33 +94,9 @@ export async function PUT(
         id: +tipo_examen,
       },
     })
-    const examinado = await prisma.rinde_examen.findUniqueOrThrow({
-      where: {
-        id,
-      },
-      include: {
-        examen: true,
-      },
-    })
-
-    const rindioAlgunaVez = await prisma.rinde_examen.findFirst({
-      where: {
-        dni: examinado.dni,
-        examen: {
-          fecha: examinado.examen.fecha,
-        },
-      },
-    })
-
-    let tema = Math.floor(Math.random() * tipo.cantidad_temas) + 1
-
-    while (rindioAlgunaVez && rindioAlgunaVez.tema === tema) {
-      tema = Math.floor(Math.random() * tipo.cantidad_temas) + 1
-    }
 
     const preguntas = await prisma.preguntas.findMany({
       where: {
-        tema,
         tipo_examen: {
           id: +tipo_examen,
         },
@@ -140,11 +116,13 @@ export async function PUT(
             id: +tipo_examen,
           },
         },
-        tema,
       },
     })
 
-    for (const pregunta of preguntas) {
+    for (const pregunta of shuffle(preguntas).slice(
+      0,
+      tipo.cantidad_preguntas,
+    )) {
       await prisma.examen_preguntas.create({
         data: {
           examen: {

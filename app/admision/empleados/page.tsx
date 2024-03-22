@@ -3,6 +3,9 @@ import Form from './Form'
 import { fetcher } from '@/services'
 import { permisos } from '@prisma/client'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 const getRoles = async () => {
   const res = await fetcher('/api/roles')
   const data: permisos[] = await res.json()

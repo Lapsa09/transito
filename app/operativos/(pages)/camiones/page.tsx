@@ -3,6 +3,9 @@ import PageClient from './page.client'
 import React from 'react'
 import { fetcher } from '@/services'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 const getCamiones = async (searchParams: string) => {
   const res = await fetcher(
     `/api/operativos/camiones${searchParams ? `?${searchParams}` : ''}`,

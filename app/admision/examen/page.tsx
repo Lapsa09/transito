@@ -4,6 +4,9 @@ import CreatedExam from './CreatedExam'
 import { examen } from '@prisma/client'
 import { fetcher } from '@/services'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 const getExamenes = async () => {
   const response = await fetcher('/api/examen', {
     next: { revalidate: 3600 * 24 },

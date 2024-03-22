@@ -176,18 +176,18 @@ export async function GET(req: NextRequest) {
           },
         }
       : sortBy === 'zona_infractor'
-      ? {
-          zona_infractor: {
-            barrio: sort,
-          },
-        }
-      : sortBy === 'tipo_licencia'
-      ? {
-          tipo_licencias: {
-            tipo: sort,
-          },
-        }
-      : { [sortBy]: sort }
+        ? {
+            zona_infractor: {
+              barrio: sort,
+            },
+          }
+        : sortBy === 'tipo_licencia'
+          ? {
+              tipo_licencias: {
+                tipo: sort,
+              },
+            }
+          : { [sortBy]: sort }
 
   const motosPromise = prisma.motos_registros.findMany({
     include: {
@@ -211,10 +211,18 @@ export async function GET(req: NextRequest) {
   })
 
   const [motos, total] = await Promise.all([motosPromise, totalPromise])
-  return NextResponse.json({
-    data: motos,
-    pages: Math.ceil(total / 10).toString(),
-  })
+
+  return NextResponse.json(
+    JSON.parse(
+      JSON.stringify(
+        {
+          data: motos,
+          pages: Math.ceil(total / 10).toString(),
+        },
+        (_, value) => (typeof value === 'bigint' ? value.toString() : value),
+      ),
+    ),
+  )
 }
 
 export async function POST(req: Request) {

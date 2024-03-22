@@ -3,8 +3,9 @@ import prisma from '@/lib/prismadb'
 
 export async function GET(req: NextRequest) {
   try {
-    const mes = req.nextUrl.searchParams.get('mes')!
-    const año = req.nextUrl.searchParams.get('año')!
+    const { searchParams } = req.nextUrl
+    const mes = searchParams.get('mes')!
+    const año = searchParams.get('año')!
     const minDate = new Date(`${año}-${mes}-01`)
     const maxDate = new Date(`${año}-${mes}-31`)
 
@@ -77,7 +78,7 @@ export async function GET(req: NextRequest) {
         busca.servicios ??= []
         row.operarios_servicios.forEach((op) => {
           const recibo = row.clientes?.recibos.find(
-            (r) => r.recibo === op.recibo
+            (r) => r.recibo === op.recibo,
           )
           busca.servicios.push({
             id_servicio: row.id_servicio,
@@ -101,7 +102,7 @@ export async function GET(req: NextRequest) {
           año: row.fecha_servicio!.getFullYear(),
           servicios: row.operarios_servicios.map((op) => {
             const recibo = row.clientes?.recibos.find(
-              (r) => r.recibo === op.recibo
+              (r) => r.recibo === op.recibo,
             )
             return {
               id_servicio: row.id_servicio,

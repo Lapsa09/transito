@@ -220,10 +220,17 @@ export async function GET(req: NextRequest) {
 
   const [autos, total] = await Promise.all([autosPromise, totalPromise])
 
-  return NextResponse.json({
-    data: autos,
-    pages: Math.ceil(total / 10).toString(),
-  })
+  return NextResponse.json(
+    JSON.parse(
+      JSON.stringify(
+        {
+          data: autos,
+          pages: Math.ceil(total / 10).toString(),
+        },
+        (_, value) => (typeof value === 'bigint' ? value.toString() : value),
+      ),
+    ),
+  )
 }
 
 export async function POST(req: NextRequest) {

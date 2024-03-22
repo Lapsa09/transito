@@ -3,6 +3,9 @@ import MainForm from '@/components/forms/main.form'
 import { FirstStep, SecondStep } from '@/components/forms/camiones.form'
 import { getSelects } from '@/services'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 async function page() {
   const { vicenteLopez, turnos, motivos, resolucion, zonas } =
     await getSelects()

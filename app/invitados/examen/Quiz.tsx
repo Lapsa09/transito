@@ -27,9 +27,6 @@ const Quiz = ({
   useEventListener('pagehide', () =>
     ref.current?.requestSubmit(buttonRef.current),
   )
-  useEventListener('beforeunload', () =>
-    ref.current?.requestSubmit(buttonRef.current),
-  )
   const methods = useForm<QuizResponse>({
     defaultValues: { id, preguntas: [] },
   })

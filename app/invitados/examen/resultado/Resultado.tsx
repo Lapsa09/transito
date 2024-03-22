@@ -12,7 +12,11 @@ function Resultado({
 }) {
   const documentRef = useRef<Document>(document)
 
-  useEventListener('visibilitychange', () => signOut(), documentRef)
+  useEventListener(
+    'visibilitychange',
+    () => setTimeout(signOut, 5000),
+    documentRef,
+  )
 
   return (
     <div>

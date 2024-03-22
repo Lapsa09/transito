@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prismadb'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 export const habilitarExamen = async (id: number) => {
   const examen = await prisma.rinde_examen.findMany({
@@ -39,6 +39,7 @@ export const terminarExamen = async (id: number) =>
     .then(() => {
       revalidateTag('examen')
     })
+    .then(() => revalidatePath('/admision/examen'))
 
 export const rehabilitarExamen = async (id: string) =>
   await prisma.rinde_examen

@@ -24,9 +24,11 @@ const pages: Links[] = [
   },
   {
     name: 'Admision',
-    permission: Roles.PROFESOR,
     link: '/',
-    links: [{ link: '/admision/examen', name: 'Examen' }],
+    links: [
+      { link: '/admision/examen', name: 'Examen', permission: Roles.PROFESOR },
+      { link: '/admision/empleados', name: 'Empleados' },
+    ],
   },
   { name: 'Sueldos', permission: Roles.ADMINISTRATIVO, link: '/sueldos' },
   { name: 'Logistica', permission: Roles.LOGISTICA, link: '/logistica' },

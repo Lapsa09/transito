@@ -212,17 +212,10 @@ export async function GET(req: NextRequest) {
 
   const [motos, total] = await Promise.all([motosPromise, totalPromise])
 
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(
-        {
-          data: motos,
-          pages: Math.ceil(total / 10).toString(),
-        },
-        (_, value) => (typeof value === 'bigint' ? value.toString() : value),
-      ),
-    ),
-  )
+  return NextResponse.json({
+    data: motos,
+    pages: Math.ceil(total / 10).toString(),
+  })
 }
 
 export async function POST(req: Request) {

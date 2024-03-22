@@ -2,6 +2,9 @@ import { Registro } from '@/types/rio'
 import PageClient from './page.client'
 import { fetcher } from '@/services'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 const getRio = async (searchParams: string) => {
   const res = await fetcher(
     `/api/operativos/rio${searchParams ? `?${searchParams}` : ''}`,

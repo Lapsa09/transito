@@ -3,6 +3,9 @@ import PageClient from './page.client'
 import { fetcher } from '@/services'
 import { proveedor } from '@prisma/client'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 const getAutos = async (searchParams: string) => {
   const res = await fetcher(
     `api/logistica/repuestos/proveedores${searchParams ? `?${searchParams}` : ''}`,

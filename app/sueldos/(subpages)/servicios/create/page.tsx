@@ -3,6 +3,9 @@ import LayoutServiciosForm from '@/components/forms/servicios.form'
 import { CreateFormLayout } from '@/components/forms/layout.form'
 import { getPrecios, getSelects } from '@/services'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 async function page() {
   const { clientes, operarios } = await getSelects()
   const precios = await getPrecios()

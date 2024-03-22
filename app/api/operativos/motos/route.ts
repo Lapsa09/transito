@@ -282,5 +282,11 @@ export async function POST(req: Request) {
     moto.motivos = motivos
   }
   revalidateTag('motos')
-  return NextResponse.json(moto)
+  return NextResponse.json(
+    JSON.parse(
+      JSON.stringify(moto, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ),
+  )
 }

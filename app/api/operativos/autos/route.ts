@@ -275,7 +275,13 @@ export async function POST(req: NextRequest) {
       },
     })
     revalidateTag('autos')
-    return NextResponse.json(auto)
+    return NextResponse.json(
+      JSON.parse(
+        JSON.stringify(auto, (_, value) =>
+          typeof value === 'bigint' ? value.toString() : value,
+        ),
+      ),
+    )
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

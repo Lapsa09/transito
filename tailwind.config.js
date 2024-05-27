@@ -4,7 +4,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const withMT = require('@material-tailwind/react/utils/withMT')
 const { nextui } = require('@nextui-org/react')
 module.exports = withMT({
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',

@@ -25,6 +25,9 @@ export const columns: ColumnDef<Registro>[] = [
         DateTime.DATE_SHORT,
       ),
     id: 'fecha',
+    meta: {
+      filterVariant: 'date',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.legajo,
@@ -34,10 +37,15 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.direccion,
     header: 'Direccion',
+    id: 'qth',
   },
   {
     accessorFn: (row) => row.operativo?.localidad?.barrio,
     header: 'Localidad',
+    id: 'localidad',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.localidad?.cp,
@@ -48,6 +56,10 @@ export const columns: ColumnDef<Registro>[] = [
     accessorFn: (row) =>
       row.operativo?.turno === turnos.MA_ANA ? 'MAÑANA' : row.operativo?.turno,
     header: 'Turno',
+    id: 'turno',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     header: 'Hora',
@@ -74,6 +86,11 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.localidad_origen?.barrio,
     header: 'Localidad Origen',
+    id: 'localidad_origen',
+    meta: {
+      filterVariant: 'select',
+      filterTag: 'zona_infractor',
+    },
   },
   {
     accessorKey: 'destino',
@@ -83,18 +100,27 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.localidad_destino?.barrio,
     header: 'Localidad Destino',
+    id: 'localidad_destino',
+    meta: {
+      filterVariant: 'select',
+      filterTag: 'zona_infractor',
+    },
   },
   {
     accessorKey: 'remito',
     header: 'Remito',
     cell: ({ row }) => (row.getValue('remito') ? 'Si' : 'No'),
-    enableColumnFilter: false,
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorKey: 'carga',
     header: 'Carga',
     cell: ({ row }) => (row.getValue('carga') ? 'Si' : 'No'),
-    enableColumnFilter: false,
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorKey: 'acta',
@@ -104,11 +130,17 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.motivo?.motivo,
     header: 'Motivo',
-    enableColumnFilter: false,
+    id: 'motivo',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorKey: 'resolucion',
     header: 'Resolucion',
-    enableColumnFilter: false,
+    id: 'resolucion',
+    meta: {
+      filterVariant: 'select',
+    },
   },
 ]

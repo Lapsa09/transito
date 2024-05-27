@@ -22,6 +22,10 @@ export const columns: ColumnDef<Registro>[] = [
         setZone: true,
       }).toLocaleString(DateTime.DATE_SHORT),
     header: 'Fecha',
+    id: 'fecha',
+    meta: {
+      filterVariant: 'date',
+    },
   },
   {
     accessorFn: (registro) =>
@@ -29,6 +33,10 @@ export const columns: ColumnDef<Registro>[] = [
         ? 'MAÑANA'
         : registro.operativo.turno,
     header: 'Turno',
+    id: 'turno',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (registro) => registro.operativo.lp,
@@ -46,14 +54,23 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (registro) => registro.dominio?.toUpperCase(),
     header: 'Dominio',
+    id: 'dominio',
   },
   {
     accessorFn: (registro) => registro.barrio?.barrio,
     header: 'Barrio',
+    id: 'zona_infractor',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (registro) => registro.zona.zona,
     header: 'Zona',
+    id: 'zona',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: ({ fechacarga }) => {

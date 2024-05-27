@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormMotosProps } from '@/types'
-import { resolucion, Prisma } from '@prisma/client'
+import { resolucion, Prisma, turnos } from '@prisma/client'
 import { geoLocation } from '@/services'
 import { revalidateTag } from 'next/cache'
 
@@ -111,58 +111,111 @@ const operativoMotos = async (body: FormMotosProps) => {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
-  const where: Prisma.motos_registrosWhereInput = {
-    dominio: {
-      contains: filterParams.dominio ?? '',
-      mode: 'insensitive',
-    },
-    operativo: {
-      qth: {
-        contains: filterParams.qth ?? '',
-        mode: 'insensitive',
-      },
-      localidad: {
-        barrio: {
-          contains: filterParams.localidad ?? '',
-          mode: 'insensitive',
-        },
-      },
-      fecha:
-        filterParams.fecha && new Date(filterParams.fecha).getDate()
+  const filterParams: Record<string, string> =
+    searchParams
+      .get('filter')
+      ?.split(',')
+      ?.reduce((acc, curr) => {
+        const [id, value] = curr.split('=')
+
+        return { ...acc, [id]: value }
+      }, {}) ?? {}
+
+  const where: Prisma.motos_registrosWhereInput | undefined = Object.keys(
+    filterParams,
+  ).length
+    ? {
+        dominio: filterParams.dominio
           ? {
-              equals: new Date(filterParams.fecha),
+              contains: filterParams.dominio,
+              mode: 'insensitive',
             }
           : undefined,
-    },
-    motivos: {
-      some: {
-        motivo: {
-          motivo: {
-            contains: filterParams.motivo ?? '',
-            mode: 'insensitive',
-          },
-        },
-      },
-    },
-    tipo_licencias: {
-      tipo: {
-        contains: filterParams.tipo_licencias ?? '',
-        mode: 'insensitive',
-      },
-    },
-    zona_infractor: {
-      barrio: {
-        contains: filterParams.zona_infractor ?? '',
-        mode: 'insensitive',
-      },
-    },
-  }
+        operativo:
+          filterParams.qth ||
+          filterParams.localidad ||
+          filterParams.fecha ||
+          filterParams.turno
+            ? {
+                qth: filterParams.qth
+                  ? {
+                      contains: filterParams.qth,
+                      mode: 'insensitive',
+                    }
+                  : undefined,
+                localidad: filterParams.localidad
+                  ? {
+                      barrio: {
+                        contains: filterParams.localidad,
+                        mode: 'insensitive',
+                      },
+                    }
+                  : undefined,
+                fecha:
+                  filterParams.fecha && new Date(filterParams.fecha).getDate()
+                    ? {
+                        equals: new Date(filterParams.fecha),
+                      }
+                    : undefined,
+                turno: filterParams.turno
+                  ? {
+                      equals:
+                        filterParams.turno !== 'MAÑANA'
+                          ? (filterParams.turno as turnos)
+                          : 'MA_ANA',
+                    }
+                  : null,
+              }
+            : undefined,
+        motivos:
+          filterParams.motivo && filterParams.motivo !== 'null'
+            ? {
+                some: {
+                  motivo: {
+                    motivo: {
+                      contains: filterParams.motivo,
+                      mode: 'insensitive',
+                    },
+                  },
+                },
+              }
+            : filterParams.motivo
+              ? {
+                  none: {
+                    motivo: {
+                      motivo: {
+                        gt: '',
+                      },
+                    },
+                  },
+                }
+              : undefined,
+        tipo_licencias:
+          filterParams.tipo_licencia && filterParams.tipo_licencia !== 'null'
+            ? {
+                tipo: {
+                  equals: filterParams.tipo_licencia,
+                  mode: 'insensitive',
+                },
+              }
+            : filterParams.tipo_licencia
+              ? null
+              : undefined,
+        zona_infractor: filterParams.zona_infractor
+          ? {
+              barrio: {
+                contains: filterParams.zona_infractor,
+                mode: 'insensitive',
+              },
+            }
+          : undefined,
+        resolucion: filterParams.resolucion
+          ? {
+              equals: filterParams.resolucion as resolucion,
+            }
+          : undefined,
+      }
+    : undefined
   const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
 
   const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(

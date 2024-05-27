@@ -1,20 +1,18 @@
 'use client'
-import { ChangeEvent } from 'react'
 import {
   UseControllerProps,
   useController,
   useFormContext,
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
-import { Input, InputProps } from '@nextui-org/input'
+import { DateInput, DateInputProps, DateValue } from '@nextui-org/react'
 import { X } from 'lucide-react'
+import { parseDate } from '@internationalized/date'
 
 interface DateFieldProps
   extends UseControllerProps,
-    Omit<InputProps, 'defaultValue' | 'name'> {
-  className?: string
+    Omit<DateInputProps, 'defaultValue' | 'name'> {
   persist?: (data: any) => void
-  label?: string
 }
 
 export function DateField({
@@ -32,32 +30,12 @@ export function DateField({
   } = useController({
     control,
     name,
-    defaultValue: null,
-    rules: {
-      ...rules,
-      validate: {
-        ...rules?.validate,
-        validDate: (value) => {
-          const date = new Date(value)
-          return value
-            ? date.toString() !== 'Invalid Date' || 'Fecha inválida'
-            : true
-        },
-        minDate: (value) => {
-          const date = new Date(value)
-          const minDate = new Date(date.getMonth() - 6)
-          return value
-            ? date >= minDate ||
-                'La fecha no debe ser mas de 6 meses anterior a la fecha actual'
-            : true
-        },
-      },
-    },
+    defaultValue: '',
+    rules,
   })
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    field.onChange(value)
+  const onChange = (value: DateValue) => {
+    field.onChange(value.toString())
     if (persist) persist({ [name]: value })
   }
 
@@ -67,9 +45,10 @@ export function DateField({
   }
 
   return (
-    <Input
+    <DateInput
       {...props}
       {...field}
+      value={field.value ? parseDate(field.value) : null}
       onChange={onChange}
       variant="bordered"
       label={label}
@@ -77,9 +56,7 @@ export function DateField({
       labelPlacement="outside"
       size="md"
       radius="sm"
-      type="date"
-      placeholder="dd/mm/yyyy"
-      validationState={invalid ? 'invalid' : 'valid'}
+      isInvalid={invalid}
       className={twMerge(className, 'data-[has-helper=true]:pb-6 pb-6')}
       classNames={{
         inputWrapper: 'border border-gray-600',

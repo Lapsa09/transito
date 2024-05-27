@@ -23,14 +23,14 @@ import {
   FieldValues,
   FormProvider,
   SubmitHandler,
+  UseFormReturn,
   useForm,
 } from 'react-hook-form'
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 import { cn } from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { Registro } from '@/types/camiones'
-import { m } from 'framer-motion'
 
 export function CreateFormLayout({
   children,
@@ -279,13 +279,16 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
   data,
   id,
   defaultValues,
-}: PropsWithChildren<{
+  resetOnSubmit = false,
+}: {
   onSubmit: SubmitHandler<T>
   className?: string
   data?: K[]
   id?: string
   defaultValues?: DefaultValues<T>
-}>) => {
+  children: React.ReactNode | ((methods: UseFormReturn<T>) => React.ReactNode)
+  resetOnSubmit?: boolean
+}) => {
   const methods = useForm<T>({
     mode: 'all',
     defaultValues,
@@ -308,10 +311,11 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
         onSubmit={async (e) => {
           e.stopPropagation()
           await handleSubmit(onSubmit)(e)
+          if (resetOnSubmit) methods.reset()
         }}
         id={id}
       >
-        {children}
+        {typeof children === 'function' ? children(methods) : children}
       </form>
     </FormProvider>
   )

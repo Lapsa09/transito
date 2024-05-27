@@ -24,6 +24,9 @@ export const columns: ColumnDef<Registro>[] = [
       DateTime.fromISO(row.operativo.fecha, {
         setZone: true,
       }).toLocaleString(DateTime.DATE_SHORT),
+    meta: {
+      filterVariant: 'date',
+    },
   },
   {
     header: 'Hora',
@@ -32,6 +35,9 @@ export const columns: ColumnDef<Registro>[] = [
       DateTime.fromISO(operativo.hora, {
         setZone: true,
       }).toLocaleString(DateTime.TIME_24_SIMPLE),
+    meta: {
+      filterVariant: 'time',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.legajo_a_cargo,
@@ -51,6 +57,10 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.localidad?.barrio,
     header: 'Barrio',
+    id: 'localidad',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.localidad?.cp,
@@ -61,6 +71,10 @@ export const columns: ColumnDef<Registro>[] = [
     accessorFn: (row) =>
       row.operativo?.turno === turnos.MA_ANA ? 'MAÑANA' : row.operativo?.turno,
     header: 'Turno',
+    id: 'turno',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.seguridad,
@@ -79,6 +93,10 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.tipo_licencias?.tipo,
     header: 'Tipo de licencia',
+    id: 'tipo_licencia',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.tipo_licencias?.vehiculo,
@@ -88,15 +106,25 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.zona_infractor?.barrio,
     header: 'Zona infractor',
+    id: 'zona_infractor',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorKey: 'resolucion',
     header: 'Resolución',
-    enableColumnFilter: false,
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.motivos.map((m) => m.motivo.motivo).join(', '),
     header: 'Motivos',
+    id: 'motivo',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorKey: 'acta',

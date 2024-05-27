@@ -2,7 +2,7 @@
 
 import { calificacion, rinde_examen } from '@prisma/client'
 import { signOut } from 'next-auth/react'
-import React, { useRef } from 'react'
+import React from 'react'
 import { useEventListener } from 'usehooks-ts'
 
 function Resultado({
@@ -10,13 +10,7 @@ function Resultado({
 }: {
   examen: rinde_examen & { calificacion: calificacion }
 }) {
-  const documentRef = useRef<Document>(document)
-
-  useEventListener(
-    'visibilitychange',
-    () => setTimeout(signOut, 5000),
-    documentRef,
-  )
+  useEventListener('pagehide', () => setTimeout(signOut, 5000))
 
   return (
     <div>

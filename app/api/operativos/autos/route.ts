@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormAutosProps } from '@/types'
-import { resolucion, Prisma } from '@prisma/client'
+import { resolucion, Prisma, turnos } from '@prisma/client'
 import { geoLocation } from '@/services'
 import { revalidateTag } from 'next/cache'
 
@@ -103,70 +103,99 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
+  const filterParams: Record<string, string> =
+    searchParams
+      .get('filter')
+      ?.split(',')
+      ?.reduce((acc, curr) => {
+        const [id, value] = curr.split('=')
 
-  const where: Prisma.operativos_registrosWhereInput = {
-    dominio: filterParams.dominio
-      ? {
-          contains: filterParams.dominio,
-          mode: 'insensitive',
-        }
-      : undefined,
-    operativo:
-      filterParams.qth || filterParams.localidad || filterParams.fecha
-        ? {
-            qth: filterParams.qth
-              ? {
-                  contains: filterParams.qth,
+        return { ...acc, [id]: value }
+      }, {}) ?? {}
+
+  const where: Prisma.operativos_registrosWhereInput | undefined = Object.keys(
+    filterParams,
+  ).length
+    ? {
+        dominio: filterParams.dominio
+          ? {
+              contains: filterParams.dominio,
+              mode: 'insensitive',
+            }
+          : undefined,
+        operativo:
+          filterParams.qth ||
+          filterParams.localidad ||
+          filterParams.fecha ||
+          filterParams.turno
+            ? {
+                qth: filterParams.qth
+                  ? {
+                      contains: filterParams.qth,
+                      mode: 'insensitive',
+                    }
+                  : undefined,
+                localidad: filterParams.localidad
+                  ? {
+                      barrio: {
+                        contains: filterParams.localidad,
+                        mode: 'insensitive',
+                      },
+                    }
+                  : undefined,
+                fecha:
+                  filterParams.fecha && new Date(filterParams.fecha).getDate()
+                    ? {
+                        equals: new Date(filterParams.fecha),
+                      }
+                    : undefined,
+                turno: filterParams.turno
+                  ? {
+                      equals:
+                        filterParams.turno !== 'MAÑANA'
+                          ? (filterParams.turno as turnos)
+                          : 'MA_ANA',
+                    }
+                  : null,
+              }
+            : undefined,
+        motivo:
+          filterParams.motivo && filterParams.motivo !== 'null'
+            ? {
+                motivo: {
+                  contains: filterParams.motivo,
                   mode: 'insensitive',
-                }
+                },
+              }
+            : filterParams.motivo
+              ? null
               : undefined,
-            localidad: filterParams.barrio
-              ? {
-                  barrio: {
-                    contains: filterParams.barrio,
-                    mode: 'insensitive',
-                  },
-                }
+        tipo_licencia:
+          filterParams.tipo_licencia && filterParams.tipo_licencia !== 'null'
+            ? {
+                tipo: {
+                  equals: filterParams.tipo_licencia,
+                  mode: 'insensitive',
+                },
+              }
+            : filterParams.tipo_licencia
+              ? null
               : undefined,
-            fecha:
-              filterParams.fecha && new Date(filterParams.fecha).getDate()
-                ? {
-                    equals: new Date(filterParams.fecha),
-                  }
-                : undefined,
-          }
-        : undefined,
-    motivo: filterParams.motivo
-      ? {
-          motivo: {
-            contains: filterParams.motivo,
-            mode: 'insensitive',
-          },
-        }
-      : undefined,
-    tipo_licencia: filterParams.tipo_licencia
-      ? {
-          tipo: {
-            contains: filterParams.tipo_licencia,
-            mode: 'insensitive',
-          },
-        }
-      : undefined,
-    zona_infractor: filterParams.zona_infractor
-      ? {
-          barrio: {
-            contains: filterParams.zona_infractor,
-            mode: 'insensitive',
-          },
-        }
-      : undefined,
-  }
+        zona_infractor: filterParams.zona_infractor
+          ? {
+              barrio: {
+                contains: filterParams.zona_infractor,
+                mode: 'insensitive',
+              },
+            }
+          : undefined,
+        resolucion: filterParams.resolucion
+          ? {
+              equals: filterParams.resolucion as resolucion,
+            }
+          : undefined,
+      }
+    : undefined
   const pageIndex = parseInt(searchParams.get('page') ?? '0')
 
   const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
@@ -197,7 +226,15 @@ export async function GET(req: NextRequest) {
                   tipo: sort,
                 },
               }
-            : { [sortBy]: sort }
+            : sortBy === 'localidad'
+              ? {
+                  operativo: {
+                    localidad: {
+                      barrio: sort,
+                    },
+                  },
+                }
+              : { [sortBy]: sort }
 
   const autosPromise = prisma.operativos_registros.findMany({
     include: {

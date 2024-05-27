@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prismadb'
 import { FormCamionesProps } from '@/types'
-import { resolucion, Prisma } from '@prisma/client'
+import { resolucion, Prisma, turnos } from '@prisma/client'
 import { geoLocation } from '@/services'
 import { revalidateTag } from 'next/cache'
 
@@ -92,54 +92,105 @@ const operativoCamiones = async (body: FormCamionesProps) => {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
-  const where: Prisma.camiones_registrosWhereInput = {
-    dominio: {
-      contains: filterParams.dominio ?? '',
-      mode: 'insensitive',
-    },
-    operativo: {
-      direccion: {
-        contains: filterParams.direccion ?? '',
-        mode: 'insensitive',
-      },
-      localidad: {
-        barrio: {
-          contains: filterParams.localidad ?? '',
-          mode: 'insensitive',
-        },
-      },
-      fecha:
-        filterParams.fecha && new Date(filterParams.fecha).getDate()
+  const filterParams: Record<string, string> =
+    searchParams
+      .get('filter')
+      ?.split(',')
+      ?.reduce((acc, curr) => {
+        const [id, value] = curr.split('=')
+
+        return { ...acc, [id]: value }
+      }, {}) ?? {}
+  const where: Prisma.camiones_registrosWhereInput | undefined = Object.keys(
+    filterParams,
+  ).length
+    ? {
+        dominio: filterParams.dominio
           ? {
-              equals: new Date(filterParams.fecha),
+              contains: filterParams.dominio,
+              mode: 'insensitive',
             }
           : undefined,
-    },
-    motivo: {
-      motivo: {
-        contains: filterParams.motivo ?? '',
-        mode: 'insensitive',
-      },
-    },
-    localidad_origen: {
-      barrio: {
-        contains: filterParams.localidad_origen ?? '',
-        mode: 'insensitive',
-      },
-    },
-    localidad_destino: {
-      barrio: {
-        contains: filterParams.localidad_destino ?? '',
-        mode: 'insensitive',
-      },
-    },
-  }
+        operativo:
+          filterParams.qth ||
+          filterParams.localidad ||
+          filterParams.fecha ||
+          filterParams.turno
+            ? {
+                direccion: filterParams.qth
+                  ? {
+                      contains: filterParams.qth,
+                      mode: 'insensitive',
+                    }
+                  : undefined,
+                localidad: filterParams.localidad
+                  ? {
+                      barrio: {
+                        contains: filterParams.localidad,
+                        mode: 'insensitive',
+                      },
+                    }
+                  : undefined,
+                fecha:
+                  filterParams.fecha && new Date(filterParams.fecha).getDate()
+                    ? {
+                        equals: new Date(filterParams.fecha),
+                      }
+                    : undefined,
+                turno: filterParams.turno
+                  ? {
+                      equals:
+                        filterParams.turno !== 'MAÑANA'
+                          ? (filterParams.turno as turnos)
+                          : 'MA_ANA',
+                    }
+                  : null,
+              }
+            : undefined,
+        motivo:
+          filterParams.motivo && filterParams.motivo !== 'null'
+            ? {
+                motivo: {
+                  contains: filterParams.motivo,
+                  mode: 'insensitive',
+                },
+              }
+            : filterParams.motivo
+              ? null
+              : undefined,
+        localidad_origen: filterParams.localidad_origen
+          ? {
+              barrio: {
+                contains: filterParams.localidad_origen,
+                mode: 'insensitive',
+              },
+            }
+          : undefined,
+        localidad_destino: filterParams.localidad_destino
+          ? {
+              barrio: {
+                contains: filterParams.localidad_destino,
+                mode: 'insensitive',
+              },
+            }
+          : undefined,
+        resolucion: filterParams.resolucion
+          ? {
+              equals: filterParams.resolucion as resolucion,
+            }
+          : undefined,
+        remito: filterParams.remito
+          ? {
+              equals: filterParams.remito === 'SI',
+            }
+          : undefined,
+        carga: filterParams.carga
+          ? {
+              equals: filterParams.carga === 'SI',
+            }
+          : undefined,
+      }
+    : undefined
   const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
 
   const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
@@ -153,24 +204,24 @@ export async function GET(req: NextRequest) {
           },
         }
       : sortBy === 'localidad_origen'
-      ? {
-          localidad_origen: {
-            barrio: sort,
-          },
-        }
-      : sortBy === 'motivo'
-      ? {
-          motivo: {
-            motivo: sort,
-          },
-        }
-      : sortBy === 'localidad_destino'
-      ? {
-          localidad_destino: {
-            barrio: sort,
-          },
-        }
-      : { [sortBy]: sort }
+        ? {
+            localidad_origen: {
+              barrio: sort,
+            },
+          }
+        : sortBy === 'motivo'
+          ? {
+              motivo: {
+                motivo: sort,
+              },
+            }
+          : sortBy === 'localidad_destino'
+            ? {
+                localidad_destino: {
+                  barrio: sort,
+                },
+              }
+            : { [sortBy]: sort }
   const camionesPromise = prisma.camiones_registros.findMany({
     include: {
       motivo: { select: { motivo: true } },

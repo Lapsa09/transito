@@ -1,3 +1,4 @@
+import { getVicenteLopez } from '@/services'
 import { Registro } from '@/types/autos'
 import { turnos } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
@@ -25,6 +26,9 @@ export const columns: ColumnDef<Registro>[] = [
       ),
     id: 'fecha',
     header: 'Fecha',
+    meta: {
+      filterVariant: 'date',
+    },
   },
   {
     accessorFn: (row) =>
@@ -43,6 +47,9 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.operativo?.localidad?.barrio,
     id: 'localidad',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.localidad?.cp,
@@ -53,6 +60,9 @@ export const columns: ColumnDef<Registro>[] = [
     accessorFn: (row) =>
       row.operativo?.turno === turnos.MA_ANA ? 'MAÑANA' : row.operativo?.turno,
     id: 'turno',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.seguridad,
@@ -71,6 +81,9 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.tipo_licencia?.tipo,
     id: 'tipo_licencia',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.tipo_licencia?.vehiculo,
@@ -90,6 +103,9 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.zona_infractor?.barrio,
     id: 'zona_infractor',
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.es_del,
@@ -100,7 +116,9 @@ export const columns: ColumnDef<Registro>[] = [
   {
     accessorFn: (row) => row.resolucion,
     id: 'resolucion',
-    enableColumnFilter: false,
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.acta,
@@ -111,6 +129,9 @@ export const columns: ColumnDef<Registro>[] = [
     accessorFn: (row) => row.motivo?.motivo,
     id: 'motivo',
     size: 400,
+    meta: {
+      filterVariant: 'select',
+    },
   },
   {
     accessorFn: (row) => row.operativo?.direccion_full?.toLocaleUpperCase(),

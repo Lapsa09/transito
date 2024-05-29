@@ -3,6 +3,7 @@ import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
 import { examen } from '@prisma/client'
 import { fetcher } from '@/services'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
@@ -19,9 +20,18 @@ async function page() {
   const examenes = await getExamenes()
   return (
     <div className="flex">
-      <div className="flex-auto ml-10 flex flex-col items-center">
-        <h1 className="text-3xl font-bold text-center mb-10">Nuevo examen</h1>
-        <CreateExamButton />
+      <div className="flex-auto ml-10">
+        <Link
+          href="/admision/examen/historial"
+          className="text-xl font-semibold text-center mb-10"
+        >
+          Examenes terminados
+        </Link>
+
+        <div className="flex flex-col items-center">
+          <h1 className="text-3xl font-bold text-center mb-10">Nuevo examen</h1>
+          <CreateExamButton />
+        </div>
       </div>
       <div className="flex-initial mr-10">
         <h1 className="text-xl font-semibold text-center mb-10">

@@ -1,5 +1,4 @@
 import React from 'react'
-import Waitzone from './Waitzone'
 import { getter } from '@/services'
 import Quiz from './Quiz'
 import { IPregunta } from '@/types/quiz'
@@ -20,14 +19,20 @@ async function page() {
   const user = session?.user as InvitedUser
   const preguntas = await getPreguntas(user.id)
   if (user.nota) return redirect('/invitados/examen/resultado')
+
+  const { tipo_examenId } = user
+
+  const tiempo = tipo_examenId <= 2 ? 1800 : 3600
+
   return (
     <div>
       <h1 className="text-center text-3xl font-bold">Examen</h1>
-      {!preguntas.examen.habilitado ? (
-        <Waitzone />
-      ) : (
-        <Quiz preguntas={preguntas.examen_preguntas} id={user.id} />
-      )}
+
+      <Quiz
+        preguntas={preguntas.examen_preguntas}
+        tiempo={tiempo}
+        id={user.id}
+      />
     </div>
   )
 }

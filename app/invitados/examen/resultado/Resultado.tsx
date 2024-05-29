@@ -2,21 +2,21 @@
 
 import { calificacion, rinde_examen } from '@prisma/client'
 import { signOut } from 'next-auth/react'
-import React, { useRef } from 'react'
-import { useEventListener } from 'usehooks-ts'
+import { useRouter } from 'next/navigation'
+import React, { useEffect } from 'react'
 
 function Resultado({
   examen,
 }: {
   examen: rinde_examen & { calificacion: calificacion }
 }) {
-  const documentRef = useRef<Document>(document)
-
-  useEventListener(
-    'visibilitychange',
-    () => setTimeout(signOut, 5000),
-    documentRef,
-  )
+  const router = useRouter()
+  useEffect(() => {
+    setTimeout(() => {
+      signOut({ redirect: false })
+      router.push('/login/invitado')
+    }, 5000)
+  }, [])
 
   return (
     <div>

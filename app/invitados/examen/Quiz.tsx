@@ -15,17 +15,26 @@ import dynamic from 'next/dynamic'
 const Quiz = ({
   preguntas,
   id,
+  tiempo,
 }: {
   preguntas: IPregunta['examen_preguntas']
   id: string
+  tiempo: number
 }) => {
   const router = useRouter()
   const ref = useRef<HTMLFormElement>(null)
   const documentRef = useRef<Document>(document)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const [contador, setContador] = useSessionStorage<number>('contador', 1800)
-  useEventListener('pagehide', () =>
-    ref.current?.requestSubmit(buttonRef.current),
+  const [contador, setContador] = useSessionStorage<number>('contador', tiempo)
+  const requestSubmit = () => ref.current?.requestSubmit(buttonRef.current)
+  useEventListener(
+    'visibilitychange',
+    () => {
+      if (document.hidden) {
+        requestSubmit()
+      }
+    },
+    documentRef,
   )
   const methods = useForm<QuizResponse>({
     defaultValues: { id, preguntas: [] },
@@ -34,29 +43,18 @@ const Quiz = ({
     initialSeconds: contador,
   })
 
-  useEventListener(
-    'visibilitychange',
-    () => {
-      if (document.hidden) {
-        ref.current?.requestSubmit(buttonRef.current)
-      }
-    },
-    documentRef,
-  )
-
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     await setter({
       route: `examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
-    sessionStorage.removeItem('contador')
     router.push(`/invitados/examen/resultado`)
   }
 
   useEffect(() => {
     setContador(seconds)
     if (!seconds) {
-      ref.current?.requestSubmit(buttonRef.current)
+      requestSubmit()
     }
   }, [seconds])
 
@@ -88,7 +86,11 @@ const Quiz = ({
             )
           })}
         </section>
-        <Button ref={buttonRef} type="submit">
+        <Button
+          isLoading={methods.formState.isSubmitting}
+          ref={buttonRef}
+          type="submit"
+        >
           Finalizar examen
         </Button>
       </form>

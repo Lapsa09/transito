@@ -23,6 +23,7 @@ import {
   FieldValues,
   FormProvider,
   SubmitHandler,
+  UseFormReturn,
   useForm,
 } from 'react-hook-form'
 import useSWR, { mutate } from 'swr'
@@ -279,18 +280,20 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
   data,
   id,
   defaultValues,
-}: PropsWithChildren<{
+  resetOnSubmit = false,
+}: {
   onSubmit: SubmitHandler<T>
   className?: string
   data?: K[]
   id?: string
   defaultValues?: DefaultValues<T>
-}>) => {
+  children: React.ReactNode | ((methods: UseFormReturn<T>) => React.ReactNode)
+  resetOnSubmit?: boolean
+}) => {
   const methods = useForm<T>({
     mode: 'all',
     defaultValues,
   })
-  const { handleSubmit } = methods
   useEffect(() => {
     if (data) {
       data.forEach((item) => {
@@ -307,11 +310,12 @@ export const RegularForm = <T extends FieldValues, K extends FieldValues>({
         className={cn('w-full', className)}
         onSubmit={async (e) => {
           e.stopPropagation()
-          await handleSubmit(onSubmit)(e)
+          await methods.handleSubmit(onSubmit)(e)
+          if (resetOnSubmit) methods.reset()
         }}
         id={id}
       >
-        {children}
+        {typeof children === 'function' ? children(methods) : children}
       </form>
     </FormProvider>
   )

@@ -1,7 +1,7 @@
 import prisma from '@/lib/prismadb'
 import { QuizResponse } from '@/types/quiz'
 import { tipo_examen } from '@prisma/client'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const examen = await prisma.examen.findFirst({
@@ -73,6 +73,30 @@ export async function POST(req: Request) {
     return NextResponse.json(resultado)
   } catch (error) {
     console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
+  }
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const body = await req.json()
+
+    const { id } = params
+
+    const examen = await prisma.rinde_examen.update({
+      where: {
+        id,
+      },
+      data: body,
+    })
+
+    return NextResponse.json(examen)
+  } catch (error) {
+    console.log(error)
+
     return NextResponse.json('Server error', { status: 500 })
   }
 }

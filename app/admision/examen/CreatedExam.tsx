@@ -36,7 +36,6 @@ function CreatedExam({ examen }: { examen: examen }) {
             includeOffset: false,
           })}
         </p>
-        <p>Estado: {examen.habilitado ? 'Empezado' : 'Sin empezar'}</p>
       </CardBody>
       <CardFooter>
         <ButtonGroup>

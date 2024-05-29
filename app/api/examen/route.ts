@@ -1,6 +1,5 @@
 import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
 import { examen } from '@prisma/client'
 import { getter, setter } from '@/services'
 import { splitFullName } from '@/utils/misc'
@@ -50,7 +49,7 @@ const getFromCitymis = async () => {
 }
 
 export async function GET() {
-  await getFromCitymis()
+  // await getFromCitymis()
   try {
     const examenes = await prisma.examen.findMany({
       where: {

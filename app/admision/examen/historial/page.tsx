@@ -9,7 +9,7 @@ export type Examen = rinde_examen & {
 }
 
 const getExamenes = async () => {
-  const response = await fetcher('/api/examen/historial', {
+  const response = await fetcher('/api/admision/examen/historial', {
     cache: 'no-store',
   })
   const examenes: { data: Examen[]; pages: number } = await response.json()

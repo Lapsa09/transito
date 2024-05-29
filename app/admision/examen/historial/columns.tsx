@@ -4,7 +4,7 @@ import RespuestasAlumnoCard from '../RespuestasAlumno'
 
 export const columns: ColumnDef<Examen>[] = [
   {
-    accessorFn: (row) => `${row.nombre} - ${row.apellido}`,
+    accessorFn: (row) => `${row.nombre} ${row.apellido}`,
     header: 'Nombre y apellido',
   },
   {
@@ -17,7 +17,7 @@ export const columns: ColumnDef<Examen>[] = [
     enableColumnFilter: false,
   },
   {
-    accessorFn: (row) => row.examen.fecha,
+    accessorFn: (row) => new Date(row.examen.fecha!).toLocaleDateString(),
     header: 'Fecha',
   },
   {
@@ -26,7 +26,7 @@ export const columns: ColumnDef<Examen>[] = [
     enableColumnFilter: false,
   },
   {
-    accessorFn: (row) => <RespuestasAlumnoCard id={row.id} />,
+    cell: ({ row }) => <RespuestasAlumnoCard id={row.original.id} />,
     header: 'Respuestas',
     enableColumnFilter: false,
   },

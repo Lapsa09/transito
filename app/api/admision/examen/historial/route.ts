@@ -12,26 +12,32 @@ export async function GET(req: NextRequest) {
   }, {})
 
   const where: Prisma.rinde_examenWhereInput = {
-    OR: [
-      {
-        nombre: {
-          contains: filterParams.nombre,
-        },
-      },
-      {
-        apellido: {
-          contains: filterParams.nombre,
-        },
-      },
-    ],
-    dni: {
-      equals: +filterParams.dni,
-    },
-    examen: {
-      fecha: {
-        equals: filterParams.fecha,
-      },
-    },
+    OR: filterParams.nombre
+      ? [
+          {
+            nombre: {
+              contains: filterParams.nombre,
+            },
+          },
+          {
+            apellido: {
+              contains: filterParams.nombre,
+            },
+          },
+        ]
+      : undefined,
+    dni: filterParams.dni
+      ? {
+          equals: +filterParams.dni,
+        }
+      : undefined,
+    examen: filterParams.fecha
+      ? {
+          fecha: {
+            equals: filterParams.fecha,
+          },
+        }
+      : undefined,
   }
 
   const pageIndex = parseInt(searchParams.get('page') ?? '0')

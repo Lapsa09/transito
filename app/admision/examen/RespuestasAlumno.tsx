@@ -27,7 +27,7 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
   return (
     <Dialog>
       <DialogTrigger>Ver examen</DialogTrigger>
-      <DialogContent className="overflow-y-auto h-unit-9xl sm:max-w-5xl">
+      <DialogContent className="overflow-y-auto h-dvh sm:max-w-5xl">
         {isLoading && <Loader />}
 
         <DialogHeader>

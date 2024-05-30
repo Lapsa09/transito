@@ -6,7 +6,7 @@ export default function CustomModal({ children }: React.PropsWithChildren) {
   const router = useRouter()
 
   return (
-    <Modal isOpen onOpenChange={router.back} size="4xl">
+    <Modal scrollBehavior="inside" isOpen onOpenChange={router.back} size="4xl">
       <ModalContent className="p-6">{children}</ModalContent>
     </Modal>
   )

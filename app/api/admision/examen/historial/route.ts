@@ -49,6 +49,9 @@ export async function GET(req: NextRequest) {
     skip: pageIndex * 10,
     take: 10,
     where,
+    orderBy: {
+      id_examen: 'desc',
+    },
   })
 
   const total = await prisma.rinde_examen.count()

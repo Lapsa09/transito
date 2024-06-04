@@ -15,6 +15,11 @@ async function page({ params }: { params: { id: string } }) {
   const data = await getter<Respuesta[]>({
     route: `/admision/examen/${id}/respuestas`,
   })
+  const preguntasCorrectas = data.filter(
+    ({ elegida_id, pregunta }) => elegida_id === pregunta.id_correcta,
+  ).length
+
+  const totalPreguntas = data.length
   return (
     <Modal>
       <DialogHeader>
@@ -22,10 +27,8 @@ async function page({ params }: { params: { id: string } }) {
           Respuestas del alumno
         </h1>
         <p className="text-sm text-muted-foreground">
-          El alumno respondió correctamente{' '}
-          {data?.filter((r) => r.elegida_id === r.pregunta.id_correcta).length}{' '}
-          de
-          {' ' + data?.length} preguntas
+          El alumno respondió correctamente {preguntasCorrectas} de{' '}
+          {totalPreguntas} preguntas
         </p>
       </DialogHeader>
       <ModalBody>

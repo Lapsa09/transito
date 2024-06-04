@@ -11,6 +11,7 @@ import { useEventListener, useSessionStorage } from 'usehooks-ts'
 import CustomRadioGroup from '@/components/RadioGroup'
 import Timer from '@/components/Timer'
 import dynamic from 'next/dynamic'
+import { useSession } from 'next-auth/react'
 
 const Quiz = ({
   preguntas,
@@ -25,6 +26,7 @@ const Quiz = ({
   const ref = useRef<HTMLFormElement>(null)
   const documentRef = useRef<Document>(document)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const { update } = useSession()
   const [contador, setContador] = useSessionStorage<number>('contador', tiempo)
   const requestSubmit = () => ref.current?.requestSubmit(buttonRef.current)
   useEventListener(
@@ -44,10 +46,11 @@ const Quiz = ({
   })
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
-    await setter({
+    const resultado = await setter({
       route: `examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
+    update({ nota: resultado.nota })
     router.push(`/invitados/examen/resultado`)
   }
 

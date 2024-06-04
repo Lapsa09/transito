@@ -11,7 +11,7 @@ import { rinde_examen, tipo_examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/Button'
 import React from 'react'
-import RespuestasAlumnoCard from '../RespuestasAlumno'
+import RespuestasAlumnoCard from './RespuestasAlumno'
 import { rehabilitarExamen, revalidar } from '@/services/actions'
 
 function AlumnoCard({

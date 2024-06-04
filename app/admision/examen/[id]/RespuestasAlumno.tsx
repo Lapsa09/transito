@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -19,13 +19,21 @@ type Respuesta = examen_preguntas & {
 }
 
 function RespuestasAlumnoCard({ id }: { id: string }) {
+  const [open, setOpen] = useState(false)
   const { data, isLoading } = useSWR<Respuesta[]>(
-    { route: `/admision/examen/${id}/respuestas` },
+    open ? { route: `/admision/examen/${id}/respuestas` } : null,
     getter,
     {},
   )
+
+  const preguntasCorrectas = data?.filter(
+    ({ elegida_id, pregunta }) => elegida_id === pregunta.id_correcta,
+  ).length
+
+  const totalPreguntas = data?.length
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>Ver examen</DialogTrigger>
       <DialogContent className="overflow-y-auto h-dvh sm:max-w-5xl">
         {isLoading && <Loader />}
@@ -33,13 +41,8 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
         <DialogHeader>
           <DialogTitle>Respuestas del alumno</DialogTitle>
           <DialogDescription>
-            El alumno respondió correctamente{' '}
-            {
-              data?.filter((r) => r.elegida_id === r.pregunta.id_correcta)
-                .length
-            }{' '}
-            de
-            {' ' + data?.length} preguntas
+            El alumno respondió correctamente {preguntasCorrectas} de{' '}
+            {totalPreguntas} preguntas
           </DialogDescription>
         </DialogHeader>
 

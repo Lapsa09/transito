@@ -26,7 +26,10 @@ const Quiz = ({
   const ref = useRef<HTMLFormElement>(null)
   const documentRef = useRef<Document>(document)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const { update } = useSession()
+  const { update } = useSession({
+    onUnauthenticated: () => router.push('/login/invitado'),
+    required: true,
+  })
   const [contador, setContador] = useSessionStorage<number>('contador', tiempo)
   const requestSubmit = () => ref.current?.requestSubmit(buttonRef.current)
   useEventListener(
@@ -50,7 +53,7 @@ const Quiz = ({
       route: `examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
-    update({ nota: resultado.nota })
+    await update({ nota: resultado.nota })
     router.push(`/invitados/examen/resultado`)
   }
 

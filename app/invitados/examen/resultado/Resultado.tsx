@@ -12,10 +12,11 @@ function Resultado({
 }) {
   const router = useRouter()
   useEffect(() => {
-    setTimeout(() => {
-      signOut({ redirect: false })
-      router.push('/login/invitado')
-    }, 5000)
+    signOut({ redirect: false }).then(() => {
+      setTimeout(() => {
+        router.push('/login/invitado')
+      }, 5000)
+    })
   }, [])
 
   return (

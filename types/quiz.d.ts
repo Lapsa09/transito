@@ -30,3 +30,8 @@ export type IPregunta = rinde_examen & {
   })[]
   examen: examen
 }
+
+export type Respuesta = examen_preguntas & {
+  pregunta: preguntas & { correcta: opciones }
+  elegida?: opciones
+}

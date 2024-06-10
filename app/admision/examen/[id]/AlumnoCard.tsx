@@ -48,7 +48,7 @@ function AlumnoCard({
                   : 'Finalizado'}
             </p>
             <p>
-              {alumno.utilizado && alumno.hora_finalizado && (
+              {alumno.utilizado && (
                 <Button
                   onClick={async () => {
                     await rehabilitarExamen(alumno.id)

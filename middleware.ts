@@ -19,7 +19,6 @@ export default async function middleware(req: NextRequest) {
 
   if (!token && isProtectedPath) {
     const url = new URL('/login', req.url)
-    url.searchParams.set('callbackUrl', encodeURI(req.url))
     return NextResponse.redirect(url)
   }
 
@@ -28,17 +27,13 @@ export default async function middleware(req: NextRequest) {
       const { role } = token
       const rolePage = rolePages[role]
       const iAmAllowed = pathname.startsWith(rolePage)
-      if (
-        !isProtectedPath ||
-        !iAmAllowed ||
-        pathname.startsWith('/invitados')
-      ) {
+      if (!isProtectedPath || !iAmAllowed) {
         const url = new URL(rolePage, req.url)
         return NextResponse.redirect(url)
       }
     } else {
       if (pathname.startsWith('/invitados')) return NextResponse.next()
-      const url = new URL('/invitados/examen', req.url)
+      const url = new URL('/login/invitado', req.url)
       return NextResponse.redirect(url)
     }
   }

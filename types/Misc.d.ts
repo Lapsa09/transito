@@ -7,6 +7,7 @@ export enum Roles {
   WAZE = 'TRAFICO',
   LOGISTICA = 'LOGISTICA',
   PROFESOR = 'PROFESOR',
+  DASHBOARD = 'DASHBOARD',
 }
 
 export type User = {

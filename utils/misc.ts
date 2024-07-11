@@ -12,6 +12,13 @@ export const parseToISOTime = (date: string) => {
   return res.toISO()
 }
 
+export const getLocalTime = (date: string) => {
+  return new Date(date).toLocaleTimeString('UTC', {
+    timeZone: 'GMT',
+    timeStyle: 'short',
+  })
+}
+
 export function shuffle<T>(array: T[]) {
   const _array = [...array]
   for (let i = array.length - 1; i > 0; i--) {

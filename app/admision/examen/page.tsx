@@ -10,7 +10,7 @@ export const fetchCache = 'force-no-store'
 
 const getExamenes = async () => {
   const response = await fetcher('/api/examen', {
-    next: { revalidate: 3600 * 24 },
+    cache: 'no-store',
   })
   const examenes: examen[] = await response.json()
   return examenes

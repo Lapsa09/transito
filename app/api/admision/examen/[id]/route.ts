@@ -1,6 +1,5 @@
 import prisma from '@/lib/prismadb'
 import { shuffle } from '@/utils/misc'
-import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -126,7 +125,6 @@ export async function POST(
         },
       })
     }
-    revalidateTag('examen')
     return NextResponse.json(examen)
   } catch (error: any) {
     if (error.name === 'PrismaClientKnownRequestError') {

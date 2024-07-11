@@ -7,7 +7,7 @@ import { IPregunta, QuizResponse } from '@/types/quiz'
 import { setter } from '@/services'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Button } from '@nextui-org/react'
-import { useEventListener, useSessionStorage } from 'usehooks-ts'
+import { useEventListener } from 'usehooks-ts'
 import CustomRadioGroup from '@/components/RadioGroup'
 import Timer from '@/components/Timer'
 import dynamic from 'next/dynamic'
@@ -30,7 +30,6 @@ const Quiz = ({
     onUnauthenticated: () => router.push('/login/invitado'),
     required: true,
   })
-  const [contador, setContador] = useSessionStorage<number>('contador', tiempo)
   const requestSubmit = () => ref.current?.requestSubmit(buttonRef.current)
   useEventListener(
     'visibilitychange',
@@ -45,7 +44,7 @@ const Quiz = ({
     defaultValues: { id, preguntas: [] },
   })
   const { seconds } = useCountdown({
-    initialSeconds: contador,
+    initialSeconds: tiempo,
   })
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
@@ -58,7 +57,6 @@ const Quiz = ({
   }
 
   useEffect(() => {
-    setContador(seconds)
     if (!seconds) {
       requestSubmit()
     }

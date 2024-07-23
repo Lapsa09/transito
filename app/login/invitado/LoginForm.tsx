@@ -15,6 +15,7 @@ function LoginForm() {
 
   const onSubmit: SubmitHandler<FieldValues> = async (body) => {
     const callback = await signIn('dni', { ...body, redirect: false })
+
     if (callback) {
       if (callback.ok) {
         router.push(`/invitados/examen`)
@@ -34,13 +35,6 @@ function LoginForm() {
             name="dni"
             rules={{ required: 'Campo requerido' }}
             placeholder="12345"
-          />
-          <Input
-            label="Contraseña"
-            name="clave"
-            type="password"
-            placeholder="********"
-            rules={{ required: 'Campo requerido' }}
           />
           <div className="flex justify-between gap-10 my-3">
             <Button

@@ -49,10 +49,10 @@ const Quiz = ({
 
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     const resultado = await setter({
-      route: `examen/${id}`,
+      route: `invitados/examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
-    await update({ nota: resultado.nota })
+    await update({ metaData: { nota: resultado.nota } })
     router.push(`/invitados/examen/resultado`)
   }
 
@@ -79,7 +79,7 @@ const Quiz = ({
           </p>
         </div>
         <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
-          {preguntas.map(({ preguntas_id, pregunta }, index) => {
+          {preguntas?.map(({ preguntas_id, pregunta }, index) => {
             return (
               <CustomRadioGroup
                 key={preguntas_id}

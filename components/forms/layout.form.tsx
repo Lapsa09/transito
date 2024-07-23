@@ -1,23 +1,21 @@
 'use client'
-import React, { FormEvent, PropsWithChildren, useEffect } from 'react'
 import Button from '@/components/Button'
-import Stepper from '@/components/Stepper'
 import Loader from '@/components/Loader'
+import Stepper from '@/components/Stepper'
 import { useStepForm, useToast } from '@/hooks'
+import { cn } from '@/lib/utils'
 import { getter, setter, updater } from '@/services'
 import {
   EditInputProps,
+  Empleado,
   FormInputProps,
   LocalOperativo,
   RioFormProps,
-  Roles,
-  User,
 } from '@/types'
-import {
-  useRouter,
-  useSelectedLayoutSegment,
-  useSelectedLayoutSegments,
-} from 'next/navigation'
+import { Registro } from '@/types/camiones'
+import { useSession } from 'next-auth/react'
+import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
+import React, { FormEvent, PropsWithChildren, useEffect } from 'react'
 import {
   DefaultValues,
   FieldValues,
@@ -26,12 +24,8 @@ import {
   UseFormReturn,
   useForm,
 } from 'react-hook-form'
-import useSWR, { mutate } from 'swr'
-import { cn } from '@/lib/utils'
-import { useSession } from 'next-auth/react'
+import useSWR from 'swr'
 import { useLocalStorage } from 'usehooks-ts'
-import { Registro } from '@/types/camiones'
-import { m } from 'framer-motion'
 
 export function CreateFormLayout({
   children,
@@ -54,7 +48,7 @@ export function CreateFormLayout({
   }
 
   const { data } = useSession({ required: true })
-  const user = data?.user as User | undefined
+  const user = data?.user as Empleado
   const methods = useForm<FormInputProps | RioFormProps>({
     mode: 'all',
     resetOptions: { keepDefaultValues: true },
@@ -69,7 +63,7 @@ export function CreateFormLayout({
     handleSubmit,
     formState: { isValid },
   } = methods
-  const layoutSegment = useSelectedLayoutSegment()
+  const [layoutSegment] = useSelectedLayoutSegments()
   const { toast } = useToast()
   const [operativo, setOperativo] = useLocalStorage<LocalOperativo>(
     layoutSegment as string,
@@ -175,7 +169,7 @@ export function EditFormLayout({
   const isFirstStep = activeStep === 0
   const isLastStep = activeStep === stepTitles.length - 1
   const { data } = useSession({ required: true })
-  const user = data?.user as User | undefined
+  const user = data?.user as Empleado | undefined
   const router = useRouter()
   const [layoutSegment, id] = useSelectedLayoutSegments()
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1)
@@ -184,7 +178,7 @@ export function EditFormLayout({
     !isLastStep && setActiveStep((cur) => cur + 1)
   }
   const { isLoading } = useSWR(
-    user?.role === Roles.ADMIN
+    user?.metaData.isAdmin
       ? { route: `/${section}/${layoutSegment}/${id}` }
       : null,
     getter,

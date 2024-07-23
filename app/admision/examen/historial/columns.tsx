@@ -1,15 +1,15 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { Examen } from './page'
 import Link from 'next/link'
+import { Historial } from '@/types/quiz'
 
-export const columns: ColumnDef<Examen>[] = [
+export const columns: ColumnDef<Historial>[] = [
   {
-    accessorFn: (row) => `${row.nombre} ${row.apellido}`,
+    accessorFn: (row) => `${row.usuario.nombre} ${row.usuario.apellido}`,
     header: 'Nombre y apellido',
     id: 'nombre',
   },
   {
-    accessorFn: (row) => row.dni,
+    accessorFn: (row) => row.usuario.dni,
     header: 'DNI',
   },
   {

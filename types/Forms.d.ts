@@ -28,8 +28,9 @@ export interface RegisterUserProps {
 }
 
 export interface LoginUserProps {
-  legajo: string
-  password: string
+  legajo?: string
+  password?: string
+  dni?: string
 }
 
 export interface FormInputProps {

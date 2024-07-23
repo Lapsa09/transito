@@ -38,58 +38,46 @@ function checkPasswordValidation(value: string) {
 export async function POST(req: Request) {
   try {
     const body: RegisterUserProps = await req.json()
-    const { legajo, nombre, apellido, telefono, password } = body
+    const { legajo, password } = body
     const isRegistered = await prisma.user.findUnique({
-      where: { legajo: +legajo },
+      where: { legajo: +legajo, user_password: { not: null } },
     })
 
     if (isRegistered) {
       return NextResponse.json(
         'El legajo ingresado ya se encuentra registrado',
-        { status: 409 }
+        { status: 409 },
       )
     }
+    const isValidLegajo = validLegajo(legajo)
 
-    const findLegajo = await prisma.legajos.findUnique({
+    if (!isValidLegajo)
+      return NextResponse.json('Legajo Invalido', { status: 400 })
+
+    const findLegajo = await prisma.user.findUnique({
       where: { legajo: +legajo },
     })
 
-    if (findLegajo) {
-      const isValidLegajo = validLegajo(legajo)
-      const passwordError = checkPasswordValidation(password)
+    if (!findLegajo)
+      return NextResponse.json(
+        'El legajo ingresado no corresponde con el de un empleado',
+        { status: 404 },
+      )
 
-      if (!isValidLegajo) {
-        return NextResponse.json('Legajo Invalido', { status: 400 })
-      }
+    const passwordError = checkPasswordValidation(password)
 
-      if (passwordError) {
-        return NextResponse.json(passwordError, { status: 400 })
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10)
-      const user = await prisma.user.create({
-        data: {
-          legajo: +legajo,
-          nombre,
-          apellido,
-          telefono: +telefono,
-          user_password: hashedPassword,
-        },
-        include: {
-          op: {
-            select: {
-              turno: true,
-              permisos: true,
-            },
-          },
-        },
-      })
-      return NextResponse.json(user)
+    if (passwordError) {
+      return NextResponse.json(passwordError, { status: 400 })
     }
-    return NextResponse.json(
-      'El legajo ingresado no corresponde con el de un empleado',
-      { status: 404 }
-    )
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = await prisma.user.update({
+      where: { legajo: +legajo },
+      data: {
+        user_password: hashedPassword,
+      },
+    })
+    return NextResponse.json(user)
   } catch (error: any) {
     console.log(error.message)
     return NextResponse.json('Server error', { status: 500 })

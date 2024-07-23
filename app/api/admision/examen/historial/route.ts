@@ -1,3 +1,4 @@
+import { historialDTO } from '@/DTOs/examen'
 import prisma from '@/lib/prismadb'
 import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
@@ -13,25 +14,27 @@ export async function GET(req: NextRequest) {
     }, {})
 
     const where: Prisma.rinde_examenWhereInput = {
-      OR: filterParams.nombre
-        ? [
-            {
-              nombre: {
-                contains: filterParams.nombre,
+      usuario: {
+        OR: filterParams.nombre
+          ? [
+              {
+                nombre: {
+                  contains: filterParams.nombre,
+                },
               },
-            },
-            {
-              apellido: {
-                contains: filterParams.nombre,
+              {
+                apellido: {
+                  contains: filterParams.nombre,
+                },
               },
-            },
-          ]
-        : undefined,
-      dni: filterParams.dni
-        ? {
-            equals: +filterParams.dni,
-          }
-        : undefined,
+            ]
+          : undefined,
+        dni: filterParams.dni
+          ? {
+              equals: +filterParams.dni,
+            }
+          : undefined,
+      },
       examen: filterParams.fecha
         ? {
             fecha: {
@@ -45,18 +48,7 @@ export async function GET(req: NextRequest) {
     }
 
     const pageIndex = parseInt(searchParams.get('page') ?? '0')
-    const examenesPromise = prisma.rinde_examen.findMany({
-      include: {
-        examen: true,
-        tipo_examen: true,
-      },
-      where,
-      orderBy: {
-        id_examen: 'desc',
-      },
-      skip: pageIndex * 10,
-      take: 10,
-    })
+    const examenesPromise = historialDTO({ where, pageIndex })
 
     const totalPromise = prisma.rinde_examen.count({
       where,

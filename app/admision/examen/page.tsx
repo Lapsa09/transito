@@ -1,39 +1,37 @@
+import { Button } from '@/components/ui'
+import { getter } from '@/services'
+import { examen } from '@prisma/client'
+import Link from 'next/link'
 import React from 'react'
 import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
-import { examen } from '@prisma/client'
-import { fetcher } from '@/services'
-import Link from 'next/link'
+
+const getExamenes = async () => {
+  const response = await getter<examen[]>({ route: '/invitados/examen' })
+
+  return response
+}
 
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
 
-const getExamenes = async () => {
-  const response = await fetcher('/api/examen', {
-    next: { revalidate: 3600 * 24 },
-  })
-  const examenes: examen[] = await response.json()
-  return examenes
-}
-
 async function page() {
   const examenes = await getExamenes()
   return (
-    <div className="flex">
-      <div className="flex-auto ml-10">
-        <Link
-          href="/admision/examen/historial"
-          className="text-xl font-semibold text-center mb-10"
-        >
-          Examenes terminados
-        </Link>
-
-        <div className="flex flex-col items-center">
-          <h1 className="text-3xl font-bold text-center mb-10">Nuevo examen</h1>
-          <CreateExamButton />
-        </div>
+    <div className="flex px-10">
+      <div className="flex-auto grid place-content-center">
+        <h1 className="text-3xl font-bold text-center mb-8">Nuevo examen</h1>
+        <CreateExamButton />
       </div>
-      <div className="flex-initial mr-10">
+      <div>
+        <Button variant="link" asChild>
+          <Link
+            href="/admision/examen/historial"
+            className="text-xl font-semibold text-center mb-10"
+          >
+            Examenes terminados
+          </Link>
+        </Button>
         <h1 className="text-xl font-semibold text-center mb-10">
           Examenes sin terminar
         </h1>

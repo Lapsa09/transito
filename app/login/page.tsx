@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { MainLogoOVT } from '@/components/Logos'
 import LoginForm from './LoginForm'
+import { Button } from '@/components/ui'
 
 function page() {
   return (
@@ -9,7 +10,10 @@ function page() {
       <MainLogoOVT />
       <LoginForm />
       <p>
-        Todavia no te registraste? <Link href="/register">Registrate aca</Link>
+        Todavia no te registraste?
+        <Button asChild variant="link">
+          <Link href="/register">Registrate aca</Link>
+        </Button>
       </p>
     </div>
   )

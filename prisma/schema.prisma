@@ -241,10 +241,10 @@ model operario {
 }
 
 model permisos {
-  id      Int       @id @default(autoincrement())
-  permiso String    @db.VarChar
-  url     String    @db.VarChar
-  legajos legajos[]
+  id      Int    @id @default(autoincrement())
+  permiso String @db.VarChar
+  url     String @db.VarChar
+  legajos User[]
 
   @@schema("public")
 }
@@ -284,23 +284,12 @@ model tipo_licencias {
   @@schema("public")
 }
 
-model legajos {
-  legajo   Int       @id
-  turno    turnos?
-  rol      roles?
-  id_rol   Int?
-  permisos permisos? @relation(fields: [id_rol], references: [id])
-  usuario  User?
-
-  @@schema("public")
-}
-
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
   type              String
   provider          String
-  providerAccountId String  @map("provider_account_id")
+  providerAccountId String   @map("provider_account_id")
   refresh_token     String?
   access_token      String?
   expires_at        Int?
@@ -308,7 +297,8 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_user_id_fkey")
+  invitado          Invitado @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_invitado_id_fkey")
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -320,7 +310,8 @@ model Session {
   sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id")
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_user_id_fkey")
+  invitado     Invitado @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_invitado_id_fkey")
 
   @@map("sessions")
   @@schema("public")
@@ -328,16 +319,32 @@ model Session {
 
 model User {
   legajo        Int       @unique
-  nombre        String    @db.VarChar
-  apellido      String    @db.VarChar
-  user_password String    @db.VarChar(255)
-  telefono      Int?
+  nombre        String?   @db.VarChar
+  apellido      String?   @db.VarChar
+  turno         turnos?
+  id_rol        Int
+  rol           permisos  @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_password String?   @db.VarChar(255)
   id            String    @id @default(cuid())
   accounts      Account[]
   sessions      Session[]
-  op            legajos   @relation(fields: [legajo], references: [legajo])
 
   @@map("users")
+  @@schema("public")
+}
+
+model Invitado {
+  id        String        @id @default(cuid())
+  nombre    String        @db.VarChar
+  apellido  String        @db.VarChar
+  dni       Int
+  utilizado Boolean       @default(false)
+  fecha     DateTime      @default(now()) @db.Date
+  accounts  Account[]
+  sessions  Session[]
+  examen    rinde_examen?
+
+  @@map("invitados")
   @@schema("public")
 }
 
@@ -670,10 +677,7 @@ model rinde_examen {
   id               String             @id @default(cuid())
   id_examen        Int
   nota             String?
-  nombre           String             @db.VarChar
-  apellido         String             @db.VarChar
-  dni              Int
-  utilizado        Boolean            @default(false)
+  id_invitado      String
   tipo_examenId    Int
   hora_finalizado  DateTime?          @db.Timestamp(6)
   hora_ingresado   DateTime?          @db.Timestamp(6)
@@ -681,8 +685,9 @@ model rinde_examen {
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
   calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
   tipo_examen      tipo_examen        @relation(fields: [tipo_examenId], references: [id])
+  usuario          Invitado           @relation(fields: [id_invitado], references: [id])
 
-  @@unique([id_examen, dni])
+  @@unique(id_invitado)
   @@schema("examen")
 }
 

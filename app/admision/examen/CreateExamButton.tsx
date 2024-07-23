@@ -2,6 +2,7 @@
 
 import Button from '@/components/Button'
 import { setter } from '@/services'
+import { examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
@@ -9,7 +10,10 @@ function CreateExamButton() {
   const router = useRouter()
   const onClick = async () => {
     try {
-      const examen = await setter({ route: 'admision/examen', body: {} })
+      const examen: examen = await setter({
+        route: 'admision/examen',
+        body: {},
+      })
       router.push('/admision/examen/' + examen.clave)
     } catch (error: any) {
       console.log(error)

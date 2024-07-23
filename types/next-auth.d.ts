@@ -1,14 +1,13 @@
 import { DefaultSession } from 'next-auth'
 import { Roles, User as IUser, InvitedUser } from './Misc'
 
-type JUser = IUser | InvitedUser
 declare module 'next-auth' {
-  interface User extends JUser {}
+  interface User extends IUser {}
   interface Session extends DefaultSession {
-    user?: JUser
+    user?: IUser
   }
 }
 
 declare module 'next-auth/jwt' {
-  interface JWT extends JUser {}
+  interface JWT extends IUser {}
 }

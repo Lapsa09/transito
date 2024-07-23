@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const body: QuizResponse = await req.json()
     const examen = await prisma.rinde_examen.findUniqueOrThrow({
       where: {
-        id: body.id,
+        id_invitado: body.id,
       },
       include: {
         tipo_examen: true,
@@ -46,13 +46,14 @@ export async function POST(req: Request) {
 
       return acc
     }, 0)
+
     const resultado = await prisma.rinde_examen.update({
       data: {
-        nota: notaFinal(nota, examen.tipo_examen!),
+        nota: notaFinal(nota, examen.tipo_examen),
         hora_finalizado: body.tiempo,
       },
       where: {
-        id: body.id,
+        id: examen.id,
       },
     })
 

@@ -63,34 +63,3 @@ export async function GET() {
     return NextResponse.json('Server error', { status: 500 })
   }
 }
-
-export async function POST(req: Request) {
-  try {
-    const body = await req.json()
-    const examen = await prisma.rinde_examen.findFirst({
-      where: {
-        dni: body.dni,
-        utilizado: false,
-        examen: {
-          clave: body.clave,
-        },
-      },
-      include: {
-        examen: true,
-      },
-    })
-
-    if (examen) {
-      await prisma.rinde_examen.update({
-        where: { id: examen.id },
-        data: { utilizado: true, hora_ingresado: new Date() },
-      })
-
-      return NextResponse.json(examen)
-    }
-    return NextResponse.json(null)
-  } catch (error) {
-    console.log(error)
-    return NextResponse.json('Server error', { status: 500 })
-  }
-}

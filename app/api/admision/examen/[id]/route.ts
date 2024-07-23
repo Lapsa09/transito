@@ -1,3 +1,4 @@
+import { examenDTO } from '@/DTOs/examen'
 import prisma from '@/lib/prismadb'
 import { shuffle } from '@/utils/misc'
 import { NextRequest, NextResponse } from 'next/server'
@@ -17,9 +18,12 @@ export async function GET(
         alumnos: {
           include: {
             tipo_examen: true,
+            usuario: true,
           },
           orderBy: {
-            apellido: 'asc',
+            usuario: {
+              apellido: 'asc',
+            },
           },
         },
       },
@@ -50,37 +54,14 @@ export async function POST(
       dni: string
       tipo_examen: string
     } = await req.json()
-
-    const examen = await prisma.rinde_examen.create({
+    const invitado = await prisma.invitado.create({
       data: {
-        nombre,
-        apellido,
         dni: +dni,
-        examen: {
-          connect: {
-            id: parseInt(id),
-          },
-        },
-        tipo_examen: {
-          connect: {
-            id: +tipo_examen,
-          },
-        },
-      },
-      include: {
-        examen_preguntas: {
-          include: {
-            pregunta: {
-              include: {
-                opciones: true,
-              },
-            },
-          },
-        },
-        tipo_examen: true,
-        examen: true,
+        apellido,
+        nombre,
       },
     })
+    const examen = await examenDTO(id, tipo_examen, invitado.id)
 
     const tipo = await prisma.tipo_examen.findUniqueOrThrow({
       where: {
@@ -113,13 +94,6 @@ export async function POST(
           pregunta: {
             connect: {
               id: pregunta.id,
-            },
-          },
-        },
-        include: {
-          pregunta: {
-            include: {
-              opciones: true,
             },
           },
         },

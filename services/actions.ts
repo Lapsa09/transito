@@ -3,7 +3,7 @@
 import prisma from '@/lib/prismadb'
 import { revalidatePath, revalidateTag } from 'next/cache'
 
-export const terminarExamen = async (id: number) =>
+export const terminarExamen = async (id: number) => {
   await prisma.examen
     .update({
       where: {
@@ -13,22 +13,28 @@ export const terminarExamen = async (id: number) =>
         terminado: true,
       },
     })
-    .then(() => {
-      revalidateTag('examen')
-    })
     .then(() => revalidatePath('/admision/examen'))
-
+}
 export const rehabilitarExamen = async (id: string) =>
   await prisma.rinde_examen
     .update({
       where: {
-        id,
+        id_invitado: id,
       },
       data: {
-        utilizado: false,
         hora_finalizado: null,
         nota: null,
       },
+    })
+    .then(() => {
+      prisma.invitado.update({
+        where: {
+          id,
+        },
+        data: {
+          utilizado: false,
+        },
+      })
     })
     .then(() => {
       prisma.examen_preguntas.updateMany({

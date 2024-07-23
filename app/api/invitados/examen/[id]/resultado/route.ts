@@ -7,9 +7,13 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
       id: params.id,
     },
     select: {
-      apellido: true,
-      nombre: true,
-      dni: true,
+      usuario: {
+        select: {
+          apellido: true,
+          nombre: true,
+          dni: true,
+        },
+      },
       calificacion: true,
     },
   })

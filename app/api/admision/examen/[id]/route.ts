@@ -1,4 +1,4 @@
-import { examenDTO } from '@/DTOs/examen'
+import { examenDTO } from '@/DTO/examen'
 import prisma from '@/lib/prismadb'
 import { shuffle } from '@/utils/misc'
 import { NextRequest, NextResponse } from 'next/server'

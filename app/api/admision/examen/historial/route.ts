@@ -1,4 +1,4 @@
-import { historialDTO } from '@/DTOs/examen'
+import { historialDTO } from '@/DTO/examen'
 import prisma from '@/lib/prismadb'
 import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'

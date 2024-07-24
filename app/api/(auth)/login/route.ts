@@ -1,4 +1,4 @@
-import { invitadoDTO, userDTO } from '@/DTOs/user'
+import { invitadoDTO, userDTO } from '@/DTO/user'
 import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 

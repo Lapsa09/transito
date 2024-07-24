@@ -1,6 +1,6 @@
 'use client'
 
-import MenuButton from '@/app/header/MenuButton'
+import MenuButton from './MenuButton'
 import { Button } from '@/components/ui'
 import {
   Sheet,

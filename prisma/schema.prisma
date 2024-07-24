@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["camiones", "examen", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze"]
+  schemas  = ["camiones", "examen", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze", "radio"]
 }
 
 model camiones_operativos {
@@ -328,6 +328,7 @@ model User {
   id            String    @id @default(cuid())
   accounts      Account[]
   sessions      Session[]
+  partes        parte[]
 
   @@map("users")
   @@schema("public")
@@ -737,6 +738,22 @@ model baches {
   fecha_reparacion DateTime? @db.Timestamp(6)
 
   @@schema("waze")
+}
+
+model parte {
+  id                Int      @id @default(autoincrement())
+  turno             turnos
+  qth               String   @db.VarChar
+  fecha             DateTime @db.Date
+  legajo            Int
+  movil             String   @db.VarChar
+  hora_inicio       DateTime @db.Time(6)
+  hora_fin          DateTime @db.Time(6)
+  hora_descanso     DateTime @db.Time(6)
+  hora_descanso_fin DateTime @db.Time(6)
+  operario          User     @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("radio")
 }
 
 enum motivo {

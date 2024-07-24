@@ -55,3 +55,16 @@ export const invitadoDTO = async (body: { dni: string }) => {
   const { examen, ...rest } = invitado
   return { metaData: examen, ...rest }
 }
+
+export async function inspectoresDTO() {
+  return await prisma.user.findMany({
+    where: {
+      id_rol: 2,
+    },
+    select: {
+      legajo: true,
+      nombre: true,
+      apellido: true,
+    },
+  })
+}

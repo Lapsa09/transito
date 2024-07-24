@@ -9,6 +9,7 @@ export enum Roles {
   LOGISTICA = 'LOGISTICA',
   PROFESOR = 'PROFESOR',
   DASHBOARD = 'DASHBOARD',
+  RADIO = 'RADIO',
 }
 
 export type User = {

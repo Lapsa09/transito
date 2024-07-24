@@ -11,10 +11,12 @@ import {
 } from '@/components/ui/sheet'
 import { Links } from '@/types'
 import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 export default function SheetDemo({ pages }: { pages: Links[] }) {
-  return (
+  const session = useSession()
+  return session.status === 'authenticated' ? (
     <Sheet>
       <SheetTrigger className="lg:hidden">
         <MenuButton />
@@ -54,5 +56,5 @@ export default function SheetDemo({ pages }: { pages: Links[] }) {
         )}
       </SheetContent>
     </Sheet>
-  )
+  ) : null
 }

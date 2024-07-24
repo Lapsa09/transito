@@ -15,6 +15,9 @@ const getOperarios = async () => {
   }))
 }
 
+export const fetchCache = 'force-no-store'
+export const dynamic = 'force-dynamic'
+
 async function page() {
   const operarios = await getOperarios()
   return (

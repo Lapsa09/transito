@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui'
-import { getter } from '@/services'
+import { fetcher } from '@/services'
 import { examen } from '@prisma/client'
 import Link from 'next/link'
 import React from 'react'
@@ -7,13 +7,13 @@ import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
 
 const getExamenes = async () => {
-  const response = await getter<examen[]>({ route: '/invitados/examen' })
-
-  return response
+  const response = await fetcher('api/invitados/examen', {
+    cache: 'no-store',
+  })
+  if (!response.ok) throw new Error('Error al obtener los examenes')
+  const examenes: examen[] = await response.json()
+  return examenes
 }
-
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 
 async function page() {
   const examenes = await getExamenes()

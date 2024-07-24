@@ -1,6 +1,6 @@
 import prisma from '@/lib/prismadb'
 import { generatePassword } from '@/utils/misc'
-import { revalidatePath } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
@@ -26,7 +26,7 @@ export async function POST() {
         hora: new Date(),
       },
     })
-    revalidatePath('/admision/examen')
+    revalidateTag('examenes')
     return NextResponse.json(examen)
   } catch (error: any) {
     if (error.name === 'PrismaClientKnownRequestError') {

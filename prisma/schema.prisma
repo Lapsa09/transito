@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["camiones", "examen", "logistica", "motos", "nuevo_control", "operativos", "public", "sueldos", "waze", "radio"]
+  schemas  = ["camiones", "examen", "logistica", "motos", "nuevo_control", "operativos", "public", "radio", "sueldos", "waze"]
 }
 
 model camiones_operativos {
@@ -285,11 +285,11 @@ model tipo_licencias {
 }
 
 model Account {
-  id                String   @id @default(cuid())
-  userId            String   @map("user_id")
+  id                String    @id @default(cuid())
+  userId            String    @map("user_id")
   type              String
   provider          String
-  providerAccountId String   @map("provider_account_id")
+  providerAccountId String    @map("provider_account_id")
   refresh_token     String?
   access_token      String?
   expires_at        Int?
@@ -297,8 +297,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_user_id_fkey")
-  invitado          Invitado @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_invitado_id_fkey")
+  User              User      @relation(fields: [userId], references: [id])
+  Invitado          Invitado? @relation(fields: [invitadoId], references: [id])
+  invitadoId        String?
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -306,12 +307,13 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
+  id           String    @id @default(cuid())
+  sessionToken String    @unique @map("session_token")
+  userId       String    @map("user_id")
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_user_id_fkey")
-  invitado     Invitado @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_invitado_id_fkey")
+  User         User      @relation(fields: [userId], references: [id])
+  Invitado     Invitado? @relation(fields: [invitadoId], references: [id])
+  invitadoId   String?
 
   @@map("sessions")
   @@schema("public")
@@ -322,10 +324,10 @@ model User {
   nombre        String?   @db.VarChar
   apellido      String?   @db.VarChar
   turno         turnos?
-  id_rol        Int
-  rol           permisos  @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_password String?   @db.VarChar(255)
   id            String    @id @default(cuid())
+  id_rol        Int
+  rol           permisos  @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
   accounts      Account[]
   sessions      Session[]
   partes        parte[]
@@ -336,8 +338,8 @@ model User {
 
 model Invitado {
   id        String        @id @default(cuid())
-  nombre    String        @db.VarChar
-  apellido  String        @db.VarChar
+  nombre    String?       @db.VarChar
+  apellido  String?       @db.VarChar
   dni       Int
   utilizado Boolean       @default(false)
   fecha     DateTime      @default(now()) @db.Date
@@ -678,17 +680,16 @@ model rinde_examen {
   id               String             @id @default(cuid())
   id_examen        Int
   nota             String?
-  id_invitado      String
+  id_invitado      String             @unique
   tipo_examenId    Int
   hora_finalizado  DateTime?          @db.Timestamp(6)
   hora_ingresado   DateTime?          @db.Timestamp(6)
   examen_preguntas examen_preguntas[]
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario          Invitado           @relation(fields: [id_invitado], references: [id])
   calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
   tipo_examen      tipo_examen        @relation(fields: [tipo_examenId], references: [id])
-  usuario          Invitado           @relation(fields: [id_invitado], references: [id])
 
-  @@unique(id_invitado)
   @@schema("examen")
 }
 
@@ -742,7 +743,7 @@ model baches {
 
 model parte {
   id                Int      @id @default(autoincrement())
-  turno             turnos
+  turno             turnos?
   qth               String   @db.VarChar
   fecha             DateTime @db.Date
   legajo            Int

@@ -24,4 +24,10 @@ export const pages: Links[] = [
   },
   { name: 'Sueldos', permission: Roles.ADMINISTRATIVO, link: '/sueldos' },
   { name: 'Logistica', permission: Roles.LOGISTICA, link: '/logistica' },
+  {
+    name: 'Radio',
+    permission: Roles.RADIO,
+    link:
+      '/radio/partes?filter=fecha=' + new Date().toISOString().split('T')[0],
+  },
 ]

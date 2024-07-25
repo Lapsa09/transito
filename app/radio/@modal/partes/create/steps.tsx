@@ -6,9 +6,7 @@ import CustomInput from '@/components/Input'
 import CustomSelect from '@/components/Select'
 import TimeField from '@/components/TimePicker'
 import Autocomplete from '@/components/Autocomplete'
-import useSWR from 'swr'
-import { getter } from '@/services'
-import { legajos, turnos } from '@prisma/client'
+import { turnos } from '@prisma/client'
 import { useFormContext } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
 import { setExpiration } from '@/utils/misc'
@@ -69,27 +67,12 @@ export function FirstStep() {
   )
 }
 
-export const SecondStep = () => {
+export const SecondStep = ({
+  operarios,
+}: {
+  operarios: { legajo: string; nombre: string }[]
+}) => {
   const form = useFormContext()
-  const { data: operarios, isLoading } = useSWR(
-    'inspectores',
-    async (route) => {
-      const operarios = await getter<
-        (legajos & {
-          usuario: {
-            nombre: string
-            apellido: string
-          }
-        })[]
-      >({
-        route,
-      })
-      return operarios.map(({ legajo, usuario }) => ({
-        legajo,
-        nombre: `${usuario.nombre} ${usuario.apellido}`,
-      }))
-    },
-  )
 
   return (
     <div className="flex w-full justify-between flex-wrap">
@@ -110,7 +93,7 @@ export const SecondStep = () => {
           required: 'Valor requerido',
         }}
         inputId="legajo"
-        inputLabel="nombre"
+        inputLabel={(option) => (option.nombre ? 'nombre' : 'legajo')}
       />
       <TimeField
         name="hora_inicio"

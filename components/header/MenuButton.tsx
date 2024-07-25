@@ -1,10 +1,11 @@
+import { Button } from '@/components/ui'
 import React from 'react'
 
-function MenuButton() {
+export default function MenuButton() {
   return (
-    <button
-      type="button"
-      className="lg:hidden ml-3 text-gray-400 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-lg inline-flex items-center justify-center"
+    <Button
+      variant="outline"
+      className="ml-3 text-gray-400 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-lg inline-flex items-center justify-center"
       aria-controls="mobile-menu-2"
       aria-expanded="false"
     >
@@ -33,8 +34,6 @@ function MenuButton() {
           clipRule="evenodd"
         ></path>
       </svg>
-    </button>
+    </Button>
   )
 }
-
-export default MenuButton

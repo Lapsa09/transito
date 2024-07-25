@@ -1,5 +1,4 @@
-import CustomOperativoLink from './CustomLinks'
-import LayoutClient from './layout.client'
+import Link from 'next/link'
 
 interface OperativosLayoutProps {
   modal: React.ReactNode
@@ -8,10 +7,10 @@ interface OperativosLayoutProps {
 
 export default function OperativosLayout(props: OperativosLayoutProps) {
   return (
-    <LayoutClient>
-      <CustomOperativoLink />
+    <main className="flex flex-col items-center gap-3">
+      <Link href="/radio/partes/create">Nuevo Parte</Link>
       {props.children}
       {props.modal}
-    </LayoutClient>
+    </main>
   )
 }

@@ -1,11 +1,7 @@
+import { partesDTO } from '@/DTO/radio'
+import { inspectoresDTO } from '@/DTO/user'
 import { parte } from '@prisma/client'
 
-export interface Parte extends parte {
-  operario: {
-    legajo: number
-    usuario: {
-      nombre: string
-      apellido: string
-    }
-  }
-}
+export type Parte = Awaited<ReturnType<typeof partesDTO>>[0]
+
+export type Inspector = Awaited<ReturnType<typeof inspectoresDTO>>[0]

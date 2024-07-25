@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react'
 import { useToast } from '@/hooks'
 import { RegularForm } from '@/components/forms/layout.form'
 import { FieldValues, SubmitHandler } from 'react-hook-form'
-import Button from '@/components/Button'
+import { Button } from '@nextui-org/react'
 
 function LoginForm() {
   const { toast } = useToast()
@@ -15,6 +15,7 @@ function LoginForm() {
 
   const onSubmit: SubmitHandler<FieldValues> = async (body) => {
     const callback = await signIn('dni', { ...body, redirect: false })
+
     if (callback) {
       if (callback.ok) {
         router.push(`/invitados/examen`)
@@ -27,24 +28,26 @@ function LoginForm() {
   }
   return (
     <RegularForm onSubmit={onSubmit}>
-      <Input
-        label="DNI"
-        name="dni"
-        rules={{ required: 'Campo requerido' }}
-        placeholder="12345"
-      />
-      <Input
-        label="Contraseña"
-        name="clave"
-        type="password"
-        placeholder="********"
-        rules={{ required: 'Campo requerido' }}
-      />
-      <div className="flex justify-between gap-10 my-3">
-        <Button className="mx-auto" type="submit">
-          Iniciar sesion
-        </Button>
-      </div>
+      {({ formState: { isSubmitting } }) => (
+        <>
+          <Input
+            label="DNI"
+            name="dni"
+            rules={{ required: 'Campo requerido' }}
+            placeholder="12345"
+          />
+          <div className="flex justify-between gap-10 my-3">
+            <Button
+              color="primary"
+              isLoading={isSubmitting}
+              className="mx-auto"
+              type="submit"
+            >
+              Iniciar sesion
+            </Button>
+          </div>
+        </>
+      )}
     </RegularForm>
   )
 }

@@ -1,3 +1,5 @@
+import { examenDTO } from '@/app/api/admision/examen/[id]/route'
+import { historialDTO } from '@/app/api/admision/examen/historial/route'
 import type {
   examen,
   examen_preguntas,
@@ -30,3 +32,12 @@ export type IPregunta = rinde_examen & {
   })[]
   examen: examen
 }
+
+export type Respuesta = examen_preguntas & {
+  pregunta: preguntas & { correcta: opciones }
+  elegida?: opciones
+}
+
+export type Alumno = Awaited<ReturnType<typeof examenDTO>>
+
+export type Historial = Awaited<ReturnType<typeof historialDTO>>[0]

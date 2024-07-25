@@ -15,7 +15,7 @@ function LoginForm() {
   const router = useRouter()
 
   const onSubmit: SubmitHandler<LoginUserProps> = async (data) => {
-    signIn('legajo', {
+    signIn('credentials', {
       ...data,
       redirect: false,
     })

@@ -3,11 +3,13 @@ import { ColumnDef } from '@tanstack/react-table'
 
 export const columns: ColumnDef<Parte>[] = [
   {
-    accessorKey: 'fecha',
+    accessorFn: (row) =>
+      new Date(row.fecha).toLocaleDateString('UTC', { timeZone: 'GMT' }),
     header: 'Fecha',
     meta: {
       filterVariant: 'date',
     },
+    id: 'fecha',
   },
   {
     accessorKey: 'turno',
@@ -24,7 +26,9 @@ export const columns: ColumnDef<Parte>[] = [
     enableColumnFilter: false,
     header: 'Operario',
     accessorFn: (row) =>
-      `${row.operario.legajo} - ${row.operario.usuario.nombre} ${row.operario.usuario.apellido}`,
+      row.operario.apellido
+        ? `${row.operario.legajo} - ${row.operario.nombre} ${row.operario.apellido}`
+        : row.operario.legajo,
   },
   {
     accessorKey: 'movil',
@@ -32,23 +36,40 @@ export const columns: ColumnDef<Parte>[] = [
     header: 'Movil',
   },
   {
-    accessorKey: 'hora_inicio',
+    id: 'horario',
     enableColumnFilter: false,
-    header: 'Hora Inicio',
+    header: 'Horario',
+    accessorFn: (row) => {
+      const horaInicio = new Date(row.hora_inicio).toLocaleTimeString('UTC', {
+        timeZone: 'GMT',
+        timeStyle: 'short',
+      })
+      const horaFin = new Date(row.hora_fin).toLocaleTimeString('UTC', {
+        timeZone: 'GMT',
+        timeStyle: 'short',
+      })
+      return `${horaInicio} - ${horaFin}`
+    },
   },
   {
-    accessorKey: 'hora_fin',
-    enableColumnFilter: false,
-    header: 'Hora Fin',
-  },
-  {
-    accessorKey: 'hora_descanso',
+    id: 'hora_descanso',
     enableColumnFilter: false,
     header: 'Hora Descanso',
-  },
-  {
-    accessorKey: 'hora_descanso_fin',
-    enableColumnFilter: false,
-    header: 'Hora Descanso Fin',
+    accessorFn: (row) => {
+      const horaDescanso = new Date(row.hora_descanso).toLocaleTimeString(
+        'UTC',
+        {
+          timeZone: 'GMT',
+          timeStyle: 'short',
+        },
+      )
+      const horaDescansoFin = new Date(
+        row.hora_descanso_fin,
+      ).toLocaleTimeString('UTC', {
+        timeZone: 'GMT',
+        timeStyle: 'short',
+      })
+      return `${horaDescanso} - ${horaDescansoFin}`
+    },
   },
 ]

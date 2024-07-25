@@ -29,14 +29,11 @@ function CreatedExam({ examen }: { examen: examen }) {
       <CardBody>
         <p>
           Hora:{' '}
-          {DateTime.fromISO(`${examen.hora}`).toUTC().toISOTime({
-            extendedZone: false,
-            suppressSeconds: true,
-            suppressMilliseconds: true,
-            includeOffset: false,
+          {new Date(examen.hora_iniciado!).toLocaleTimeString('es-AR', {
+            timeStyle: 'short',
+            hour12: false,
           })}
         </p>
-        <p>Estado: {examen.habilitado ? 'Empezado' : 'Sin empezar'}</p>
       </CardBody>
       <CardFooter>
         <ButtonGroup>

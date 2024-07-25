@@ -1,16 +1,14 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsContainer from 'next-auth/providers/credentials'
 import prisma from '@/lib/prismadb'
-import bycript from 'bcrypt'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { invitedSignIn, signIn } from '@/services'
-import { InvitedUser, User } from '@/types'
+import { signIn } from '@/services'
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsContainer({
-      id: 'legajo',
+      id: 'credentials',
       name: 'Credentials',
       credentials: {
         legajo: { label: 'Legajo', type: 'number', placeholder: '12345' },
@@ -18,20 +16,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.legajo || !credentials?.password) {
-          throw new Error('Credenciales invalidas')
+          throw new Error('Faltan credenciales')
         }
         const user = await signIn(credentials)
 
         if (!user) {
-          throw new Error('Usuario no encontrado')
+          throw new Error(
+            'No se encontro el legajo o la contraseña es incorrecta',
+          )
         }
-        const isPasswordValid = await bycript.compare(
-          credentials.password,
-          user.user_password,
-        )
-        if (!isPasswordValid) {
-          throw new Error('Contraseña invalida')
-        }
+
         return user
       },
     }),
@@ -40,26 +34,17 @@ export const authOptions: NextAuthOptions = {
       name: 'DNI',
       credentials: {
         dni: { label: 'DNI', type: 'number', placeholder: '12345678' },
-        clave: { label: 'Contraseña', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.dni || !credentials?.clave) {
-          throw new Error('Credenciales invalidas')
+        if (!credentials?.dni) {
+          throw new Error('Falta el DNI')
         }
-        const user = await invitedSignIn({
-          dni: +credentials.dni,
-          password: credentials.clave,
-        })
-        if (!user) {
-          throw new Error(
-            'Su DNI no esta registrado o la clave ya fue utilizada',
-          )
-        }
-        const isPasswordValid = credentials.clave === user.examen.clave
+        const user = await signIn(credentials)
 
-        if (!isPasswordValid) {
-          throw new Error('Contraseña invalida')
+        if (!user) {
+          throw new Error('Su DNI no esta registrado')
         }
+
         return user
       },
     }),
@@ -68,7 +53,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   pages: {
-    signIn: 'invitados/examen',
+    signIn: '/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
 
@@ -77,9 +62,9 @@ export const authOptions: NextAuthOptions = {
       return { ...token, ...user }
     },
     session({ session, token }) {
-      session.user = token as User | InvitedUser
+      session.user = token
 
       return session
     },
   },
-}
+} satisfies NextAuthOptions

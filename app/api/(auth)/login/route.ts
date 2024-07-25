@@ -1,32 +1,29 @@
+import { invitadoDTO, userDTO } from '@/DTO/user'
 import prisma from '@/lib/prismadb'
-import { turnos } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const _user = await prisma.user.findUnique({
+  if (body.legajo) {
+    const user = await userDTO(body)
+    return NextResponse.json(user)
+  }
+
+  const invitado = await invitadoDTO(body)
+
+  await prisma.invitado.update({
     where: {
-      legajo: +body.legajo,
+      id: invitado?.id,
     },
-    include: {
-      op: {
-        select: {
-          permisos: { select: { permiso: true } },
-          turno: true,
+    data: {
+      utilizado: true,
+      examen: {
+        update: {
+          hora_ingresado: new Date(),
         },
       },
     },
   })
-  let user = null
-  if (_user) {
-    const { op, ...rest } = _user
 
-    user = {
-      ...rest,
-      role: op?.permisos?.permiso,
-      turno: op?.turno === turnos.MA_ANA ? 'MAÑANA' : op?.turno,
-    }
-  }
-
-  return NextResponse.json(user)
+  return NextResponse.json(invitado)
 }

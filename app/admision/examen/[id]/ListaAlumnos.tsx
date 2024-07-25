@@ -1,25 +1,21 @@
 'use client'
 
-import { rinde_examen, tipo_examen } from '@prisma/client'
 import React, { useState } from 'react'
 import AlumnoCard from './AlumnoCard'
 import { Input } from '@nextui-org/react'
+import { Alumno } from '@/types/quiz'
 
-function ListaAlumnos({
-  alumnos,
-}: {
-  alumnos: Array<rinde_examen & { tipo_examen: tipo_examen }>
-}) {
+function ListaAlumnos({ alumnos }: { alumnos: Alumno[] }) {
   const [inputValue, setInputValue] = useState('')
 
-  const filterAlumnos = (
-    alumno: rinde_examen & { tipo_examen: tipo_examen },
-  ) => {
+  const filterAlumnos = (alumno: Alumno) => {
     if (inputValue === '') return true
     return (
-      alumno.apellido?.toLowerCase().includes(inputValue.toLowerCase()) ||
-      alumno.nombre?.toLowerCase().includes(inputValue.toLowerCase()) ||
-      alumno.dni.toString().includes(inputValue)
+      alumno.usuario.apellido
+        ?.toLowerCase()
+        .includes(inputValue.toLowerCase()) ||
+      alumno.usuario.nombre?.toLowerCase().includes(inputValue.toLowerCase()) ||
+      alumno.usuario.dni.toString().includes(inputValue)
     )
   }
 
@@ -37,9 +33,9 @@ function ListaAlumnos({
         }}
       />
       <div className="grid grid-cols-3 max-h-unit-9xl p-3 gap-3 overflow-y-auto">
-        {alumnos.filter(filterAlumnos).map((alumno) => (
-          <AlumnoCard key={alumno.id} alumno={alumno} />
-        ))}
+        {alumnos
+          ?.filter(filterAlumnos)
+          .map((alumno) => <AlumnoCard key={alumno.id} alumno={alumno} />)}
       </div>
     </div>
   )

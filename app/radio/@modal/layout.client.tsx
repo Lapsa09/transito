@@ -6,7 +6,6 @@ import { turnos } from '@prisma/client'
 import React, { FormEvent, useEffect } from 'react'
 import Stepper from '@/components/Stepper'
 import { FieldValues, FormProvider, useForm } from 'react-hook-form'
-import { revalidar } from '@/services/actions'
 import { Button } from '@/components/ui'
 import { useLocalStorage } from 'usehooks-ts'
 
@@ -40,7 +39,6 @@ function LayoutClient({ children }: { children: React.ReactNode }) {
       const { expiresAt, ...rest } = parte
       form.reset(rest)
       form.setFocus('operario')
-      revalidar('radio/partes')
     } catch (error: any) {
       toast({
         title: error.response?.data || error.message,

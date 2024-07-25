@@ -2,7 +2,7 @@
 
 import Button from '@/components/Button'
 import React from 'react'
-import { habilitarExamen } from '@/services/actions'
+// import { habilitarExamen } from '@/services/actions'
 import { toast } from '@/hooks'
 
 function BeginButton({ id }: { id: number }) {
@@ -10,7 +10,7 @@ function BeginButton({ id }: { id: number }) {
     <Button
       onClick={async () => {
         try {
-          await habilitarExamen(id)
+          // await habilitarExamen(id)
           toast({ title: 'El examen comenzo', variant: 'success' })
         } catch (error: any) {
           toast({ title: error.message, variant: 'destructive' })

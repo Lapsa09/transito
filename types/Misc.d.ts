@@ -1,3 +1,4 @@
+import { invitadoDTO, userDTO } from '@/DTO/user'
 import { examen, rinde_examen } from '@prisma/client'
 
 export enum Roles {
@@ -7,28 +8,28 @@ export enum Roles {
   WAZE = 'TRAFICO',
   LOGISTICA = 'LOGISTICA',
   PROFESOR = 'PROFESOR',
+  DASHBOARD = 'DASHBOARD',
+  RADIO = 'RADIO',
 }
 
 export type User = {
   id: string
-  legajo?: number
   nombre: string
+  legajo?: number
+  dni?: number
   apellido: string
-  user_password: string
-  telefono: number
-  role: Roles
-  turno: 'MAÑANA' | 'TARDE' | 'NOCHE' | null
+  metaData: Record<string, any>
 }
+
+export type Empleado = User & NonNullable<Awaited<ReturnType<typeof userDTO>>>
+export type Invitado = User &
+  NonNullable<Awaited<ReturnType<typeof invitadoDTO>>>
 
 export interface Links {
   link: string
   name: string
   permission?: Roles
   links?: Links[]
-}
-
-export interface InvitedUser extends rinde_examen {
-  examen: examen
 }
 
 export enum Meses {

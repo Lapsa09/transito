@@ -19,7 +19,7 @@ interface Props<T extends FieldValues>
     Omit<AutocompleteProps, 'name' | 'children' | 'items'> {
   options?: T[]
   label: string
-  inputLabel?: string
+  inputLabel?: string | ((option: T) => string)
   inputId?: string
   className?: string
   persist?: (data: any) => void
@@ -58,7 +58,10 @@ export default function MyCombobox<T extends FieldValues>({
 
   useEffect(() => {
     const option = options.find((o) => o[inputId] == value?.[inputId])
-    setInputValue(option?.[inputLabel] || '')
+
+    typeof inputLabel === 'function'
+      ? setInputValue(option?.[inputLabel(option)] || '')
+      : setInputValue(option?.[inputLabel] || '')
   }, [value])
 
   const selected = useMemo(() => {
@@ -105,7 +108,9 @@ export default function MyCombobox<T extends FieldValues>({
     >
       {(option) => (
         <AutocompleteItem key={option[inputId]}>
-          {option[inputLabel]}
+          {typeof inputLabel === 'function'
+            ? option[inputLabel(option)]
+            : option[inputLabel]}
         </AutocompleteItem>
       )}
     </Autocomplete>

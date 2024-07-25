@@ -7,56 +7,58 @@ import { IPregunta, QuizResponse } from '@/types/quiz'
 import { setter } from '@/services'
 import { useCountdown } from '@/hooks/useCountdown'
 import { Button } from '@nextui-org/react'
-import { useEventListener, useSessionStorage } from 'usehooks-ts'
+import { useEventListener } from 'usehooks-ts'
 import CustomRadioGroup from '@/components/RadioGroup'
 import Timer from '@/components/Timer'
 import dynamic from 'next/dynamic'
+import { useSession } from 'next-auth/react'
 
 const Quiz = ({
   preguntas,
   id,
+  tiempo,
 }: {
   preguntas: IPregunta['examen_preguntas']
   id: string
+  tiempo: number
 }) => {
   const router = useRouter()
   const ref = useRef<HTMLFormElement>(null)
   const documentRef = useRef<Document>(document)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const [contador, setContador] = useSessionStorage<number>('contador', 1800)
-  useEventListener('pagehide', () =>
-    ref.current?.requestSubmit(buttonRef.current),
+  const { update } = useSession({
+    onUnauthenticated: () => router.push('/login/invitado'),
+    required: true,
+  })
+  const requestSubmit = () => ref.current?.requestSubmit(buttonRef.current)
+  useEventListener(
+    'visibilitychange',
+    () => {
+      if (document.hidden) {
+        requestSubmit()
+      }
+    },
+    documentRef,
   )
   const methods = useForm<QuizResponse>({
     defaultValues: { id, preguntas: [] },
   })
   const { seconds } = useCountdown({
-    initialSeconds: contador,
+    initialSeconds: tiempo,
   })
 
-  useEventListener(
-    'visibilitychange',
-    () => {
-      if (document.hidden) {
-        ref.current?.requestSubmit(buttonRef.current)
-      }
-    },
-    documentRef,
-  )
-
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
-    await setter({
-      route: `examen/${id}`,
+    const resultado = await setter({
+      route: `invitados/examen/${id}`,
       body: { ...body, tiempo: new Date() },
     })
-    sessionStorage.removeItem('contador')
+    await update({ metaData: { nota: resultado.nota } })
     router.push(`/invitados/examen/resultado`)
   }
 
   useEffect(() => {
-    setContador(seconds)
     if (!seconds) {
-      ref.current?.requestSubmit(buttonRef.current)
+      requestSubmit()
     }
   }, [seconds])
 
@@ -77,7 +79,7 @@ const Quiz = ({
           </p>
         </div>
         <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
-          {preguntas.map(({ preguntas_id, pregunta }, index) => {
+          {preguntas?.map(({ preguntas_id, pregunta }, index) => {
             return (
               <CustomRadioGroup
                 key={preguntas_id}
@@ -88,7 +90,11 @@ const Quiz = ({
             )
           })}
         </section>
-        <Button ref={buttonRef} type="submit">
+        <Button
+          isLoading={methods.formState.isSubmitting}
+          ref={buttonRef}
+          type="submit"
+        >
           Finalizar examen
         </Button>
       </form>

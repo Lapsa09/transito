@@ -241,10 +241,10 @@ model operario {
 }
 
 model permisos {
-  id      Int       @id @default(autoincrement())
-  permiso String    @db.VarChar
-  url     String    @db.VarChar
-  legajos legajos[]
+  id      Int    @id @default(autoincrement())
+  permiso String @db.VarChar
+  url     String @db.VarChar
+  legajos User[]
 
   @@schema("public")
 }
@@ -284,24 +284,12 @@ model tipo_licencias {
   @@schema("public")
 }
 
-model legajos {
-  legajo   Int       @id
-  turno    turnos?
-  rol      roles?
-  id_rol   Int?
-  permisos permisos? @relation(fields: [id_rol], references: [id])
-  usuario  User?
-  partes   parte[]
-
-  @@schema("public")
-}
-
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
+  id                String    @id @default(cuid())
+  userId            String    @map("user_id")
   type              String
   provider          String
-  providerAccountId String  @map("provider_account_id")
+  providerAccountId String    @map("provider_account_id")
   refresh_token     String?
   access_token      String?
   expires_at        Int?
@@ -309,7 +297,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User              User      @relation(fields: [userId], references: [id])
+  Invitado          Invitado? @relation(fields: [invitadoId], references: [id])
+  invitadoId        String?
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -317,11 +307,13 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
+  id           String    @id @default(cuid())
+  sessionToken String    @unique @map("session_token")
+  userId       String    @map("user_id")
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User         User      @relation(fields: [userId], references: [id])
+  Invitado     Invitado? @relation(fields: [invitadoId], references: [id])
+  invitadoId   String?
 
   @@map("sessions")
   @@schema("public")
@@ -329,16 +321,33 @@ model Session {
 
 model User {
   legajo        Int       @unique
-  nombre        String    @db.VarChar
-  apellido      String    @db.VarChar
-  user_password String    @db.VarChar(255)
-  telefono      Int?
+  nombre        String?   @db.VarChar
+  apellido      String?   @db.VarChar
+  turno         turnos?
+  user_password String?   @db.VarChar(255)
   id            String    @id @default(cuid())
+  id_rol        Int
+  rol           permisos  @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
   accounts      Account[]
   sessions      Session[]
-  op            legajos   @relation(fields: [legajo], references: [legajo])
+  partes        parte[]
 
   @@map("users")
+  @@schema("public")
+}
+
+model Invitado {
+  id        String        @id @default(cuid())
+  nombre    String?       @db.VarChar
+  apellido  String?       @db.VarChar
+  dni       Int
+  utilizado Boolean       @default(false)
+  fecha     DateTime      @default(now()) @db.Date
+  accounts  Account[]
+  sessions  Session[]
+  examen    rinde_examen?
+
+  @@map("invitados")
   @@schema("public")
 }
 
@@ -639,7 +648,6 @@ model examen {
   id            Int            @id @default(autoincrement())
   clave         String?        @db.VarChar
   fecha         DateTime?      @default(now()) @db.Date
-  habilitado    Boolean        @default(false)
   hora_iniciado DateTime?      @default(now()) @db.Time(6)
   hora          DateTime?      @db.Timestamp(6)
   terminado     Boolean?       @default(false)
@@ -659,7 +667,7 @@ model calificacion {
 
 model tipo_examen {
   id                 Int            @id @default(autoincrement())
-  tipo               String?        @db.VarChar
+  tipo               String         @db.VarChar
   cantidad_preguntas Int
   cantidad_temas     Int
   preguntas          preguntas[]
@@ -672,20 +680,16 @@ model rinde_examen {
   id               String             @id @default(cuid())
   id_examen        Int
   nota             String?
-  nombre           String?            @db.VarChar
-  apellido         String?            @db.VarChar
-  email            String?            @db.VarChar
-  dni              Int
-  utilizado        Boolean            @default(false)
-  tipo_examenId    Int?
+  id_invitado      String             @unique
+  tipo_examenId    Int
   hora_finalizado  DateTime?          @db.Timestamp(6)
   hora_ingresado   DateTime?          @db.Timestamp(6)
   examen_preguntas examen_preguntas[]
   examen           examen             @relation(fields: [id_examen], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario          Invitado           @relation(fields: [id_invitado], references: [id])
   calificacion     calificacion?      @relation(fields: [nota], references: [nota], onDelete: NoAction, onUpdate: NoAction)
-  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
+  tipo_examen      tipo_examen        @relation(fields: [tipo_examenId], references: [id])
 
-  @@unique([id_examen, dni])
   @@schema("examen")
 }
 
@@ -716,11 +720,11 @@ model preguntas {
   id               Int                @id @default(autoincrement())
   pregunta         String             @db.VarChar
   id_correcta      Int?
-  tipo_examenId    Int?
+  tipo_examenId    Int
   examen_preguntas examen_preguntas[]
   opciones         opciones[]         @relation("opciones_id_preguntaTopreguntas")
   correcta         opciones?          @relation("preguntas_correctaToopciones", fields: [id_correcta], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tipo_examen      tipo_examen?       @relation(fields: [tipo_examenId], references: [id])
+  tipo_examen      tipo_examen        @relation(fields: [tipo_examenId], references: [id])
 
   @@schema("examen")
 }
@@ -739,7 +743,7 @@ model baches {
 
 model parte {
   id                Int      @id @default(autoincrement())
-  turno             turnos
+  turno             turnos?
   qth               String   @db.VarChar
   fecha             DateTime @db.Date
   legajo            Int
@@ -748,7 +752,7 @@ model parte {
   hora_fin          DateTime @db.Time(6)
   hora_descanso     DateTime @db.Time(6)
   hora_descanso_fin DateTime @db.Time(6)
-  operario          legajos  @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
+  operario          User     @relation(fields: [legajo], references: [legajo], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("radio")
 }

@@ -1,24 +1,26 @@
 import { getServerSession } from 'next-auth/next'
-import { roles } from '@prisma/client'
 import { authOptions } from '@/lib/auth'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { dashboards } from '@/lib/dashboards'
 import { LogoOVT } from '@/components/Logos'
-import { User } from '@/types'
+import { redirect } from 'next/navigation'
+import { Empleado } from '@/types'
 
 export default async function Home() {
   const data = await getServerSession(authOptions)
 
-  const user = data?.user as User
+  const user = data?.user as Empleado
 
-  const fullName = user?.nombre + ' ' + user?.apellido
+  if (!user) return redirect('/login')
+
+  const fullName = user.nombre + ' ' + user.apellido
 
   return (
     <div className="flex flex-col">
       <h1>
-        Bienvenido {fullName}. Legajo {user?.legajo}
+        Bienvenido {fullName}. Legajo {user.legajo}
       </h1>
-      {user?.role === roles.ADMIN && (
+      {user.metaData.isAdmin && (
         <Tabs
           orientation="vertical"
           defaultValue="Control Vehicular y Denuncias"

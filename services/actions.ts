@@ -3,30 +3,7 @@
 import prisma from '@/lib/prismadb'
 import { revalidatePath, revalidateTag } from 'next/cache'
 
-export const habilitarExamen = async (id: number) => {
-  const examen = await prisma.rinde_examen.findMany({
-    where: {
-      id_examen: id,
-    },
-  })
-  if (!examen.every((e) => e.tipo_examenId))
-    throw new Error('No todos los alumnos tienen un tipo de examen asignado')
-  await prisma.examen
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        habilitado: true,
-        hora_iniciado: new Date(),
-      },
-    })
-    .then(() => {
-      revalidateTag('examen')
-    })
-}
-
-export const terminarExamen = async (id: number) =>
+export const terminarExamen = async (id: number) => {
   await prisma.examen
     .update({
       where: {
@@ -36,22 +13,28 @@ export const terminarExamen = async (id: number) =>
         terminado: true,
       },
     })
-    .then(() => {
-      revalidateTag('examen')
-    })
     .then(() => revalidatePath('/admision/examen'))
-
+}
 export const rehabilitarExamen = async (id: string) =>
   await prisma.rinde_examen
     .update({
       where: {
-        id,
+        id_invitado: id,
       },
       data: {
-        utilizado: false,
         hora_finalizado: null,
         nota: null,
       },
+    })
+    .then(() => {
+      prisma.invitado.update({
+        where: {
+          id,
+        },
+        data: {
+          utilizado: false,
+        },
+      })
     })
     .then(() => {
       prisma.examen_preguntas.updateMany({

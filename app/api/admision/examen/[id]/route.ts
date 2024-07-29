@@ -47,18 +47,23 @@ export async function POST(
       apellido,
       dni,
       tipo_examen,
+      edad,
+      sexo,
     }: {
       nombre: string
       apellido: string
-      email: string
       dni: string
       tipo_examen: string
+      edad: string
+      sexo: string
     } = await req.json()
     const invitado = await prisma.invitado.create({
       data: {
         dni: +dni,
         apellido,
         nombre,
+        edad: +edad,
+        sexo,
       },
     })
     const examen = await examenDTO(id, tipo_examen, invitado.id)
@@ -80,7 +85,7 @@ export async function POST(
       },
     })
 
-    for (const pregunta of shuffle(preguntas).slice(
+    for (const pregunta of shuffle([...preguntas]).slice(
       0,
       tipo.cantidad_preguntas,
     )) {

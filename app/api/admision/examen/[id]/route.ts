@@ -36,6 +36,38 @@ export async function GET(
   }
 }
 
+function categorizeAge(dni: number, edad: number | null) {
+  if (!edad) {
+    if (dni < 16000000) {
+      return 5
+    } else if (dni < 31000000) {
+      return 4
+    } else if (dni < 38000000) {
+      return 3
+    } else if (dni < 45000000) {
+      return 2
+    } else if (dni < 90000000) {
+      return 1
+    } else {
+      return undefined
+    }
+  } else {
+    if (edad <= 17) {
+      return 1
+    } else if (edad <= 25) {
+      return 2
+    } else if (edad <= 35) {
+      return 3
+    } else if (edad <= 59) {
+      return 4
+    } else if (edad >= 60) {
+      return 5
+    } else {
+      return undefined
+    }
+  }
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } },
@@ -62,8 +94,9 @@ export async function POST(
         dni: +dni,
         apellido,
         nombre,
-        edad: +edad,
+        id_edad: categorizeAge(+dni, +edad),
         sexo,
+        edad: +edad,
       },
     })
     const examen = await examenDTO(id, tipo_examen, invitado.id)

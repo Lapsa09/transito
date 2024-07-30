@@ -341,15 +341,25 @@ model Invitado {
   nombre    String?       @db.VarChar
   apellido  String?       @db.VarChar
   dni       Int
-  edad      Int
-  sexo      String        @db.VarChar
+  edad      Int?
+  sexo      String?       @db.VarChar
   utilizado Boolean       @default(false)
   fecha     DateTime      @default(now()) @db.Date
   accounts  Account[]
   sessions  Session[]
   examen    rinde_examen?
+  id_edad   Int?
+  grupo     grupo_etario? @relation(fields: [id_edad], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("invitados")
+  @@schema("public")
+}
+
+model grupo_etario {
+  id           Int        @id @default(autoincrement())
+  grupo_etario String     @db.VarChar
+  invitados    Invitado[]
+
   @@schema("public")
 }
 

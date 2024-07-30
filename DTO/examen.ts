@@ -51,7 +51,14 @@ export const historialDTO = async ({
     include: {
       examen: true,
       tipo_examen: true,
-      usuario: true,
+      usuario: {
+        select: {
+          apellido: true,
+          nombre: true,
+          dni: true,
+          id: true,
+        },
+      },
     },
     where,
     orderBy: {

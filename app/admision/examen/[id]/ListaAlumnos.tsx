@@ -20,7 +20,7 @@ function ListaAlumnos({ alumnos }: { alumnos: Alumno[] }) {
   }
 
   return (
-    <div className="my-2 col-span-3">
+    <div className="my-2 col-span-2">
       <h1 className="ml-5">Lista de alumnos</h1>
       <Input
         value={inputValue}

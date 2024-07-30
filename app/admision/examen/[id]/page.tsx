@@ -30,7 +30,7 @@ async function page({ params }: { params: { id: string } }) {
 
   return (
     <section className="grid gap-5">
-      <div className="grid grid-flow-col gap-5">
+      <div className="grid grid-cols-3 gap-5">
         <ListaAlumnos alumnos={examen.alumnos} />
 
         <NuevoAlumno id={examen.id} />

@@ -1,4 +1,4 @@
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { NumeroMemo } from '@/components/MiniModals'
 import { cancelarOperario } from '@/services'
 import { Operarios, Servicio } from '@/types/servicios.sueldos'

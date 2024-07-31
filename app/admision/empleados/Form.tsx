@@ -1,7 +1,7 @@
 'use client'
 
 import Autocomplete from '@/components/Autocomplete'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { RegularForm } from '@/components/forms/layout.form'
 import CustomInput from '@/components/Input'
 import CustomSelect from '@/components/Select'

@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import React from 'react'
 // import { habilitarExamen } from '@/services/actions'
 import { toast } from '@/hooks'

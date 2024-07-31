@@ -1,4 +1,4 @@
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import SeguroForm from '@/components/forms/logistica/seguro.form'
 import { Vehiculo } from '@/types/logistica'
 import { ColumnDef } from '@tanstack/react-table'

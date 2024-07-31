@@ -3,7 +3,7 @@
 import useSWR from 'swr'
 import React from 'react'
 import Input from '@/components/Input'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { SubmitHandler } from 'react-hook-form'
 import { getPrecios, updatePrecios } from '@/services'
 import { useRouter } from 'next/navigation'

@@ -1,4 +1,4 @@
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { getForExport } from '@/services'
 import { Meses } from '@/types'
 import { exporter } from '@/utils/csvExport'

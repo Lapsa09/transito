@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { fetcher } from '@/services'
 import { examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'

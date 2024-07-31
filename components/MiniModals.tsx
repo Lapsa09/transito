@@ -8,7 +8,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from '@nextui-org/react'
-import Button from './Button'
+import { Button } from './ui/button'
 import Input from './Input'
 import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form'
 import {

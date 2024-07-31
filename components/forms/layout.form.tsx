@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import Loader from '@/components/Loader'
 import Stepper from '@/components/Stepper'
 import { useStepForm, useToast } from '@/hooks'
@@ -125,7 +125,7 @@ export function CreateFormLayout({
   return (
     <div className={className}>
       {nuevoOperativo && (
-        <Button onClick={nuevoOperativo} variant="text">
+        <Button onClick={nuevoOperativo} variant="link">
           Nuevo Operativo
         </Button>
       )}
@@ -238,7 +238,7 @@ export function EditFormLayout({
   return (
     <div className={className}>
       {nuevoOperativo && (
-        <Button onClick={nuevoOperativo} variant="text">
+        <Button onClick={nuevoOperativo} variant="link">
           Nuevo Operativo
         </Button>
       )}

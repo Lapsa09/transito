@@ -8,7 +8,7 @@ import {
 } from '@nextui-org/react'
 import { IoIosRefresh } from 'react-icons/io'
 import { useRouter } from 'next/navigation'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import React from 'react'
 import RespuestasAlumnoCard from './RespuestasAlumno'
 import { rehabilitarExamen } from '@/services/actions'

@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { setter } from '@/services'
 import { Vehiculo } from '@/types/logistica'
 import React, { useRef } from 'react'

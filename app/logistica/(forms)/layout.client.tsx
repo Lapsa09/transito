@@ -6,7 +6,7 @@ import { type LogisticaForms } from '@/types/logistica'
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import { setter } from '@/services'
 import { useToast } from '@/hooks'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 
 function layout({ children }: React.PropsWithChildren) {
   const layoutSegment = useSelectedLayoutSegments()

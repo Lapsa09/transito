@@ -4,9 +4,9 @@ import { User } from '@/types'
 import Link from 'next/link'
 import { FiLogOut } from 'react-icons/fi'
 import { signOut, useSession } from 'next-auth/react'
-import { Button, Typography } from '@material-tailwind/react'
 import Dropdown from './Dropdown'
 import { pages } from '@/utils/pages'
+import { Button } from '../ui'
 
 function Menu() {
   const { data } = useSession()
@@ -34,7 +34,7 @@ function Menu() {
             ) : (
               <Link key={page.name} href={page.link}>
                 <Button
-                  variant="text"
+                  variant="link"
                   key={page.name}
                   className="text-gray-700 md:hover:text-green-400 capitalize text-base font-medium"
                 >
@@ -51,11 +51,11 @@ function Menu() {
           </div>
         )}
         <Button
-          variant="text"
+          variant="ghost"
           onClick={logout}
           className="text-gray-700 hover:text-green-400"
         >
-          <Typography className="px-3 py-2 md:hidden">Cerrar sesion</Typography>
+          <p className="px-3 py-2 md:hidden">Cerrar sesion</p>
           <FiLogOut className="cursor-pointer text-xl" />
         </Button>
       </ul>

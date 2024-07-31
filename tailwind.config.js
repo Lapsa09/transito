@@ -1,9 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 const defaultTheme = require('tailwindcss/defaultTheme')
 
-const withMT = require('@material-tailwind/react/utils/withMT')
 const { nextui } = require('@nextui-org/react')
-module.exports = withMT({
+module.exports = {
   darkMode: 'class',
   content: [
     './pages/**/*.{ts,tsx}',
@@ -88,5 +87,5 @@ module.exports = withMT({
       sans: defaultTheme.fontFamily.sans,
     },
   },
-  plugins: [require('tailwindcss-animated'), nextui()],
-})
+  plugins: [require('tailwindcss-animated'), nextui(), require('daisyui')],
+}

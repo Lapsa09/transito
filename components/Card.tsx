@@ -1,5 +1,4 @@
 'use client'
-import { Card, Typography } from '@material-tailwind/react'
 import { PropsWithChildren } from 'react'
 import {
   FaCarSide,
@@ -16,6 +15,7 @@ import { MdAttachMoney, MdDeliveryDining, MdFiberNew } from 'react-icons/md'
 import { GiAutoRepair } from 'react-icons/gi'
 
 import Link from 'next/link'
+import { Card } from '@nextui-org/react'
 
 function CardWithLink({ children, link }: PropsWithChildren<{ link: string }>) {
   return (
@@ -34,7 +34,7 @@ export function AutosLinkCard() {
   return (
     <CardWithLink link="/operativos/autos">
       <FaCarSide className="text-6xl" />
-      <Typography className="text-4xl">Autos</Typography>
+      <p className="text-4xl">Autos</p>
     </CardWithLink>
   )
 }
@@ -43,7 +43,7 @@ export function MotosLinkCard() {
   return (
     <CardWithLink link="/operativos/motos">
       <RiMotorbikeFill className="text-6xl" />
-      <Typography className="text-4xl">Motos</Typography>
+      <p className="text-4xl">Motos</p>
     </CardWithLink>
   )
 }
@@ -52,7 +52,7 @@ export function CamionesLinkCard() {
   return (
     <CardWithLink link="/operativos/camiones">
       <FaTruckMoving className="text-6xl" />
-      <Typography className="text-4xl">Camiones</Typography>
+      <p className="text-4xl">Camiones</p>
     </CardWithLink>
   )
 }
@@ -61,7 +61,7 @@ export function PaseoRioLinkCard() {
   return (
     <CardWithLink link="/operativos/rio">
       <FaParking className="text-6xl" />
-      <Typography className="text-4xl">Paseo del Rio</Typography>
+      <p className="text-4xl">Paseo del Rio</p>
     </CardWithLink>
   )
 }
@@ -70,7 +70,7 @@ export function ClientesLinkCard() {
   return (
     <CardWithLink link="/sueldos/clientes">
       <BsFillPersonFill className="text-6xl" />
-      <Typography className="text-4xl">Clientes</Typography>
+      <p className="text-4xl">Clientes</p>
     </CardWithLink>
   )
 }
@@ -79,7 +79,7 @@ export function ServiciosLinkCard() {
   return (
     <CardWithLink link="/sueldos/servicios">
       <FaShuttleVan className="text-6xl" />
-      <Typography className="text-4xl">Servicios</Typography>
+      <p className="text-4xl">Servicios</p>
     </CardWithLink>
   )
 }
@@ -88,7 +88,7 @@ export function OperariosLinkCard() {
   return (
     <CardWithLink link="/sueldos/operarios">
       <FaUserNurse className="text-6xl" />
-      <Typography className="text-4xl">Operarios</Typography>
+      <p className="text-4xl">Operarios</p>
     </CardWithLink>
   )
 }
@@ -97,7 +97,7 @@ export function LiquidacionesLinkCard() {
   return (
     <CardWithLink link="/sueldos/liqui">
       <FaParking className="text-6xl" />
-      <Typography className="text-4xl">Liquidaciones</Typography>
+      <p className="text-4xl">Liquidaciones</p>
     </CardWithLink>
   )
 }
@@ -106,7 +106,7 @@ export function NewServicioLinkCard() {
   return (
     <CardWithLink link="/sueldos/servicios/create">
       <MdFiberNew className="text-6xl" />
-      <Typography className="text-4xl">Nuevo Servicio</Typography>
+      <p className="text-4xl">Nuevo Servicio</p>
     </CardWithLink>
   )
 }
@@ -115,7 +115,7 @@ export function ActualizarPreciosCard() {
   return (
     <CardWithLink link="/sueldos/precios">
       <MdAttachMoney className="text-6xl" />
-      <Typography className="text-4xl">Actualizar Precios</Typography>
+      <p className="text-4xl">Actualizar Precios</p>
     </CardWithLink>
   )
 }
@@ -124,7 +124,7 @@ export function MovilesCard() {
   return (
     <CardWithLink link="/logistica/vehiculos">
       <FaTruckPickup className="text-6xl" />
-      <Typography className="text-4xl">Moviles</Typography>
+      <p className="text-4xl">Moviles</p>
     </CardWithLink>
   )
 }
@@ -133,7 +133,7 @@ export function PedidosCard() {
   return (
     <CardWithLink link="/logistica/repuestos/pedidos">
       <MdDeliveryDining className="text-6xl" />
-      <Typography className="text-4xl">Pedidos</Typography>
+      <p className="text-4xl">Pedidos</p>
     </CardWithLink>
   )
 }
@@ -142,7 +142,7 @@ export function ReparacionesCard() {
   return (
     <CardWithLink link="/logistica/repuestos/reparaciones">
       <FaWrench className="text-6xl" />
-      <Typography className="text-4xl">Reparaciones</Typography>
+      <p className="text-4xl">Reparaciones</p>
     </CardWithLink>
   )
 }
@@ -151,7 +151,7 @@ export function ProveedoresCard() {
   return (
     <CardWithLink link="/logistica/repuestos/proveedores">
       <BsCartPlus className="text-6xl" />
-      <Typography className="text-4xl">Proveedores</Typography>
+      <p className="text-4xl">Proveedores</p>
     </CardWithLink>
   )
 }
@@ -160,7 +160,7 @@ export function RepuestosCard() {
   return (
     <CardWithLink link="/logistica/repuestos">
       <GiAutoRepair className="text-6xl" />
-      <Typography className="text-4xl">Repuestos</Typography>
+      <p className="text-4xl">Repuestos</p>
     </CardWithLink>
   )
 }

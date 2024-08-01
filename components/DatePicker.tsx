@@ -36,7 +36,7 @@ export function DateField({
 
   const onChange = (value: DateValue) => {
     field.onChange(value.toString())
-    if (persist) persist({ [name]: value })
+    if (persist) persist({ [name]: value.toString() })
   }
 
   const clear = () => {

@@ -48,9 +48,11 @@ import { ScheduleList } from '@/types/citymis.examen'
 //   }
 // }
 
-export async function GET(req: NextRequest) {
+export const dynamic = 'force-dynamic'
+
+export async function GET() {
   // await getFromCitymis()
-  const { searchParams } = req.nextUrl
+
   try {
     const examenes = await prisma.examen.findMany({
       where: {

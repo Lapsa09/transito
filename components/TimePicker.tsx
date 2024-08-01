@@ -36,7 +36,7 @@ export function TimeField({
 
   const onChange = (value: TimeInputValue) => {
     field.onChange(value.toString())
-    if (persist) persist({ [name]: value })
+    if (persist) persist({ [name]: value.toString() })
   }
 
   const clear = () => {

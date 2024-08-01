@@ -87,5 +87,5 @@ module.exports = {
       sans: defaultTheme.fontFamily.sans,
     },
   },
-  plugins: [require('tailwindcss-animated'), nextui(), require('daisyui')],
+  plugins: [require('tailwindcss-animate'), nextui(), require('daisyui')],
 }

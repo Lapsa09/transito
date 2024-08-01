@@ -26,7 +26,7 @@ function Menu() {
   }
   return (
     <div className="hidden lg:block w-full md:w-1/2">
-      <ul className="flex-col md:flex-row flex md:space-x-8 mt-4 md:mt-0 md:text-md md:font-medium md:justify-between items-center">
+      <ul className="flex mt-4 md:mt-0 md:text-md md:font-medium md:justify-between items-center">
         {user.metaData.isAdmin ? (
           pages.map((page) =>
             page.links ? (

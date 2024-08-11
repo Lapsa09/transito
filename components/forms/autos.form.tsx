@@ -1,11 +1,11 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Input from '@/components/Input'
 import DatePicker from '@/components/DatePicker'
 import TimePicker from '@/components/TimePicker'
 import Select from '@/components/Select'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useLocalStorage } from 'usehooks-ts'
+import { useEventListener, useLocalStorage } from 'usehooks-ts'
 import {
   resolucion as IResolucion,
   tipo_licencias,
@@ -35,6 +35,7 @@ export function FirstStep({
     seguridad: { id: seguridad; label: string }[]
   }
 }) {
+  const formRef = useRef<HTMLFormElement>(null)
   const { vicenteLopez, turnos, seguridad } = selects
 
   const [operativo, edit] = useLocalStorage<typeof DEFAULT_OPERATIVO_AUTO>(
@@ -43,9 +44,10 @@ export function FirstStep({
   )
   const formProps = useForm<FormProps>({
     defaultValues: operativo,
+    mode: 'onBlur',
   })
 
-  const setOperativo = (value: any) => {
+  const setOperativo = (value: FormProps) => {
     edit((state) => ({
       ...state,
       ...value,
@@ -55,9 +57,9 @@ export function FirstStep({
 
   const { setActiveStep } = useStepForm()
 
-  useEffect(() => {
-    setOperativo(formProps.getValues())
-  }, [formProps.watch()])
+  useEventListener('beforeunload', () => {
+    formRef.current?.requestSubmit()
+  })
 
   const handleSubmit = (body: FormProps) => {
     setOperativo(body)
@@ -69,6 +71,7 @@ export function FirstStep({
       <form
         onSubmit={formProps.handleSubmit(handleSubmit)}
         className="flex w-full justify-between flex-wrap"
+        ref={formRef}
       >
         <DatePicker
           name="fecha"

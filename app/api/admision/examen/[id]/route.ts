@@ -1,6 +1,9 @@
+import { db } from '@/drizzle/db'
+import { examenPreguntas, tipoExamen } from '@/drizzle/schema/examen'
+import { invitados } from '@/drizzle/schema/schema'
 import { examenDTO } from '@/DTO/examen'
-import prisma from '@/lib/prismadb'
 import { shuffle } from '@/utils/misc'
+import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -9,26 +12,19 @@ export async function GET(
 ) {
   try {
     const { id } = params
-    const examen = await prisma.examen.findFirst({
-      where: {
-        clave: id,
-        terminado: false,
-      },
-      include: {
+
+    const examen = await db.query.examenes.findFirst({
+      where: (examenes, { eq }) => eq(examenes.clave, id),
+      with: {
         alumnos: {
-          include: {
-            tipo_examen: true,
+          with: {
+            tipoExamen: true,
             usuario: true,
           },
-          orderBy: {
-            usuario: {
-              apellido: 'asc',
-            },
-          },
+          orderBy: (usuario, { desc }) => [desc(usuario.horaIngresado)],
         },
       },
     })
-
     return NextResponse.json(examen)
   } catch (error) {
     console.log(error)
@@ -89,52 +85,40 @@ export async function POST(
       edad: string
       sexo: string
     } = await req.json()
-    const invitado = await prisma.invitado.create({
-      data: {
+
+    const [invitado] = await db
+      .insert(invitados)
+      .values({
         dni: +dni,
         apellido,
         nombre,
-        id_edad: categorizeAge(+dni, +edad),
+        idEdad: categorizeAge(+dni, +edad),
         sexo,
         edad: +edad,
-      },
-    })
+      })
+      .returning()
+
     const examen = await examenDTO(id, tipo_examen, invitado.id)
 
-    const tipo = await prisma.tipo_examen.findUniqueOrThrow({
-      where: {
-        id: +tipo_examen,
-      },
-    })
+    const [tipo] = await db
+      .select()
+      .from(tipoExamen)
+      .where(eq(tipoExamen.id, +tipo_examen))
 
-    const preguntas = await prisma.preguntas.findMany({
-      where: {
-        tipo_examen: {
-          id: +tipo_examen,
-        },
-      },
-      include: {
+    const preguntas = await db.query.preguntas.findMany({
+      where: (tipo, { eq }) => eq(tipo.id, +tipo_examen),
+      with: {
         opciones: true,
       },
     })
 
-    for (const pregunta of shuffle([...preguntas]).slice(
+    for (const pregunta of shuffle(preguntas).slice(
       0,
-      tipo.cantidad_preguntas,
+      tipo.cantidadPreguntas,
     )) {
-      await prisma.examen_preguntas.create({
-        data: {
-          examen: {
-            connect: {
-              id: examen.id,
-            },
-          },
-          pregunta: {
-            connect: {
-              id: pregunta.id,
-            },
-          },
-        },
+      await db.insert(examenPreguntas).values({
+        examenId: examen.id,
+        preguntaId: pregunta.id,
       })
     }
     return NextResponse.json(examen)

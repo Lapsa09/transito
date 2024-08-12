@@ -1,3 +1,5 @@
+import { db } from '@/drizzle/db'
+import { clientes } from '@/drizzle/schema/sueldos'
 import prisma from '@/lib/prismadb'
 import { NextResponse, NextRequest } from 'next/server'
 
@@ -42,11 +44,13 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body: { cliente: string } = await req.json()
-  const cliente = await prisma.clientes.create({
-    data: {
+
+  const cliente = await db
+    .insert(clientes)
+    .values({
       cliente: body.cliente,
-    },
-  })
+    })
+    .returning()
 
   return NextResponse.json(cliente)
 }

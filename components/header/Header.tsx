@@ -6,7 +6,7 @@ import { pages } from '@/utils/pages'
 
 function Header() {
   return (
-    <header className="border-gray-200 bg-white px-8 flex flex-wrap items-center justify-between shadow-[0_0_21px_-7px_rgba(0,0,0,0.41)] header w-full">
+    <header className="border-gray-200 bg-white dark:bg-slate-900 px-8 flex flex-wrap items-center justify-between shadow-[0_0_21px_-7px_rgba(0,0,0,0.41)] header w-full">
       <div className="grid gap-10 w-full md:w-fit grid-cols-3 lg:grid-cols-1">
         <Drawer pages={pages} />
 

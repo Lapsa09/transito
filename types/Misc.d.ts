@@ -1,5 +1,6 @@
 import { invitadoDTO, userDTO } from '@/DTO/user'
 import { examen, rinde_examen } from '@prisma/client'
+import { SQL } from 'drizzle-orm'
 
 export enum Roles {
   ADMIN = 'ADMIN',
@@ -46,3 +47,8 @@ export enum Meses {
   11 = 'NOVIEMBRE',
   12 = 'DICIEMBRE',
 }
+
+export type DrizzleWhere<T> =
+  | SQL<unknown>
+  | ((aliases: T) => SQL<T> | undefined)
+  | undefined

@@ -34,9 +34,9 @@ function Menu() {
             ) : (
               <Link key={page.name} href={page.link}>
                 <Button
-                  variant="link"
+                  variant="ghost"
                   key={page.name}
-                  className="text-gray-700 md:hover:text-green-400 capitalize text-base font-medium"
+                  className="text-gray-700 dark:text-white md:hover:text-green-400 capitalize text-base font-medium"
                 >
                   {page.name}
                 </Button>
@@ -53,7 +53,7 @@ function Menu() {
         <Button
           variant="ghost"
           onClick={logout}
-          className="text-gray-700 hover:text-green-400"
+          className="text-gray-700 dark:text-white hover:text-green-400"
         >
           <p className="px-3 py-2 md:hidden">Cerrar sesion</p>
           <FiLogOut className="cursor-pointer text-xl" />

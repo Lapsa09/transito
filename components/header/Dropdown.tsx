@@ -9,19 +9,19 @@ function Dropdown({ page }: { page: Links }) {
         href={page.link}
         tabIndex={0}
         role="button"
-        className="btn btn-ghost text-gray-700 text-base font-medium font-sans md:hover:text-green-400"
+        className="btn btn-ghost text-gray-700 dark:text-white text-base font-medium font-sans md:hover:text-green-400"
       >
         {page.name}
       </Link>
       <ul
         tabIndex={0}
-        className="dropdown-content menu bg-white rounded-box z-[1] w-52 p-2 shadow"
+        className="dropdown-content menu bg-white dark:bg-slate-900 rounded-box z-[1] w-52 p-2 shadow"
       >
         {page.links?.map((child) => (
           <li key={child.name}>
             <Link
               href={child.link}
-              className="text-gray-700 hover:text-green-400"
+              className="text-gray-700 dark:text-white hover:text-green-400"
             >
               {child.name}
             </Link>

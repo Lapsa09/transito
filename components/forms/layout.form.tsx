@@ -12,7 +12,7 @@ import {
   LocalOperativo,
   RioFormProps,
 } from '@/types'
-import { Registro } from '@/types/camiones'
+import { Registro } from '@/drizzle/schema/camiones'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import React, { FormEvent, PropsWithChildren, useEffect } from 'react'

@@ -1,18 +1,14 @@
-import {
-  barrios,
-  clientes,
-  motivos,
-  operario,
-  resolucion,
-  seguridad,
-  tipo_licencias,
-  vicente_lopez,
-  motivo,
-  zonas,
-  turnos,
-} from '@prisma/client'
 import { Operativo } from './operativos'
 import { type LogisticaForms } from './logistica'
+import {
+  Barrio,
+  Motivo,
+  resolucionSchema,
+  seguridadSchema,
+  TipoLicencia,
+  turnosSchema,
+  VicenteLopez,
+} from '@/drizzle/schema/schema'
 
 export interface LocalOperativo extends Partial<Operativo> {
   expiresAt: number
@@ -20,9 +16,6 @@ export interface LocalOperativo extends Partial<Operativo> {
 
 export interface RegisterUserProps {
   legajo: number
-  nombre: string
-  apellido: string
-  telefono: number
   password: string
   confirmPassword: string
 }
@@ -36,18 +29,18 @@ export interface LoginUserProps {
 export interface FormInputProps {
   legajo_a_cargo: string
   legajo_planilla: string
-  seguridad: seguridad
+  seguridad: keyof typeof seguridadSchema.enum
   qth: string
-  localidad: vicente_lopez
+  localidad: VicenteLopez
   fecha: string
-  turno: turnos
+  turno: keyof typeof turnosSchema.enum
   lpcarga: number
   hora: string
   dominio: string
-  zona_infractor: barrios
+  zona_infractor: Barrio
   licencia?: string
-  tipo_licencia?: tipo_licencias
-  resolucion?: resolucion
+  tipo_licencia?: TipoLicencia
+  resolucion?: keyof typeof resolucionSchema.enum
   acta?: string
   extranjero?: boolean
 }
@@ -59,31 +52,31 @@ export interface EditInputProps extends FormInputProps {
 
 export interface FormAutosProps extends FormInputProps {
   graduacion_alcoholica?: string
-  motivo?: motivos
+  motivo?: Motivo
 }
 
 export interface EditAutosProps extends EditInputProps {
   graduacion_alcoholica: string
-  motivo?: motivos
+  motivo?: Motivo
 }
 
 export interface FormMotosProps extends FormInputProps {
-  motivos: motivos[]
+  motivos: Motivo[]
 }
 
 export interface EditMotosProps extends EditInputProps {
-  motivos: motivos[]
+  motivos: Motivo[]
 }
 
 export interface FormCamionesProps extends FormInputProps {
-  motivo?: motivos
+  motivo?: Motivo
   remito: boolean
   carga: boolean
   legajo: number
   origen?: string
   destino?: string
-  localidad_origen: barrios
-  localidad_destino: barrios
+  localidad_origen: Barrio
+  localidad_destino: Barrio
 }
 
 export interface EditCamionesProps extends EditInputProps {
@@ -93,8 +86,8 @@ export interface EditCamionesProps extends EditInputProps {
   legajo: string
   origen?: string
   destino?: string
-  localidad_origen: barrios
-  localidad_destino: barrios
+  localidad_origen: Barrio
+  localidad_destino: Barrio
 }
 
 export type RadioOPForm = {
@@ -154,7 +147,7 @@ export type RioFormProps = {
   hora: string
   dominio: string
   acta: bigint
-  resolucion: resolucion
+  resolucion: keyof typeof resolucionSchema.enum
   fechacarga: string
   lpcarga: string
   zona: zonas

@@ -1,7 +1,10 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle/db'
+import { operativos, registros } from '@/drizzle/schema/camiones'
+import { motivos, vicenteLopez } from '@/drizzle/schema/schema'
+import { localidad_destino, localidad_origen } from '@/DTO/camiones'
 import { EditCamionesProps } from '@/types'
-import { turnos } from '@prisma/client'
-import { DateTime } from 'luxon'
+import { getLocalTime } from '@/utils/misc'
+import { eq, sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
@@ -9,27 +12,42 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const camion = await prisma.camiones_registros.findUnique({
-    where: { id: Number(id) },
-    include: {
-      motivo: true,
-      operativo: { include: { localidad: true } },
-      localidad_destino: true,
-      localidad_origen: true,
-    },
-  })
+  const [camion] = await db
+    .select()
+    .from(registros)
+    .where(eq(registros.id, Number(id)))
+    .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(
+      localidad_destino,
+      eq(registros.idLocalidadDestino, localidad_destino.idBarrio),
+    )
+    .innerJoin(
+      localidad_origen,
+      eq(registros.idLocalidadOrigen, localidad_origen.idBarrio),
+    )
+    .innerJoin(vicenteLopez, eq(operativos.idLocalidad, vicenteLopez.idBarrio))
 
   if (camion) {
-    const { operativo, ...rest } = camion
+    const {
+      operativos,
+      vicente_lopez: localidad,
+      motivos: motivo,
+      localidad_destino,
+      localidad_origen,
+      registros,
+    } = camion
 
     const res = {
-      ...rest,
-      ...operativo,
-      qth: operativo?.direccion,
-      fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: DateTime.fromJSDate(rest?.hora!)
-        .toUTC()
-        .toFormat('HH:mm'),
+      ...registros,
+      ...operativos,
+      qth: operativos.direccion,
+      fecha: operativos?.fecha.split('T')[0],
+      hora: getLocalTime(operativos.fecha + 'T' + registros.hora + 'Z'),
+      motivo,
+      localidad,
+      localidad_destino,
+      localidad_origen,
     }
 
     return NextResponse.json(res)
@@ -44,41 +62,33 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
 
   const body: EditCamionesProps = await req.json()
 
-  await prisma.camiones_operativos.update({
-    where: { id_op: Number(body.id_op) },
-    data: {
-      fecha: new Date(body.fecha),
-      id_localidad: Number(body.localidad?.id_barrio),
+  await db
+    .update(operativos)
+    .set({
+      fecha: sql`to_date(${body.fecha},'YYYY-MM-DD')`,
+      idLocalidad: Number(body.localidad?.id_barrio),
       turno: body.turno,
       legajo: body.legajo,
       direccion: body.qth,
-      direccion_full: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
-    },
-  })
+      direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    })
+    .where(eq(operativos.idOp, Number(body.id_op)))
 
-  const _hora = new Date(body.fecha)
-  // @ts-ignore
-  _hora.setUTCHours(...body.hora.split(':'))
-
-  const camion = await prisma.camiones_registros.update({
-    where: { id: Number(id) },
-    data: {
-      hora: _hora,
+  const [camion] = await db
+    .update(registros)
+    .set({
+      hora: sql<string>`to_timestamp(${body.hora}, 'HH24:MI:SS')`,
       acta: body.acta,
       dominio: body.dominio,
       licencia: body.licencia,
       resolucion: body.resolucion,
-      id_motivo: body.motivo?.id_motivo,
-      id_localidad_origen: body.localidad_origen?.id_barrio,
-      id_localidad_destino: body.localidad_destino?.id_barrio,
-      id_operativo: body.id_op,
-    },
-    include: {
-      motivo: true,
-      operativo: { include: { localidad: true } },
-      localidad_destino: true,
-      localidad_origen: true,
-    },
-  })
+      idMotivo: body.motivo?.id_motivo,
+      idLocalidadOrigen: body.localidad_origen?.id_barrio,
+      idLocalidadDestino: body.localidad_destino?.id_barrio,
+      idOperativo: body.id_op,
+    })
+    .where(eq(registros.id, Number(id)))
+    .returning()
+
   return NextResponse.json(camion)
 }

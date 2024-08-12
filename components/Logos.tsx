@@ -41,7 +41,10 @@ export const LogoOVT = ({ className }: { className?: string }) => {
   return (
     <Image
       src={logoOVT}
-      className={twMerge(className, 'object-contain sm:h-12 sm:w-40 h-8 w-20')}
+      className={twMerge(
+        className,
+        'object-contain sm:h-12 sm:w-40 h-8 w-20 dark:invert',
+      )}
       alt="Logo Observatorio Vial"
       sizes="(max-width: 540px) 5rem, 10rem"
     />

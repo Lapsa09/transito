@@ -1,26 +1,26 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle/db'
 import { NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id
 
-    const examen = await prisma.rinde_examen.findUnique({
-      where: {
-        id_invitado: id,
-      },
-      include: {
-        examen_preguntas: {
-          include: {
+    const examen = await db.query.rindeExamen.findFirst({
+      where: (examen, { eq }) => eq(examen.idInvitado, id),
+      with: {
+        preguntas: {
+          with: {
             pregunta: {
-              select: {
+              columns: {
                 id: true,
                 pregunta: true,
+              },
+              with: {
                 opciones: {
-                  select: {
+                  columns: {
                     id: true,
                     respuesta: true,
-                    id_pregunta: true,
+                    idPregunta: true,
                   },
                 },
               },
@@ -31,8 +31,8 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
       },
     })
 
-    if (examen?.examen_preguntas)
-      examen!.examen_preguntas = examen!.examen_preguntas.map((pregunta) => {
+    if (examen?.preguntas)
+      examen.preguntas = examen.preguntas.map((pregunta) => {
         const [preg, señal] =
           pregunta.pregunta.pregunta.split(/N° ([0-9]{1,3})/)
 

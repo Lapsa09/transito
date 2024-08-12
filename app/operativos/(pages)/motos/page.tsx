@@ -1,30 +1,39 @@
 import React from 'react'
-import PageClient from './page.client'
-import { Registro } from '@/types/motos'
 import { fetcher } from '@/services'
+import { IndexPageProps, SearchParams } from '@/types/data-table'
+import { MotosTable } from './table'
+import { Filter } from '@/DTO/filters'
+import { MotosDTO } from '@/DTO/motos'
 
-const getMotos = async (searchParams: string) => {
+const getMotos = async (searchParams: SearchParams) => {
+  const params = new URLSearchParams(searchParams)
+
   const res = await fetcher(
-    `/api/operativos/motos${searchParams ? `?${searchParams}` : ''}`,
+    `api/operativos/motos${params ? `?${params.toString()}` : ''}`,
     {
       next: {
-        tags: ['operativos', 'motos'],
+        tags: ['motos'],
       },
     },
   )
-  const data: { data: Registro[]; pages: number } = await res.json()
+  const data: { data: MotosDTO[]; pages: number } = await res.json()
   return data
 }
 
-async function page({
-  searchParams,
-}: {
-  searchParams: Record<string, string>
-}) {
-  const { data, pages } = await getMotos(
-    new URLSearchParams(searchParams).toString(),
-  )
-  return <PageClient data={data} pages={pages} />
+const getFilters = async () => {
+  const res = await fetcher('api/filters', {
+    next: {
+      tags: ['filters'],
+    },
+  })
+  const data: Filter = await res.json()
+  return data
+}
+
+async function page({ searchParams }: IndexPageProps) {
+  const tasks = await getMotos(searchParams)
+  const filters = await getFilters()
+  return <MotosTable tasks={tasks} filters={filters} />
 }
 
 export default page

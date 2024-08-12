@@ -19,6 +19,12 @@ export const getLocalTime = (date: string) => {
   })
 }
 
+export const getLocalDate = (date: string) => {
+  return new Date(date).toLocaleDateString('UTC', {
+    timeZone: 'GMT',
+  })
+}
+
 export function shuffle<T>(array: T[]) {
   const _array = [...array]
   for (let i = array.length - 1; i > 0; i--) {

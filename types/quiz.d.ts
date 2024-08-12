@@ -1,5 +1,4 @@
-import { examenDTO } from '@/app/api/admision/examen/[id]/route'
-import { historialDTO } from '@/app/api/admision/examen/historial/route'
+import { examenDTO, historialDTO } from '@/DTO/examen'
 import type {
   examen,
   examen_preguntas,

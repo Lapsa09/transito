@@ -1,7 +1,7 @@
 import React from 'react'
 import MainForm from '@/components/forms/main.form'
 import { FirstStep, SecondStep } from '@/components/forms/motos.form'
-import { getSelects } from '@/services'
+import { getOperativosSelects } from '@/services'
 import CustomModal from '@/components/Modal'
 import FormHeader from './header'
 
@@ -17,7 +17,7 @@ async function page() {
     motivos,
     resolucion,
     zonas,
-  } = await getSelects()
+  } = await getOperativosSelects()
   return (
     <CustomModal>
       <div className="flex flex-col justify-center items-center px-6">

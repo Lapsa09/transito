@@ -188,6 +188,8 @@ export function SecondStep({
         <AutoComplete
           name="zona"
           label="Zona"
+          inputId="idZona"
+          inputLabel="zona"
           className="w-full basis-5/12"
           options={zonasPaseo}
         />

@@ -38,7 +38,6 @@ export function FirstStep({
   }
 }) {
   const { vicenteLopez, turnos, seguridad } = selects
-
   const [operativo, edit] = useLocalStorage<typeof DEFAULT_OPERATIVO_AUTO>(
     'autos',
     DEFAULT_OPERATIVO_AUTO,
@@ -46,14 +45,14 @@ export function FirstStep({
   const formProps = useForm<FormProps>({
     resolver: zodResolver(operativoInputSchema),
     defaultValues: operativo,
-    mode: 'onBlur',
+    mode: 'all',
   })
 
   const setOperativo = (value: any) => {
     edit((state) => ({
       ...state,
       ...value,
-      expiresAt: state.expiresAt || setExpiration(),
+      expiresAt: setExpiration(),
     }))
   }
 
@@ -247,7 +246,7 @@ export function SecondStep({
           name="tipoLicencia"
           label="Tipo licencia"
           options={licencias}
-          inputId="id_tipo"
+          inputId="idTipo"
           inputLabel="tipo"
           className="w-full basis-5/12"
         />

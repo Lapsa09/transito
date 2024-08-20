@@ -180,7 +180,7 @@ export const geoLocation = async (
   return { latitud, longitud }
 }
 
-export const getSelects = async () => {
+export const getOperativosSelects = async () => {
   const [
     zonas,
     turnos,
@@ -190,14 +190,6 @@ export const getSelects = async () => {
     motivos,
     vicenteLopez,
     zonasPaseo,
-    clientes,
-    operarios,
-    tipoMoviles,
-    dependencias,
-    usos,
-    repuestos,
-    proveedores,
-    tipoRepuestos,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -207,14 +199,67 @@ export const getSelects = async () => {
     getMotivos(),
     getVicenteLopez(),
     getZonasPaseo(),
-    getListaClientes(),
-    getListaOperarios(),
+  ])
+
+  return {
+    zonas,
+    turnos,
+    seguridad,
+    licencias,
+    resolucion,
+    motivos,
+    vicenteLopez,
+    zonasPaseo,
+  }
+}
+
+export const getLogisticaSelects = async () => {
+  const [
+    tipoMoviles,
+    dependencias,
+    usos,
+    repuestos,
+    proveedores,
+    tipoRepuestos,
+  ] = await Promise.all([
     getTipoMoviles(),
     getDependenciasLogistica(),
     getSectoresLogistica(),
     getRepuestos(),
     getProveedores(),
     getTipoRepuestos(),
+  ])
+
+  return {
+    tipoMoviles,
+    dependencias,
+    usos,
+    repuestos,
+    proveedores,
+    tipoRepuestos,
+  }
+}
+
+export const getSelects = async () => {
+  const [
+    {
+      zonas,
+      turnos,
+      seguridad,
+      licencias,
+      resolucion,
+      motivos,
+      vicenteLopez,
+      zonasPaseo,
+    },
+    clientes,
+    operarios,
+    { tipoMoviles, dependencias, usos, repuestos, proveedores, tipoRepuestos },
+  ] = await Promise.all([
+    getOperativosSelects(),
+    getListaClientes(),
+    getListaOperarios(),
+    getLogisticaSelects(),
   ])
   return {
     zonas,

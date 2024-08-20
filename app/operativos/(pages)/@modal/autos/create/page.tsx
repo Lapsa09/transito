@@ -1,7 +1,7 @@
 import React from 'react'
 import MainForm from '@/components/forms/main.form'
 import { FirstStep, SecondStep } from '@/components/forms/autos.form'
-import { getSelects } from '@/services'
+import { getOperativosSelects } from '@/services'
 import FormHeader from './header'
 import CustomModal from '@/components/Modal'
 
@@ -17,7 +17,7 @@ async function page() {
     motivos,
     resolucion,
     zonas,
-  } = await getSelects()
+  } = await getOperativosSelects()
 
   return (
     <CustomModal>

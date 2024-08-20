@@ -96,7 +96,7 @@ export function FirstStep({
         <Autocomplete
           name="localidad"
           label="Zona"
-          inputId="id_barrio"
+          inputId="idBarrio"
           inputLabel="barrio"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
@@ -223,7 +223,7 @@ export function SecondStep({
           name="localidad_origen"
           label="Localidad de origen"
           options={zonas}
-          inputId="id_barrio"
+          inputId="idBarrio"
           inputLabel="barrio"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
@@ -233,7 +233,7 @@ export function SecondStep({
           name="localidad_destino"
           label="Localidad de destino"
           options={zonas}
-          inputId="id_barrio"
+          inputId="idBarrio"
           inputLabel="barrio"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
@@ -261,7 +261,7 @@ export function SecondStep({
               label="Motivo"
               name="motivos"
               options={motivos}
-              inputId="id_motivo"
+              inputId="idMotivo"
               inputLabel="motivo"
               className="w-full basis-5/12"
               rules={{ required: 'Este campo es requerido' }}

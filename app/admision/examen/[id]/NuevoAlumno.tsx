@@ -4,12 +4,12 @@ import React from 'react'
 import CustomInput from '@/components/Input'
 import { setter } from '@/services'
 import { Button } from '@/components/ui/button'
-import { rinde_examen } from '@prisma/client'
 import { FieldValues } from 'react-hook-form'
 import { toast } from '@/hooks'
 import { useRouter } from 'next/navigation'
 import { RegularForm } from '@/components/forms/layout.form'
 import CustomSelect from '@/components/Select'
+import { RindeExamen } from '@/drizzle/schema/examen'
 
 const tipos_examen = [
   { id: 1, label: 'AUTOS' },
@@ -21,7 +21,7 @@ const tipos_examen = [
 function NuevoAlumno({ id }: { id: number }) {
   const router = useRouter()
   const onSubmit = async (body: FieldValues) =>
-    await setter<rinde_examen>({
+    await setter<RindeExamen>({
       route: 'admision/examen/' + id,
       body,
     })

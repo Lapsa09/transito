@@ -1,6 +1,6 @@
 import bycript from 'bcrypt'
 import { Roles } from '@/types'
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { invitados, permisos, users } from '@/drizzle/schema/schema'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { rindeExamen, tipoExamen } from '@/drizzle/schema/examen'
@@ -69,3 +69,5 @@ export async function inspectoresDTO() {
     .from(users)
     .where(eq(users.idRol, 2))
 }
+
+export type InspectoresDTO = Awaited<ReturnType<typeof inspectoresDTO>>[0]

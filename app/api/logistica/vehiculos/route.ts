@@ -1,72 +1,53 @@
-import prisma from '@/lib/prismadb'
-import { Vehiculo } from '@/types/logistica'
+import { db } from '@/drizzle'
+import { Movil, movil } from '@/drizzle/schema/logistica'
+import { vehiculosDTO } from '@/DTO/logistica/vehiculos'
+import { searchParamsSchema } from '@/schemas/form'
+import { count } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
-  const vehiculosPromise = prisma.movil.findMany({
-    include: {
-      uso: true,
-      dependencia: true,
-      tipo_vehiculo: true,
-    },
-    skip: pageIndex * 10,
-    take: 10,
-  })
+  const { page, per_page } = searchParamsSchema.parse(searchParams)
+  const vehiculosPromise = vehiculosDTO({ page, per_page })
 
-  const totalPromise = prisma.movil.count()
+  const totalPromise = db
+    .select({ count: count() })
+    .from(movil)
+    .execute()
+    .then((res) => res[0].count)
 
   const [vehiculos, total] = await Promise.all([vehiculosPromise, totalPromise])
 
   return NextResponse.json({
     data: vehiculos,
-    pages: Math.ceil(total / 10).toString(),
+    pages: Math.ceil(total / per_page).toString(),
   })
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body: Vehiculo = await req.json()
+    const body: Movil = await req.json()
 
-    const vehiculo = await prisma.movil.create({
-      data: {
-        uso: {
-          connect: {
-            id_uso: body.uso.id_uso,
-          },
-        },
-        dependencia: {
-          connect: {
-            id_dependencia: body.dependencia.id_dependencia,
-          },
-        },
-        tipo_vehiculo: {
-          connect: {
-            id_tipo: body.tipo_vehiculo.id_tipo,
-          },
-        },
-        patente: body.patente,
-        marca: body.marca,
-        modelo: body.modelo,
-        a_o: +body.a_o,
-        no_chasis: body.no_chasis,
-        empresa_seguimiento: body.empresa_seguimiento,
-        id_megatrans: body.id_megatrans,
-        nro_movil: body.nro_movil,
-        plan_renovacion: body.plan_renovacion,
-        tipo_combustible: body.tipo_combustible,
-        tipo_motor: body.tipo_motor ? +body.tipo_motor : null,
-      },
-      include: {
-        uso: true,
-        dependencia: true,
-        tipo_vehiculo: true,
-      },
+    await db.insert(movil).values({
+      idUso: body.idUso,
+      idDependencia: body.idDependencia,
+      idTipoVehiculo: body.idTipoVehiculo,
+      patente: body.patente,
+      marca: body.marca,
+      modelo: body.modelo,
+      año: body.año,
+      noChasis: body.noChasis,
+      empresaSeguimiento: body.empresaSeguimiento,
+      idMegatrans: body.idMegatrans,
+      nroMovil: body.nroMovil,
+      planRenovacion: body.planRenovacion,
+      tipoCombustible: body.tipoCombustible,
+      tipoMotor: body.tipoMotor,
     })
+
     revalidateTag('vehiculos')
-    return NextResponse.json(vehiculo)
+    return NextResponse.json('Exito')
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

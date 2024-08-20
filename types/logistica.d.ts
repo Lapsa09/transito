@@ -1,55 +1,48 @@
 import {
-  dependencia,
-  kilometraje_vehiculos,
-  logistica_tipo_vehiculo,
-  movil,
-  proveedor,
-  reparaciones,
-  uso,
-  pedido_repuesto,
-  repuesto,
-  vtv,
-  tipo_repuesto,
-} from '@prisma/client'
+  Dependencia,
+  Movil,
+  Proveedor,
+  Reparaciones,
+  Repuestos,
+  TipoRepuesto,
+  TipoVehiculo,
+  Uso,
+} from '@/drizzle/schema/logistica'
 
-export interface Vehiculo extends movil {
-  uso: uso
-  dependencia: dependencia
-  tipo_vehiculo: logistica_tipo_vehiculo
+export interface Vehiculo extends Movil {
+  uso: Uso
+  dependencia: Dependencia
+  tipo_vehiculo: TipoVehiculo
   seguro?: string
 }
 
-export interface KilometrajeVehiculo extends kilometraje_vehiculos {}
-
-export interface Reparacion extends reparaciones {
-  repuesto: repuesto & {
-    pedido_repuesto: pedido_repuesto & {
-      proveedor: proveedor
+export interface Reparacion extends Reparaciones {
+  repuesto: Repuestos & {
+    pedido_repuesto: PedidoRepuesto & {
+      proveedor: Proveedor
     }
   }
-  movil: movil
+  movil: Movil
 }
 
-export type ReparacionForm = reparaciones & {
-  repuesto: repuesto
+export type ReparacionForm = Reparaciones & {
+  repuesto: Repuestos
 }
 
-export interface VTV extends vtv {}
-
-export interface Repuesto extends repuesto {
-  tipo_repuesto: tipo_repuesto
-  reparacion?: reparaciones
-  pedido_repuesto?: pedido_repuesto
+export interface Repuesto extends Repuestos {
+  tipo_repuesto: TipoRepuesto
+  reparacion?: Reparaciones
+  pedido_repuesto?: PedidoRepuesto
 }
 
-export interface PedidoRepuesto extends pedido_repuesto {
+export interface PedidoRepuesto extends PedidoRepuesto {
   repuestos: Array<Repuesto & { cantidad: number }>
-  proveedor: proveedor
+  proveedor: Proveedor
 }
 
-export interface PedidoForm extends pedido_repuesto {
+export interface PedidoForm extends PedidoRepuesto {
   repuestos: {
-    tipo_repuesto: tipo_repuesto
+    tipo_repuesto: TipoRepuesto
     cantidad: number
     item: string
   }[]

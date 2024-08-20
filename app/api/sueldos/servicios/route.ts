@@ -1,23 +1,56 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import {
+  clientes,
+  operarios,
+  operariosServicios,
+  recibos,
+  servicios,
+} from '@/drizzle/schema/sueldos'
 import { ServiciosFormProps } from '@/types'
-import { parseToISOTime } from '@/utils/misc'
-import { DateTime } from 'luxon'
+import { eq, sql } from 'drizzle-orm'
 import { NextResponse, NextRequest } from 'next/server'
+
+type Operario = {
+  nombre: string
+  legajo: number
+  horaInicio: string
+  horaFin: string
+  aCobrar: number
+}
 
 export async function GET() {
   try {
-    const servicios = await prisma.servicios.findMany({
-      include: {
-        clientes: { select: { cliente: true } },
-        operarios_servicios: {
-          include: {
-            operarios: true,
-          },
-        },
-      },
-    })
+    const serviciosList = await db
+      .select({
+        idServicio: servicios.idServicio,
+        fechaServicio: servicios.fechaServicio,
+        feriado: servicios.feriado,
+        importeServicio: servicios.importeServicio,
+        cliente: clientes.cliente,
+        memo: servicios.memo,
+        operarios: sql<
+          Operario[]
+        >`json_agg(json_build_object('nombre', ${operarios.nombre}, 'legajo', ${operarios.legajo}, 'horaInicio', ${operariosServicios.horaInicio}, 'horaFin', ${operariosServicios.horaFin}, 'aCobrar', ${operariosServicios.aCobrar}, 'cancelado', ${operariosServicios.cancelado}))`.as(
+          'operarios',
+        ),
+      })
+      .from(servicios)
+      .innerJoin(clientes, eq(servicios.idCliente, clientes.idCliente))
+      .innerJoin(
+        operariosServicios,
+        eq(servicios.idServicio, operariosServicios.idServicio),
+      )
+      .innerJoin(operarios, eq(operariosServicios.legajo, operarios.legajo))
+      .groupBy(
+        servicios.idServicio,
+        servicios.fechaServicio,
+        servicios.feriado,
+        servicios.importeServicio,
+        clientes.cliente,
+        servicios.memo,
+      )
 
-    return NextResponse.json(servicios)
+    return NextResponse.json(serviciosList)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })
@@ -27,49 +60,34 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const body: ServiciosFormProps = await req.json()
 
-  const nuevoServicio = await prisma.servicios.create({
-    data: {
-      clientes: {
-        connect: {
-          id_cliente: body.cliente.id_cliente,
-        },
-      },
-      fecha_servicio: DateTime.fromISO(body.fecha_servicio).toISO(),
+  const [{ idServicio }] = await db
+    .insert(servicios)
+    .values({
+      fechaServicio: body.fecha_servicio,
       feriado: body.feriado,
-      importe_servicio: body.importe_servicio,
-    },
-  })
+      importeServicio: body.importe_servicio,
+      idCliente: body.cliente.idCliente,
+    })
+    .returning({ idServicio: servicios.idServicio })
 
   if (body.hay_recibo && body.recibo) {
-    await prisma.recibos.create({
-      data: {
-        recibo: +body.recibo,
-        acopio: +body.importe_recibo! - +body.importe_servicio,
-        clientes: {
-          connect: {
-            id_cliente: body.cliente.id_cliente,
-          },
-        },
-        fecha_recibo: DateTime.fromISO(body.fecha_recibo!).toISO(),
-        importe_recibo: +body.importe_recibo!,
-      },
+    await db.insert(recibos).values({
+      recibo: body.recibo,
+      acopio: body.importe_recibo! - body.importe_servicio,
+      idCliente: body.cliente.idCliente,
+      fechaRecibo: body.fecha_recibo!,
+      importeRecibo: body.importe_recibo,
     })
   }
 
   for (const operario of body.operarios) {
-    const hora_inicio = parseToISOTime(operario.hora_inicio)
-
-    const hora_fin = parseToISOTime(operario.hora_fin)
-
-    await prisma.operarios_servicios.create({
-      data: {
-        hora_inicio,
-        hora_fin,
-        a_cobrar: operario.a_cobrar,
-        cancelado: false,
-        id_servicio: nuevoServicio.id_servicio,
-        legajo: operario.operario?.legajo,
-      },
+    await db.insert(operariosServicios).values({
+      horaInicio: operario.hora_inicio,
+      horaFin: operario.hora_fin,
+      aCobrar: operario.a_cobrar,
+      cancelado: false,
+      idServicio,
+      legajo: operario.operario?.legajo,
     })
   }
 

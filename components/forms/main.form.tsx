@@ -1,11 +1,10 @@
 'use client'
 import { useStepForm } from '@/hooks'
-import React, { useRef } from 'react'
+import React from 'react'
 import { Variants, motion } from 'framer-motion'
 
 function MainForm({ children }: { children: React.ReactNode[] }) {
   const { activeStep } = useStepForm()
-  const refs = useRef<HTMLDivElement[]>([])
 
   const variant: Variants = {
     open: {
@@ -28,12 +27,10 @@ function MainForm({ children }: { children: React.ReactNode[] }) {
         <motion.div
           variants={variant}
           key={i}
-          ref={(el) => el && refs.current.push(el)}
           animate={
             activeStep === i ? 'open' : activeStep > i ? 'left' : 'right'
           }
           className="w-full flex-col"
-          style={{ minHeight: '500px' }}
         >
           {child}
         </motion.div>

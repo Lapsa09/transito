@@ -1,23 +1,19 @@
 import { NextResponse, NextRequest } from 'next/server'
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { servicios } from '@/drizzle/schema/sueldos'
+import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 export async function PUT(req: NextRequest, state: { params: { id: string } }) {
   const { memo } = await req.json()
-  const { id } = state.params
+  const id = z.coerce.number().parse(state.params.id)
 
-  const memoActualizado = await prisma.servicios.update({
-    where: { id_servicio: Number(id) },
-    data: {
+  await db
+    .update(servicios)
+    .set({
       memo,
-    },
-    include: {
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
+    })
+    .where(eq(servicios.idServicio, id))
 
-  return NextResponse.json(memoActualizado)
+  return NextResponse.json('Exito')
 }

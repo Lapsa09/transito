@@ -1,11 +1,11 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/camiones'
 import { motivos, vicenteLopez } from '@/drizzle/schema/schema'
-import { localidad_destino, localidad_origen } from '@/DTO/camiones'
-import { EditCamionesProps } from '@/types'
-import { getLocalTime } from '@/utils/misc'
+import { localidad_destino, localidad_origen } from '@/DTO/operativos/camiones'
+import { camionesInputPropsSchema } from '@/schemas/camiones'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
   const {
@@ -42,8 +42,6 @@ export async function GET(_: Request, state: { params: { id: string } }) {
       ...registros,
       ...operativos,
       qth: operativos.direccion,
-      fecha: operativos?.fecha.split('T')[0],
-      hora: getLocalTime(operativos.fecha + 'T' + registros.hora + 'Z'),
       motivo,
       localidad,
       localidad_destino,
@@ -60,35 +58,41 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const body: EditCamionesProps = await req.json()
+  const json = await req.json()
+  const body = camionesInputPropsSchema
+    .merge(
+      z.object({
+        id_op: z.coerce.number(),
+      }),
+    )
+    .parse(json)
 
   await db
     .update(operativos)
     .set({
       fecha: sql`to_date(${body.fecha},'YYYY-MM-DD')`,
-      idLocalidad: Number(body.localidad?.id_barrio),
+      idLocalidad: body.localidad?.idBarrio,
       turno: body.turno,
       legajo: body.legajo,
       direccion: body.qth,
       direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
     })
-    .where(eq(operativos.idOp, Number(body.id_op)))
+    .where(eq(operativos.idOp, body.id_op))
 
-  const [camion] = await db
+  await db
     .update(registros)
     .set({
-      hora: sql<string>`to_timestamp(${body.hora}, 'HH24:MI:SS')`,
+      hora: body.hora,
       acta: body.acta,
       dominio: body.dominio,
       licencia: body.licencia,
       resolucion: body.resolucion,
-      idMotivo: body.motivo?.id_motivo,
-      idLocalidadOrigen: body.localidad_origen?.id_barrio,
-      idLocalidadDestino: body.localidad_destino?.id_barrio,
+      idMotivo: body.motivo?.idMotivo,
+      idLocalidadOrigen: body.localidad_origen?.idBarrio,
+      idLocalidadDestino: body.localidad_destino?.idBarrio,
       idOperativo: body.id_op,
     })
     .where(eq(registros.id, Number(id)))
-    .returning()
 
-  return NextResponse.json(camion)
+  return NextResponse.json('Exito')
 }

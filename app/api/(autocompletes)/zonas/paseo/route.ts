@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { zonas } from '@/drizzle/schema/nuevo_control'
 import { NextResponse } from 'next/server'
 

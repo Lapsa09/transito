@@ -7,18 +7,18 @@ import CustomInput from '@/components/Input'
 import CustomSelect from '@/components/Select'
 import { toast } from '@/hooks'
 import { setter } from '@/services'
-import { permisos, turnos } from '@prisma/client'
 import React from 'react'
 import { SubmitHandler } from 'react-hook-form'
+import { Permiso, Turno } from '@/drizzle/schema/schema'
 
 function Form({
   roles,
   turnos,
 }: {
-  roles: permisos[]
-  turnos: { id: turnos; label: string }[]
+  roles: Permiso[]
+  turnos: { id: Turno; label: string }[]
 }) {
-  const onSubmit: SubmitHandler<{ legajo: string; rol: permisos }> = async (
+  const onSubmit: SubmitHandler<{ legajo: string; rol: Permiso }> = async (
     data,
   ) =>
     await setter({ route: '/admision/empleados', body: data })

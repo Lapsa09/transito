@@ -5,6 +5,9 @@ import { getSelects } from '@/services'
 import FormHeader from './header'
 import CustomModal from '@/components/Modal'
 
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 async function page() {
   const {
     vicenteLopez,

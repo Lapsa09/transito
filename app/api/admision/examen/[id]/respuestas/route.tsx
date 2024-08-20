@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { examenPreguntas, opciones, preguntas } from '@/drizzle/schema/examen'
 import { eq } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
@@ -14,8 +14,8 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
       .select({
         examenId: examenPreguntas.examenId,
         pregunta: preguntas.pregunta,
-        correcta: opciones,
-        elegida: correcta,
+        elegida: opciones.respuesta,
+        correcta: correcta.respuesta,
       })
       .from(examenPreguntas)
       .innerJoin(preguntas, eq(preguntas.id, examenPreguntas.preguntaId))
@@ -32,19 +32,13 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         pregunta: señal
           ? preg + `: <img src="/setran/${señal}.png" alt="señal" />`
           : pregunta.pregunta,
-        correcta: {
-          ...pregunta.correcta,
-          respuesta: pregunta.correcta?.respuesta.match(/^[0-9]{1,3}$/)
-            ? `<img src="/setran/${pregunta.correcta.respuesta}.png" alt="señal" />`
-            : pregunta.correcta?.respuesta,
-        },
+        correcta: pregunta.correcta.match(/^[0-9]{1,3}$/)
+          ? `<img src="/setran/${pregunta.correcta}.png" alt="señal" />`
+          : pregunta.correcta,
         elegida: pregunta.elegida
-          ? {
-              ...pregunta.elegida,
-              respuesta: pregunta.elegida.respuesta.match(/^[0-9]{1,3}$/)
-                ? `<img src="/setran/${pregunta.elegida.respuesta}.png" alt="señal" />`
-                : pregunta.elegida.respuesta,
-            }
+          ? pregunta.elegida.match(/^[0-9]{1,3}$/)
+            ? `<img src="/setran/${pregunta.elegida}.png" alt="señal" />`
+            : pregunta.elegida
           : undefined,
       }
     })

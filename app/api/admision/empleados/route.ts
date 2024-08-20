@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { permisos, users } from '@/drizzle/schema/schema'
 import { NextRequest, NextResponse } from 'next/server'
 

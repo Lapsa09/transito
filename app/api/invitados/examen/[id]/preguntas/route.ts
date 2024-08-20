@@ -1,11 +1,11 @@
-import { db } from '@/drizzle/db'
+import { examendb } from '@/drizzle'
 import { NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id
 
-    const examen = await db.query.rindeExamen.findFirst({
+    const examen = await examendb.query.rindeExamen.findFirst({
       where: (examen, { eq }) => eq(examen.idInvitado, id),
       with: {
         preguntas: {

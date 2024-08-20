@@ -1,25 +1,25 @@
-import prisma from '@/lib/prismadb'
+import { sueldosdb } from '@/drizzle'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    const operarios = await prisma.operarios.findMany({
-      where: {
-        NOT: {
-          legajo: 1,
-        },
-      },
-      include: {
+    const operarios = await sueldosdb.query.operarios.findMany({
+      with: {
         servicios: {
-          include: {
+          with: {
             servicios: {
-              include: {
-                clientes: { select: { cliente: true } },
+              with: {
+                cliente: {
+                  columns: {
+                    cliente: true,
+                  },
+                },
               },
             },
           },
         },
       },
+      where: (operario, { ne }) => ne(operario.legajo, 1),
     })
 
     return NextResponse.json(operarios)

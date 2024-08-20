@@ -1,77 +1,17 @@
 import { DateTime } from 'luxon'
 import axios from 'axios'
-import prisma from '@/lib/prismadb'
 import { NextResponse } from 'next/server'
 import { RootObject } from '@/types/waze'
-import { type calles, type recorrido } from '@prisma/client'
-
-interface Promedio {
-  horario: string
-  id_trafico: number
-  tiempo: number
-  tiempo_hist: number
-  velocidad: number
-  velocidad_hist: number
-  calles: string
-  trafico: string
-}
-
-const xprisma = prisma.$extends({
-  model: {
-    recorrido: {
-      async getPromedio() {
-        const promedio: Promedio[] = await prisma.$queryRaw`
-        SELECT
-        case when avg(r.velocidad_hist)::int-avg(r.velocidad)::int >1 
-        then ceil(avg(r.id_trafico))::int
-        else floor(avg(r.id_trafico)) ::int
-        end as id_trafico,
-        round(avg(r.tiempo))::int as tiempo,
-        round(avg(r.tiempo_hist))::int as tiempo_hist,
-        round(avg(r.velocidad))::int as velocidad,
-        round(avg(r.velocidad_hist))::int as velocidad_hist,
-          c.calles,
-          h.horario,
-          n.nivel as trafico
-        FROM
-          waze.recorrido r
-        INNER JOIN
-          waze.calles c
-        ON
-          r.id_calles = c.id
-        INNER JOIN
-          waze.reporte rp
-        ON
-          r.id_reporte = rp.id
-        INNER JOIN
-          waze.horarios h
-        ON
-          rp.id_horario = h.id
-        INNER JOIN
-          waze.nivel_trafico n
-        ON
-          1 = n.id
-        WHERE
-          rp.id_dia IN (
-            SELECT
-              id
-            FROM
-              waze.dia
-            ORDER BY
-              fecha DESC
-            LIMIT
-              15
-          )
-        group by c.calles,h.horario,r.id_calles,rp.id_horario,n.nivel
-        ORDER BY
-          r.id_calles ASC,
-          rp.id_horario ASC
-        `
-        return promedio
-      },
-    },
-  },
-})
+import { db, wazedb } from '@/drizzle'
+import {
+  calles,
+  dia,
+  horarios,
+  nivelTrafico,
+  recorrido,
+  reporte,
+} from '@/drizzle/schema/waze'
+import { eq, arrayContains, desc, sql, avg } from 'drizzle-orm'
 
 const callesList = {
   'Laprida - Maipu a B. Parera': 1,
@@ -115,7 +55,10 @@ const fetchWaze = async () => {
   } = await axios.get<RootObject>(process.env.WAZE_API!)
 
   const body: {
-    calles: Array<Omit<recorrido, 'id' | 'id_reporte'> & Omit<calles, 'id'>>
+    calles: Array<
+      Omit<typeof recorrido.$inferSelect, 'id' | 'idReporte'> &
+        Omit<typeof calles.$inferSelect, 'id'>
+    >
     hora: number
     fecha: number
   } = {
@@ -127,25 +70,26 @@ const fetchWaze = async () => {
   body.calles = routes
     .filter((r) => Object.keys(callesList).includes(r.name))
     .map((r) => ({
-      id_calles: callesList[r.name as keyof typeof callesList],
+      idCalles: callesList[r.name as keyof typeof callesList],
       tiempo: seconds_to_mins(r.time),
-      tiempo_hist: seconds_to_mins(r.historicTime),
+      tiempoHist: seconds_to_mins(r.historicTime),
       velocidad: get_speed(r.time, r.length),
-      velocidad_hist: get_speed(r.historicTime, r.length),
-      id_trafico: r.jamLevel + 1,
+      velocidadHist: get_speed(r.historicTime, r.length),
+      idTrafico: r.jamLevel + 1,
       calles: r.name,
     }))
   body.hora = horas(DateTime.now().setLocale('es-AR').hour)
-  const repetido = await prisma.dia.findFirst({
-    where: {
-      fecha: DateTime.now().toISO()!,
+  const repetido = await wazedb.query.dia.findFirst({
+    where(fields, { eq }) {
+      return eq(fields.fecha, sql`to_date(${new Date()}, 'YYYY-MM-DD')`)
     },
   })
   if (repetido) body.fecha = repetido.id
   else {
-    const { id } = await prisma.dia.create({
-      data: { fecha: DateTime.now().toISO()! },
-    })
+    const [{ id }] = await db
+      .insert(dia)
+      .values({ fecha: sql`to_date(${new Date()}, 'YYYY-MM-DD')` })
+      .returning({ id: dia.id })
     body.fecha = id
   }
   return body
@@ -153,29 +97,57 @@ const fetchWaze = async () => {
 
 export async function GET() {
   try {
-    const res = await prisma.dia.findFirst({
-      include: {
-        reporte: {
-          include: {
+    const res = await wazedb.query.dia.findFirst({
+      with: {
+        reportes: {
+          with: {
             horarios: true,
-            recorrido: {
-              include: {
+            recorridos: {
+              with: {
                 calles: true,
-                nivel_trafico: true,
+                nivelTrafico: true,
               },
             },
           },
-          orderBy: {
-            id_horario: 'asc',
-          },
+          orderBy: (reporte, { asc }) => asc(reporte.idHorario),
         },
       },
-      orderBy: {
-        fecha: 'desc',
-      },
+      orderBy: (dia, { desc }) => desc(dia.fecha),
     })
 
-    const promedio = await xprisma.recorrido.getPromedio()
+    const promedio = await db
+      .select({
+        id_trafico: sql<number>`case when ${avg(recorrido.velocidadHist).mapWith(Number)}-${avg(recorrido.velocidad).mapWith(Number)} >1 then ceil(${avg(nivelTrafico.id).mapWith(Number)}) else floor(${avg(nivelTrafico.id).mapWith(Number)}) end`,
+        tiempo: sql<number>`round(${avg(recorrido.tiempo).mapWith(Number)})`,
+        tiempo_hist: sql<number>`round(${avg(recorrido.tiempoHist).mapWith(Number)})`,
+        velocidad: sql<number>`round(${avg(recorrido.velocidad).mapWith(Number)})`,
+        velocidad_hist: sql<number>`round(${avg(recorrido.velocidadHist).mapWith(Number)})`,
+        calles: calles.calles,
+        horario: horarios.horario,
+        trafico: nivelTrafico.nivel,
+      })
+      .from(recorrido)
+      .innerJoin(calles, eq(recorrido.idCalles, calles.id))
+      .innerJoin(reporte, eq(recorrido.idReporte, reporte.id))
+      .innerJoin(horarios, eq(reporte.idHorario, horarios.id))
+      .innerJoin(nivelTrafico, eq(nivelTrafico.id, 1))
+      .where(
+        arrayContains(
+          reporte.idDia,
+          db
+            .select({ id: dia.id })
+            .from(dia)
+            .orderBy(desc(dia.fecha))
+            .limit(15),
+        ),
+      )
+      .groupBy(
+        calles.calles,
+        horarios.horario,
+        reporte.idHorario,
+        nivelTrafico.nivel,
+      )
+      .orderBy(calles.calles, horarios.horario)
 
     return NextResponse.json({
       res,
@@ -191,98 +163,62 @@ export async function POST() {
   try {
     const { calles, fecha, hora } = await fetchWaze()
 
-    const repetido = await prisma.reporte.findFirst({
-      where: {
-        id_dia: fecha,
-        id_horario: hora,
+    const repetido = await wazedb.query.reporte.findFirst({
+      where(fields, { eq, and }) {
+        return and(eq(fields.idDia, fecha), eq(fields.idHorario, hora))
       },
     })
 
     if (!repetido) {
-      const { id: id_reporte } = await prisma.reporte.create({
-        data: {
-          id_dia: fecha,
-          id_horario: hora,
-        },
-      })
+      const [{ id_reporte }] = await db
+        .insert(reporte)
+        .values({
+          idDia: fecha,
+          idHorario: hora,
+        })
+        .returning({ id_reporte: reporte.id })
+
       for (const calle of calles) {
-        await prisma.recorrido.create({
-          data: {
-            calles: {
-              connect: {
-                id: calle.id_calles,
-              },
-            },
-            reporte: {
-              connect: {
-                id: id_reporte,
-              },
-            },
-            nivel_trafico: {
-              connect: {
-                id: calle.id_trafico,
-              },
-            },
-            tiempo: calle.tiempo,
-            tiempo_hist: calle.tiempo_hist,
-            velocidad: calle.velocidad,
-            velocidad_hist: calle.velocidad_hist,
-          },
+        await db.insert(recorrido).values({
+          idCalles: calle.idCalles,
+          idReporte: id_reporte,
+          tiempo: calle.tiempo,
+          tiempoHist: calle.tiempoHist,
+          velocidad: calle.velocidad,
+          velocidadHist: calle.velocidadHist,
+          idTrafico: calle.idTrafico,
         })
       }
     } else {
       for (const calle of calles) {
-        const recorrido = await prisma.recorrido.findFirst({
-          where: {
-            id_reporte: repetido.id,
-            id_calles: calle.id_calles,
+        const recorridoRep = await wazedb.query.recorrido.findFirst({
+          where(fields, { eq, and }) {
+            return and(
+              eq(fields.idReporte, repetido.id),
+              eq(fields.idCalles, calle.idCalles),
+            )
           },
         })
-        if (recorrido) {
-          await prisma.recorrido.update({
-            where: {
-              id: recorrido.id,
-            },
-            data: {
-              calles: {
-                connect: {
-                  id: calle.id_calles,
-                },
-              },
-              nivel_trafico: {
-                connect: {
-                  id: calle.id_trafico,
-                },
-              },
+        if (recorridoRep) {
+          await db
+            .update(recorrido)
+            .set({
               tiempo: calle.tiempo,
-              tiempo_hist: calle.tiempo_hist,
+              tiempoHist: calle.tiempoHist,
               velocidad: calle.velocidad,
-              velocidad_hist: calle.velocidad_hist,
-            },
-          })
+              velocidadHist: calle.velocidadHist,
+              idTrafico: calle.idTrafico,
+            })
+            .where(eq(recorrido.id, recorridoRep.id))
         } else {
-          await prisma.recorrido.create({
-            data: {
-              calles: {
-                connect: {
-                  id: calle.id_calles,
-                },
-              },
-              reporte: {
-                connect: {
-                  id: repetido.id,
-                },
-              },
-              nivel_trafico: {
-                connect: {
-                  id: calle.id_trafico,
-                },
-              },
-              tiempo: calle.tiempo,
-              tiempo_hist: calle.tiempo_hist,
-              velocidad: calle.velocidad,
-              velocidad_hist: calle.velocidad_hist,
-            },
+          await db.insert(recorrido).values({
+            idCalles: calle.idCalles,
+            idReporte: repetido.id,
+            tiempo: calle.tiempo,
+            tiempoHist: calle.tiempoHist,
+            velocidad: calle.velocidad,
+            velocidadHist: calle.velocidadHist,
+            idTrafico: calle.idTrafico,
           })
         }
       }

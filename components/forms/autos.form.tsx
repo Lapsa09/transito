@@ -1,41 +1,42 @@
 'use client'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import Input from '@/components/Input'
 import DatePicker from '@/components/DatePicker'
 import TimePicker from '@/components/TimePicker'
 import Select from '@/components/Select'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useEventListener, useLocalStorage } from 'usehooks-ts'
-import {
-  resolucion as IResolucion,
-  tipo_licencias,
-  seguridad,
-  turnos,
-  vicente_lopez,
-  motivos,
-  barrios,
-} from '@prisma/client'
+import { useLocalStorage } from 'usehooks-ts'
 import Autocomplete from '@/components/Autocomplete'
-import { FormAutosProps } from '@/types'
 import { setExpiration } from '@/utils/misc'
 import { setter } from '@/services'
 import { toast, useStepForm } from '@/hooks'
-import { Button } from '@nextui-org/react'
-import { DEFAULT_OPERATIVO_AUTO } from '@/utils/localOperativos'
-import { AutosDTO } from '@/DTO/autos'
+import { DEFAULT_OPERATIVO_AUTO } from '@/schemas/autos'
+import { z } from 'zod'
+import { operativoInputSchema, registroInputSchema } from '@/schemas/autos'
+import {
+  Barrio,
+  Motivo,
+  resolucionSchema,
+  seguridadSchema,
+  TipoLicencia,
+  turnosSchema,
+  VicenteLopez,
+} from '@/drizzle/schema/schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '../ui'
+import { useSession } from 'next-auth/react'
 
-type FormProps = NonNullable<typeof DEFAULT_OPERATIVO_AUTO>
+type FormProps = z.infer<typeof operativoInputSchema>
 
 export function FirstStep({
   selects,
 }: {
   selects: {
-    vicenteLopez: vicente_lopez[]
-    turnos: { id: turnos; label: string }[]
-    seguridad: { id: seguridad; label: string }[]
+    vicenteLopez: VicenteLopez[]
+    turnos: { id: keyof typeof turnosSchema.enum; label: string }[]
+    seguridad: { id: keyof typeof seguridadSchema.enum; label: string }[]
   }
 }) {
-  const formRef = useRef<HTMLFormElement>(null)
   const { vicenteLopez, turnos, seguridad } = selects
 
   const [operativo, edit] = useLocalStorage<typeof DEFAULT_OPERATIVO_AUTO>(
@@ -43,11 +44,12 @@ export function FirstStep({
     DEFAULT_OPERATIVO_AUTO,
   )
   const formProps = useForm<FormProps>({
+    resolver: zodResolver(operativoInputSchema),
     defaultValues: operativo,
     mode: 'onBlur',
   })
 
-  const setOperativo = (value: FormProps) => {
+  const setOperativo = (value: any) => {
     edit((state) => ({
       ...state,
       ...value,
@@ -56,10 +58,6 @@ export function FirstStep({
   }
 
   const { setActiveStep } = useStepForm()
-
-  useEventListener('beforeunload', () => {
-    formRef.current?.requestSubmit()
-  })
 
   const handleSubmit = (body: FormProps) => {
     setOperativo(body)
@@ -71,12 +69,12 @@ export function FirstStep({
       <form
         onSubmit={formProps.handleSubmit(handleSubmit)}
         className="flex w-full justify-between flex-wrap"
-        ref={formRef}
       >
         <DatePicker
           name="fecha"
           label="Fecha"
           className="w-full basis-5/12"
+          persist={setOperativo}
           rules={{
             required: 'Este campo es requerido',
             validate: {
@@ -94,27 +92,32 @@ export function FirstStep({
         <TimePicker
           name="hora"
           label="Hora"
+          persist={setOperativo}
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
         />
         <Input.Legajo
           name="legajo_a_cargo"
           label="Legajo a cargo"
+          persist={setOperativo}
           className="w-full basis-5/12"
         />
         <Input.Legajo
           name="legajo_planilla"
           label="Legajo planilla"
+          persist={setOperativo}
           className="w-full basis-5/12"
         />
         <Select
           name="turno"
           label="Turno"
+          persist={setOperativo}
           className="w-full basis-5/12"
           options={turnos}
           rules={{ required: 'Este campo es requerido' }}
         />
         <Select
+          persist={setOperativo}
           name="seguridad"
           label="Seguridad"
           className="w-full basis-5/12"
@@ -123,6 +126,7 @@ export function FirstStep({
         />
         <Input
           name="qth"
+          persist={setOperativo}
           label="Direccion"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
@@ -130,8 +134,9 @@ export function FirstStep({
         />
         <Autocomplete
           name="localidad"
+          persist={setOperativo}
           label="Zona"
-          inputId="id_barrio"
+          inputId="idBarrio"
           inputLabel="barrio"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
@@ -153,18 +158,29 @@ export function SecondStep({
   selects,
 }: {
   selects: {
-    licencias: tipo_licencias[]
-    motivos: motivos[]
-    resolucion: { id: IResolucion; label: string }[]
-    zonas: barrios[]
+    licencias: TipoLicencia[]
+    motivos: Motivo[]
+    resolucion: { id: keyof typeof resolucionSchema.enum; label: string }[]
+    zonas: Barrio[]
   }
 }) {
-  const formProps = useForm<FormAutosProps>()
+  const { data } = useSession()
+  const formProps = useForm<z.infer<typeof registroInputSchema>>({
+    mode: 'onBlur',
+    resolver: zodResolver(registroInputSchema),
+    defaultValues: {
+      lpcarga: data?.user?.legajo,
+    },
+  })
   const { setActiveStep } = useStepForm()
 
+  const handleBack = () => {
+    setActiveStep(0)
+  }
+
   const esSancionable =
-    formProps.watch('resolucion') === IResolucion.ACTA ||
-    formProps.watch('resolucion') === IResolucion.REMITIDO
+    formProps.watch('resolucion') === resolucionSchema.enum.ACTA ||
+    formProps.watch('resolucion') === resolucionSchema.enum.REMITIDO
 
   const { licencias, motivos, resolucion, zonas } = selects
 
@@ -180,11 +196,22 @@ export function SecondStep({
     }
   }, [esSancionable])
 
-  const handleSubmit = async (body: FormAutosProps) => {
+  useEffect(() => {
+    const parsedOperativo = operativoInputSchema.safeParse(operativo)
+
+    if (!parsedOperativo.success) {
+      setActiveStep(0)
+    }
+  }, [])
+
+  const handleSubmit = async (body: z.infer<typeof registroInputSchema>) => {
     try {
-      await setter<AutosDTO>({
+      await setter<void>({
         route: `/operativos/autos`,
-        body: { ...body, ...operativo },
+        body: {
+          ...body,
+          ...operativoInputSchema.safeParse(operativo).data,
+        },
       })
       toast({ title: 'Operativo creado con exito', variant: 'success' })
 
@@ -217,7 +244,7 @@ export function SecondStep({
           placeholder='Ej: "12345678"'
         />
         <Autocomplete
-          name="tipo_licencia"
+          name="tipoLicencia"
           label="Tipo licencia"
           options={licencias}
           inputId="id_tipo"
@@ -228,7 +255,7 @@ export function SecondStep({
           name="zona_infractor"
           label="Zona infractor"
           options={zonas}
-          inputId="id_barrio"
+          inputId="idBarrio"
           inputLabel="barrio"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
@@ -252,7 +279,7 @@ export function SecondStep({
               label="Motivo"
               name="motivo"
               options={motivos}
-              inputId="id_motivo"
+              inputId="idMotivo"
               inputLabel="motivo"
               className="w-full basis-5/12"
               rules={{ required: 'Este campo es requerido' }}
@@ -266,7 +293,7 @@ export function SecondStep({
           </>
         )}
         <div className="flex justify-between w-full">
-          <Button onClick={() => setActiveStep(0)}>Atras</Button>
+          <Button onClick={handleBack}>Atras</Button>
 
           <Button disabled={!formProps.formState.isValid} type="submit">
             Guardar

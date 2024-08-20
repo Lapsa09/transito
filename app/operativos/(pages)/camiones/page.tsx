@@ -1,7 +1,7 @@
 import React from 'react'
 import { fetcher } from '@/services'
 import { IndexPageProps, SearchParams } from '@/types/data-table'
-import { CamionesDTO } from '@/DTO/camiones'
+import { CamionesDTO } from '@/DTO/operativos/camiones'
 import { Filter } from '@/DTO/filters'
 import { CamionesTable } from './table'
 

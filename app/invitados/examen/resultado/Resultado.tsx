@@ -1,30 +1,22 @@
 'use client'
 
 import { Button } from '@/components/ui'
+import { Calificacion, RindeExamen } from '@/drizzle/schema/examen'
 import { Respuesta } from '@/types/quiz'
-import { calificacion, rinde_examen } from '@prisma/client'
 import { signOut } from 'next-auth/react'
-<<<<<<< HEAD
-import React from 'react'
-import { useEventListener } from 'usehooks-ts'
-=======
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
->>>>>>> origin/next
 
 function Resultado({
   examen,
   respuestas,
 }: {
-  examen: rinde_examen & { calificacion: calificacion }
+  examen: RindeExamen & { calificacion: Calificacion }
   respuestas: Respuesta[]
 }) {
-<<<<<<< HEAD
-  useEventListener('pagehide', () => setTimeout(signOut, 5000))
-=======
   const router = useRouter()
   const preguntasCorrectas = respuestas.filter(
-    ({ elegida_id, pregunta }) => elegida_id === pregunta.id_correcta,
+    ({ elegidaId, pregunta }) => elegidaId === pregunta.idCorrecta,
   ).length
 
   const totalPreguntas = respuestas.length
@@ -35,7 +27,6 @@ function Resultado({
   useEffect(() => {
     signOut({ redirect: false })
   }, [])
->>>>>>> origin/next
 
   return (
     <div>
@@ -52,7 +43,7 @@ function Resultado({
       <Button onClick={inicio}>Volver al inicio</Button>
       <div className="overflow-y-auto max-h-96">
         {respuestas.map((r, i) => (
-          <div key={r.preguntas_id}>
+          <div key={r.preguntaId}>
             <h3
               className="text-lg font-semibold"
               dangerouslySetInnerHTML={{
@@ -72,7 +63,7 @@ function Resultado({
             <p className="flex flex-col">
               Elegida:
               <span
-                className={`p-2 ml-1 text-sm ${r.elegida_id === r.pregunta.id_correcta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
+                className={`p-2 ml-1 text-sm ${r.elegidaId === r.pregunta.idCorrecta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
                 dangerouslySetInnerHTML={{
                   __html:
                     r.elegida?.respuesta ??

@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { rindeExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { invitadoDTO, userDTO } from '@/DTO/user'

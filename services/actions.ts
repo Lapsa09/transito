@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { examenes, examenPreguntas, rindeExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { eq } from 'drizzle-orm'

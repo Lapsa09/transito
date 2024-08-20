@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { NumeroMemo } from '@/components/MiniModals'
 import { cancelarOperario } from '@/services'
-import { Operarios, Servicio } from '@/types/servicios.sueldos'
+import { OperariosDTO, Servicio } from '@/types/servicios.sueldos'
 import { ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { DateTime } from 'luxon'
@@ -39,7 +39,7 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     id: 'memo',
     cell: (info) =>
       info.getValue() || (
-        <NumeroMemo id_servicio={info.row.original.id_servicio} />
+        <NumeroMemo id_servicio={info.row.original.idServicio} />
       ),
     header: () => <span>Memo</span>,
     footer: (props) => props.column.id,
@@ -60,7 +60,7 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
         .includes(filter),
   },
   {
-    accessorFn: (row) => row.importe_servicio,
+    accessorFn: (row) => row.importeServicio,
     id: 'importe_servicio',
     cell: (info) => `$ ${info.getValue<number>()}`,
     header: () => <span>Importe Servicio</span>,
@@ -78,14 +78,14 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
     id: 'edit',
     header: () => null,
     cell: ({ row }) => (
-      <Link href={`/sueldos/servicios/edit/${row.original.id_servicio}`}>
+      <Link href={`/sueldos/servicios/edit/${row.original.idServicio}`}>
         <Button>Editar</Button>
       </Link>
     ),
   },
 ]
 
-export const OperarioColumns: ColumnDef<Operarios>[] = [
+export const OperarioColumns: ColumnDef<OperariosDTO>[] = [
   {
     accessorFn: (row) => row.legajo,
     id: 'legajo',
@@ -101,7 +101,7 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.hora_inicio,
+    accessorFn: (row) => row.horaInicio,
     id: 'hora_inicio',
     cell: (info) =>
       DateTime.fromISO(info.getValue<string>(), {
@@ -111,7 +111,7 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.hora_fin,
+    accessorFn: (row) => row.horaFin,
     id: 'hora_fin',
     cell: (info) =>
       DateTime.fromISO(info.getValue<string>(), {
@@ -121,7 +121,7 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.a_cobrar,
+    accessorFn: (row) => row.aCobrar,
     id: 'a_cobrar',
     cell: (info) => `$ ${info.getValue<number>()}`,
     header: () => <span>A Cobrar</span>,
@@ -144,7 +144,7 @@ export const OperarioColumns: ColumnDef<Operarios>[] = [
               })
               if (data) {
                 return data.map((servicio) => {
-                  if (servicio.id_servicio === res.id_servicio) {
+                  if (servicio.idServicio === res.idServicio) {
                     return res
                   }
                   return servicio

@@ -36,8 +36,7 @@ function ClientPage({ data }: { data: Parte[] }) {
           <div className="mt-5">
             <div className="flex gap-10 justify-between items-center w-full">
               <p className="m-0 text-2xl">
-                {parte.operario.legajo}- {parte.operario.apellido}{' '}
-                {parte.operario.apellido}
+                {parte.legajo}- {parte.apellido} {parte.apellido}
               </p>
               <p className="float-right">Movil: {parte.movil}</p>
             </div>

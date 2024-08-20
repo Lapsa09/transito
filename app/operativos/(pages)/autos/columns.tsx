@@ -1,5 +1,5 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
-import { AutosDTO } from '@/DTO/autos'
+import { AutosDTO } from '@/DTO/operativos/autos'
 import { getLocalDate } from '@/utils/misc'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'

@@ -1,5 +1,5 @@
 import { Operativo, Registro } from '@/drizzle/schema/operativos'
-import { db } from '@/drizzle/db'
+import { autosdb, db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/operativos'
 import {
   Barrio,
@@ -14,14 +14,14 @@ import {
   VicenteLopez,
   vicenteLopez,
 } from '@/drizzle/schema/schema'
-import { AutosDTO, autosDTO } from '@/DTO/autos'
+import { AutosDTO, autosDTO } from '@/DTO/operativos/autos'
 import { filterColumn } from '@/lib/filter-column'
 import { geoLocation } from '@/services'
-import { FormAutosProps } from '@/types'
 import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { autosInputPropsSchema } from '@/schemas/autos'
 
 const searchParamsSchema = z.object({
   page: z.coerce.number().default(1),
@@ -38,7 +38,9 @@ const searchParamsSchema = z.object({
   resolucion: z.enum(resolucion.enumValues).optional(),
 })
 
-const operativoAlcoholemia = async (body: FormAutosProps) => {
+const operativoAlcoholemia = async (
+  body: z.infer<typeof autosInputPropsSchema>,
+) => {
   const {
     fecha,
     qth,
@@ -62,9 +64,9 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
         eq(operativos.turno, turno),
         eq(operativos.legajoACargo, +legajo_a_cargo),
         eq(operativos.legajoPlanilla, +legajo_planilla),
-        eq(operativos.idLocalidad, localidad.id_barrio),
+        eq(operativos.idLocalidad, localidad.idBarrio),
         eq(operativos.seguridad, seguridad),
-        eq(operativos.hora, sql<Date>`to_timestamp(${hora}, 'HH24:MI')`),
+        eq(operativos.hora, hora),
         eq(operativos.direccionFull, direccion_full),
       ),
     )
@@ -95,7 +97,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
           turno,
           legajoACargo: +legajo_a_cargo,
           legajoPlanilla: +legajo_planilla,
-          idLocalidad: localidad.id_barrio,
+          idLocalidad: localidad.idBarrio,
           seguridad,
           hora: sql<Date>`to_timestamp(${hora}, 'HH24:MI')`,
           direccionFull: direccion_full,
@@ -114,7 +116,7 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
           turno,
           legajoACargo: +legajo_a_cargo,
           legajoPlanilla: +legajo_planilla,
-          idLocalidad: localidad.id_barrio,
+          idLocalidad: localidad.idBarrio,
           seguridad,
           hora: sql<Date>`to_timestamp(${hora}, 'HH24:MI')`,
           direccionFull: direccion_full,
@@ -254,64 +256,44 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body: FormAutosProps = await req.json()
+    const json = await req.json()
+    const body = autosInputPropsSchema.safeParse(json)
 
-    const id_operativo = await operativoAlcoholemia(body)
+    if (!body.success) {
+      return NextResponse.json('Campos requeridos', { status: 400 })
+    }
 
-    const repetido = await db.query.registrosAutos.findFirst({
-      where: (registro, { eq }) => (
-        eq(registro.dominio, body.dominio),
-        eq(registro.idOperativo, id_operativo)
-      ),
+    const id_operativo = await operativoAlcoholemia(body.data)
+
+    const repetido = await autosdb.query.registros.findFirst({
+      where: (registro, { eq }) =>
+        and(
+          eq(registro.dominio, body.data.dominio),
+          eq(registro.idOperativo, id_operativo),
+        ),
     })
+
     if (repetido) {
       return NextResponse.json('El dominio ya fue ingresado el mismo dia', {
         status: 401,
       })
     }
 
-    const [auto] = await db
-      .insert(registros)
-      .values({
-        acta: body.acta ? +body.acta : null,
-        dominio: body.dominio.toUpperCase(),
-        graduacionAlcoholica: Number(body.graduacion_alcoholica),
-        licencia: Number(body.licencia) || null,
-        lpcarga: body.lpcarga,
-        resolucion: body.resolucion || resolucionSchema.enum.PREVENCION,
-        idLicencia: body.tipo_licencia?.id_tipo,
-        idZonaInfractor: body.zona_infractor?.id_barrio,
-        idMotivo: body.motivo?.id_motivo,
-        idOperativo: id_operativo,
-      })
-      .returning({
-        id: registros.id,
-        acta: registros.acta,
-        dominio: registros.dominio,
-        graduacion_alcoholica: registros.graduacionAlcoholica,
-        resolucion: registros.resolucion,
-        fecha_carga: registros.fechacarga,
-        lpcarga: registros.lpcarga,
-        resultado: registros.resultado,
-        id_operativo: registros.idOperativo,
-        motivo: motivos.motivo,
-        tipo_licencia: tipoLicencias.tipo,
-        vehiculo: tipoLicencias.vehiculo,
-        zona_infractor: barrios.barrio,
-        fecha: operativos.fecha,
-        hora: operativos.hora,
-        direccion_full: operativos.direccionFull,
-        latitud: operativos.latitud,
-        longitud: operativos.longitud,
-        cp: vicenteLopez.cp,
-        localidad: vicenteLopez.barrio,
-        seguridad: operativos.seguridad,
-        turno: operativos.turno,
-        qth: operativos.qth,
-      })
+    await db.insert(registros).values({
+      acta: body.data.acta ? +body.data.acta : null,
+      dominio: body.data.dominio.toUpperCase(),
+      graduacionAlcoholica: body.data.graduacion_alcoholica,
+      licencia: Number(body.data.licencia) || null,
+      lpcarga: body.data.lpcarga,
+      resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
+      idLicencia: body.data.tipo_licencia?.idTipo,
+      idZonaInfractor: body.data.zona_infractor?.idBarrio,
+      idMotivo: body.data.motivo?.idMotivo,
+      idOperativo: id_operativo,
+    })
 
     revalidateTag('autos')
-    return NextResponse.json(auto)
+    return NextResponse.json('Exito')
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

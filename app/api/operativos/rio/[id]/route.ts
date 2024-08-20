@@ -1,45 +1,39 @@
-import prisma from '@/lib/prismadb'
-import { RioFormProps } from '@/types'
-import { turnos } from '@prisma/client'
+import { riodb } from '@/drizzle'
+import { registros } from '@/drizzle/schema/nuevo_control'
+import { barrios } from '@/drizzle/schema/schema'
+import { rioInputPropsSchema } from '@/schemas/rio'
 import { load } from 'cheerio'
+import { eq } from 'drizzle-orm'
 import { NextResponse, NextRequest } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
 
-  const auto = await prisma.nuevo_control_registros.findUnique({
-    where: { id: Number(id) },
-    include: {
+  const auto = await riodb.query.registros.findFirst({
+    where: (registro, { eq }) => eq(registro.id, Number(id)),
+    with: {
       operativo: true,
       barrio: true,
       zona: true,
     },
   })
-
   if (auto) {
     const { operativo, ...rest } = auto
 
     const res = {
       ...rest,
       ...operativo,
-      fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: rest?.hora?.toLocaleTimeString(),
     }
 
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(res, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+    return NextResponse.json(res)
   }
   return NextResponse.json(null)
 }
 
-const radicacion = async (body: RioFormProps) => {
+const radicacion = async (body: z.infer<typeof rioInputPropsSchema>) => {
   try {
     const { dominio } = body
 
@@ -80,32 +74,27 @@ const radicacion = async (body: RioFormProps) => {
     const provincia = fonts.eq(3).text().trim()
 
     if (provincia !== 'BUENOS AIRES' && provincia !== 'CAPITAL FEDERAL') {
-      const _res = await prisma.barrios.findFirst({
-        where: {
-          barrio: provincia,
-        },
+      const _res = await riodb.query.barrios.findFirst({
+        where: (barrio, { like }) => like(barrio.barrio, provincia),
       })
-      return _res!.id_barrio
+      return _res!.idBarrio
     } else {
       if (localidad === 'CAPITAL FEDERAL') {
         return 51
       } else {
-        const _res = await prisma.barrios.findFirst({
-          where: {
-            barrio: {
-              contains: localidad,
-            },
-          },
+        const _res = await riodb.query.barrios.findFirst({
+          where: (barrio, { like }) => like(barrio.barrio, localidad),
         })
         if (!_res) {
-          const nuevoBarrio = await prisma.barrios.create({
-            data: {
+          const [nuevoBarrio] = await riodb
+            .insert(barrios)
+            .values({
               barrio: localidad,
-            },
-          })
-          return nuevoBarrio.id_barrio
+            })
+            .returning({ idBarrio: barrios.idBarrio })
+          return nuevoBarrio.idBarrio
         } else {
-          return _res.id_barrio
+          return _res.idBarrio
         }
       }
     }
@@ -120,44 +109,19 @@ export async function PUT(req: NextRequest, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const body: RioFormProps = await req.json()
+  const json = await req.json()
+  const body = rioInputPropsSchema.parse(json)
 
   const id_barrio = await radicacion(body)
 
-  const moto = await prisma.nuevo_control_registros.update({
-    where: { id: Number(id) },
-    data: {
+  await riodb
+    .update(registros)
+    .set({
       dominio: body.dominio,
       hora: body.hora,
-      zona: {
-        connect: {
-          id_zona: body.zona.id_zona,
-        },
-      },
-      barrio: {
-        connect: {
-          id_barrio,
-        },
-      },
-      operativo: {
-        update: {
-          fecha: body.fecha,
-          lp: +body.lp,
-          turno: body.turno,
-        },
-      },
-    },
-    include: {
-      operativo: true,
-      barrio: true,
-      zona: true,
-    },
-  })
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(moto, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+      idZona: body.zona.idZona,
+      idLocalidad: id_barrio,
+    })
+    .where(eq(registros.id, Number(id)))
+  return NextResponse.json('Exito')
 }

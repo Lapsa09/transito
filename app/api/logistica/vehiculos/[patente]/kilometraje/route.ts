@@ -1,6 +1,11 @@
-import prisma from '@/lib/prismadb'
-import { KilometrajeVehiculo } from '@/types/logistica'
-import { DateTime } from 'luxon'
+import { db } from '@/drizzle'
+import {
+  KilometrajeVehiculos,
+  kilometrajeVehiculos,
+} from '@/drizzle/schema/logistica'
+import { kilometrajeDTO } from '@/DTO/logistica/kilometraje'
+import { searchParamsSchema } from '@/schemas/form'
+import { count, eq, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -10,24 +15,20 @@ export async function GET(
 ) {
   const { patente } = params
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
+  const { page, per_page } = searchParamsSchema.parse(searchParams)
 
-  const vehiculo = await prisma.kilometraje_vehiculos.findMany({
-    where: {
-      patente,
-    },
-    include: {
-      movil: true,
-    },
-    skip: pageIndex * 10,
-    take: 10,
-  })
+  const vehiculo = await kilometrajeDTO({ patente, page, per_page })
 
-  const total = await prisma.kilometraje_vehiculos.count({ where: { patente } })
+  const total = await db
+    .select({ count: count() })
+    .from(kilometrajeVehiculos)
+    .where(eq(kilometrajeVehiculos.patente, patente))
+    .execute()
+    .then((res) => res[0].count)
 
   return NextResponse.json({
     data: vehiculo,
-    pages: Math.ceil(total / 10).toString(),
+    pages: Math.ceil(total / per_page).toString(),
   })
 }
 
@@ -35,34 +36,20 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: KilometrajeVehiculo = await req.json()
+  const body: KilometrajeVehiculos = await req.json()
   const { patente } = params
-  const vehiculo = await prisma.kilometraje_vehiculos.create({
-    data: {
-      movil: {
-        connect: {
-          patente,
-        },
-      },
-      fecha: DateTime.fromFormat(String(body.fecha), 'yyyy-MM-dd').toISO(),
-      filtro_aceite: body.filtro_aceite ? +body.filtro_aceite : null,
-      kit_distribucion: body.kit_distribucion ? +body.kit_distribucion : null,
-      kit_poly_v: body.kit_poly_v ? +body.kit_poly_v : null,
-      km: body.km ? +body.km : null,
-      proximo_cambio_distribucion: body.proximo_cambio_distribucion
-        ? +body.proximo_cambio_distribucion
-        : null,
-      proximo_cambio_filtro: body.proximo_cambio_filtro
-        ? +body.proximo_cambio_filtro
-        : null,
-      proximo_cambio_poly_v: body.proximo_cambio_poly_v
-        ? +body.proximo_cambio_poly_v
-        : null,
-    },
-    include: {
-      movil: true,
-    },
+
+  await db.insert(kilometrajeVehiculos).values({
+    patente,
+    fecha: sql`to_date(${body.fecha}, 'YYYY-MM-DD')`,
+    km: body.km,
+    filtroAceite: body.filtroAceite,
+    proximoCambioFiltro: body.proximoCambioFiltro,
+    kitDistribucion: body.kitDistribucion,
+    proximoCambioDistribucion: body.proximoCambioDistribucion,
+    kitPolyV: body.kitPolyV,
+    proximoCambioPolyV: body.proximoCambioPolyV,
   })
   revalidateTag('kilometraje')
-  return NextResponse.json(vehiculo)
+  return NextResponse.json('Exito')
 }

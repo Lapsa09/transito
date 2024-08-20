@@ -18,10 +18,10 @@ import {
   updateMemo,
 } from '@/services'
 import { mutate } from 'swr'
-import { servicios } from '@prisma/client'
 import { toast } from '@/hooks'
 import { IoMdAdd } from 'react-icons/io'
 import { RegularForm } from './forms/layout.form'
+import { Servicios, servicios } from '@/drizzle/schema/sueldos'
 
 type Data = Awaited<ReturnType<typeof getSelects>>
 
@@ -133,13 +133,13 @@ export const NumeroMemo = ({ id_servicio }: { id_servicio: number }) => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (body) => {
     try {
-      await mutate<servicios[]>(
+      await mutate<Servicios[]>(
         'servicios',
         async (data) => {
           const req = await updateMemo({ body, id_servicio })
           if (data) {
             return data.map((servicio) => {
-              if (servicio.id_servicio === req.id_servicio) {
+              if (servicio.idServicio === req.idServicio) {
                 return req
               }
               return servicio

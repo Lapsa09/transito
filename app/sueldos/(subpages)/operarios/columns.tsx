@@ -46,7 +46,7 @@ export const OperariosColumns: ColumnDef<Operarios>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.servicios?.fecha_servicio,
+    accessorFn: (row) => row.servicios?.fechaServicio,
     id: 'fecha_servicio',
     header: () => 'Fecha Servicio',
     cell: ({ getValue }) =>
@@ -62,14 +62,14 @@ export const OperariosColumns: ColumnDef<Operarios>[] = [
         .includes(filter),
   },
   {
-    accessorFn: (row) => row.a_cobrar,
+    accessorFn: (row) => row.aCobrar,
     id: 'a_cobrar',
     header: () => <span>A Cobrar</span>,
     cell: ({ getValue }) => `$ ${getValue<number>()}`,
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.servicios?.importe_servicio,
+    accessorFn: (row) => row.servicios?.importeServicio,
     id: 'importe_servicio',
     header: () => <span>Importe Servicio</span>,
     cell: ({ getValue }) => `$ ${getValue<number>()}`,

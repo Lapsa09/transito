@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import {
   examenes,
   examenPreguntas,
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
     const nota = body.preguntas.reduce((acc, pregunta) => {
       if (pregunta) {
-        const respuesta = respuestas.find((r) => r.id === pregunta.id_pregunta)
+        const respuesta = respuestas.find((r) => r.id === pregunta.idPregunta)
         if (pregunta.id === respuesta?.idCorrecta) acc++
       }
 
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
         .where(
           and(
             eq(examenPreguntas.examenId, resultado.id),
-            eq(examenPreguntas.preguntaId, pregunta!.id_pregunta),
+            eq(examenPreguntas.preguntaId, pregunta!.idPregunta),
           ),
         )
     }

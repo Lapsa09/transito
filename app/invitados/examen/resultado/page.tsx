@@ -1,20 +1,20 @@
 import { getter } from '@/services'
-import { calificacion, rinde_examen } from '@prisma/client'
 import React from 'react'
 import Resultado from './Resultado'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Respuesta } from '@/types/quiz'
 import { Invitado } from '@/types'
+import { Calificacion, RindeExamen } from '@/drizzle/schema/examen'
 
-const getExamen = async (id?: string) => {
-  const data = await getter<rinde_examen & { calificacion: calificacion }>({
+const getExamen = async (id: string | null) => {
+  const data = await getter<RindeExamen & { calificacion: Calificacion }>({
     route: `invitados/examen/${id}/resultado`,
   })
   return data
 }
 
-const getRespuestas = async (id?: string) => {
+const getRespuestas = async (id: string | null) => {
   const data = await getter<Respuesta[]>({
     route: `admision/examen/${id}/respuestas`,
   })

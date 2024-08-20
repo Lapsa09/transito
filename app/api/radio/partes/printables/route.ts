@@ -1,18 +1,16 @@
-import { printablePartesDTO } from '@/DTO/radio'
+import { partesDTO } from '@/DTO/radio'
+import { searchParamsSchema } from '@/schemas/form'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const partesInputSchema = searchParamsSchema.merge(
+  z.object({ fecha: z.string() }),
+)
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> =
-    searchParams
-      .get('filter')
-      ?.split(',')
-      ?.reduce((acc, curr) => {
-        const [id, value] = curr.split('=')
-
-        return { ...acc, [id]: value }
-      }, {}) ?? {}
-  const partes = await printablePartesDTO(filterParams)
+  const { fecha, page, per_page } = partesInputSchema.parse(searchParams)
+  const partes = await partesDTO({ fecha, page, per_page })
 
   return NextResponse.json(partes)
 }

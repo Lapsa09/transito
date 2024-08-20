@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/operativos'
 import {
   barrios,
@@ -6,31 +6,17 @@ import {
   tipoLicencias,
   vicenteLopez,
 } from '@/drizzle/schema/schema'
-import prisma from '@/lib/prismadb'
-import { EditAutosProps } from '@/types'
+import { autosInputPropsSchema } from '@/schemas/autos'
 import { eq, sql } from 'drizzle-orm'
-import { DateTime } from 'luxon'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
 
-  // const auto=await db.query.registrosAutos.findFirst({
-  //   where:(registro,{eq})=>eq(registro.id,Number(id)),
-  //   with:{
-  //     motivo:true,
-  //     operativo:{
-  //       with:{
-  //         localidad:true
-  //       },
-  //     },tipoLicencia:true,
-  //     barrio:true
-  //   }
-  // })
-
-  const auto = await db
+  const [auto] = await db
     .select({
       id: registros.id,
       acta: registros.acta,
@@ -59,15 +45,8 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     .innerJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
     .where(eq(registros.id, Number(id)))
 
-  if (auto.length) {
-    return NextResponse.json(
-      // JSON.parse(
-      //   JSON.stringify(res, (_, value) =>
-      //     typeof value === 'bigint' ? value.toString() : value,
-      //   ),
-      // ),
-      auto[0],
-    )
+  if (auto) {
+    return NextResponse.json(auto)
   }
   return NextResponse.json(null)
 }
@@ -77,46 +56,41 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const body: EditAutosProps = await req.json()
+  const json = await req.json()
 
-  const auto = await db
+  const body = autosInputPropsSchema
+    .merge(z.object({ id_operativo: z.number() }))
+    .parse(json)
+
+  await db
     .update(registros)
     .set({
-      acta: Number(body.acta) || null,
+      acta: body.acta,
       dominio: body.dominio,
-      graduacionAlcoholica: Number(body.graduacion_alcoholica) || null,
-      licencia: Number(body.licencia) || null,
+      graduacionAlcoholica: body.graduacion_alcoholica,
+      licencia: body.licencia,
       resolucion: body.resolucion,
-      idLicencia: body.tipo_licencia?.id_tipo,
-      idZonaInfractor: body.zona_infractor?.id_barrio,
-      idMotivo: body.motivo?.id_motivo,
-      idOperativo: body.id_op,
+      idLicencia: body.tipo_licencia?.idTipo,
+      idZonaInfractor: body.zona_infractor?.idBarrio,
+      idMotivo: body.motivo?.idMotivo,
+      idOperativo: body.id_operativo,
     })
     .where(eq(registros.id, Number(id)))
-    .returning()
 
-  const operativo = await db
+  await db
     .update(operativos)
     .set({
       fecha: sql`to_date(${body.fecha},'YYYY-MM-DD')`,
       hora: body.hora,
-      idLocalidad: Number(body.localidad?.id_barrio),
+      idLocalidad: body.localidad?.idBarrio,
       turno: body.turno,
-      legajoACargo: Number(body.legajo_a_cargo),
-      legajoPlanilla: Number(body.legajo_planilla),
+      legajoACargo: body.legajo_a_cargo,
+      legajoPlanilla: body.legajo_planilla,
       qth: body.qth,
       seguridad: body.seguridad,
       direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
     })
-    .where(eq(operativos.idOp, Number(body.id_op)))
-    .returning()
+    .where(eq(operativos.idOp, body.id_operativo))
 
-  return NextResponse.json(
-    // JSON.parse(
-    //   JSON.stringify(auto, (_, value) =>
-    //     typeof value === 'bigint' ? value.toString() : value,
-    //   ),
-    // ),
-    { ...auto[0], ...operativo[0] },
-  )
+  return NextResponse.json('Exito')
 }

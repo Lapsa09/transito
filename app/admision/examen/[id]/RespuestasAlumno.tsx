@@ -10,12 +10,12 @@ import {
 } from '@/components/ui/dialog'
 import useSWR from 'swr'
 import { getter } from '@/services'
-import { examen_preguntas, opciones, preguntas } from '@prisma/client'
 import Loader from '@/components/Loader'
+import { ExamenPreguntas, Opciones, Preguntas } from '@/drizzle/schema/examen'
 
-type Respuesta = examen_preguntas & {
-  pregunta: preguntas & { correcta: opciones }
-  elegida?: opciones
+type Respuesta = ExamenPreguntas & {
+  pregunta: Preguntas & { correcta: Opciones }
+  elegida?: Opciones
 }
 
 function RespuestasAlumnoCard({ id }: { id: string }) {
@@ -27,7 +27,7 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
   )
 
   const preguntasCorrectas = data?.filter(
-    ({ elegida_id, pregunta }) => elegida_id === pregunta.id_correcta,
+    ({ elegidaId, pregunta }) => elegidaId === pregunta.idCorrecta,
   ).length
 
   const totalPreguntas = data?.length
@@ -47,7 +47,7 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
         </DialogHeader>
 
         {data?.map((r, i) => (
-          <div key={r.preguntas_id}>
+          <div key={r.preguntaId}>
             <h3
               className="text-lg font-semibold"
               dangerouslySetInnerHTML={{
@@ -67,7 +67,7 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
             <p className="flex flex-col">
               Elegida:
               <span
-                className={`p-2 ml-1 text-sm ${r.elegida_id === r.pregunta.id_correcta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
+                className={`p-2 ml-1 text-sm ${r.elegidaId === r.pregunta.idCorrecta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
                 dangerouslySetInnerHTML={{
                   __html:
                     r.elegida?.respuesta ??

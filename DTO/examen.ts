@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db, examendb } from '@/drizzle'
 import { examenes, rindeExamen, tipoExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { SQL, eq, asc, desc } from 'drizzle-orm'
@@ -8,7 +8,7 @@ export const examenDTO = async (
   tipo_examen: string,
   id_invitado: string,
 ) => {
-  const examen = await db.transaction(async (tx) => {
+  const examen = await examendb.transaction(async (tx) => {
     return await tx
       .insert(rindeExamen)
       .values({

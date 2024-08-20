@@ -1,18 +1,23 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { servicios } from '@/drizzle/schema/sueldos'
+import { count, desc, sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    const liquidaciones =
-      await prisma.$queryRaw`select extract(month from fecha_servicio) as mes, extract(year from fecha_servicio) as año, count(*) as total from sueldos.servicios group by mes, año order by año desc, mes desc`
+    const mes = sql<number>`extract(month from ${servicios.fechaServicio})`
+    const año = sql<number>`extract(year from ${servicios.fechaServicio})`
+    const liquidaciones = await db
+      .select({
+        mes,
+        año,
+        total: count(),
+      })
+      .from(servicios)
+      .groupBy(mes, año)
+      .orderBy(desc(año), desc(mes))
 
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(liquidaciones, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+    return NextResponse.json(liquidaciones)
   } catch (error: any) {
     console.log(error.message)
     return NextResponse.json('Server error', { status: 500 })

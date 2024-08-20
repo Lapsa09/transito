@@ -1,72 +1,86 @@
-import prisma from '@/lib/prismadb'
-import { Historial } from '@/types'
+import { db } from '@/drizzle'
+import {
+  clientes,
+  operarios,
+  operariosServicios,
+  recibos,
+  servicios,
+} from '@/drizzle/schema/sueldos'
+import { eq, sql, sum } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
-const sueldosPrisma = prisma.$extends({
-  query: {
-    clientes: {
-      async findMany({ args }) {
-        const { select, ...rest } = args
-        const clientes = await prisma.clientes.findMany({
-          ...rest,
-          include: {
-            ...rest.include,
-            recibos: true,
-            servicios: {
-              include: {
-                operarios_servicios: { include: { operarios: true } },
-              },
-            },
-          },
-        })
+type Operario = {
+  legajo: number
+  nombre: string
+}
 
-        const response = clientes.map((cliente) => {
-          const historial = cliente.servicios.reduce<Historial[]>(
-            (acc, servicio) => {
-              const mes = servicio.fecha_servicio?.getMonth()
-              const año = servicio.fecha_servicio?.getFullYear()
+type Servicio = {
+  idServicio: number
+  fechaServicio: string
+  importeServicio: number
+  idCliente: number
+  operarios: Operario[]
+}
 
-              const recibo = acc.find(
-                (row) => row.mes === mes && row.año === año
-              )
-              if (recibo) {
-                recibo.servicios.push(servicio)
-                recibo.gastos += servicio.importe_servicio!
-              } else {
-                acc.push({
-                  mes,
-                  año,
-                  servicios: [servicio],
-                  gastos: servicio.importe_servicio!,
-                  acopio: cliente.recibos
-                    .filter(
-                      (recibo) =>
-                        recibo.fecha_recibo?.getMonth() === mes &&
-                        recibo.fecha_recibo?.getFullYear() === año
-                    )
-                    .reduce((acc, recibo) => acc + recibo.acopio, 0),
-                })
-              }
+type Historial = {
+  mes: number
+  año: number
+  acopio: number
+  gastos: number
+  servicios: Servicio[]
+}
 
-              return acc
-            },
-            []
-          )
+const operariosInServicio = db
+  .select({
+    idServicio: operariosServicios.idServicio,
+    fechaServicio: servicios.fechaServicio,
+    importeServicio: servicios.importeServicio,
+    idCliente: servicios.idCliente,
+    operarios: sql<Operario[]>`json_agg(json_build_object(
+    'legajo', ${operarios.legajo},
+    'nombre', ${operarios.nombre}
+    ))`.as('operarios'),
+  })
+  .from(operariosServicios)
+  .innerJoin(operarios, eq(operarios.legajo, operariosServicios.legajo))
+  .innerJoin(servicios, eq(servicios.idServicio, operariosServicios.idServicio))
+  .groupBy(
+    operariosServicios.idServicio,
+    servicios.fechaServicio,
+    servicios.importeServicio,
+    servicios.idCliente,
+  )
+  .as('operariosInServicio')
 
-          const { servicios, ...rest } = cliente
-          return {
-            ...rest,
-            historial,
-            a_favor: historial.reduce((acc, row) => acc + row.acopio, 0),
-            a_deudor: historial.reduce((acc, row) => acc + row.gastos, 0),
-          }
-        })
-
-        return response
-      },
-    },
-  },
-})
+const historial = db
+  .select({
+    acopio: sum(recibos.acopio).mapWith(Number).as('acopio_historial'),
+    gastos: sum(servicios.importeServicio).mapWith(Number).as('gastos'),
+    mes: sql<number>`extract(month from ${servicios.fechaServicio})`.as('mes'),
+    año: sql<number>`extract(year from ${servicios.fechaServicio})`.as('año'),
+    idCliente: servicios.idCliente,
+    servicios: sql<Servicio[]>`json_agg(json_build_object(
+    'idServicio', ${operariosInServicio.idServicio},
+    'fechaServicio', ${operariosInServicio.fechaServicio},
+    'importeServicio', ${operariosInServicio.importeServicio},
+    'idCliente', ${operariosInServicio.idCliente},
+    'operarios', ${operariosInServicio.operarios}
+  )) as servicios
+    `.as('servicios'),
+  })
+  .from(servicios)
+  .innerJoin(clientes, eq(clientes.idCliente, servicios.idCliente))
+  .innerJoin(recibos, eq(recibos.idCliente, clientes.idCliente))
+  .innerJoin(
+    operariosInServicio,
+    eq(operariosInServicio.idServicio, servicios.idServicio),
+  )
+  .groupBy(
+    servicios.idCliente,
+    sql`extract(year from ${servicios.fechaServicio})`,
+    sql`extract(month from ${servicios.fechaServicio})`,
+  )
+  .as('historial')
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
@@ -74,9 +88,38 @@ export async function GET(req: NextRequest) {
   if (searchParams.has('id_cliente')) {
   }
   try {
-    const servicios = await sueldosPrisma.clientes.findMany()
+    const clientesList = await db
+      .select({
+        id_cliente: clientes.idCliente,
+        cliente: clientes.cliente,
+        recibos: sql`json_agg(json_build_object(
+          recibo, ${recibos.recibo},
+          fecha, ${recibos.fechaRecibo},
+          acopio,${recibos.acopio},
+          importeRecibo, ${recibos.importeRecibo},
+          idCliente, ${recibos.idCliente}
+      ))`,
+        // historial: jsonAgg({
+        //   mes: historial.mes,
+        //   año: historial.año,
+        //   acopio: historial.acopio,
+        //   gastos: historial.gastos,
+        //   servicios: historial.servicios,
+        // }),
+        historial: sql<Historial[]>`json_agg(json_build_object(
+          'mes', ${historial.mes},
+          'año', ${historial.año},
+          'acopio', ${historial.acopio},
+          'gastos', ${historial.gastos},
+          'servicios', ${historial.servicios}))`.as('historial'),
+      })
+      .from(clientes)
+      .leftJoin(recibos, eq(clientes.idCliente, recibos.idCliente))
+      .leftJoin(servicios, eq(servicios.idCliente, clientes.idCliente))
+      .innerJoin(historial, eq(clientes.idCliente, historial.idCliente))
+      .groupBy(clientes.cliente, clientes.idCliente)
 
-    return NextResponse.json(servicios)
+    return NextResponse.json(clientesList)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

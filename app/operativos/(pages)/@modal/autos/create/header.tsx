@@ -5,7 +5,7 @@ import { useStepForm } from '@/hooks'
 import React, { useEffect } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 import Stepper from '@/components/Stepper'
-import { DEFAULT_OPERATIVO_AUTO } from '@/utils/localOperativos'
+import { DEFAULT_OPERATIVO_AUTO } from '@/schemas/autos'
 
 function FormHeader() {
   const { setActiveStep } = useStepForm()
@@ -21,10 +21,12 @@ function FormHeader() {
     const { expiresAt, ...rest } = operativo
     if (expiresAt < Date.now() || !Object.values(rest).every(Boolean)) {
       nuevoOperativo()
+    } else {
+      setActiveStep(1)
     }
   }, [])
   return (
-    <header>
+    <header className="w-full flex flex-col">
       <Button onClick={nuevoOperativo} variant="ghost">
         Nuevo Operativo
       </Button>

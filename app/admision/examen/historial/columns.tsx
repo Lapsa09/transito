@@ -4,21 +4,21 @@ import { Historial } from '@/types/quiz'
 
 export const columns: ColumnDef<Historial>[] = [
   {
-    accessorFn: (row) => `${row.usuario.nombre} ${row.usuario.apellido}`,
+    accessorFn: (row) => `${row.nombre} ${row.apellido}`,
     header: 'Nombre y apellido',
     id: 'nombre',
   },
   {
-    accessorFn: (row) => row.usuario.dni,
+    accessorFn: (row) => row.dni,
     header: 'DNI',
   },
   {
-    accessorFn: (row) => row.tipo_examen.tipo,
+    accessorFn: (row) => row.tipoExamen,
     header: 'Tipo de examen',
     enableColumnFilter: false,
   },
   {
-    accessorFn: (row) => new Date(row.examen.fecha!).toLocaleDateString(),
+    accessorFn: (row) => new Date(row.fecha!).toLocaleDateString(),
     header: 'Fecha',
   },
   {

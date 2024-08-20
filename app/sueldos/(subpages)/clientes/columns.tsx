@@ -146,7 +146,7 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
   },
   {
     id: 'importe_servicio',
-    accessorFn: (row) => row.importe_servicio,
+    accessorFn: (row) => row.importeServicio,
     header: () => <span>Importe Servicio</span>,
     cell: ({ getValue }) => `$ ${getValue<number>()}`,
   },
@@ -168,21 +168,21 @@ export const OperarioColumns: ColumnDef<IOperario>[] = [
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.hora_inicio,
+    accessorFn: (row) => row.horaInicio,
     id: 'hora_inicio',
     cell: (info) => info.getValue(),
     header: () => <span>Hora Inicio</span>,
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.hora_fin,
+    accessorFn: (row) => row.horaFin,
     id: 'hora_fin',
     cell: (info) => info.getValue(),
     header: () => <span>Hora Fin</span>,
     footer: (props) => props.column.id,
   },
   {
-    accessorFn: (row) => row.a_cobrar,
+    accessorFn: (row) => row.aCobrar,
     id: 'a_cobrar',
     cell: (info) => info.getValue(),
     header: () => <span>A Cobrar</span>,

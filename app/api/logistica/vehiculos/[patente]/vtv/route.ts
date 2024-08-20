@@ -1,6 +1,8 @@
-import prisma from '@/lib/prismadb'
-import { VTV } from '@/types/logistica'
-import { DateTime } from 'luxon'
+import { db } from '@/drizzle'
+import { Vtv, vtv } from '@/drizzle/schema/logistica'
+import { vtvDTO } from '@/DTO/logistica/vtv'
+import { searchParamsSchema } from '@/schemas/form'
+import { count, eq, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -11,27 +13,22 @@ export async function GET(
   const { patente } = params
 
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
+  const { page, per_page } = searchParamsSchema.parse(searchParams)
 
-  const vehiculo = await prisma.vtv.findMany({
-    where: {
-      patente,
-    },
-    include: {
-      movil: true,
-    },
-    orderBy: {
-      fecha_emision: 'desc',
-    },
-    skip: pageIndex * 10,
-    take: 10,
-  })
+  const vehiculo = await vtvDTO({ patente, page, per_page })
 
-  const total = await prisma.vtv.count({ where: { patente } })
+  const total = await db
+    .select({
+      count: count(),
+    })
+    .from(vtv)
+    .where(eq(vtv.patente, patente))
+    .execute()
+    .then((res) => res[0].count)
 
   return NextResponse.json({
     data: vehiculo,
-    pages: Math.ceil(total / 10).toString(),
+    pages: Math.ceil(total / per_page).toString(),
   })
 }
 
@@ -39,31 +36,17 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: VTV = await req.json()
+  const body: Vtv = await req.json()
   const { patente } = params
-  const vehiculo = await prisma.vtv.create({
-    data: {
-      movil: {
-        connect: {
-          patente,
-        },
-      },
-      fecha_emision: DateTime.fromFormat(
-        String(body.fecha_emision),
-        'yyyy-MM-dd',
-      ).toISO(),
-      vencimiento: DateTime.fromFormat(
-        String(body.vencimiento),
-        'yyyy-MM-dd',
-      ).toISO(),
-      condicion: body.condicion,
-      estado: body.estado,
-      observacion: body.observacion,
-    },
-    include: {
-      movil: true,
-    },
+
+  await db.insert(vtv).values({
+    patente,
+    fechaEmision: sql`to_date(${body.fechaEmision}, 'YYYY-MM-DD')`,
+    vencimiento: sql`to_date(${body.vencimiento}, 'YYYY-MM-DD')`,
+    condicion: body.condicion,
+    estado: body.estado,
+    observacion: body.observacion,
   })
   revalidateTag('vtv')
-  return NextResponse.json(vehiculo)
+  return NextResponse.json('Exito')
 }

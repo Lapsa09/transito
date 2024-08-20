@@ -1,22 +1,22 @@
 import React from 'react'
 import Form from './Form'
 import { fetcher } from '@/services'
-import { permisos, turnos } from '@prisma/client'
-
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
+import { Permiso, Turno } from '@/drizzle/schema/schema'
 
 const getRoles = async () => {
   const res = await fetcher('/api/roles')
-  const data: permisos[] = await res.json()
+  const data: Permiso[] = await res.json()
   return data
 }
 
 const getTurnos = async () => {
   const res = await fetcher('/api/turnos')
-  const data: { id: turnos; label: string }[] = await res.json()
+  const data: { id: Turno; label: string }[] = await res.json()
   return data
 }
+
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
 async function page() {
   const [roles, turnos] = await Promise.all([getRoles(), getTurnos()])

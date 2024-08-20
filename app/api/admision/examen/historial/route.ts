@@ -1,25 +1,23 @@
-import { db } from '@/drizzle/db'
-import { examenes, rindeExamen, tipoExamen } from '@/drizzle/schema/examen'
+import { db } from '@/drizzle'
+import { examenes, rindeExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { historialDTO } from '@/DTO/examen'
 import { filterColumn } from '@/lib/filter-column'
-import prisma from '@/lib/prismadb'
-import { DrizzleWhere } from '@/types'
+import { searchParamsSchema } from '@/schemas/form'
 import { Historial } from '@/types/quiz'
-import { and, asc, count, desc, eq, or, SQL } from 'drizzle-orm'
+import { and, count, eq, or, SQL } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
-export const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
-  per_page: z.coerce.number().default(10),
-  sort: z.string().optional(),
-  nombre: z.string().optional(),
-  dni: z.number().optional(),
-  fecha: z.string().optional(),
-  hora_finalizado: z.string().time().optional(),
-  operator: z.enum(['and', 'or']).optional(),
-})
+const searchHistorialParamsSchema = searchParamsSchema.merge(
+  z.object({
+    nombre: z.string().optional(),
+    dni: z.number().optional(),
+    fecha: z.string().optional(),
+    hora_finalizado: z.string().time().optional(),
+    operator: z.enum(['and', 'or']).optional(),
+  }),
+)
 
 export async function GET(req: NextRequest) {
   try {
@@ -33,7 +31,7 @@ export async function GET(req: NextRequest) {
       dni,
       operator,
       hora_finalizado,
-    } = searchParamsSchema.parse(searchParams)
+    } = searchHistorialParamsSchema.parse(searchParams)
 
     const [column, order] = (sort?.split('.').filter(Boolean) ?? [
       'id',

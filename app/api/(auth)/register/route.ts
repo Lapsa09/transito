@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db } from '@/drizzle'
 import { users } from '@/drizzle/schema/schema'
 import { RegisterUserProps } from '@/types'
 import bcrypt from 'bcrypt'

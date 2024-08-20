@@ -7,12 +7,12 @@ import Autocomplete from '@/components/Autocomplete'
 import { useFieldArray } from 'react-hook-form'
 import { PedidoForm } from '@/types/logistica'
 import { Button } from '@/components/ui/button'
-import { proveedor, tipo_repuesto } from '@prisma/client'
+import { Proveedor, TipoRepuesto } from '@/drizzle/schema/logistica'
 
 function PedidosForm({
   selects,
 }: {
-  selects: { proveedores: proveedor[]; tipoRepuestos: tipo_repuesto[] }
+  selects: { proveedores: Proveedor[]; tipoRepuestos: TipoRepuesto[] }
 }) {
   const { append, fields, remove } = useFieldArray<PedidoForm>({
     name: 'repuestos',
@@ -21,7 +21,7 @@ function PedidosForm({
   const agregarRepuesto = () => {
     append({
       tipo_repuesto: {
-        id_tipo_repuesto: 0,
+        idTipoRepuesto: 0,
         tipo: '',
       },
       item: '',

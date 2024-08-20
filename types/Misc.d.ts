@@ -1,5 +1,4 @@
 import { invitadoDTO, userDTO } from '@/DTO/user'
-import { examen, rinde_examen } from '@prisma/client'
 import { SQL } from 'drizzle-orm'
 
 export enum Roles {

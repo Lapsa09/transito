@@ -79,10 +79,10 @@ const Quiz = ({
           </p>
         </div>
         <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
-          {preguntas?.map(({ preguntas_id, pregunta }, index) => {
+          {preguntas?.map(({ preguntaId, pregunta }, index) => {
             return (
               <CustomRadioGroup
-                key={preguntas_id}
+                key={preguntaId}
                 label={`${index + 1}- ${pregunta.pregunta}`}
                 options={pregunta.opciones}
                 name={'preguntas.' + index}

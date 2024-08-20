@@ -4,23 +4,16 @@ import React from 'react'
 import useSWRInmutable from 'swr/immutable'
 import { getter } from '@/services'
 import Loader from '@/components/Loader'
-import { legajos } from '@prisma/client'
+import { InspectoresDTO } from '@/DTO/user'
 
 function LayoutClient(props: { children: React.ReactNode }) {
   const { isLoading } = useSWRInmutable('inspectores', async (route) => {
-    const operarios = await getter<
-      (legajos & {
-        usuario: {
-          nombre: string
-          apellido: string
-        }
-      })[]
-    >({
+    const operarios = await getter<InspectoresDTO[]>({
       route,
     })
-    return operarios.map(({ legajo, usuario }) => ({
+    return operarios.map(({ legajo, nombre, apellido }) => ({
       legajo,
-      nombre: `${usuario.nombre} ${usuario.apellido}`,
+      nombre: `${nombre} ${apellido}`,
     }))
   })
   if (isLoading) return null

@@ -6,15 +6,15 @@ import Autocomplete from '../../Autocomplete'
 import { useFormContext } from 'react-hook-form'
 import { Vehiculo } from '@/types/logistica'
 import { useMemo } from 'react'
-import { dependencia, logistica_tipo_vehiculo, uso } from '@prisma/client'
+import { Dependencia, TipoVehiculo, Uso } from '@/drizzle/schema/logistica'
 
 function VehiculosForm({
   selects,
 }: {
   selects: {
-    usos: uso[]
-    tipoMoviles: logistica_tipo_vehiculo[]
-    dependencias: dependencia[]
+    usos: Uso[]
+    tipoMoviles: TipoVehiculo[]
+    dependencias: Dependencia[]
   }
 }) {
   const { watch } = useFormContext<Vehiculo>()
@@ -22,7 +22,7 @@ function VehiculosForm({
   const usos = useMemo(() => {
     if (!selects?.dependencias) return []
     return selects.usos.filter(
-      (uso) => uso.id_dependencia === watch('dependencia')?.id_dependencia,
+      (uso) => uso.idDependencia === watch('dependencia')?.idDependencia,
     )
   }, [watch('dependencia')])
 

@@ -11,21 +11,21 @@ import {
 } from 'react-hook-form'
 import TimeField from '../TimePicker'
 import { IoMdRemove } from 'react-icons/io'
-import Button from '../Button'
+import { Button } from '../ui/button'
 import { ServiciosFormProps } from '@/types'
 import { NuevoCliente, NuevoOperario } from '../MiniModals'
 import { DateTime, Interval } from 'luxon'
-import { clientes, operarios, precios } from '@prisma/client'
+import { Clientes, Operarios, Precios } from '@/drizzle/schema/sueldos'
 
 function LayoutServiciosForm({
   selects,
   precios,
 }: {
   selects: {
-    clientes: Array<clientes & { acopio: number }>
-    operarios: operarios[]
+    clientes: Array<Clientes & { acopio: number }>
+    operarios: Operarios[]
   }
-  precios: precios[]
+  precios: Precios[]
 }) {
   const { control, setValue, watch, getValues, resetField } =
     useFormContext<ServiciosFormProps>()
@@ -39,7 +39,10 @@ function LayoutServiciosForm({
   })
 
   useEffect(() => {
-    const importe_servicio = fields.reduce((acc, op) => acc + op.a_cobrar, 0)
+    const importe_servicio = fields.reduce(
+      (acc, op) => acc + (op.a_cobrar ?? 0),
+      0,
+    )
     setValue('importe_servicio', importe_servicio)
   }, [fields])
 
@@ -179,8 +182,8 @@ function OperarioForm({
 }: {
   index: number
   remove: UseFieldArrayRemove
-  operarios: operarios[]
-  precios: precios[]
+  operarios: Operarios[]
+  precios: Precios[]
 }) {
   const { setValue, watch } = useFormContext<ServiciosFormProps>()
   const { feriado, fecha_servicio, operarios: watchOps = [] } = watch()

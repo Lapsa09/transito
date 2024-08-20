@@ -9,6 +9,7 @@ import {
   turnosSchema,
   VicenteLopez,
 } from '@/drizzle/schema/schema'
+import { Clientes, Operarios } from '@/drizzle/schema/sueldos'
 
 export interface LocalOperativo extends Partial<Operativo> {
   expiresAt: number
@@ -120,7 +121,7 @@ export type EstadoOperario = {
 }
 
 export type ServiciosFormProps = {
-  cliente: clientes & { acopio: number }
+  cliente: Clientes & { acopio: number }
   hay_recibo: boolean
   recibo?: number
   fecha_recibo?: string
@@ -130,7 +131,7 @@ export type ServiciosFormProps = {
   feriado?: boolean
   memo?: string
   operarios: {
-    operario?: operario
+    operario?: Operarios
     hora_inicio: string
     hora_fin: string
     a_cobrar: number

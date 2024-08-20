@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { FormCamionesProps } from '@/types'
 import { geoLocation } from '@/services'
 import { revalidateTag } from 'next/cache'
 import { z } from 'zod'
@@ -25,8 +24,9 @@ import {
   CamionesDTO,
   localidad_destino,
   localidad_origen,
-} from '@/DTO/camiones'
-import { db } from '@/drizzle/db'
+} from '@/DTO/operativos/camiones'
+import { camionesdb, db } from '@/drizzle'
+import { camionesInputPropsSchema } from '@/schemas/camiones'
 
 const searchParamsSchema = z.object({
   page: z.coerce.number().default(1),
@@ -45,7 +45,9 @@ const searchParamsSchema = z.object({
   resolucion: z.enum(resolucion.enumValues).optional(),
 })
 
-const operativoCamiones = async (body: FormCamionesProps) => {
+const operativoCamiones = async (
+  body: z.infer<typeof camionesInputPropsSchema>,
+) => {
   const { fecha, qth, turno, legajo, localidad } = body
 
   const direccion_full = `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`
@@ -58,8 +60,8 @@ const operativoCamiones = async (body: FormCamionesProps) => {
         eq(operativos.fecha, sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`),
         eq(operativos.direccionFull, direccion_full),
         eq(operativos.turno, turno),
-        eq(operativos.legajo, legajo.toString()),
-        eq(operativos.idLocalidad, localidad.id_barrio),
+        eq(operativos.legajo, legajo),
+        eq(operativos.idLocalidad, localidad.idBarrio),
       ),
     )
 
@@ -86,8 +88,8 @@ const operativoCamiones = async (body: FormCamionesProps) => {
           fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
           direccion: qth,
           turno,
-          legajo: legajo.toString(),
-          idLocalidad: localidad.id_barrio,
+          legajo: legajo,
+          idLocalidad: localidad.idBarrio,
           direccionFull: direccion_full,
           latitud,
           longitud,
@@ -102,8 +104,8 @@ const operativoCamiones = async (body: FormCamionesProps) => {
           fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
           direccion: qth,
           turno,
-          legajo: legajo.toString(),
-          idLocalidad: localidad.id_barrio,
+          legajo: legajo,
+          idLocalidad: localidad.idBarrio,
           direccionFull: direccion_full,
           latitud: geocodificado[0].latitud,
           longitud: geocodificado[0].longitud,
@@ -256,13 +258,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: Request) {
   try {
-    const body: FormCamionesProps = await req.json()
+    const json = await req.json()
 
-    const id_operativo = await operativoCamiones(body)
+    const body = camionesInputPropsSchema.safeParse(json)
 
-    const repetido = await db.query.registrosAutos.findFirst({
+    if (!body.success) {
+      return NextResponse.json('Campos requeridos', { status: 400 })
+    }
+
+    const id_operativo = await operativoCamiones(body.data)
+
+    const repetido = await camionesdb.query.registros.findFirst({
       where: (registro, { eq }) => (
-        eq(registro.dominio, body.dominio),
+        eq(registro.dominio, body.data.dominio),
         eq(registro.idOperativo, id_operativo)
       ),
     })
@@ -272,53 +280,25 @@ export async function POST(req: Request) {
         status: 401,
       })
     }
-    const [camion] = await db
-      .insert(registros)
-      .values({
-        acta: body.acta,
-        dominio: body.dominio,
-        resolucion: body.resolucion,
-        lpcarga: body.lpcarga,
-        idOperativo: id_operativo,
-        idLocalidadOrigen: body.localidad_origen?.id_barrio,
-        idLocalidadDestino: body.localidad_destino?.id_barrio,
-        idMotivo: body.motivo?.id_motivo,
-        hora: body.hora,
-        remito: body.remito,
-        carga: body.carga,
-        destino: body.destino,
-        origen: body.origen,
-        licencia: body.licencia,
-      })
-      .returning({
-        id: registros.id,
-        acta: registros.acta,
-        dominio: registros.dominio,
-        resolucion: registros.resolucion,
-        lpcarga: registros.lpcarga,
-        idOperativo: registros.idOperativo,
-        localidadOrigen: localidad_origen.barrio,
-        localidadDestino: localidad_destino.barrio,
-        idMotivo: registros.idMotivo,
-        hora: registros.hora,
-        remito: registros.remito,
-        carga: registros.carga,
-        destino: registros.destino,
-        origen: registros.origen,
-        licencia: registros.licencia,
-        legajo: operativos.legajo,
-        fecha: operativos.fecha,
-        direccionFull: operativos.direccionFull,
-        latitud: operativos.latitud,
-        longitud: operativos.longitud,
-        cp: vicenteLopez.cp,
-        localidad: vicenteLopez.barrio,
-        turno: operativos.turno,
-        qth: operativos.direccion,
-      })
+    await db.insert(registros).values({
+      acta: body.data.acta,
+      dominio: body.data.dominio,
+      resolucion: body.data.resolucion,
+      lpcarga: body.data.lpcarga,
+      idOperativo: id_operativo,
+      idLocalidadOrigen: body.data.localidad_origen?.idBarrio,
+      idLocalidadDestino: body.data.localidad_destino?.idBarrio,
+      idMotivo: body.data.motivo?.idMotivo,
+      hora: body.data.hora,
+      remito: body.data.remito,
+      carga: body.data.carga,
+      destino: body.data.destino,
+      origen: body.data.origen,
+      licencia: body.data.licencia,
+    })
 
     revalidateTag('camiones')
-    return NextResponse.json(camion)
+    return NextResponse.json('Exito')
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

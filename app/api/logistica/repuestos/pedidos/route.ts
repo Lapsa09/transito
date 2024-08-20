@@ -1,66 +1,46 @@
-import prisma from '@/lib/prismadb'
-import { PedidoRepuesto } from '@/types/logistica'
-import { tipo_repuesto } from '@prisma/client'
-import { DateTime } from 'luxon'
+import { db } from '@/drizzle'
+import {
+  pedidoRepuesto,
+  repuesto,
+  tipoRepuesto,
+} from '@/drizzle/schema/logistica'
+import { PedidosDTO, pedidosDTO } from '@/DTO/logistica/pedidos'
+import { searchParamsSchema } from '@/schemas/form'
+import { count } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
-  const pedidos = await prisma.pedido_repuesto.findMany({
-    include: {
-      repuestos: {
-        include: {
-          tipo_repuesto: true,
-        },
-      },
-      proveedor: true,
-    },
-    skip: pageIndex * 10,
-    take: 10,
+  const { page, per_page, sort } = searchParamsSchema.parse(searchParams)
+  const [column, order] = (sort?.split('.').filter(Boolean) ?? [
+    'id',
+    'desc',
+  ]) as [keyof PedidosDTO, 'asc' | 'desc']
+
+  const pedidos = await pedidosDTO({
+    page,
+    per_page,
   })
-  const res: PedidoRepuesto[] = []
-  for (const pedido of pedidos) {
-    const repuestos = pedido.repuestos.reduce<PedidoRepuesto['repuestos']>(
-      (acc, repuesto) => {
-        const item = acc.find(
-          (r) =>
-            r.item === repuesto.item &&
-            r.tipo_repuesto.id_tipo_repuesto ===
-              repuesto.tipo_repuesto.id_tipo_repuesto,
-        )
 
-        if (item) {
-          item.cantidad++
-        } else {
-          acc.push({
-            item: repuesto.item,
-            cantidad: 1,
-            tipo_repuesto: repuesto.tipo_repuesto,
-            id: repuesto.id,
-            id_pedido: repuesto.id_pedido,
-            id_tipo_repuesto: repuesto.id_tipo_repuesto,
-          })
-        }
-
-        return acc
-      },
-      [],
-    )
-    res.push({ ...pedido, repuestos })
-  }
+  const total = await db
+    .select({
+      count: count(),
+    })
+    .from(pedidoRepuesto)
+    .execute()
+    .then((res) => res[0].count)
 
   return NextResponse.json({
-    data: res,
-    pages: res.length.toString(),
+    data: pedidos,
+    pages: Math.ceil(total / per_page),
   })
 }
 
 export async function POST(req: NextRequest) {
   const body: {
     repuestos: {
-      tipo_repuesto: tipo_repuesto
+      tipo_repuesto: typeof tipoRepuesto.$inferSelect
       item: string
       cantidad: number
     }[]
@@ -72,49 +52,23 @@ export async function POST(req: NextRequest) {
     fecha_pedido: string
     orden_compra: string
   } = await req.json()
-  const pedido = await prisma.pedido_repuesto.create({
-    data: {
-      proveedor: {
-        connect: {
-          id: body.proveedor.id,
-        },
-      },
-      fecha_entrega: DateTime.fromFormat(
-        String(body.fecha_entrega),
-        'yyyy-MM-dd',
-      ).toISO(),
-      fecha_pedido: DateTime.fromFormat(
-        String(body.fecha_pedido),
-        'yyyy-MM-dd',
-      ).toISO(),
-      orden_compra: body.orden_compra,
-    },
-    include: {
-      repuestos: {
-        include: {
-          tipo_repuesto: true,
-        },
-      },
-      proveedor: true,
-    },
-  })
 
-  for (const repuesto of body.repuestos) {
-    for (let i = 0; i < repuesto.cantidad; i++)
-      await prisma.repuesto.create({
-        data: {
-          pedido_repuesto: {
-            connect: {
-              id: pedido.id,
-            },
-          },
-          tipo_repuesto: {
-            connect: {
-              id_tipo_repuesto: repuesto.tipo_repuesto.id_tipo_repuesto,
-            },
-          },
-          item: repuesto.item,
-        },
+  const [pedido] = await db
+    .insert(pedidoRepuesto)
+    .values({
+      idProveedor: body.proveedor.id,
+      fechaPedido: body.fecha_pedido,
+      fechaEntrega: body.fecha_entrega,
+      ordenCompra: body.orden_compra,
+    })
+    .returning({ id: pedidoRepuesto.id })
+
+  for (const _repuesto of body.repuestos) {
+    for (let i = 0; i < _repuesto.cantidad; i++)
+      await db.insert(repuesto).values({
+        idPedido: pedido.id,
+        idTipoRepuesto: _repuesto.tipo_repuesto.idTipoRepuesto,
+        item: _repuesto.item,
       })
   }
   revalidateTag('pedidos')

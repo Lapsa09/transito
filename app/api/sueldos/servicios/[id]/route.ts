@@ -1,59 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
 import { ServiciosFormProps } from '@/types'
-import { DateTime } from 'luxon'
-import { parseToISOTime } from '@/utils/misc'
+import { db } from '@/drizzle'
+import {
+  clientes,
+  operarios,
+  operariosServicios,
+  recibos,
+  servicios,
+} from '@/drizzle/schema/sueldos'
+import { and, eq, sql } from 'drizzle-orm'
+
+type Operario = {
+  nombre: string
+  legajo: number
+  horaInicio: string
+  horaFin: string
+  aCobrar: number
+}
+
+type Recibo = {
+  recibo: number
+  fechaRecibo: Date
+  importe: number
+  acopio: number
+}
 
 export async function GET(
   _: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const servicios = await prisma.servicios.findFirst({
-    where: {
-      id_servicio: +params.id,
-    },
-    include: {
-      clientes: {
-        include: {
-          recibos: true,
-        },
-      },
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
-
-  const res = {
-    ...servicios,
-    cliente: servicios?.clientes,
-    fecha_servicio: DateTime.fromJSDate(servicios?.fecha_servicio!)
-      .toUTC()
-      .toISODate(),
-    ...servicios?.clientes?.recibos[0],
-    fecha_recibo: DateTime.fromJSDate(
-      servicios?.clientes?.recibos[0]?.fecha_recibo!,
+  const [_servicios] = await db
+    .select({
+      idServicio: servicios.idServicio,
+      fechaServicio: servicios.fechaServicio,
+      feriado: servicios.feriado,
+      importeServicio: servicios.importeServicio,
+      cliente: clientes.cliente,
+      memo: servicios.memo,
+      operarios: sql<
+        Operario[]
+      >`json_agg(json_build_object('nombre', ${operarios.nombre}, 'legajo', ${operarios.legajo}, 'horaInicio', ${operariosServicios.horaInicio}, 'horaFin', ${operariosServicios.horaFin}, 'aCobrar', ${operariosServicios.aCobrar}, 'cancelado', ${operariosServicios.cancelado}))`.as(
+        'operarios',
+      ),
+      recibos: sql<
+        Recibo[]
+      >`json_agg(json_build_object('recibo', ${recibos.recibo}, 'fechaRecibo', ${recibos.fechaRecibo}, 'importe', ${recibos.importeRecibo},'acopio',${recibos.acopio}))`.as(
+        'recibos',
+      ),
+    })
+    .from(servicios)
+    .where(eq(servicios.idServicio, +params.id))
+    .innerJoin(clientes, eq(servicios.idCliente, clientes.idCliente))
+    .leftJoin(recibos, eq(clientes.idCliente, recibos.idCliente))
+    .leftJoin(
+      operariosServicios,
+      eq(servicios.idServicio, operariosServicios.idServicio),
     )
-      .toUTC()
-      .toISODate(),
-    hay_recibo: servicios?.clientes?.recibos?.length! > 0,
-    operarios: servicios?.operarios_servicios.map((operario) => ({
-      ...operario,
-      operario: operario.operarios,
-      hora_inicio: DateTime.fromJSDate(operario.hora_inicio!)
-        .toUTC()
-        .toLocaleString(DateTime.TIME_24_SIMPLE),
-      hora_fin: DateTime.fromJSDate(operario.hora_fin!)
-        .toUTC()
-        .toLocaleString(DateTime.TIME_24_SIMPLE),
-    })),
-  }
+    .leftJoin(operarios, eq(operariosServicios.legajo, operarios.legajo))
 
-  delete res.clientes
-
-  return NextResponse.json(res)
+  return NextResponse.json(_servicios)
 }
 
 export async function PUT(
@@ -62,58 +67,48 @@ export async function PUT(
 ) {
   const body: ServiciosFormProps = await req.json()
 
-  await prisma.servicios.update({
-    where: {
-      id_servicio: +params.id,
-    },
-    data: {
-      clientes: {
-        connect: {
-          id_cliente: body.cliente.id_cliente,
-        },
-      },
-      fecha_servicio: DateTime.fromISO(body.fecha_servicio).toISO(),
+  await db
+    .update(servicios)
+    .set({
+      idCliente: body.cliente.idCliente,
+      fechaServicio: body.fecha_servicio,
       feriado: body.feriado,
-      importe_servicio: body.importe_servicio,
+      importeServicio: body.importe_servicio,
       memo: body.memo,
-    },
-    include: {
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
+    })
+    .where(eq(servicios.idServicio, +params.id))
 
   for (const operario of body.operarios) {
-    const id = await prisma.operarios_servicios.findFirst({
-      where: { legajo: operario.operario?.legajo, id_servicio: +params.id },
-      select: { id: true },
-    })
+    const [id] = await db
+      .select({
+        id: operariosServicios.id,
+      })
+      .from(operariosServicios)
+      .where(
+        and(
+          eq(operariosServicios.id, +params.id),
+          eq(operariosServicios.legajo, operario.operario!.legajo),
+        ),
+      )
     if (id) {
-      await prisma.operarios_servicios.update({
-        where: {
-          id: id.id,
-        },
-        data: {
-          hora_fin: parseToISOTime(operario.hora_fin),
-          hora_inicio: parseToISOTime(operario.hora_inicio),
-          a_cobrar: operario.a_cobrar,
+      await db
+        .update(operariosServicios)
+        .set({
+          horaInicio: operario.hora_inicio,
+          horaFin: operario.hora_fin,
+          aCobrar: operario.a_cobrar,
           cancelado: operario.cancelado,
           legajo: operario.operario?.legajo,
-        },
-      })
+        })
+        .where(and(eq(operariosServicios.id, id.id)))
     } else {
-      await prisma.operarios_servicios.create({
-        data: {
-          hora_fin: parseToISOTime(operario.hora_fin),
-          hora_inicio: parseToISOTime(operario.hora_inicio),
-          a_cobrar: operario.a_cobrar,
-          cancelado: false,
-          id_servicio: +params.id,
-          legajo: operario.operario?.legajo,
-        },
+      await db.insert(operariosServicios).values({
+        idServicio: +params.id,
+        legajo: operario.operario?.legajo,
+        horaInicio: operario.hora_inicio,
+        horaFin: operario.hora_fin,
+        aCobrar: operario.a_cobrar,
+        cancelado: false,
       })
     }
   }

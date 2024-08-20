@@ -1,31 +1,38 @@
-import prisma from '@/lib/prismadb'
-import { proveedor } from '@prisma/client'
+import { db } from '@/drizzle'
+import { proveedor } from '@/drizzle/schema/logistica'
+import { searchParamsSchema } from '@/schemas/form'
+import { count } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
-  const pedidos = await prisma.proveedor.findMany({
-    skip: pageIndex * 10,
-    take: 10,
-  })
+  const { page, per_page } = searchParamsSchema.parse(searchParams)
 
-  const total = await prisma.proveedor.count()
+  const proveedores = await db
+    .select()
+    .from(proveedor)
+    .limit(per_page)
+    .offset((page - 1) * per_page)
+
+  const total = await db
+    .select({ count: count() })
+    .from(proveedor)
+    .execute()
+    .then((res) => res[0].count)
 
   return NextResponse.json({
-    data: pedidos,
-    pages: Math.ceil(total / 10).toString(),
+    data: proveedores,
+    pages: Math.ceil(total / per_page).toString(),
   })
 }
 
 export async function POST(req: NextRequest) {
-  const body: proveedor = await req.json()
+  const body: typeof proveedor.$inferInsert = await req.json()
 
-  const pedido = await prisma.proveedor.create({
-    data: body,
-  })
+  await db.insert(proveedor).values(body)
+
   revalidateTag('proveedores')
   revalidatePath('/logistica/repuestos/pedidos/create')
-  return NextResponse.json(pedido)
+  return NextResponse.json('Exito')
 }

@@ -1,11 +1,10 @@
-import { barrios, motivo, resolucion, turnos, zonas } from '@prisma/client'
+import { Barrio, Resolucion, Turno } from '@/drizzle/schema/schema'
 
 export interface Operativo {
   id_op: number
   fecha: string
-  motivo?: motivo
   lp: string
-  turno: turnos
+  turno: Turno
 }
 
 export interface Registro {
@@ -13,11 +12,11 @@ export interface Registro {
   hora: string
   dominio: string
   acta: bigint
-  resolucion: resolucion
+  resolucion: Resolucion
   fechacarga: string
   lpcarga: string
   mes: number
-  barrio: barrios
+  barrio: Barrio
   operativo: Operativo
   zona: zonas
 }

@@ -3,7 +3,7 @@ import { fetcher } from '@/services'
 import { IndexPageProps, SearchParams } from '@/types/data-table'
 import { MotosTable } from './table'
 import { Filter } from '@/DTO/filters'
-import { MotosDTO } from '@/DTO/motos'
+import { MotosDTO } from '@/DTO/operativos/motos'
 
 const getMotos = async (searchParams: SearchParams) => {
   const params = new URLSearchParams(searchParams)

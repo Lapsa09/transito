@@ -3,7 +3,7 @@ import { fetcher } from '@/services'
 import { IndexPageProps, SearchParams } from '@/types/data-table'
 import { AutosTable } from './table'
 import { Filter } from '@/DTO/filters'
-import { AutosDTO } from '@/DTO/autos'
+import { AutosDTO } from '@/DTO/operativos/autos'
 
 const getAutos = async (searchParams: SearchParams) => {
   const params = new URLSearchParams(searchParams)

@@ -1,4 +1,4 @@
-import { db } from '@/drizzle/db'
+import { db, examendb } from '@/drizzle'
 import { examenPreguntas, tipoExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { examenDTO } from '@/DTO/examen'
@@ -13,7 +13,7 @@ export async function GET(
   try {
     const { id } = params
 
-    const examen = await db.query.examenes.findFirst({
+    const examen = await examendb.query.examenes.findFirst({
       where: (examenes, { eq }) => eq(examenes.clave, id),
       with: {
         alumnos: {
@@ -105,7 +105,7 @@ export async function POST(
       .from(tipoExamen)
       .where(eq(tipoExamen.id, +tipo_examen))
 
-    const preguntas = await db.query.preguntas.findMany({
+    const preguntas = await examendb.query.preguntas.findMany({
       where: (tipo, { eq }) => eq(tipo.id, +tipo_examen),
       with: {
         opciones: true,
@@ -123,9 +123,6 @@ export async function POST(
     }
     return NextResponse.json(examen)
   } catch (error: any) {
-    if (error.name === 'PrismaClientKnownRequestError') {
-      return NextResponse.json('El alumno ya fue ingresado', { status: 403 })
-    }
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })
   }

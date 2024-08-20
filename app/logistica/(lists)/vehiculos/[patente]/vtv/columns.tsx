@@ -1,40 +1,57 @@
-import { VTV } from '@/types/logistica'
+import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
+import { VTVDTO } from '@/DTO/logistica/vtv'
 import { ColumnDef } from '@tanstack/react-table'
-import { DateTime } from 'luxon'
 
-export const columns: ColumnDef<VTV>[] = [
-  {
-    accessorFn: (row) => DateTime.fromISO(String(row.fecha_emision)).monthLong,
-    header: 'Mes',
-  },
-  {
-    accessorFn: (row) => DateTime.fromISO(String(row.fecha_emision)).year,
-    header: 'Año',
-  },
-  {
-    accessorFn: (row) =>
-      DateTime.fromISO(String(row.fecha_emision))
-        .plus({ day: 1 })
-        .toLocaleString(DateTime.DATE_SHORT),
-    header: 'Fecha de emisión',
-  },
-  {
-    accessorFn: (row) =>
-      DateTime.fromISO(String(row.vencimiento))
-        .plus({ day: 1 })
-        .toLocaleString(DateTime.DATE_SHORT),
-    header: 'Fecha de vencimiento',
-  },
-  {
-    accessorFn: (row) => row.estado,
-    header: 'Estado',
-  },
-  {
-    accessorFn: (row) => row.observacion,
-    header: 'Observaciones',
-  },
-  {
-    accessorFn: (row) => row.condicion,
-    header: 'Condición',
-  },
-]
+export function getColumns(): ColumnDef<VTVDTO>[] {
+  return [
+    {
+      accessorFn: (row) => row.mes,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Mes" />
+      ),
+      id: 'mes',
+    },
+    {
+      accessorFn: (row) => row.año,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Año" />
+      ),
+      id: 'año',
+    },
+    {
+      accessorFn: (row) => row.fecha_emision,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Fecha de emision" />
+      ),
+      id: 'fecha_emision',
+    },
+    {
+      accessorFn: (row) => row.vencimiento,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Fecha de vencimiento" />
+      ),
+      id: 'vencimiento',
+    },
+    {
+      accessorFn: (row) => row.estado,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Estado" />
+      ),
+      id: 'estado',
+    },
+    {
+      accessorFn: (row) => row.observacion,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Observaciones" />
+      ),
+      id: 'observacion',
+    },
+    {
+      accessorFn: (row) => row.condicion,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Condicion" />
+      ),
+      id: 'condicion',
+    },
+  ]
+}

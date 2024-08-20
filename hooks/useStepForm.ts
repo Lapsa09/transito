@@ -16,7 +16,9 @@ export const useStepForm = () => {
     } else {
       newParams.set('step', newStep.toString())
     }
-    router.replace(`${pathName}?${newParams.toString()}`)
+    setTimeout(() => {
+      router.replace(`${pathName}?${newParams.toString()}`)
+    }, 200)
   }
 
   return {

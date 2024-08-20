@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
-import { FormMotosProps } from '@/types'
 import { geoLocation } from '@/services'
 import { revalidateTag } from 'next/cache'
 import { z } from 'zod'
@@ -26,10 +24,12 @@ import {
   registros,
 } from '@/drizzle/schema/motos'
 import { filterColumn } from '@/lib/filter-column'
-import { MotosDTO, motosDTO } from '@/DTO/motos'
-import { db } from '@/drizzle/db'
+import { MotosDTO, motosDTO } from '@/DTO/operativos/motos'
+import { autosdb, db } from '@/drizzle'
+import { motosInputPropsSchema } from '@/schemas/motos'
+import { createSelectSchema } from 'drizzle-zod'
 
-const operativoMotos = async (body: FormMotosProps) => {
+const operativoMotos = async (body: z.infer<typeof motosInputPropsSchema>) => {
   const {
     fecha,
     qth,
@@ -53,9 +53,9 @@ const operativoMotos = async (body: FormMotosProps) => {
         eq(operativos.turno, turno),
         eq(operativos.legajoACargo, +legajo_a_cargo),
         eq(operativos.legajoPlanilla, +legajo_planilla),
-        eq(operativos.idZona, localidad.id_barrio),
+        eq(operativos.idZona, localidad.idBarrio),
         eq(operativos.seguridad, seguridad),
-        eq(operativos.hora, sql<Date>`to_timestamp(${hora}, 'HH24:MI')`),
+        eq(operativos.hora, hora),
         eq(operativos.direccionFull, direccion_full),
       ),
     )
@@ -86,9 +86,9 @@ const operativoMotos = async (body: FormMotosProps) => {
           turno,
           legajoACargo: +legajo_a_cargo,
           legajoPlanilla: +legajo_planilla,
-          idZona: localidad.id_barrio,
+          idZona: localidad.idBarrio,
           seguridad,
-          hora: sql<Date>`to_timestamp(${hora}, 'HH24:MI')`,
+          hora,
           direccionFull: direccion_full,
           latitud,
           longitud,
@@ -105,9 +105,9 @@ const operativoMotos = async (body: FormMotosProps) => {
           turno,
           legajoACargo: +legajo_a_cargo,
           legajoPlanilla: +legajo_planilla,
-          idZona: localidad.id_barrio,
+          idZona: localidad.idBarrio,
           seguridad,
-          hora: sql<Date>`to_timestamp(${hora}, 'HH24:MI')`,
+          hora,
           direccionFull: direccion_full,
           latitud: geocodificado[0].latitud,
           longitud: geocodificado[0].longitud,
@@ -272,14 +272,26 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: Request) {
-  const body: FormMotosProps = await req.json()
+  const json = await req.json()
+  const body = motosInputPropsSchema
+    .merge(
+      z.object({
+        motivos: z.array(createSelectSchema(motivos)).optional(),
+      }),
+    )
+    .safeParse(json)
 
-  const id_operativo = await operativoMotos(body)
+  if (!body.success) {
+    return NextResponse.json('Campos requeridos', { status: 400 })
+  }
+  const id_operativo = await operativoMotos(body.data)
 
-  const repetido = await db.query.registrosAutos.findFirst({
-    where: (registro, { eq }) => (
-      eq(registro.dominio, body.dominio), eq(registro.idOperativo, id_operativo)
-    ),
+  const repetido = await autosdb.query.registros.findFirst({
+    where: (registro, { eq }) =>
+      and(
+        eq(registro.dominio, body.data?.dominio),
+        eq(registro.idOperativo, id_operativo),
+      ),
   })
   if (repetido) {
     return NextResponse.json('El dominio ya fue ingresado el mismo dia', {
@@ -290,46 +302,26 @@ export async function POST(req: Request) {
   const [moto] = await db
     .insert(registros)
     .values({
-      acta: body.acta ? +body.acta : null,
-      dominio: body.dominio.toUpperCase(),
-      licencia: Number(body.licencia) || null,
-      lpcarga: body.lpcarga,
-      resolucion: body.resolucion || resolucionSchema.enum.PREVENCION,
-      idLicencia: body.tipo_licencia?.id_tipo,
-      idZonaInfractor: body.zona_infractor?.id_barrio,
+      acta: body.data.acta,
+      dominio: body.data.dominio.toUpperCase(),
+      licencia: body.data.licencia,
+      lpcarga: body.data.lpcarga,
+      resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
+      idLicencia: body.data.tipo_licencia?.idTipo,
+      idZonaInfractor: body.data.zona_infractor?.idBarrio,
       idOperativo: id_operativo,
     })
     .returning({
       id: registros.id,
-      acta: registros.acta,
-      dominio: registros.dominio,
-      resolucion: registros.resolucion,
-      fecha_carga: registros.fechacarga,
-      lpcarga: registros.lpcarga,
-      id_operativo: registros.idOperativo,
-      motivo: motivos.motivo,
-      tipo_licencia: tipoLicencias.tipo,
-      vehiculo: tipoLicencias.vehiculo,
-      zona_infractor: barrios.barrio,
-      fecha: operativos.fecha,
-      hora: operativos.hora,
-      direccion_full: operativos.direccionFull,
-      latitud: operativos.latitud,
-      longitud: operativos.longitud,
-      cp: vicenteLopez.cp,
-      localidad: vicenteLopez.barrio,
-      seguridad: operativos.seguridad,
-      turno: operativos.turno,
-      qth: operativos.qth,
     })
 
-  for (const motivo of body.motivos) {
+  for (const motivo of body.data.motivos || []) {
     await db.insert(motoMotivo).values({
       idRegistro: moto.id,
-      idMotivo: motivo.id_motivo,
+      idMotivo: motivo.idMotivo,
     })
   }
 
   revalidateTag('motos')
-  return NextResponse.json(moto)
+  return NextResponse.json('Exito')
 }

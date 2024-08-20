@@ -1,17 +1,17 @@
 import { Button } from '@/components/ui'
 import { fetcher } from '@/services'
-import { examen } from '@prisma/client'
 import Link from 'next/link'
 import React from 'react'
 import CreateExamButton from './CreateExamButton'
 import CreatedExam from './CreatedExam'
+import { Examen } from '@/drizzle/schema/examen'
 
 const getExamenes = async () => {
   const response = await fetcher('api/invitados/examen', {
     cache: 'no-store',
   })
   if (!response.ok) throw new Error('Error al obtener los examenes')
-  const examenes: examen[] = await response.json()
+  const examenes: Examen[] = await response.json()
   return examenes
 }
 

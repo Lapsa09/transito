@@ -1,23 +1,19 @@
-'use client'
 import React from 'react'
-import { getOperarios } from '@/services'
-import { DataTable } from '@/components/table'
-import { OperarioColumns } from './columns'
-import OperariosTable from './expansions'
-import useSWR from 'swr'
+import { getOperarios, getter } from '@/services'
+import Table from './table'
+import { Operario } from '@/types/operarios.sueldos'
+import { IndexPageProps, SearchParams } from '@/types/data-table'
 
-function page() {
-  const { data, isLoading } = useSWR('operarios', getOperarios)
-  if (isLoading) return null
+const getData = async (params: SearchParams) => {
+  const data = await getter<{ data: Operario[]; pages: number }>({
+    route: `sueldos/operarios${params ? `?${params.toString()}` : ''}`,
+  })
+  return data
+}
 
-  return (
-    <DataTable
-      columns={OperarioColumns}
-      data={data}
-      expand={OperariosTable}
-      getRowCanExpand={(row) => row.original.servicios.length > 0}
-    />
-  )
+async function page({ searchParams }: IndexPageProps) {
+  const { data, pages } = await getData(searchParams)
+  return <Table data={data} pages={pages} />
 }
 
 export default page

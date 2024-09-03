@@ -39,6 +39,6 @@ export interface DataTableFilterOption<TData> {
   isMulti?: boolean
 }
 
-export interface IndexPageProps {
+export type IndexPageProps<T = unknown> = T & {
   searchParams: SearchParams
 }

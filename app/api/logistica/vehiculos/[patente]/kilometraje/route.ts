@@ -1,10 +1,8 @@
 import { db } from '@/drizzle'
-import {
-  KilometrajeVehiculos,
-  kilometrajeVehiculos,
-} from '@/drizzle/schema/logistica'
+import { kilometrajeVehiculos } from '@/drizzle/schema/logistica'
 import { kilometrajeDTO } from '@/DTO/logistica/kilometraje'
 import { searchParamsSchema } from '@/schemas/form'
+import { kilometrajeInputSchema } from '@/schemas/logistica'
 import { count, eq, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
@@ -36,19 +34,20 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: KilometrajeVehiculos = await req.json()
+  const json = await req.json()
+  const body = kilometrajeInputSchema.parse(json)
   const { patente } = params
 
   await db.insert(kilometrajeVehiculos).values({
     patente,
     fecha: sql`to_date(${body.fecha}, 'YYYY-MM-DD')`,
     km: body.km,
-    filtroAceite: body.filtroAceite,
-    proximoCambioFiltro: body.proximoCambioFiltro,
-    kitDistribucion: body.kitDistribucion,
-    proximoCambioDistribucion: body.proximoCambioDistribucion,
-    kitPolyV: body.kitPolyV,
-    proximoCambioPolyV: body.proximoCambioPolyV,
+    filtroAceite: body.filtro_aceite,
+    proximoCambioFiltro: body.proximo_cambio_filtro,
+    kitDistribucion: body.kit_distribucion,
+    proximoCambioDistribucion: body.proximo_cambio_distribucion,
+    kitPolyV: body.kit_poly_v,
+    proximoCambioPolyV: body.proximo_cambio_poly_v,
   })
   revalidateTag('kilometraje')
   return NextResponse.json('Exito')

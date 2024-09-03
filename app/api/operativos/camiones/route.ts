@@ -1,7 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { geoLocation } from '@/services'
-import { revalidateTag } from 'next/cache'
-import { z } from 'zod'
+import {
+  camionesDTO,
+  CamionesDTO,
+  localidad_destino,
+  localidad_origen,
+} from '@/DTO/operativos/camiones'
+import { camionesdb, db } from '@/drizzle'
+import {
+  Operativo,
+  operativos,
+  Registro,
+  registros,
+} from '@/drizzle/schema/camiones'
 import {
   Barrio,
   Motivo,
@@ -11,39 +20,32 @@ import {
   VicenteLopez,
   vicenteLopez,
 } from '@/drizzle/schema/schema'
-import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
-import {
-  Operativo,
-  operativos,
-  Registro,
-  registros,
-} from '@/drizzle/schema/camiones'
+import { authOptions } from '@/lib/auth'
 import { filterColumn } from '@/lib/filter-column'
-import {
-  camionesDTO,
-  CamionesDTO,
-  localidad_destino,
-  localidad_origen,
-} from '@/DTO/operativos/camiones'
-import { camionesdb, db } from '@/drizzle'
 import { camionesInputPropsSchema } from '@/schemas/camiones'
+import { searchParamsSchema } from '@/schemas/form'
+import { geoLocation } from '@/services'
+import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
+import { getServerSession } from 'next-auth'
+import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
-const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
-  per_page: z.coerce.number().default(10),
-  sort: z.string().optional(),
-  fecha: z.string().date().optional(),
-  operator: z.enum(['and', 'or']).default('and'),
-  dominio: z.string().optional(),
-  turno: z.enum(turnos.enumValues).optional(),
-  motivo: z.string().optional(),
-  localidad_origen: z.string().optional(),
-  localidad_destino: z.string().optional(),
-  remito: z.boolean().optional(),
-  carga: z.boolean().optional(),
-  localidad: z.string().optional(),
-  resolucion: z.enum(resolucion.enumValues).optional(),
-})
+const searchCamionesParamsSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().date().optional(),
+    operator: z.enum(['and', 'or']).default('and'),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    motivo: z.string().optional(),
+    localidad_origen: z.string().optional(),
+    localidad_destino: z.string().optional(),
+    remito: z.boolean().optional(),
+    carga: z.boolean().optional(),
+    localidad: z.string().optional(),
+    resolucion: z.enum(resolucion.enumValues).optional(),
+  }),
+)
 
 const operativoCamiones = async (
   body: z.infer<typeof camionesInputPropsSchema>,
@@ -122,7 +124,7 @@ const operativoCamiones = async (
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const input = searchParamsSchema.parse(
+    const input = searchCamionesParamsSchema.parse(
       Object.fromEntries(new URLSearchParams(searchParams).entries()),
     )
 
@@ -280,11 +282,14 @@ export async function POST(req: Request) {
         status: 401,
       })
     }
+
+    const user = await getServerSession(authOptions)
+
     await db.insert(registros).values({
       acta: body.data.acta,
       dominio: body.data.dominio,
       resolucion: body.data.resolucion,
-      lpcarga: body.data.lpcarga,
+      lpcarga: user?.user?.legajo,
       idOperativo: id_operativo,
       idLocalidadOrigen: body.data.localidad_origen?.idBarrio,
       idLocalidadDestino: body.data.localidad_destino?.idBarrio,

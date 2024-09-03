@@ -21,7 +21,7 @@ export const getServicios = async () => {
 }
 
 export const getOperarios = async () => {
-  const data = await getter<Operario[]>({
+  const data = await getter<{ data: Operario[]; pages: number }>({
     route: 'sueldos/operarios',
   })
   return data
@@ -110,7 +110,7 @@ export const cancelarOperario = async ({
 
 export const getServicioForEdit = async (id: string) => {
   const data = await getter<ServiciosFormProps>({
-    route: 'sueldos/servicios/' + id,
+    route: 'sueldos/servicios/edit/' + id,
   })
   return data
 }
@@ -149,13 +149,14 @@ export const getForExport = async ({
 }
 
 export const getExportables = async () => {
-  const data = await getter<
-    {
+  const data = await getter<{
+    data: {
       mes: number
       año: number
       total: number
     }[]
-  >({
+    pages: number
+  }>({
     route: 'sueldos/servicios/liqui/list',
   })
   return data

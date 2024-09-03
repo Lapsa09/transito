@@ -1,7 +1,5 @@
-import { db } from '@/drizzle'
+import { camionesdb, db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/camiones'
-import { motivos, vicenteLopez } from '@/drizzle/schema/schema'
-import { localidad_destino, localidad_origen } from '@/DTO/operativos/camiones'
 import { camionesInputPropsSchema } from '@/schemas/camiones'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
@@ -12,45 +10,43 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const [camion] = await db
-    .select()
-    .from(registros)
-    .where(eq(registros.id, Number(id)))
-    .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
-    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-    .innerJoin(
-      localidad_destino,
-      eq(registros.idLocalidadDestino, localidad_destino.idBarrio),
-    )
-    .innerJoin(
-      localidad_origen,
-      eq(registros.idLocalidadOrigen, localidad_origen.idBarrio),
-    )
-    .innerJoin(vicenteLopez, eq(operativos.idLocalidad, vicenteLopez.idBarrio))
+  const camion = await camionesdb.query.registros.findFirst({
+    where: (registro, { eq }) => eq(registro.id, Number(id)),
+    with: {
+      operativo: {
+        with: {
+          localidad: true,
+        },
+      },
+      motivo: true,
+      localidadDestino: true,
+      localidadOrigen: true,
+    },
+  })
 
   if (camion) {
     const {
-      operativos,
-      vicente_lopez: localidad,
-      motivos: motivo,
-      localidad_destino,
-      localidad_origen,
-      registros,
+      operativo,
+      localidadDestino: localidad_destino,
+      localidadOrigen: localidad_origen,
+      ...rest
     } = camion
 
     const res = {
-      ...registros,
-      ...operativos,
-      qth: operativos.direccion,
-      motivo,
-      localidad,
-      localidad_destino,
-      localidad_origen,
+      registro: {
+        ...rest,
+        localidad_origen,
+        localidad_destino,
+      },
+      operativo: {
+        ...operativos,
+        qth: operativos.direccion,
+      },
     }
 
     return NextResponse.json(res)
   }
-  return NextResponse.json(null)
+  return NextResponse.redirect('operativos/camiones')
 }
 
 export async function PUT(req: Request, state: { params: { id: string } }) {

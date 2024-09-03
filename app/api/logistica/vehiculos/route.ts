@@ -2,6 +2,7 @@ import { db } from '@/drizzle'
 import { Movil, movil } from '@/drizzle/schema/logistica'
 import { vehiculosDTO } from '@/DTO/logistica/vehiculos'
 import { searchParamsSchema } from '@/schemas/form'
+import { vehiculoInputSchema } from '@/schemas/logistica'
 import { count } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
@@ -27,23 +28,25 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body: Movil = await req.json()
+    const json = await req.json()
+
+    const body = vehiculoInputSchema.parse(json)
 
     await db.insert(movil).values({
-      idUso: body.idUso,
-      idDependencia: body.idDependencia,
-      idTipoVehiculo: body.idTipoVehiculo,
       patente: body.patente,
+      idUso: body.uso.idUso,
+      idDependencia: body.dependencia.idDependencia,
+      idTipoVehiculo: body.tipo_vehiculo.idTipo,
       marca: body.marca,
       modelo: body.modelo,
       año: body.año,
-      noChasis: body.noChasis,
-      empresaSeguimiento: body.empresaSeguimiento,
-      idMegatrans: body.idMegatrans,
-      nroMovil: body.nroMovil,
-      planRenovacion: body.planRenovacion,
-      tipoCombustible: body.tipoCombustible,
-      tipoMotor: body.tipoMotor,
+      noChasis: body.nro_chasis,
+      empresaSeguimiento: body.empresa_seguimiento,
+      idMegatrans: body.id_megatrans,
+      nroMovil: body.nro_movil,
+      planRenovacion: body.plan_renovacion,
+      tipoCombustible: body.tipo_combustible,
+      tipoMotor: body.tipo_motor,
     })
 
     revalidateTag('vehiculos')

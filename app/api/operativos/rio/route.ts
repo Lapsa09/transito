@@ -1,14 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { load } from 'cheerio'
-import { revalidateTag } from 'next/cache'
 import { db, riodb } from '@/drizzle'
 import { operativos, registros, zonas } from '@/drizzle/schema/nuevo_control'
-import { and, asc, count, desc, eq, like, or, SQL, sql } from 'drizzle-orm'
 import { Barrio, barrios, turnos } from '@/drizzle/schema/schema'
-import { z } from 'zod'
-import { filterColumn } from '@/lib/filter-column'
 import { RioDTO, rioDTO } from '@/DTO/operativos/rio'
+import { authOptions } from '@/lib/auth'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
 import { rioInputPropsSchema } from '@/schemas/rio'
+import { load } from 'cheerio'
+import { and, asc, count, desc, eq, like, or, SQL, sql } from 'drizzle-orm'
+import { getServerSession } from 'next-auth'
+import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 const operativoPaseo = async (body: z.infer<typeof rioInputPropsSchema>) => {
   const { fecha, turno, lp } = body
@@ -111,21 +114,19 @@ const radicacion = async (body: z.infer<typeof rioInputPropsSchema>) => {
   }
 }
 
-const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
-  per_page: z.coerce.number().default(10),
-  sort: z.string().optional(),
-  fecha: z.string().date().optional(),
-  operator: z.enum(['and', 'or']).default('and'),
-  dominio: z.string().optional(),
-  turno: z.enum(turnos.enumValues).optional(),
-  zona_infractor: z.string().optional(),
-  zona: z.string().optional(),
-})
+const searchRioParamsSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().date().optional(),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    zona_infractor: z.string().optional(),
+    zona: z.string().optional(),
+  }),
+)
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const input = searchParamsSchema.parse(
+  const input = searchRioParamsSchema.parse(
     Object.fromEntries(new URLSearchParams(searchParams).entries()),
   )
   const {
@@ -240,6 +241,7 @@ export async function POST(req: NextRequest) {
   }
 
   const id_localidad = await radicacion(data)
+  const user = await getServerSession(authOptions)
 
   await db.insert(registros).values({
     hora: data.hora,
@@ -247,6 +249,7 @@ export async function POST(req: NextRequest) {
     idOperativo: id_operativo,
     idZona: data.zona.idZona,
     idLocalidad: id_localidad,
+    lpcarga: user?.user?.legajo,
   })
   revalidateTag('rio')
   return NextResponse.json('Exito')

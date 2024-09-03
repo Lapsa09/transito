@@ -1,6 +1,7 @@
 import { db } from '@/drizzle'
 import { proveedor } from '@/drizzle/schema/logistica'
 import { searchParamsSchema } from '@/schemas/form'
+import { proveedorInputSchema } from '@/schemas/logistica'
 import { count } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
@@ -28,7 +29,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const body: typeof proveedor.$inferInsert = await req.json()
+  const json = await req.json()
+
+  const body = proveedorInputSchema.parse(json)
 
   await db.insert(proveedor).values(body)
 

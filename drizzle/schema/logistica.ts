@@ -119,12 +119,12 @@ export const proveedor = logistica.table('proveedor', {
 
 export const tipoVehiculo = logistica.table('tipo_vehiculo', {
   idTipo: serial('id_tipo').primaryKey().notNull(),
-  tipo: varchar('tipo'),
+  tipo: varchar('tipo').notNull(),
 })
 
 export const uso = logistica.table('uso', {
   idUso: serial('id_uso').primaryKey().notNull(),
-  uso: varchar('uso'),
+  uso: varchar('uso').notNull(),
   idDependencia: integer('id_dependencia')
     .notNull()
     .references(() => dependencia.idDependencia, {

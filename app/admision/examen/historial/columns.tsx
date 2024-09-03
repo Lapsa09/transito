@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import { Historial } from '@/types/quiz'
 
-export const columns: ColumnDef<Historial>[] = [
+export const getColumns = (): ColumnDef<Historial>[] => [
   {
     accessorFn: (row) => `${row.nombre} ${row.apellido}`,
     header: 'Nombre y apellido',

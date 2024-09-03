@@ -1,11 +1,8 @@
 import { db } from '@/drizzle'
-import {
-  pedidoRepuesto,
-  repuesto,
-  tipoRepuesto,
-} from '@/drizzle/schema/logistica'
+import { pedidoRepuesto, repuesto } from '@/drizzle/schema/logistica'
 import { PedidosDTO, pedidosDTO } from '@/DTO/logistica/pedidos'
 import { searchParamsSchema } from '@/schemas/form'
+import { pedidoRepuestoSchema } from '@/schemas/logistica'
 import { count } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
@@ -38,28 +35,17 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const body: {
-    repuestos: {
-      tipo_repuesto: typeof tipoRepuesto.$inferSelect
-      item: string
-      cantidad: number
-    }[]
-    proveedor: {
-      id: number
-    }
-    cantidad: number
-    fecha_entrega: string
-    fecha_pedido: string
-    orden_compra: string
-  } = await req.json()
+  const json = await req.json()
+
+  const body = pedidoRepuestoSchema.parse(json)
 
   const [pedido] = await db
     .insert(pedidoRepuesto)
     .values({
       idProveedor: body.proveedor.id,
-      fechaPedido: body.fecha_pedido,
-      fechaEntrega: body.fecha_entrega,
-      ordenCompra: body.orden_compra,
+      fechaPedido: body.fechaPedido,
+      fechaEntrega: body.fechaEntrega,
+      ordenCompra: body.ordenCompra,
     })
     .returning({ id: pedidoRepuesto.id })
 

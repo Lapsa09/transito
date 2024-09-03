@@ -6,7 +6,7 @@ import {
   rindeExamen,
   tipoExamen,
 } from '@/drizzle/schema/examen'
-import { QuizResponse } from '@/types/quiz'
+import { examenInputSchema } from '@/schemas/form'
 import { and, eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -31,7 +31,9 @@ const notaFinal = (
 
 export async function POST(req: Request) {
   try {
-    const body: QuizResponse = await req.json()
+    const json = await req.json()
+
+    const body = examenInputSchema.parse(json)
 
     const [examen] = await db
       .select({
@@ -57,7 +59,7 @@ export async function POST(req: Request) {
       .update(rindeExamen)
       .set({
         nota: notaFinal(nota, examen.tipo_examen),
-        horaFinalizado: body.tiempo.toLocaleTimeString(),
+        horaFinalizado: body.tiempo,
       })
       .where(eq(rindeExamen.id, examen.id))
       .returning()
@@ -76,7 +78,7 @@ export async function POST(req: Request) {
         )
     }
 
-    return NextResponse.json(resultado)
+    return NextResponse.json(resultado.nota!)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

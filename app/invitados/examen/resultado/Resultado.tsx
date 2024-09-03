@@ -1,25 +1,18 @@
 'use client'
 
 import { Button } from '@/components/ui'
-import { Calificacion, RindeExamen } from '@/drizzle/schema/examen'
-import { Respuesta } from '@/types/quiz'
+import type { Resultado as Resultados } from '@/types/quiz'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 
-function Resultado({
-  examen,
-  respuestas,
-}: {
-  examen: RindeExamen & { calificacion: Calificacion }
-  respuestas: Respuesta[]
-}) {
+function Resultado({ examen }: { examen: Resultados }) {
   const router = useRouter()
-  const preguntasCorrectas = respuestas.filter(
-    ({ elegidaId, pregunta }) => elegidaId === pregunta.idCorrecta,
+  const preguntasCorrectas = examen.preguntas.filter(
+    ({ id_correcta, id_elegida }) => id_correcta === id_elegida,
   ).length
 
-  const totalPreguntas = respuestas.length
+  const totalPreguntas = examen.preguntas.length
   const inicio = async () => {
     router.push('/login/invitado')
   }
@@ -31,8 +24,8 @@ function Resultado({
   return (
     <div>
       <h1>El examen ha finalizado</h1>
-      <p>Resultado: {examen.calificacion.nota}</p>
-      <p>{examen.calificacion.resultado}</p>
+      <p>Resultado: {examen.nota}</p>
+      <p>{examen.calificacion}</p>
       <div>
         <h1>Respuestas del alumno</h1>
         <p>
@@ -42,12 +35,12 @@ function Resultado({
       </div>
       <Button onClick={inicio}>Volver al inicio</Button>
       <div className="overflow-y-auto max-h-96">
-        {respuestas.map((r, i) => (
-          <div key={r.preguntaId}>
+        {examen.preguntas.map((r, i) => (
+          <div key={r.id}>
             <h3
               className="text-lg font-semibold"
               dangerouslySetInnerHTML={{
-                __html: i + 1 + '- ' + r.pregunta.pregunta,
+                __html: i + 1 + '- ' + r.pregunta,
               }}
             />
 
@@ -56,18 +49,16 @@ function Resultado({
               <span
                 className="p-2 mb-1 ml-1 text-sm bg-green-800 rounded-lg text-green-50"
                 dangerouslySetInnerHTML={{
-                  __html: r.pregunta.correcta.respuesta,
+                  __html: r.correcta,
                 }}
               />
             </p>
             <p className="flex flex-col">
               Elegida:
               <span
-                className={`p-2 ml-1 text-sm ${r.elegidaId === r.pregunta.idCorrecta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
+                className={`p-2 ml-1 text-sm ${r.id_elegida === r.id_correcta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
                 dangerouslySetInnerHTML={{
-                  __html:
-                    r.elegida?.respuesta ??
-                    'El alumno no respondió esta pregunta',
+                  __html: r.elegida ?? 'El alumno no respondió esta pregunta',
                 }}
               />
             </p>

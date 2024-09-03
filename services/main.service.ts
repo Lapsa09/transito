@@ -58,7 +58,7 @@ export const getVicenteLopez = async () => {
 
 export const getTurnos = async () => {
   const data = await getter<
-    { id: keyof typeof turnosSchema.enum; label: string }[]
+    Record<'id' | 'label', keyof typeof turnosSchema.enum>[]
   >({
     route: 'turnos',
   })
@@ -67,7 +67,7 @@ export const getTurnos = async () => {
 
 export const getSeguridad = async () => {
   const data = await getter<
-    { id: keyof typeof seguridadSchema.enum; label: string }[]
+    Record<'id' | 'label', keyof typeof seguridadSchema.enum>[]
   >({
     route: 'seguridad',
   })
@@ -83,7 +83,7 @@ export const getLicencias = async () => {
 
 export const getResolucion = async () => {
   const data = await getter<
-    { id: keyof typeof resolucionSchema.enum; label: string }[]
+    Record<'id' | 'label', keyof typeof resolucionSchema.enum>[]
   >({
     route: 'resolucion',
   })

@@ -22,21 +22,27 @@ import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { autosInputPropsSchema } from '@/schemas/autos'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { searchParamsSchema } from '@/schemas/form'
 
-const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
-  per_page: z.coerce.number().default(10),
-  sort: z.string().optional(),
-  fecha: z.string().date().optional(),
-  operator: z.enum(['and', 'or']).default('and'),
-  dominio: z.string().optional(),
-  turno: z.enum(turnos.enumValues).optional(),
-  motivo: z.string().optional(),
-  zona_infractor: z.string().optional(),
-  localidad: z.string().optional(),
-  tipo_licencia: z.string().optional(),
-  resolucion: z.enum(resolucion.enumValues).optional(),
-})
+const searchAutosInputSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().date().optional(),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    motivo: z.string().optional(),
+    zona_infractor: z.string().optional(),
+    localidad: z.string().optional(),
+    tipo_licencia: z.string().optional(),
+    resolucion: z.enum(resolucion.enumValues).optional(),
+  }),
+)
+
+const orderFunctions = {
+  asc,
+  desc,
+}
 
 const operativoAlcoholemia = async (
   body: z.infer<typeof autosInputPropsSchema>,
@@ -135,7 +141,7 @@ const operativoAlcoholemia = async (
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const input = searchParamsSchema.parse(
+    const input = searchAutosInputSchema.parse(
       Object.fromEntries(new URLSearchParams(searchParams).entries()),
     )
 
@@ -204,29 +210,19 @@ export async function GET(req: NextRequest) {
       if (!column) return desc(registros.id)
 
       if (column in registros) {
-        return order === 'asc'
-          ? asc(registros[column as keyof Registro])
-          : desc(registros[column as keyof Registro])
+        return orderFunctions[order](registros[column as keyof Registro])
       } else if (column in operativos) {
-        return order === 'asc'
-          ? asc(operativos[column as keyof Operativo])
-          : desc(operativos[column as keyof Operativo])
+        return orderFunctions[order](operativos[column as keyof Operativo])
       } else if (column in motivos) {
-        return order === 'asc'
-          ? asc(motivos[column as keyof Motivo])
-          : desc(motivos[column as keyof Motivo])
+        return orderFunctions[order](motivos[column as keyof Motivo])
       } else if (column in tipoLicencias) {
-        return order === 'asc'
-          ? asc(tipoLicencias[column as keyof TipoLicencia])
-          : desc(tipoLicencias[column as keyof TipoLicencia])
+        return orderFunctions[order](
+          tipoLicencias[column as keyof TipoLicencia],
+        )
       } else if (column in vicenteLopez) {
-        return order === 'asc'
-          ? asc(vicenteLopez[column as keyof VicenteLopez])
-          : desc(vicenteLopez[column as keyof VicenteLopez])
+        return orderFunctions[order](vicenteLopez[column as keyof VicenteLopez])
       }
-      return order === 'asc'
-        ? asc(barrios[column as keyof Barrio])
-        : desc(barrios[column as keyof Barrio])
+      return orderFunctions[order](barrios[column as keyof Barrio])
     }
     const autosPromise = autosDTO({
       page,
@@ -278,13 +274,14 @@ export async function POST(req: NextRequest) {
         status: 401,
       })
     }
+    const user = await getServerSession(authOptions)
 
     await db.insert(registros).values({
       acta: body.data.acta ? +body.data.acta : null,
       dominio: body.data.dominio.toUpperCase(),
       graduacionAlcoholica: body.data.graduacion_alcoholica,
       licencia: Number(body.data.licencia) || null,
-      lpcarga: body.data.lpcarga,
+      lpcarga: user?.user?.legajo,
       resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
       idLicencia: body.data.tipo_licencia?.idTipo,
       idZonaInfractor: body.data.zona_infractor?.idBarrio,

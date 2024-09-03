@@ -1,32 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { NumeroMemo } from '@/components/MiniModals'
-import { cancelarOperario } from '@/services'
-import { OperariosDTO, Servicio } from '@/types/servicios.sueldos'
+import { Servicio } from '@/types/servicios.sueldos'
 import { ColumnDef } from '@tanstack/react-table'
-import { ChevronDown, ChevronRight } from 'lucide-react'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
-import { mutate } from 'swr'
 
-export const ServicioColumns: ColumnDef<Servicio>[] = [
-  {
-    id: 'expander',
-    header: () => null,
-    cell: ({ row }) => {
-      return (
-        row.getCanExpand() && (
-          <button
-            {...{
-              onClick: row.getToggleExpandedHandler(),
-              style: { cursor: 'pointer' },
-            }}
-          >
-            {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
-          </button>
-        )
-      )
-    },
-  },
+export const servicioColumns = (): ColumnDef<Servicio>[] => [
   {
     accessorFn: (row) => row.clientes?.cliente,
     id: 'cliente',
@@ -68,11 +47,16 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
   },
   {
     id: 'cantidad_operarios',
-    cell: (info) =>
-      info.row.original.operarios_servicios?.filter(
-        (operario) => operario.legajo !== 1,
-      ).length,
+    accessorFn: (row) => row.cantidad_operarios,
     header: () => <span>Cantidad de operarios</span>,
+  },
+  {
+    id: 'operarios',
+    cell: ({ row }) => (
+      <Link href={`/sueldos/servicios/operarios/${row.original.idServicio}`}>
+        <Button>Operarios</Button>
+      </Link>
+    ),
   },
   {
     id: 'edit',
@@ -81,83 +65,6 @@ export const ServicioColumns: ColumnDef<Servicio>[] = [
       <Link href={`/sueldos/servicios/edit/${row.original.idServicio}`}>
         <Button>Editar</Button>
       </Link>
-    ),
-  },
-]
-
-export const OperarioColumns: ColumnDef<OperariosDTO>[] = [
-  {
-    accessorFn: (row) => row.legajo,
-    id: 'legajo',
-    cell: (info) => info.getValue(),
-    header: () => <span>Legajo</span>,
-    footer: (props) => props.column.id,
-  },
-  {
-    accessorFn: (row) => row.operarios?.nombre,
-    id: 'nombre',
-    cell: (info) => info.getValue(),
-    header: () => <span>Nombre</span>,
-    footer: (props) => props.column.id,
-  },
-  {
-    accessorFn: (row) => row.horaInicio,
-    id: 'hora_inicio',
-    cell: (info) =>
-      DateTime.fromISO(info.getValue<string>(), {
-        setZone: true,
-      }).toLocaleString(DateTime.TIME_24_SIMPLE),
-    header: () => <span>Hora Inicio</span>,
-    footer: (props) => props.column.id,
-  },
-  {
-    accessorFn: (row) => row.horaFin,
-    id: 'hora_fin',
-    cell: (info) =>
-      DateTime.fromISO(info.getValue<string>(), {
-        setZone: true,
-      }).toLocaleString(DateTime.TIME_24_SIMPLE),
-    header: () => <span>Hora Fin</span>,
-    footer: (props) => props.column.id,
-  },
-  {
-    accessorFn: (row) => row.aCobrar,
-    id: 'a_cobrar',
-    cell: (info) => `$ ${info.getValue<number>()}`,
-    header: () => <span>A Cobrar</span>,
-    footer: (props) => props.column.id,
-  },
-  {
-    id: 'actions',
-    header: () => null,
-    cell: (info) => (
-      <Button
-        onClick={async () => {
-          await mutate<Servicio[]>(
-            'servicios',
-            async (data) => {
-              const res = await cancelarOperario({
-                id_servicio: info.row.original.id,
-                body: {
-                  cancelado: info.row.original.cancelado,
-                },
-              })
-              if (data) {
-                return data.map((servicio) => {
-                  if (servicio.idServicio === res.idServicio) {
-                    return res
-                  }
-                  return servicio
-                })
-              }
-              return [res]
-            },
-            { revalidate: false },
-          )
-        }}
-      >
-        Cancelar
-      </Button>
     ),
   },
 ]

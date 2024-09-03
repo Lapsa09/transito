@@ -1,7 +1,7 @@
-import * as React from "react";
-import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
+import * as React from 'react'
+import { flexRender, type Table as TanstackTable } from '@tanstack/react-table'
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -9,15 +9,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+} from '@/components/ui/table'
+import { DataTablePagination } from '@/components/data-table/data-table-pagination'
 
 interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * The table instance returned from useDataTable hook with pagination, sorting, filtering, etc.
    * @type TanstackTable<TData>
    */
-  table: TanstackTable<TData>;
+  table: TanstackTable<TData>
 
   /**
    * The floating bar to render at the bottom of the table on row selection.
@@ -25,7 +25,8 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
    * @type React.ReactNode | null
    * @example floatingBar={<TasksTableFloatingBar table={table} />}
    */
-  floatingBar?: React.ReactNode | null;
+  floatingBar?: React.ReactNode | null
+  expand?: React.ComponentType<{ data: TData }>
 }
 
 export function DataTable<TData>({
@@ -33,11 +34,12 @@ export function DataTable<TData>({
   floatingBar = null,
   children,
   className,
+  expand: Expand,
   ...props
 }: DataTableProps<TData>) {
   return (
     <div
-      className={cn("w-full space-y-2.5 overflow-auto", className)}
+      className={cn('w-full space-y-2.5 overflow-auto', className)}
       {...props}
     >
       {children}
@@ -57,7 +59,7 @@ export function DataTable<TData>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                       <div
                         onMouseDown={header.getResizeHandler()}
@@ -67,13 +69,13 @@ export function DataTable<TData>({
                         <div
                           className={`h-1/2 absolute top-1/4 w-1/2 ${
                             header.column.getIsResizing()
-                              ? "bg-black/50 opacity-100"
-                              : "bg-gray-200"
+                              ? 'bg-black/50 opacity-100'
+                              : 'bg-gray-200'
                           }`}
                         />
                       </div>
                     </TableHead>
-                  );
+                  )
                 })}
               </TableRow>
             ))}
@@ -81,19 +83,27 @@ export function DataTable<TData>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  <TableRow data-state={row.getIsSelected() && 'selected'}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {Expand && (
+                    <TableRow
+                      className={`${row.getIsExpanded() ? '' : 'hidden'}`}
+                    >
+                      <TableCell colSpan={row.getVisibleCells().length}>
+                        <Expand data={row.original} />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <TableRow>
@@ -113,5 +123,5 @@ export function DataTable<TData>({
         {table.getFilteredSelectedRowModel().rows.length > 0 && floatingBar}
       </div>
     </div>
-  );
+  )
 }

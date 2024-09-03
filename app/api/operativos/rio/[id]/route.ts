@@ -16,7 +16,6 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     where: (registro, { eq }) => eq(registro.id, Number(id)),
     with: {
       operativo: true,
-      barrio: true,
       zona: true,
     },
   })
@@ -24,13 +23,13 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     const { operativo, ...rest } = auto
 
     const res = {
-      ...rest,
-      ...operativo,
+      registro: rest,
+      operativo,
     }
 
     return NextResponse.json(res)
   }
-  return NextResponse.json(null)
+  return NextResponse.redirect('operativos/rio')
 }
 
 const radicacion = async (body: z.infer<typeof rioInputPropsSchema>) => {

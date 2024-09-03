@@ -12,6 +12,7 @@ import {
   type AnyPgColumn,
   primaryKey,
   uuid,
+  alias,
 } from 'drizzle-orm/pg-core'
 import { invitados } from './schema'
 import { relations } from 'drizzle-orm'
@@ -51,6 +52,8 @@ export const opciones = examen.table('opciones', {
     .notNull()
     .references((): AnyPgColumn => preguntas.id),
 })
+
+export const correcta = alias(opciones, 'correcta')
 
 export const preguntas = examen.table('preguntas', {
   id: serial('id').primaryKey().notNull(),

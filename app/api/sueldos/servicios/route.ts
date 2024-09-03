@@ -1,25 +1,71 @@
 import { db } from '@/drizzle'
 import {
   clientes,
-  operarios,
   operariosServicios,
   recibos,
   servicios,
 } from '@/drizzle/schema/sueldos'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
 import { ServiciosFormProps } from '@/types'
-import { eq, sql } from 'drizzle-orm'
+import { formatDate } from '@/utils/misc'
+import { and, count, eq, gte, lte, or, sql, SQL } from 'drizzle-orm'
 import { NextResponse, NextRequest } from 'next/server'
+import { z } from 'zod'
 
-type Operario = {
-  nombre: string
-  legajo: number
-  horaInicio: string
-  horaFin: string
-  aCobrar: number
-}
-
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { page, per_page, cliente, operator, operario, mes, año } =
+      searchParamsSchema
+        .merge(
+          z.object({
+            cliente: z.string().optional(),
+            operario: z.string().optional(),
+            mes: z.string().optional(),
+            año: z.string().optional(),
+          }),
+        )
+        .parse(
+          Object.fromEntries(
+            new URLSearchParams(req.nextUrl.searchParams).entries(),
+          ),
+        )
+
+    const fromDay =
+      mes && año
+        ? sql`to_date(${año}-${mes}-01, 'yyyy-mm-dd')`.mapWith(formatDate)
+        : undefined
+    const toDay =
+      mes && año
+        ? sql`to_date(${año}-${mes}-31, 'yyyy-mm-dd')`.mapWith(formatDate)
+        : undefined
+
+    const expressions: (SQL<unknown> | undefined)[] = [
+      fromDay && toDay
+        ? and(
+            gte(servicios.fechaServicio, fromDay),
+            lte(servicios.fechaServicio, toDay),
+          )
+        : undefined,
+      cliente
+        ? filterColumn({
+            column: clientes.cliente,
+            value: cliente,
+            isSelectable: true,
+          })
+        : undefined,
+      operario
+        ? filterColumn({
+            column: operariosServicios.legajo,
+            value: operario,
+            isSelectable: true,
+          })
+        : undefined,
+    ]
+
+    const where =
+      !operator || operator === 'and' ? and(...expressions) : or(...expressions)
+
     const serviciosList = await db
       .select({
         idServicio: servicios.idServicio,
@@ -28,29 +74,24 @@ export async function GET() {
         importeServicio: servicios.importeServicio,
         cliente: clientes.cliente,
         memo: servicios.memo,
-        operarios: sql<
-          Operario[]
-        >`json_agg(json_build_object('nombre', ${operarios.nombre}, 'legajo', ${operarios.legajo}, 'horaInicio', ${operariosServicios.horaInicio}, 'horaFin', ${operariosServicios.horaFin}, 'aCobrar', ${operariosServicios.aCobrar}, 'cancelado', ${operariosServicios.cancelado}))`.as(
-          'operarios',
-        ),
       })
       .from(servicios)
+      .where(where)
       .innerJoin(clientes, eq(servicios.idCliente, clientes.idCliente))
-      .innerJoin(
-        operariosServicios,
-        eq(servicios.idServicio, operariosServicios.idServicio),
-      )
-      .innerJoin(operarios, eq(operariosServicios.legajo, operarios.legajo))
-      .groupBy(
-        servicios.idServicio,
-        servicios.fechaServicio,
-        servicios.feriado,
-        servicios.importeServicio,
-        clientes.cliente,
-        servicios.memo,
-      )
+      .offset((page - 1) * per_page)
+      .limit(per_page)
 
-    return NextResponse.json(serviciosList)
+    const total = await db
+      .select({ count: count() })
+      .from(servicios)
+      .where(where)
+      .execute()
+      .then((data) => data[0].count)
+
+    return NextResponse.json({
+      data: serviciosList,
+      pages: Math.ceil(total / per_page),
+    })
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

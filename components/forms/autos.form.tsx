@@ -8,7 +8,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
 import Autocomplete from '@/components/Autocomplete'
 import { setExpiration } from '@/utils/misc'
-import { setter } from '@/services'
+import { setter, updater } from '@/services'
 import { toast, useStepForm } from '@/hooks'
 import { DEFAULT_OPERATIVO_AUTO } from '@/schemas/autos'
 import { z } from 'zod'
@@ -24,18 +24,20 @@ import {
 } from '@/drizzle/schema/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../ui'
-import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 type FormProps = z.infer<typeof operativoInputSchema>
 
 export function FirstStep({
   selects,
+  editableOperativo,
 }: {
   selects: {
     vicenteLopez: VicenteLopez[]
-    turnos: { id: keyof typeof turnosSchema.enum; label: string }[]
-    seguridad: { id: keyof typeof seguridadSchema.enum; label: string }[]
+    turnos: Record<'id' | 'label', keyof typeof turnosSchema.enum>[]
+    seguridad: Record<'id' | 'label', keyof typeof seguridadSchema.enum>[]
   }
+  editableOperativo?: FormProps
 }) {
   const { vicenteLopez, turnos, seguridad } = selects
   const [operativo, edit] = useLocalStorage<typeof DEFAULT_OPERATIVO_AUTO>(
@@ -44,7 +46,7 @@ export function FirstStep({
   )
   const formProps = useForm<FormProps>({
     resolver: zodResolver(operativoInputSchema),
-    defaultValues: operativo,
+    defaultValues: { ...operativo, ...editableOperativo },
     mode: 'all',
   })
 
@@ -155,23 +157,27 @@ export function FirstStep({
 
 export function SecondStep({
   selects,
+  editableRegistro,
+  id,
 }: {
   selects: {
     licencias: TipoLicencia[]
     motivos: Motivo[]
-    resolucion: { id: keyof typeof resolucionSchema.enum; label: string }[]
+    resolucion: Record<'id' | 'label', keyof typeof resolucionSchema.enum>[]
     zonas: Barrio[]
   }
+  editableRegistro?: z.infer<typeof registroInputSchema>
+  id?: string
 }) {
-  const { data } = useSession()
+  const router = useRouter()
   const formProps = useForm<z.infer<typeof registroInputSchema>>({
     mode: 'onBlur',
     resolver: zodResolver(registroInputSchema),
     defaultValues: {
-      lpcarga: data?.user?.legajo,
+      ...editableRegistro,
     },
   })
-  const { setActiveStep } = useStepForm()
+  const { setActiveStep, activeStep } = useStepForm()
 
   const handleBack = () => {
     setActiveStep(0)
@@ -196,27 +202,41 @@ export function SecondStep({
   }, [esSancionable])
 
   useEffect(() => {
-    const parsedOperativo = operativoInputSchema.safeParse(operativo)
+    if (activeStep === 1) {
+      const parsedOperativo = operativoInputSchema.safeParse(operativo)
 
-    if (!parsedOperativo.success) {
-      setActiveStep(0)
+      if (!parsedOperativo.success) {
+        setActiveStep(0)
+      }
     }
-  }, [])
+  }, [activeStep])
 
   const handleSubmit = async (body: z.infer<typeof registroInputSchema>) => {
     try {
-      await setter<void>({
-        route: `/operativos/autos`,
-        body: {
-          ...body,
-          ...operativoInputSchema.safeParse(operativo).data,
-        },
-      })
-      toast({ title: 'Operativo creado con exito', variant: 'success' })
+      if (!id) {
+        await setter<void>({
+          route: `/operativos/autos`,
+          body: {
+            ...body,
+            ...operativoInputSchema.safeParse(operativo).data,
+          },
+        })
+        toast({ title: 'Operativo creado con exito', variant: 'success' })
 
-      formProps.reset()
+        formProps.reset()
 
-      formProps.setFocus('dominio')
+        formProps.setFocus('dominio')
+      } else {
+        await updater<void>({
+          route: `/operativos/autos/${id}`,
+          body: {
+            ...body,
+            ...operativoInputSchema.safeParse(operativo).data,
+          },
+        })
+        toast({ title: 'Operativo actualizado con exito', variant: 'success' })
+        router.back()
+      }
     } catch (error: any) {
       toast({
         title: error.response?.data || error.message,
@@ -243,7 +263,7 @@ export function SecondStep({
           placeholder='Ej: "12345678"'
         />
         <Autocomplete
-          name="tipoLicencia"
+          name="tipo_licencia"
           label="Tipo licencia"
           options={licencias}
           inputId="idTipo"

@@ -1,59 +1,24 @@
 import {
-  Dependencia,
-  Movil,
-  Proveedor,
-  Reparaciones,
-  Repuestos,
-  TipoRepuesto,
-  TipoVehiculo,
-  Uso,
-} from '@/drizzle/schema/logistica'
+  kilometrajeInputSchema,
+  logisticaForms,
+  pedidoRepuestoSchema,
+  proveedorInputSchema,
+  reparacionInputSchema,
+  vehiculoInputSchema,
+  vtvInputSchema,
+} from '@/schemas/logistica'
+import { z } from 'zod'
 
-export interface Vehiculo extends Movil {
-  uso: Uso
-  dependencia: Dependencia
-  tipo_vehiculo: TipoVehiculo
-  seguro?: string
-}
+export type Vehiculo = z.infer<typeof vehiculoInputSchema>
 
-export interface Reparacion extends Reparaciones {
-  repuesto: Repuestos & {
-    pedido_repuesto: PedidoRepuesto & {
-      proveedor: Proveedor
-    }
-  }
-  movil: Movil
-}
+export type ReparacionForm = z.infer<typeof reparacionInputSchema>
 
-export type ReparacionForm = Reparaciones & {
-  repuesto: Repuestos
-}
+export type PedidoForm = z.infer<typeof pedidoRepuestoSchema>
 
-export interface Repuesto extends Repuestos {
-  tipo_repuesto: TipoRepuesto
-  reparacion?: Reparaciones
-  pedido_repuesto?: PedidoRepuesto
-}
+export type KilometrajeVehiculo = z.infer<typeof kilometrajeInputSchema>
 
-export interface PedidoRepuesto extends PedidoRepuesto {
-  repuestos: Array<Repuesto & { cantidad: number }>
-  proveedor: Proveedor
-}
+export type Proveedor = z.infer<typeof proveedorInputSchema>
 
-export interface PedidoForm extends PedidoRepuesto {
-  repuestos: {
-    tipo_repuesto: TipoRepuesto
-    cantidad: number
-    item: string
-  }[]
-}
+export type VTV = z.infer<typeof vtvInputSchema>
 
-export type LogisticaForms =
-  | Vehiculo
-  | KilometrajeVehiculo
-  | ReparacionForm
-  | VTV
-  | Repuesto
-  | PedidoForm
-  | proveedor
-  | stock
+export type LogisticaForms = z.infer<typeof logisticaForms>

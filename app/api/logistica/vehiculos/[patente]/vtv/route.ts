@@ -1,7 +1,8 @@
 import { db } from '@/drizzle'
-import { Vtv, vtv } from '@/drizzle/schema/logistica'
+import { vtv } from '@/drizzle/schema/logistica'
 import { vtvDTO } from '@/DTO/logistica/vtv'
 import { searchParamsSchema } from '@/schemas/form'
+import { vtvInputSchema } from '@/schemas/logistica'
 import { count, eq, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
@@ -36,12 +37,13 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: Vtv = await req.json()
+  const json = await req.json()
+  const body = vtvInputSchema.parse(json)
   const { patente } = params
 
   await db.insert(vtv).values({
     patente,
-    fechaEmision: sql`to_date(${body.fechaEmision}, 'YYYY-MM-DD')`,
+    fechaEmision: sql`to_date(${body.fecha_emision}, 'YYYY-MM-DD')`,
     vencimiento: sql`to_date(${body.vencimiento}, 'YYYY-MM-DD')`,
     condicion: body.condicion,
     estado: body.estado,

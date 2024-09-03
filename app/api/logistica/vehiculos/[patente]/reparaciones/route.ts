@@ -1,11 +1,8 @@
 import { db } from '@/drizzle'
-import {
-  Reparaciones,
-  reparaciones,
-  Repuestos,
-} from '@/drizzle/schema/logistica'
+import { reparaciones } from '@/drizzle/schema/logistica'
 import { reparacionesByMovilDTO } from '@/DTO/logistica/reparaciones'
 import { searchParamsSchema } from '@/schemas/form'
+import { reparacionInputSchema } from '@/schemas/logistica'
 import { count, eq, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
@@ -36,7 +33,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: Reparaciones & { repuesto: Repuestos } = await req.json()
+  const json = await req.json()
+  const body = reparacionInputSchema.parse(json)
   const { patente } = params
 
   await db.insert(reparaciones).values({

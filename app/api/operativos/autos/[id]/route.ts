@@ -1,11 +1,5 @@
-import { db } from '@/drizzle'
+import { autosdb, db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/operativos'
-import {
-  barrios,
-  motivos,
-  tipoLicencias,
-  vicenteLopez,
-} from '@/drizzle/schema/schema'
 import { autosInputPropsSchema } from '@/schemas/autos'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
@@ -16,39 +10,33 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const [auto] = await db
-    .select({
-      id: registros.id,
-      acta: registros.acta,
-      dominio: registros.dominio,
-      graduacion_alcoholica: registros.graduacionAlcoholica,
-      licencia: registros.licencia,
-      resolucion: registros.resolucion,
-      tipo_licencia: tipoLicencias,
-      zona_infractor: barrios,
-      motivo: motivos,
-      id_operativo: registros.idOperativo,
-      fecha: operativos.fecha,
-      hora: operativos.hora,
-      localidad: vicenteLopez,
-      turno: operativos.turno,
-      legajo_a_cargo: operativos.legajoACargo,
-      legajo_planilla: operativos.legajoPlanilla,
-      qth: operativos.qth,
-      seguridad: operativos.seguridad,
-    })
-    .from(registros)
-    .innerJoin(operativos, eq(operativos.idOp, registros.idOperativo))
-    .innerJoin(vicenteLopez, eq(operativos.idLocalidad, vicenteLopez.idBarrio))
-    .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
-    .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
-    .innerJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
-    .where(eq(registros.id, Number(id)))
+  const auto = await autosdb.query.registros.findFirst({
+    where: (registro, { eq }) => eq(registro.id, Number(id)),
+    with: {
+      operativo: {
+        with: {
+          localidad: true,
+        },
+      },
+      tipoLicencia: true,
+      barrio: true,
+      motivo: true,
+    },
+  })
 
   if (auto) {
-    return NextResponse.json(auto)
+    const { operativo, ...rest } = auto
+    return NextResponse.json({
+      operativo,
+      registro: {
+        ...rest,
+        zona_infractor: rest.barrio,
+        tipo_licencia: rest.tipoLicencia,
+        graduacion_alcoholica: rest.graduacionAlcoholica,
+      },
+    })
   }
-  return NextResponse.json(null)
+  return NextResponse.redirect('operativos/autos')
 }
 
 export async function PUT(req: Request, state: { params: { id: string } }) {

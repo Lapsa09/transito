@@ -12,5 +12,5 @@ export interface OperariosDTO extends OperariosServicios {
 
 export interface Servicio extends Servicios {
   clientes: Clientes
-  operarios_servicios: OperariosDTO[]
+  cantidad_operarios: number
 }

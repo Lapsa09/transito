@@ -15,11 +15,15 @@ export async function PUT(req: NextRequest, state: { params: { id: string } }) {
     .where(eq(operariosServicios.id, +id))
     .returning()
 
-  await db.update(servicios).set({
-    importeServicio: !cancelado
-      ? sql<number>`${servicios.importeServicio}-${update.aCobrar}`
-      : sql<number>`${servicios.importeServicio}+${update.aCobrar}`,
-  })
+  await db
+    .update(servicios)
+    .set({
+      importeServicio: !cancelado
+        ? sql<number>`${servicios.importeServicio}-${update.aCobrar}`
+        : sql<number>`${servicios.importeServicio}+${update.aCobrar}`,
+    })
+    .where(eq(servicios.idServicio, update.idServicio))
+    .execute()
 
   return NextResponse.json('Exito')
 }

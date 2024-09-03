@@ -98,7 +98,11 @@ export async function POST(
       })
       .returning()
 
-    const examen = await examenDTO(id, tipo_examen, invitado.id)
+    const examen = await examenDTO({
+      id,
+      tipo_examen,
+      id_invitado: invitado.id,
+    })
 
     const [tipo] = await db
       .select()

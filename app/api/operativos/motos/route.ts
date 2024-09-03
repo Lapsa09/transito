@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { geoLocation } from '@/services'
-import { revalidateTag } from 'next/cache'
-import { z } from 'zod'
+import { MotosDTO, motosDTO } from '@/DTO/operativos/motos'
+import { autosdb, db } from '@/drizzle'
+import {
+  motoMotivo,
+  Operativo,
+  operativos,
+  Registro,
+  registros,
+} from '@/drizzle/schema/motos'
 import {
   Barrio,
   barrios,
@@ -15,19 +20,17 @@ import {
   VicenteLopez,
   vicenteLopez,
 } from '@/drizzle/schema/schema'
-import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
-import {
-  motoMotivo,
-  Operativo,
-  operativos,
-  Registro,
-  registros,
-} from '@/drizzle/schema/motos'
+import { authOptions } from '@/lib/auth'
 import { filterColumn } from '@/lib/filter-column'
-import { MotosDTO, motosDTO } from '@/DTO/operativos/motos'
-import { autosdb, db } from '@/drizzle'
+import { searchParamsSchema } from '@/schemas/form'
 import { motosInputPropsSchema } from '@/schemas/motos'
+import { geoLocation } from '@/services'
+import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
 import { createSelectSchema } from 'drizzle-zod'
+import { getServerSession } from 'next-auth'
+import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 const operativoMotos = async (body: z.infer<typeof motosInputPropsSchema>) => {
   const {
@@ -121,25 +124,23 @@ const operativoMotos = async (body: z.infer<typeof motosInputPropsSchema>) => {
   }
 }
 
-const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
-  per_page: z.coerce.number().default(10),
-  sort: z.string().optional(),
-  fecha: z.string().date().optional(),
-  operator: z.enum(['and', 'or']).default('and'),
-  dominio: z.string().optional(),
-  turno: z.enum(turnos.enumValues).optional(),
-  motivo: z.string().optional(),
-  zona_infractor: z.string().optional(),
-  localidad: z.string().optional(),
-  tipo_licencia: z.string().optional(),
-  resolucion: z.enum(resolucion.enumValues).optional(),
-})
+const searchMotosParamsSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().date().optional(),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    motivo: z.string().optional(),
+    zona_infractor: z.string().optional(),
+    localidad: z.string().optional(),
+    tipo_licencia: z.string().optional(),
+    resolucion: z.enum(resolucion.enumValues).optional(),
+  }),
+)
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const input = searchParamsSchema.parse(
+    const input = searchMotosParamsSchema.parse(
       Object.fromEntries(new URLSearchParams(searchParams).entries()),
     )
 
@@ -299,13 +300,15 @@ export async function POST(req: Request) {
     })
   }
 
+  const user = await getServerSession(authOptions)
+
   const [moto] = await db
     .insert(registros)
     .values({
       acta: body.data.acta,
       dominio: body.data.dominio.toUpperCase(),
       licencia: body.data.licencia,
-      lpcarga: body.data.lpcarga,
+      lpcarga: user?.user?.legajo,
       resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
       idLicencia: body.data.tipo_licencia?.idTipo,
       idZonaInfractor: body.data.zona_infractor?.idBarrio,

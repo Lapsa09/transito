@@ -1,11 +1,10 @@
 'use client'
 
-// import type { DataTableFilterField } from '@/types/data-table'
 import * as React from 'react'
 import { DataTable } from '@/components/data-table/data-table'
 import { useDataTable } from '@/hooks/use-data-table'
 import { DataTableAdvancedToolbar } from '@/components/data-table/advanced/data-table-advanced-toolbar'
-import { getColumns } from './columns'
+import { getColumns, repuestosColumns } from './columns'
 import { Filter } from '@/DTO/filters'
 import { PedidosDTO } from '@/DTO/logistica/pedidos'
 
@@ -14,69 +13,36 @@ interface TasksTableProps {
   filters?: Filter
 }
 
-export function PedidosTable({
-  tasks: { data, pages },
-  // filters,
-}: TasksTableProps) {
+export function PedidosTable({ tasks: { data, pages } }: TasksTableProps) {
   const columns = React.useMemo(() => getColumns(), [])
-
-  // const filterFields: DataTableFilterField<VehiculoDTO>[] = [
-  //   {
-  //     label: 'Localidad',
-  //     value: 'localidad',
-  //     options: filters.localidad,
-  //     placeholder: 'Filtrar localidad...',
-  //   },
-  //   {
-  //     label: 'Turno',
-  //     value: 'turno',
-  //     options: filters.turno,
-  //     placeholder: 'Filtrar turno...',
-  //   },
-  //   {
-  //     label: 'Dominio',
-  //     value: 'dominio',
-  //     placeholder: 'Filtrar dominio...',
-  //   },
-  //   {
-  //     label: 'Licencia',
-  //     value: 'tipo_licencia',
-  //     placeholder: 'Filtrar licencia...',
-  //     options: filters.tipo_licencia,
-  //   },
-  //   {
-  //     label: 'Zona Infractor',
-  //     value: 'zona_infractor',
-  //     placeholder: 'Filtrar zona infractor...',
-  //     options: filters.zona_infractor,
-  //   },
-  //   {
-  //     label: 'Resolucion',
-  //     value: 'resolucion',
-  //     placeholder: 'Filtrar resolucion...',
-  //     options: filters.resolucion,
-  //   },
-  //   {
-  //     label: 'Motivo',
-  //     value: 'motivo',
-  //     placeholder: 'Filtrar motivo...',
-  //     options: filters.motivo,
-  //   },
-  // ]
 
   const { table } = useDataTable({
     data,
     columns,
     pageCount: pages,
     // optional props
-    // filterFields,
     defaultPerPage: 10,
     defaultSort: 'id.desc',
   })
 
   return (
-    <DataTable table={table}>
+    <DataTable table={table} expand={Repuestos}>
       <DataTableAdvancedToolbar table={table} />
     </DataTable>
   )
+}
+
+export function Repuestos({ data }: { data: PedidosDTO }) {
+  const columns = React.useMemo(() => repuestosColumns(), [])
+
+  const { table } = useDataTable({
+    data: data.repuestos,
+    columns,
+    pageCount: data.repuestos.length,
+    // optional props
+    defaultPerPage: 10,
+    defaultSort: 'item.desc',
+  })
+
+  return <DataTable table={table} />
 }

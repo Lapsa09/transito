@@ -52,7 +52,7 @@ export function getColumns(): ColumnDef<PedidosDTO>[] {
     },
   ]
 }
-export const RepuestosColumns: ColumnDef<PedidosDTO['repuestos'][0]>[] = [
+export const repuestosColumns = (): ColumnDef<PedidosDTO['repuestos'][0]>[] => [
   {
     accessorFn: (row) => row.item,
     header: ({ column }) => (

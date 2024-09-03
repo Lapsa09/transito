@@ -1,7 +1,7 @@
 import type { Parte } from '@/types/radio'
 import { ColumnDef } from '@tanstack/react-table'
 
-export const columns: ColumnDef<Parte>[] = [
+export const getColumns = (): ColumnDef<Parte>[] => [
   {
     accessorFn: (row) =>
       new Date(row.fecha).toLocaleDateString('UTC', { timeZone: 'GMT' }),

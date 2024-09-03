@@ -1,12 +1,6 @@
-import { db } from '@/drizzle'
+import { db, motosdb } from '@/drizzle'
 import { motoMotivo, operativos, registros } from '@/drizzle/schema/motos'
-import {
-  barrios,
-  Motivo,
-  motivos,
-  tipoLicencias,
-  vicenteLopez,
-} from '@/drizzle/schema/schema'
+import { motivos } from '@/drizzle/schema/schema'
 import { motosInputPropsSchema } from '@/schemas/motos'
 import { eq, sql } from 'drizzle-orm'
 import { createSelectSchema } from 'drizzle-zod'
@@ -18,40 +12,36 @@ export async function GET(_: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const [moto] = await db
-    .select({
-      acta: registros.acta,
-      dominio: registros.dominio,
-      fecha: operativos.fecha,
-      hora: operativos.hora,
-      id_op: operativos.idOp,
-      legajo_a_cargo: operativos.legajoACargo,
-      legajo_planilla: operativos.legajoPlanilla,
-      licencia: registros.licencia,
-      qth: operativos.qth,
-      resolucion: registros.resolucion,
-      seguridad: operativos.seguridad,
-      turno: operativos.turno,
-      zona_infractor: barrios,
-      localidad: vicenteLopez,
-      tipo_licencia: tipoLicencias,
-      motivos: sql<
-        Motivo[]
-      >`select json_agg(json_build_object(id_motivo,${motivos.idMotivo},motivo,${motivos.motivo})) from ${motoMotivo} inner join ${motivos} on ${motoMotivo.idMotivo} = ${motivos.idMotivo} where ${motoMotivo.idRegistro} = ${registros.id}`,
-    })
-    .from(registros)
-    .where(eq(registros.id, Number(id)))
-    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-    .innerJoin(vicenteLopez, eq(operativos.idZona, vicenteLopez.idBarrio))
-    .leftJoin(motoMotivo, eq(registros.id, motoMotivo.idRegistro))
-    .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
-    .innerJoin(motivos, eq(motoMotivo.idMotivo, motivos.idMotivo))
-    .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
+  const moto = await motosdb.query.registros.findFirst({
+    where: (registro, { eq }) => eq(registro.id, Number(id)),
+    with: {
+      operativo: {
+        with: {
+          localidad: true,
+        },
+      },
+      tipoLicencia: true,
+      barrio: true,
+      motivos: {
+        with: {
+          motivo: true,
+        },
+      },
+    },
+  })
 
   if (moto) {
-    return NextResponse.json(moto)
+    const { operativo, ...rest } = moto
+    return NextResponse.json({
+      registro: {
+        ...rest,
+        zona_infractor: moto.barrio,
+        tipo_licencia: moto.tipoLicencia,
+      },
+      operativo,
+    })
   }
-  return NextResponse.json(null)
+  return NextResponse.redirect('operativos/motos')
 }
 
 export async function PUT(req: Request, state: { params: { id: string } }) {

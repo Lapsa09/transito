@@ -12,7 +12,7 @@ import * as logistica from './schema/logistica'
 import * as relations from './schema/relations'
 import * as waze from './schema/waze'
 
-const client = postgres(process.env.DATABASE_URL!)
+const client = postgres(process.env.DATABASE_URL!, { max: 5 })
 
 // { schema } is used for relational queries
 export const riodb = drizzle(client, {

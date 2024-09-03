@@ -10,10 +10,9 @@ import {
   operativoInputSchema,
   registroInputSchema,
 } from '@/schemas/rio'
-import { setter } from '@/services'
+import { setter, updater } from '@/services'
 import { setExpiration } from '@/utils/misc'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSession } from 'next-auth/react'
 import React, { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
@@ -21,15 +20,18 @@ import { z } from 'zod'
 import { Button } from '../ui'
 import { turnosSchema } from '@/drizzle/schema/schema'
 import { zonas } from '@/drizzle/schema/nuevo_control'
+import { useRouter } from 'next/navigation'
 
 type FormProps = z.infer<typeof operativoInputSchema>
 
 export function FirstStep({
   selects,
+  editableOperativo,
 }: {
   selects: {
-    turnos: { id: keyof typeof turnosSchema.enum; label: string }[]
+    turnos: Record<'id' | 'label', keyof typeof turnosSchema.enum>[]
   }
+  editableOperativo?: FormProps
 }) {
   const { turnos } = selects
 
@@ -48,7 +50,7 @@ export function FirstStep({
 
   const formProps = useForm<FormProps>({
     resolver: zodResolver(operativoInputSchema),
-    defaultValues: operativo,
+    defaultValues: { ...operativo, ...editableOperativo },
     mode: 'onBlur',
   })
 
@@ -118,19 +120,22 @@ export function FirstStep({
 
 export function SecondStep({
   selects,
+  editableRegistro,
+  id,
 }: {
   selects: {
     zonasPaseo: (typeof zonas.$inferSelect)[]
   }
+  editableRegistro?: z.infer<typeof registroInputSchema>
+  id?: string
 }) {
   const { zonasPaseo } = selects
-
-  const { data } = useSession()
+  const router = useRouter()
   const formProps = useForm<z.infer<typeof registroInputSchema>>({
     mode: 'onBlur',
     resolver: zodResolver(registroInputSchema),
     defaultValues: {
-      lpcarga: data?.user?.legajo,
+      ...editableRegistro,
     },
   })
   const { setActiveStep } = useStepForm()
@@ -154,18 +159,27 @@ export function SecondStep({
 
   const handleSubmit = async (body: z.infer<typeof registroInputSchema>) => {
     try {
-      await setter<void>({
-        route: `/operativos/rio`,
-        body: {
-          ...body,
-          ...operativoInputSchema.safeParse(operativo).data,
-        },
-      })
-      toast({ title: 'Operativo creado con exito', variant: 'success' })
+      if (!id) {
+        await setter<void>({
+          route: `/operativos/rio`,
+          body: {
+            ...body,
+            ...operativoInputSchema.safeParse(operativo).data,
+          },
+        })
+        toast({ title: 'Operativo creado con exito', variant: 'success' })
 
-      formProps.reset()
+        formProps.reset()
 
-      formProps.setFocus('dominio')
+        formProps.setFocus('dominio')
+      } else {
+        await updater<void>({
+          route: `/operativos/rio/${id}`,
+          body,
+        })
+        toast({ title: 'Operativo actualizado con exito', variant: 'success' })
+        router.back()
+      }
     } catch (error: any) {
       toast({
         title: error.response?.data || error.message,

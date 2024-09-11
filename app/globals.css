@@ -65,6 +65,10 @@
   }
 }
 
+:root {
+  scroll-behavior: smooth;
+}
+
 input::-webkit-calendar-picker-indicator {
   display: none;
 }

@@ -352,7 +352,7 @@ function page() {
       <NavigationMenu className="mx-auto">
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Link href="#who" legacyBehavior passHref>
+            <Link replace href="#who" legacyBehavior passHref>
               <NavigationMenuLink
                 className={cn(
                   navigationMenuTriggerStyle(),
@@ -364,7 +364,7 @@ function page() {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="#history" legacyBehavior passHref>
+            <Link replace href="#history" legacyBehavior passHref>
               <NavigationMenuLink
                 className={cn(
                   navigationMenuTriggerStyle(),
@@ -376,7 +376,7 @@ function page() {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="#dashboards" legacyBehavior passHref>
+            <Link replace href="#dashboards" legacyBehavior passHref>
               <NavigationMenuLink
                 className={cn(
                   navigationMenuTriggerStyle(),
@@ -388,7 +388,7 @@ function page() {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="#expansion" legacyBehavior passHref>
+            <Link replace href="#expansion" legacyBehavior passHref>
               <NavigationMenuLink
                 className={cn(
                   navigationMenuTriggerStyle(),
@@ -410,7 +410,7 @@ function page() {
 
       <SectionExpansion />
 
-      <Link href="#">
+      <Link replace href="#">
         <FaAngleUp className="fixed right-4 bottom-16 w-12 h-12 rounded-full bg-green-700 shadow-sm opacity-0 hover:opacity-80 focus:opacity-90 active:opacity-100 transition-opacity" />
       </Link>
     </div>

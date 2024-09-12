@@ -1,37 +1,66 @@
 import { db } from '@/drizzle'
-import { pedidoRepuesto, repuesto } from '@/drizzle/schema/logistica'
-import { PedidosDTO, pedidosDTO } from '@/DTO/logistica/pedidos'
+import {
+  pedidoRepuesto,
+  proveedor as proveedores,
+  repuesto,
+} from '@/drizzle/schema/logistica'
+import { pedidosDTO } from '@/DTO/logistica/pedidos'
+import { filterColumn } from '@/lib/filter-column'
 import { searchParamsSchema } from '@/schemas/form'
 import { pedidoRepuestoSchema } from '@/schemas/logistica'
-import { count } from 'drizzle-orm'
+import { and, count, eq, or, SQL } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl
-  const { page, per_page, sort } = searchParamsSchema.parse(searchParams)
-  const [column, order] = (sort?.split('.').filter(Boolean) ?? [
-    'id',
-    'desc',
-  ]) as [keyof PedidosDTO, 'asc' | 'desc']
+  try {
+    const { searchParams } = req.nextUrl
+    const { page, per_page, operator, proveedor } = searchParamsSchema
+      .merge(
+        z.object({
+          proveedor: z.string().optional(),
+        }),
+      )
+      .parse(Object.fromEntries(new URLSearchParams(searchParams).entries()))
+    const expressions: (SQL<unknown> | undefined)[] = [
+      !!proveedor
+        ? filterColumn({
+            column: proveedores.nombre,
+            value: proveedor,
+          })
+        : undefined,
+    ]
 
-  const pedidos = await pedidosDTO({
-    page,
-    per_page,
-  })
+    const where =
+      !operator || operator === 'and' ? and(...expressions) : or(...expressions)
 
-  const total = await db
-    .select({
-      count: count(),
+    const pedidos = await pedidosDTO({
+      page,
+      per_page,
+      where,
     })
-    .from(pedidoRepuesto)
-    .execute()
-    .then((res) => res[0].count)
 
-  return NextResponse.json({
-    data: pedidos,
-    pages: Math.ceil(total / per_page),
-  })
+    const total = await db
+      .select({
+        count: count(),
+      })
+      .from(pedidoRepuesto)
+      .innerJoin(proveedores, eq(proveedores.id, pedidoRepuesto.idProveedor))
+      .where(where)
+      .execute()
+      .then((res) => res[0].count)
+
+    return NextResponse.json({
+      data: pedidos,
+      pages: Math.ceil(total / per_page),
+    })
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json([], {
+      status: 500,
+    })
+  }
 }
 
 export async function POST(req: NextRequest) {

@@ -2,6 +2,7 @@ import React from 'react'
 import { fetcher } from '@/services'
 import { proveedor } from '@/drizzle/schema/logistica'
 import { ProveedoresTable } from './table'
+import { Filter } from '@/DTO/filters'
 
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
@@ -21,6 +22,16 @@ const getAutos = async (searchParams: string) => {
   return data
 }
 
+const getFilters = async () => {
+  const res = await fetcher('api/filters', {
+    next: {
+      tags: ['filters'],
+    },
+  })
+  const data: Filter = await res.json()
+  return data
+}
+
 async function page({
   searchParams,
 }: {
@@ -28,7 +39,9 @@ async function page({
 }) {
   const data = await getAutos(new URLSearchParams(searchParams).toString())
 
-  return <ProveedoresTable tasks={data} />
+  const filters = await getFilters()
+
+  return <ProveedoresTable tasks={data} filters={filters} />
 }
 
 export default page

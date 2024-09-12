@@ -8,6 +8,7 @@ import { DataTableAdvancedToolbar } from '@/components/data-table/advanced/data-
 import { getColumns } from './columns'
 import { Filter } from '@/DTO/filters'
 import { KilometrajeDTO } from '@/DTO/logistica/kilometraje'
+import { DataTableFilterField } from '@/types/data-table'
 
 interface TasksTableProps {
   tasks: { data: KilometrajeDTO[]; pages: number }
@@ -20,56 +21,21 @@ export function KilometrajeTable({
 }: TasksTableProps) {
   const columns = React.useMemo(() => getColumns(), [])
 
-  // const filterFields: DataTableFilterField<VehiculoDTO>[] = [
-  //   {
-  //     label: 'Localidad',
-  //     value: 'localidad',
-  //     options: filters.localidad,
-  //     placeholder: 'Filtrar localidad...',
-  //   },
-  //   {
-  //     label: 'Turno',
-  //     value: 'turno',
-  //     options: filters.turno,
-  //     placeholder: 'Filtrar turno...',
-  //   },
-  //   {
-  //     label: 'Dominio',
-  //     value: 'dominio',
-  //     placeholder: 'Filtrar dominio...',
-  //   },
-  //   {
-  //     label: 'Licencia',
-  //     value: 'tipo_licencia',
-  //     placeholder: 'Filtrar licencia...',
-  //     options: filters.tipo_licencia,
-  //   },
-  //   {
-  //     label: 'Zona Infractor',
-  //     value: 'zona_infractor',
-  //     placeholder: 'Filtrar zona infractor...',
-  //     options: filters.zona_infractor,
-  //   },
-  //   {
-  //     label: 'Resolucion',
-  //     value: 'resolucion',
-  //     placeholder: 'Filtrar resolucion...',
-  //     options: filters.resolucion,
-  //   },
-  //   {
-  //     label: 'Motivo',
-  //     value: 'motivo',
-  //     placeholder: 'Filtrar motivo...',
-  //     options: filters.motivo,
-  //   },
-  // ]
+  const filterFields: DataTableFilterField<KilometrajeDTO>[] = [
+    {
+      label: 'Fecha',
+      value: 'fecha',
+      type: 'date',
+      placeholder: 'Filtrar fecha...',
+    },
+  ]
 
   const { table } = useDataTable({
     data,
     columns,
     pageCount: pages,
     // optional props
-    // filterFields,
+    filterFields,
     defaultPerPage: 10,
     defaultSort: 'fecha.desc',
   })

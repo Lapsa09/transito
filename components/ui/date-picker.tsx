@@ -13,7 +13,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { SelectSingleEventHandler } from 'react-day-picker'
 
 interface DatePickerProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
@@ -52,6 +52,10 @@ interface DatePickerProps
    * @type string
    */
   triggerClassName?: string
+
+  storageKey?: string
+
+  setDate: SelectSingleEventHandler
 }
 
 export function DatePicker({
@@ -60,38 +64,11 @@ export function DatePicker({
   triggerClassName,
   triggerSize,
   className,
+  date,
+  setDate,
+  storageKey = 'fecha',
   ...props
 }: DatePickerProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [date, setDate] = React.useState<Date | undefined>(() => {
-    const fecha = searchParams.get('fecha')
-
-    let day: Date | undefined
-
-    if (props.date) {
-      day = props.date
-    }
-
-    return fecha ? new Date(fecha + 'T00:00:00') : day
-  })
-
-  React.useEffect(() => {
-    const newSearchParams = new URLSearchParams(searchParams)
-    if (date) {
-      newSearchParams.set('fecha', format(date, 'yyyy-MM-dd'))
-    } else {
-      newSearchParams.delete('fecha')
-    }
-
-    router.replace(`${pathname}?${newSearchParams.toString()}`, {
-      scroll: false,
-    })
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date])
-
   return (
     <Popover>
       <PopoverTrigger asChild>

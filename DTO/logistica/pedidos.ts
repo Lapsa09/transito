@@ -5,14 +5,17 @@ import {
   repuesto,
   tipoRepuesto,
 } from '@/drizzle/schema/logistica'
-import { eq, sql } from 'drizzle-orm'
+import { jsonAgg } from '@/utils/misc'
+import { SQL, eq } from 'drizzle-orm'
 
 export async function pedidosDTO({
   page,
   per_page,
+  where,
 }: {
   page: number
   per_page: number
+  where?: SQL
 }) {
   return await db
     .select({
@@ -21,16 +24,21 @@ export async function pedidosDTO({
       fechaEntrega: pedidoRepuesto.fechaEntrega,
       ordenCompra: pedidoRepuesto.ordenCompra,
       proveedor: proveedor.nombre,
-      repuestos: sql<
-        {
-          item: string
-          tipoRepuesto: string
-          cantidad: number
-        }[]
-      >`select ${repuesto.item}, ${tipoRepuesto.tipo} as tipoRepuesto, count(*) as cantidad from ${repuesto} inner join ${tipoRepuesto} on ${repuesto.idTipoRepuesto} = ${tipoRepuesto.idTipoRepuesto} where ${repuesto.idPedido} = ${pedidoRepuesto.id} group by ${repuesto.item}, ${tipoRepuesto.tipo}`,
+      repuestos: jsonAgg({
+        item: repuesto.item,
+        tipoRepuesto: tipoRepuesto.tipo,
+      }),
     })
     .from(pedidoRepuesto)
+    .where(where)
     .innerJoin(repuesto, eq(repuesto.idPedido, pedidoRepuesto.id))
+    .groupBy(
+      pedidoRepuesto.id,
+      proveedor.nombre,
+      pedidoRepuesto.fechaPedido,
+      pedidoRepuesto.fechaEntrega,
+      pedidoRepuesto.ordenCompra,
+    )
     .innerJoin(
       tipoRepuesto,
       eq(repuesto.idTipoRepuesto, tipoRepuesto.idTipoRepuesto),

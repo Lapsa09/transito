@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select'
 
 import { DataTableAdvancedFacetedFilter } from './data-table-advanced-faceted-filter'
+import { DatePicker } from '@/components/ui/date-picker'
 
 interface DataTableFilterItemProps<TData> {
   table: Table<TData>
@@ -59,16 +60,25 @@ export function DataTableFilterItem<TData>({
     (item) => item.value === column?.id,
   )?.filterOperator
 
-  const operators =
-    selectedOption.options.length > 0
-      ? dataTableConfig.selectableOperators
-      : dataTableConfig.comparisonOperators
+  const operators = React.useMemo(() => {
+    if (selectedOption.type === 'select') {
+      return dataTableConfig.selectableOperators
+    } else if (selectedOption.type === 'date') {
+      return dataTableConfig.dateOperators
+    } else {
+      return dataTableConfig.comparisonOperators
+    }
+  }, [selectedOption])
 
   const [value, setValue] = React.useState(filterValues[0] ?? '')
+  const [dateValue, setDateValue] = React.useState<Date | undefined>(
+    filterValues[0] ? new Date(filterValues[0] + 'T00:00:00') : undefined,
+  )
   const debounceValue = useDebounce(value, 500)
   const [open, setOpen] = React.useState(defaultOpen)
   const [selectedOperator, setSelectedOperator] = React.useState(
-    operators.find((c) => c.value === filterOperator) ?? operators[0],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    [...operators].find((c) => c.value === filterOperator) ?? operators[0],
   )
 
   // Create query string
@@ -100,6 +110,14 @@ export function DataTableFilterItem<TData>({
             : null,
       })
       router.push(`${pathname}?${newSearchParams}`)
+    } else if (selectedOption.type === 'date') {
+      // key=value~operator
+      const newSearchParams = createQueryString({
+        [String(selectedOption.value)]: dateValue
+          ? `${dateValue.toISOString().split('T')[0]}~${selectedOperator?.value}`
+          : null,
+      })
+      router.push(`${pathname}?${newSearchParams}`)
     } else {
       // key=value~operator
       const newSearchParams = createQueryString({
@@ -112,7 +130,7 @@ export function DataTableFilterItem<TData>({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOption, debounceValue, selectedOperator])
+  }, [selectedOption, debounceValue, selectedOperator, dateValue])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -138,12 +156,19 @@ export function DataTableFilterItem<TData>({
                         .join(', ')}
                 </span>
               )
-            : value.length > 0 && (
-                <span className="text-muted-foreground">
-                  <span className="text-foreground">: </span>
-                  {value}
-                </span>
-              )}
+            : selectedOption.type === 'date'
+              ? dateValue && (
+                  <span className="text-muted-foreground">
+                    <span className="text-foreground">: </span>
+                    {dateValue.toLocaleDateString()}
+                  </span>
+                )
+              : value.length > 0 && (
+                  <span className="text-muted-foreground">
+                    <span className="text-foreground">: </span>
+                    {value}
+                  </span>
+                )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-60 space-y-1.5 p-2" align="start">
@@ -155,7 +180,9 @@ export function DataTableFilterItem<TData>({
             <Select
               value={selectedOperator?.value}
               onValueChange={(value) =>
-                setSelectedOperator(operators.find((c) => c.value === value)!)
+                setSelectedOperator(
+                  [...operators].find((c) => c.value === value)!,
+                )
               }
             >
               <SelectTrigger className="h-auto w-fit truncate border-none px-2 py-0.5 text-xs hover:bg-muted/50">
@@ -195,7 +222,7 @@ export function DataTableFilterItem<TData>({
             <RxTrash className="size-4" aria-hidden="true" />
           </Button>
         </div>
-        {selectedOption.options.length > 0 ? (
+        {selectedOption.type === 'select' ? (
           column && (
             <DataTableAdvancedFacetedFilter
               key={String(selectedOption.value)}
@@ -206,6 +233,16 @@ export function DataTableFilterItem<TData>({
               setSelectedOptions={setSelectedOptions}
             />
           )
+        ) : selectedOption.type === 'date' ? (
+          <DatePicker
+            triggerSize="sm"
+            triggerVariant="outline"
+            date={dateValue}
+            storageKey={selectedOption.id}
+            setDate={setDateValue}
+            triggerClassName="ml-auto w-full"
+            placeholder="Filtrar por fecha..."
+          />
         ) : (
           <Input
             placeholder="Type here..."

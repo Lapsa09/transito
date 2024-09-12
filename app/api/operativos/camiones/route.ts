@@ -33,7 +33,7 @@ import { z } from 'zod'
 
 const searchCamionesParamsSchema = searchParamsSchema.merge(
   z.object({
-    fecha: z.string().date().optional(),
+    fecha: z.string().optional(),
     operator: z.enum(['and', 'or']).default('and'),
     dominio: z.string().optional(),
     turno: z.enum(turnos.enumValues).optional(),
@@ -130,7 +130,11 @@ export async function GET(req: NextRequest) {
 
     const expressions: (SQL<unknown> | undefined)[] = [
       !!input.fecha
-        ? eq(operativos.fecha, sql<Date>`to_date(${input.fecha}, 'yyyy-mm-dd')`)
+        ? filterColumn({
+            column: operativos.fecha,
+            value: input.fecha,
+            isDate: true,
+          })
         : undefined,
       input.turno
         ? filterColumn({
@@ -242,6 +246,20 @@ export async function GET(req: NextRequest) {
     const totalPromise = db
       .select({ count: count() })
       .from(registros)
+      .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+      .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+      .innerJoin(
+        vicenteLopez,
+        eq(operativos.idLocalidad, vicenteLopez.idBarrio),
+      )
+      .innerJoin(
+        localidad_origen,
+        eq(registros.idLocalidadOrigen, localidad_origen.idBarrio),
+      )
+      .innerJoin(
+        localidad_destino,
+        eq(registros.idLocalidadDestino, localidad_destino.idBarrio),
+      )
       .where(where)
       .execute()
       .then(([{ count }]) => count)

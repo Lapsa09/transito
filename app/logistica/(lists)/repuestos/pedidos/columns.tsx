@@ -67,11 +67,11 @@ export const repuestosColumns = (): ColumnDef<PedidosDTO['repuestos'][0]>[] => [
     ),
     id: 'tipoRepuesto',
   },
-  {
-    accessorFn: (row) => row.cantidad,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cantidad" />
-    ),
-    id: 'cantidad',
-  },
+  // {
+  //   accessorFn: (row) => row.cantidad,
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Cantidad" />
+  //   ),
+  //   id: 'cantidad',
+  // },
 ]

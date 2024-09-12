@@ -13,6 +13,14 @@ export const dataTableConfig = {
     { label: 'Esta vacio', value: 'isNull' as const },
     { label: 'No esta vacio', value: 'isNotNull' as const },
   ],
+  dateOperators: [
+    { label: 'Es', value: 'eq' as const },
+    { label: 'No es', value: 'notEq' as const },
+    { label: 'Es mayor que', value: 'gt' as const },
+    { label: 'Es mayor o igual que', value: 'gte' as const },
+    { label: 'Es menor que', value: 'lt' as const },
+    { label: 'Es menor o igual que', value: 'lte' as const },
+  ],
   selectableOperators: [
     { label: 'Es', value: 'eq' as const },
     { label: 'No es', value: 'notEq' as const },

@@ -1,15 +1,16 @@
 import { db } from '@/drizzle'
 import { kilometrajeVehiculos, movil } from '@/drizzle/schema/logistica'
-import { eq } from 'drizzle-orm'
+import { SQL, eq } from 'drizzle-orm'
 
 export async function kilometrajeDTO({
-  patente,
   page = 1,
   per_page = 10,
+  where,
 }: {
   patente: string
   page: number
   per_page: number
+  where?: SQL
 }) {
   return db
     .select({
@@ -25,7 +26,7 @@ export async function kilometrajeDTO({
     })
     .from(kilometrajeVehiculos)
     .innerJoin(movil, eq(kilometrajeVehiculos.patente, movil.patente))
-    .where(eq(kilometrajeVehiculos.patente, patente))
+    .where(where)
     .limit(per_page)
     .offset((page - 1) * per_page)
 }

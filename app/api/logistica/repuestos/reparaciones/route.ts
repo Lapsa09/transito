@@ -10,29 +10,36 @@ import { count, eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl
-  const { page, per_page } = searchParamsSchema.parse(searchParams)
-
-  const listaReparaciones = await db
-    .select()
-    .from(reparaciones)
-    .innerJoin(movil, eq(reparaciones.patente, movil.patente))
-    .innerJoin(repuesto, eq(reparaciones.articulo, repuesto.id))
-    .innerJoin(
-      tipoRepuesto,
-      eq(repuesto.idTipoRepuesto, tipoRepuesto.idTipoRepuesto),
+  try {
+    const { searchParams } = req.nextUrl
+    const { page, per_page } = searchParamsSchema.parse(
+      Object.fromEntries(new URLSearchParams(searchParams).entries()),
     )
-    .offset((page - 1) * per_page)
-    .limit(per_page)
 
-  const total = await db
-    .select({ count: count() })
-    .from(reparaciones)
-    .execute()
-    .then((res) => res[0].count)
+    const listaReparaciones = await db
+      .select()
+      .from(reparaciones)
+      .innerJoin(movil, eq(reparaciones.patente, movil.patente))
+      .innerJoin(repuesto, eq(reparaciones.articulo, repuesto.id))
+      .innerJoin(
+        tipoRepuesto,
+        eq(repuesto.idTipoRepuesto, tipoRepuesto.idTipoRepuesto),
+      )
+      .offset((page - 1) * per_page)
+      .limit(per_page)
 
-  return NextResponse.json({
-    data: listaReparaciones,
-    pages: Math.ceil(total / per_page).toString(),
-  })
+    const total = await db
+      .select({ count: count() })
+      .from(reparaciones)
+      .execute()
+      .then((res) => res[0].count)
+
+    return NextResponse.json({
+      data: listaReparaciones,
+      pages: Math.ceil(total / per_page).toString(),
+    })
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json([], { status: 500 })
+  }
 }

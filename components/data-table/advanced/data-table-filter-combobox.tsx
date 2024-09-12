@@ -2,7 +2,13 @@
 
 import * as React from 'react'
 import type { DataTableFilterOption } from '@/types/data-table'
-import { RxCaretSort, RxChevronDown, RxPlus, RxText } from 'react-icons/rx'
+import {
+  RxCalendar,
+  RxCaretSort,
+  RxChevronDown,
+  RxPlus,
+  RxText,
+} from 'react-icons/rx'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -91,6 +97,8 @@ export function DataTableFilterCombobox<TData>({
                         className="mr-2 size-4"
                         aria-hidden="true"
                       />
+                    ) : option.type === 'date' ? (
+                      <RxCalendar className="mr-2 size-4" aria-hidden="true" />
                     ) : (
                       <RxText className="mr-2 size-4" aria-hidden="true" />
                     )}

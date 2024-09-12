@@ -7,6 +7,7 @@ import { DataTableAdvancedToolbar } from '@/components/data-table/advanced/data-
 import { getColumns } from './columns'
 import { Filter } from '@/DTO/filters'
 import { ReparacionesByMovilDTO } from '@/DTO/logistica/reparaciones'
+import { DataTableFilterField } from '@/types/data-table'
 
 interface TasksTableProps {
   tasks: { data: ReparacionesByMovilDTO[]; pages: number }
@@ -19,56 +20,43 @@ export function ReparacionesTable({
 }: TasksTableProps) {
   const columns = React.useMemo(() => getColumns(), [])
 
-  // const filterFields: DataTableFilterField<VehiculoDTO>[] = [
-  //   {
-  //     label: 'Localidad',
-  //     value: 'localidad',
-  //     options: filters.localidad,
-  //     placeholder: 'Filtrar localidad...',
-  //   },
-  //   {
-  //     label: 'Turno',
-  //     value: 'turno',
-  //     options: filters.turno,
-  //     placeholder: 'Filtrar turno...',
-  //   },
-  //   {
-  //     label: 'Dominio',
-  //     value: 'dominio',
-  //     placeholder: 'Filtrar dominio...',
-  //   },
-  //   {
-  //     label: 'Licencia',
-  //     value: 'tipo_licencia',
-  //     placeholder: 'Filtrar licencia...',
-  //     options: filters.tipo_licencia,
-  //   },
-  //   {
-  //     label: 'Zona Infractor',
-  //     value: 'zona_infractor',
-  //     placeholder: 'Filtrar zona infractor...',
-  //     options: filters.zona_infractor,
-  //   },
-  //   {
-  //     label: 'Resolucion',
-  //     value: 'resolucion',
-  //     placeholder: 'Filtrar resolucion...',
-  //     options: filters.resolucion,
-  //   },
-  //   {
-  //     label: 'Motivo',
-  //     value: 'motivo',
-  //     placeholder: 'Filtrar motivo...',
-  //     options: filters.motivo,
-  //   },
-  // ]
+  const filterFields: DataTableFilterField<ReparacionesByMovilDTO>[] = [
+    {
+      label: 'Fecha',
+      value: 'fecha',
+      type: 'date',
+      placeholder: 'Filtrar fecha...',
+    },
+    {
+      label: 'Fecha Entrega',
+      value: 'fecha_entrega',
+      type: 'date',
+      placeholder: 'Filtrar fecha entrega...',
+    },
+    {
+      label: 'Fecha Pedido',
+      value: 'fecha_pedido',
+      type: 'date',
+      placeholder: 'Filtrar fecha pedido...',
+    },
+    {
+      label: 'Orden Compra',
+      value: 'orden_compra',
+      placeholder: 'Filtrar orden compra...',
+    },
+    {
+      label: 'Repuesto',
+      value: 'repuesto',
+      placeholder: 'Filtrar repuesto...',
+    },
+  ]
 
   const { table } = useDataTable({
     data,
     columns,
     pageCount: pages,
     // optional props
-    // filterFields,
+    filterFields,
     defaultPerPage: 10,
     defaultSort: 'fecha.desc',
   })

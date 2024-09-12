@@ -1,4 +1,5 @@
 import { db } from '@/drizzle'
+import { tipoRepuesto } from '@/drizzle/schema/logistica'
 import { zonas } from '@/drizzle/schema/nuevo_control'
 import {
   vicenteLopez,
@@ -12,21 +13,29 @@ import {
 export const filtersDTO = async () => {
   const turnos = turnosSchema.options
   const resolucion = resolucionSchema.options
-  const { localidades, motivos, tiposLicencia, barrios, zonasPaseo } =
-    await db.transaction(async (tx) => {
-      const localidadesPromise = await tx.select().from(vicenteLopez)
-      const motivosPromise = await tx.select().from(motivosSchema)
-      const tiposLicenciaPromise = await tx.select().from(tipoLicencias)
-      const barriosPromise = await tx.select().from(barriosSchema)
-      const zonasPromise = await tx.select().from(zonas)
-      return {
-        localidades: localidadesPromise,
-        motivos: motivosPromise,
-        tiposLicencia: tiposLicenciaPromise,
-        barrios: barriosPromise,
-        zonasPaseo: zonasPromise,
-      }
-    })
+  const {
+    localidades,
+    motivos,
+    tiposLicencia,
+    barrios,
+    zonasPaseo,
+    tiposRepuesto,
+  } = await db.transaction(async (tx) => {
+    const localidadesPromise = await tx.select().from(vicenteLopez)
+    const motivosPromise = await tx.select().from(motivosSchema)
+    const tiposLicenciaPromise = await tx.select().from(tipoLicencias)
+    const barriosPromise = await tx.select().from(barriosSchema)
+    const zonasPromise = await tx.select().from(zonas)
+    const tipoRepuestoPromise = await tx.select().from(tipoRepuesto)
+    return {
+      localidades: localidadesPromise,
+      motivos: motivosPromise,
+      tiposLicencia: tiposLicenciaPromise,
+      barrios: barriosPromise,
+      zonasPaseo: zonasPromise,
+      tiposRepuesto: tipoRepuestoPromise,
+    }
+  })
   return {
     localidad: localidades.map((localidad) => ({
       value: localidad.idBarrio,
@@ -68,6 +77,12 @@ export const filtersDTO = async () => {
       value: zona.idZona,
       label: zona.zona,
     })),
+    tipo_repuesto: tiposRepuesto
+      .map((tipo) => ({
+        value: tipo.idTipoRepuesto as number | null,
+        label: tipo.tipo,
+      }))
+      .concat([{ value: null, label: 'Vacio' }]),
   }
 }
 

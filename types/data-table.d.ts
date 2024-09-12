@@ -27,6 +27,7 @@ export interface DataTableFilterField<TData> {
   value: NestedKeys<TData>
   placeholder?: string
   options?: Option[]
+  type?: 'text' | 'date' | 'select'
 }
 
 export interface DataTableFilterOption<TData> {
@@ -37,6 +38,7 @@ export interface DataTableFilterOption<TData> {
   filterValues?: string[]
   filterOperator?: string
   isMulti?: boolean
+  type?: 'text' | 'date' | 'select'
 }
 
 export type IndexPageProps<T = unknown> = T & {

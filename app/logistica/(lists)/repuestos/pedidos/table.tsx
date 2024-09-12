@@ -7,6 +7,7 @@ import { DataTableAdvancedToolbar } from '@/components/data-table/advanced/data-
 import { getColumns, repuestosColumns } from './columns'
 import { Filter } from '@/DTO/filters'
 import { PedidosDTO } from '@/DTO/logistica/pedidos'
+import { DataTableFilterField } from '@/types/data-table'
 
 interface TasksTableProps {
   tasks: { data: PedidosDTO[]; pages: number }
@@ -16,11 +17,20 @@ interface TasksTableProps {
 export function PedidosTable({ tasks: { data, pages } }: TasksTableProps) {
   const columns = React.useMemo(() => getColumns(), [])
 
+  const filterFields: DataTableFilterField<PedidosDTO>[] = [
+    {
+      label: 'Proveedor',
+      value: 'proveedor',
+      placeholder: 'Filtrar proveedor...',
+    },
+  ]
+
   const { table } = useDataTable({
     data,
     columns,
     pageCount: pages,
     // optional props
+    filterFields,
     defaultPerPage: 10,
     defaultSort: 'id.desc',
   })
@@ -38,9 +48,9 @@ export function Repuestos({ data }: { data: PedidosDTO }) {
   const { table } = useDataTable({
     data: data.repuestos,
     columns,
-    pageCount: data.repuestos.length,
+    pageCount: 1,
     // optional props
-    defaultPerPage: 10,
+    defaultPerPage: data.repuestos.length,
     defaultSort: 'item.desc',
   })
 

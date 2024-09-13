@@ -1,5 +1,5 @@
 import { db } from '@/drizzle'
-import { operativos, registros } from '@/drizzle/schema/operativos'
+import { motoMotivo, operativos, registros } from '@/drizzle/schema/motos'
 import {
   barrios,
   motivos,
@@ -11,12 +11,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const searchParamsSchema = z.object({
-  y: z.coerce.number().default(new Date().getFullYear()),
+  y: z.coerce.number().optional().default(new Date().getFullYear()),
 })
 
 export async function GET(req: NextRequest) {
   const { y } = searchParamsSchema.parse(req.nextUrl.searchParams)
-  const autos = db
+  const motos = db
     .select({
       id: registros.id,
       resolucion: registros.resolucion,
@@ -26,27 +26,27 @@ export async function GET(req: NextRequest) {
       direccion_full: operativos.direccionFull,
       latitud: operativos.latitud,
       longitud: operativos.longitud,
-      es_del: registros.esDel,
       qth: operativos.qth,
     })
     .from(registros)
     .where(eq(sql`extract(year from ${operativos.fecha})`, y))
     .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
     .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
-    .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+    .leftJoin(motoMotivo, eq(registros.id, motoMotivo.idRegistro))
+    .leftJoin(motivos, eq(motoMotivo.idMotivo, motivos.idMotivo))
     .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
-    .innerJoin(vicenteLopez, eq(operativos.idLocalidad, vicenteLopez.idBarrio))
-    .as('autos')
+    .innerJoin(vicenteLopez, eq(operativos.idZona, vicenteLopez.idBarrio))
+    .as('motos')
 
   const byTrim = await db.transaction(async (tx) => {
-    const trimAuto = sql<number>`extract(quarter from ${autos.fecha})`
+    const trimAuto = sql<number>`extract(quarter from ${motos.fecha})`
 
     const _autos = await tx
       .select({
         value: count(),
         id: trimAuto,
       })
-      .from(autos)
+      .from(motos)
       .groupBy(trimAuto)
 
     return _autos.map((auto) => ({
@@ -57,14 +57,14 @@ export async function GET(req: NextRequest) {
   })
 
   const byMes = await db.transaction(async (tx) => {
-    const mesAuto = sql<number>`extract(month from ${autos.fecha})`
+    const mesAuto = sql<number>`extract(month from ${motos.fecha})`
 
     const _autos = await tx
       .select({
         value: count(),
         id: mesAuto,
       })
-      .from(autos)
+      .from(motos)
       .groupBy(mesAuto)
 
     return _autos.map((auto) => ({
@@ -80,21 +80,21 @@ export async function GET(req: NextRequest) {
     const _autos = await tx
       .select({
         value: count(),
-        id: autos.resolucion,
+        id: motos.resolucion,
       })
-      .from(autos)
-      .groupBy(autos.resolucion)
+      .from(motos)
+      .groupBy(motos.resolucion)
       .orderBy(desc(count()))
 
     return _autos
   })
   const byVecinos = await db.transaction(async (tx) => {
     const vilo = (await db.select().from(vicenteLopez)).map((v) => v.barrio)
-    const id = sql`CASE WHEN ${autos.zona_infractor} = 'CABA' THEN 'caba' ELSE case when ${autos.zona_infractor} in ${vilo} THEN 'vecinos' else 'otros' end END`
+    const id = sql`CASE WHEN ${motos.zona_infractor} = 'CABA' THEN 'caba' ELSE case when ${motos.zona_infractor} in ${vilo} THEN 'vecinos' else 'otros' end END`
     const aux = db
       .select({ id: id.as('id'), value: count().as('value') })
-      .from(autos)
-      .groupBy(autos.zona_infractor)
+      .from(motos)
+      .groupBy(motos.zona_infractor)
       .as('aux')
     const _autos = await tx
       .select({
@@ -111,11 +111,11 @@ export async function GET(req: NextRequest) {
     const _autos = await tx
       .select({
         value: count(),
-        id: autos.motivo,
+        id: motos.motivo,
       })
-      .from(autos)
-      .where(isNotNull(autos.motivo))
-      .groupBy(autos.motivo)
+      .from(motos)
+      .where(isNotNull(motos.motivo))
+      .groupBy(motos.motivo)
       .orderBy(desc(count()))
 
     return _autos
@@ -125,10 +125,10 @@ export async function GET(req: NextRequest) {
     const _autos = await tx
       .select({
         value: count(),
-        id: autos.zona_infractor,
+        id: motos.zona_infractor,
       })
-      .from(autos)
-      .groupBy(autos.zona_infractor)
+      .from(motos)
+      .groupBy(motos.zona_infractor)
       .orderBy(desc(count()))
 
     return _autos
@@ -137,13 +137,13 @@ export async function GET(req: NextRequest) {
   const geoJSON = await db.transaction(async (tx) => {
     const _autos = await tx
       .select({
-        id: autos.id,
-        latitud: autos.latitud,
-        longitud: autos.longitud,
-        qth: autos.qth,
+        id: motos.id,
+        latitud: motos.latitud,
+        longitud: motos.longitud,
+        qth: motos.qth,
       })
-      .from(autos)
-      .where(and(isNotNull(autos.latitud), isNotNull(autos.longitud)))
+      .from(motos)
+      .where(and(isNotNull(motos.latitud), isNotNull(motos.longitud)))
 
     return {
       type: 'FeatureCollection',

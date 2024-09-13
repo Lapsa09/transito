@@ -1,10 +1,10 @@
+import { localidad_destino, localidad_origen } from '@/drizzle/schema/camiones'
 import {
   motivos,
   resolucion,
   turnos,
   vicenteLopez,
 } from '@/drizzle/schema/schema'
-import { localidad_destino, localidad_origen } from '@/DTO/operativos/camiones'
 import { DOMINIO_PATTERN } from '@/utils/validations'
 import { createSelectSchema } from 'drizzle-zod'
 

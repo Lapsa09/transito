@@ -7,9 +7,13 @@ import {
   boolean,
   date,
   real,
+  alias,
 } from 'drizzle-orm/pg-core'
 import { barrios, motivos, turnos, vicenteLopez } from './schema'
 import { relations } from 'drizzle-orm'
+
+export const localidad_origen = alias(barrios, 'localidad_origen')
+export const localidad_destino = alias(barrios, 'localidad_destino')
 
 export const camiones = pgSchema('camiones')
 
@@ -29,10 +33,10 @@ export const registros = camiones.table('registros', {
   mes: integer('mes'),
   semana: integer('semana'),
   idLocalidadOrigen: integer('id_localidad_origen').references(
-    () => barrios.idBarrio,
+    () => localidad_origen.idBarrio,
   ),
   idLocalidadDestino: integer('id_localidad_destino').references(
-    () => barrios.idBarrio,
+    () => localidad_destino.idBarrio,
   ),
   idMotivo: integer('id_motivo').references(() => motivos.idMotivo),
   idOperativo: integer('id_operativo').references(() => operativos.idOp),

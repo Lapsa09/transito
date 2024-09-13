@@ -1,11 +1,12 @@
 import { db } from '@/drizzle'
-import { operativos, registros } from '@/drizzle/schema/camiones'
-import { barrios, motivos, vicenteLopez } from '@/drizzle/schema/schema'
+import {
+  localidad_destino,
+  localidad_origen,
+  operativos,
+  registros,
+} from '@/drizzle/schema/camiones'
+import { motivos, vicenteLopez } from '@/drizzle/schema/schema'
 import { eq, sql, SQL } from 'drizzle-orm'
-import { alias } from 'drizzle-orm/pg-core'
-
-export const localidad_origen = alias(barrios, 'localidad_origen')
-export const localidad_destino = alias(barrios, 'localidad_destino')
 
 export async function camionesDTO({
   page,

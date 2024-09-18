@@ -9,31 +9,20 @@ import {
   CardHeader,
   Button,
 } from '@nextui-org/react'
-import { examen } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { terminarExamen } from '@/services/actions'
-import { DateTime } from 'luxon'
+import { Examen } from '@/drizzle/schema/examen'
+import { getLocalDate, getLocalTime } from '@/utils/misc'
 
-function CreatedExam({ examen }: { examen: examen }) {
+function CreatedExam({ examen }: { examen: Examen }) {
   const router = useRouter()
   return (
     <Card>
       <CardHeader>
-        <h1>
-          Fecha:{' '}
-          {DateTime.fromISO(`${examen.fecha}`)
-            .toUTC()
-            .toLocaleString(DateTime.DATE_SHORT)}
-        </h1>
+        <h1>Fecha: {getLocalDate(examen.fecha!)}</h1>
       </CardHeader>
       <CardBody>
-        <p>
-          Hora:{' '}
-          {new Date(examen.hora_iniciado!).toLocaleTimeString('es-AR', {
-            timeStyle: 'short',
-            hour12: false,
-          })}
-        </p>
+        <p>Hora: {getLocalTime(examen.horaIniciado!)}</p>
       </CardBody>
       <CardFooter>
         <ButtonGroup>

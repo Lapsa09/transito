@@ -1,7 +1,8 @@
 import { fetcher } from '@/services'
 import React from 'react'
-import PageClient from './page.client'
+import PageClient from './table'
 import { Historial } from '@/types/quiz'
+import { IndexPageProps } from '@/types/data-table'
 
 const getExamenes = async (searchParams: string) => {
   const response = await fetcher(
@@ -14,11 +15,7 @@ const getExamenes = async (searchParams: string) => {
   return examenes
 }
 
-async function page({
-  searchParams,
-}: {
-  searchParams: Record<string, string>
-}) {
+async function page({ searchParams }: IndexPageProps) {
   const { data, pages } = await getExamenes(
     new URLSearchParams(searchParams).toString(),
   )

@@ -1,16 +1,15 @@
-import type {
-  operario,
-  operarios_servicios,
-  servicios,
-  clientes,
-  recibos,
-} from '@prisma/client'
+import {
+  Clientes,
+  OperariosServicios,
+  Servicios,
+} from '@/drizzle/schema/sueldos'
+import { Operario } from './operarios.sueldos'
 
-export interface IOperario extends operarios_servicios {
-  operarios: operario | null
+export interface IOperario extends OperariosServicios {
+  operarios: Operario | null
 }
 
-export interface Servicio extends servicios {
+export interface Servicio extends Servicios {
   operarios_servicios: IOperario[]
 }
 
@@ -21,7 +20,7 @@ export interface Historial {
   mes?: number
   servicios: Servicio[]
 }
-export interface Cliente extends clientes {
+export interface Cliente extends Clientes {
   a_deudor: number
   a_favor: number
   historial: Historial[]

@@ -1,15 +1,16 @@
 import {
-  operario,
-  operarios_servicios,
+  Clientes,
+  Operarios,
+  OperariosServicios,
+  Servicios,
   servicios,
-  clientes,
-} from '@prisma/client'
+} from '@/drizzle/schema/sueldos'
 
-export interface Operarios extends operarios_servicios {
-  operarios: operario
+export interface OperariosDTO extends OperariosServicios {
+  operarios: Operarios
 }
 
-export interface Servicio extends servicios {
-  clientes: clientes
-  operarios_servicios: Operarios[]
+export interface Servicio extends Servicios {
+  clientes: Clientes
+  cantidad_operarios: number
 }

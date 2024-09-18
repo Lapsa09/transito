@@ -1,5 +1,5 @@
-import prisma from '@/lib/prismadb'
-import { permisos, turnos } from '@prisma/client'
+import { db } from '@/drizzle'
+import { permisos, users } from '@/drizzle/schema/schema'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -11,20 +11,18 @@ export async function POST(req: NextRequest) {
     turno,
   }: {
     legajo: string
-    rol: permisos
+    rol: typeof permisos.$inferSelect
     nombre: string
     apellido: string
-    turno?: turnos
+    turno: (typeof users.$inferInsert)['turno']
   } = await req.json()
 
-  await prisma.user.create({
-    data: {
-      legajo: +legajo,
-      id_rol: rol.id,
-      nombre,
-      apellido,
-      turno,
-    },
+  await db.insert(users).values({
+    idRol: rol.id,
+    legajo: +legajo,
+    nombre,
+    apellido,
+    turno,
   })
 
   return NextResponse.json('Success')

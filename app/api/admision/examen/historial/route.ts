@@ -1,63 +1,84 @@
+import { db } from '@/drizzle'
+import { examenes, rindeExamen } from '@/drizzle/schema/examen'
+import { invitados } from '@/drizzle/schema/schema'
 import { historialDTO } from '@/DTO/examen'
-import prisma from '@/lib/prismadb'
-import { Prisma } from '@prisma/client'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
+import { Historial } from '@/types/quiz'
+import { and, count, eq, or, SQL } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const searchHistorialParamsSchema = searchParamsSchema.merge(
+  z.object({
+    nombre: z.string().optional(),
+    dni: z.number().optional(),
+    fecha: z.string().optional(),
+    hora_finalizado: z.string().time().optional(),
+    operator: z.enum(['and', 'or']).optional(),
+  }),
+)
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const filterParams: Record<string, string> = [
-      ...searchParams.getAll('filter'),
-    ].reduce((acc, curr) => {
-      const [id, value] = curr.split('=')
-      return { ...acc, [id]: value }
-    }, {})
+    const {
+      page,
+      per_page,
+      sort,
+      nombre,
+      fecha,
+      dni,
+      operator,
+      hora_finalizado,
+    } = searchHistorialParamsSchema.parse(searchParams)
 
-    const where: Prisma.rinde_examenWhereInput = {
-      usuario: {
-        OR: filterParams.nombre
-          ? [
-              {
-                nombre: {
-                  contains: filterParams.nombre,
-                },
-              },
-              {
-                apellido: {
-                  contains: filterParams.nombre,
-                },
-              },
-            ]
-          : undefined,
-        dni: filterParams.dni
-          ? {
-              equals: +filterParams.dni,
-            }
-          : undefined,
-      },
-      examen: filterParams.fecha
-        ? {
-            fecha: {
-              equals: filterParams.fecha,
-            },
-          }
+    const [column, order] = (sort?.split('.').filter(Boolean) ?? [
+      'id',
+      'desc',
+    ]) as [keyof Historial, 'asc' | 'desc']
+
+    const expressions: (SQL<unknown> | undefined)[] = [
+      nombre
+        ? filterColumn({
+            column: invitados.nombre || invitados.apellido,
+            value: nombre,
+          })
         : undefined,
-      hora_finalizado: {
-        not: null,
-      },
-    }
+      // Filter tasks by status
+      !!fecha ? eq(examenes.fecha, fecha) : undefined,
+      // Filter tasks by priority
+      !!dni
+        ? filterColumn({
+            column: invitados.dni,
+            value: dni.toString(),
+          })
+        : undefined,
+      // Filter by createdAt
+      !!hora_finalizado
+        ? eq(rindeExamen.horaFinalizado, hora_finalizado)
+        : undefined,
+    ]
 
-    const pageIndex = parseInt(searchParams.get('page') ?? '0')
-    const examenesPromise = historialDTO({ where, pageIndex })
+    const where =
+      !operator || operator === 'and' ? and(...expressions) : or(...expressions)
 
-    const totalPromise = prisma.rinde_examen.count({
+    const _examenes = await historialDTO({
+      page,
+      per_page,
+      orderBy: { column, order },
       where,
     })
 
-    const [examenes, total] = await Promise.all([examenesPromise, totalPromise])
+    const total = await db
+      .select({ count: count() })
+      .from(rindeExamen)
+      .where(where)
+      .execute()
+      .then((res) => res[0]?.count ?? 0)
 
     return NextResponse.json({
-      data: examenes,
+      data: _examenes,
       pages: Math.ceil(total / 10).toString(),
     })
   } catch (error) {

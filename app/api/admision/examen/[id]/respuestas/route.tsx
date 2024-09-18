@@ -1,53 +1,44 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { examenPreguntas, opciones, preguntas } from '@/drizzle/schema/examen'
+import { eq } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import { NextResponse } from 'next/server'
+
+const correcta = alias(opciones, 'correcta')
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params
-    const examen = await prisma.examen_preguntas.findMany({
-      where: {
-        examen_id: id,
-      },
 
-      include: {
-        pregunta: {
-          include: {
-            correcta: true,
-          },
-        },
-        elegida: true,
-      },
-      orderBy: {
-        preguntas_id: 'asc',
-      },
-    })
+    const examen = await db
+      .select({
+        examenId: examenPreguntas.examenId,
+        pregunta: preguntas.pregunta,
+        elegida: opciones.respuesta,
+        correcta: correcta.respuesta,
+      })
+      .from(examenPreguntas)
+      .innerJoin(preguntas, eq(preguntas.id, examenPreguntas.preguntaId))
+      .leftJoin(opciones, eq(opciones.id, examenPreguntas.elegidaId))
+      .innerJoin(correcta, eq(correcta.id, preguntas.idCorrecta))
+      .where(eq(examenPreguntas.examenId, id))
+      .orderBy(preguntas.id)
 
     const _examen = examen.map((pregunta) => {
-      const [preg, señal] = pregunta.pregunta.pregunta.split(/N° ([0-9]{1,3})/)
+      const [preg, señal] = pregunta.pregunta?.split(/N° ([0-9]{1,3})/) || []
 
       return {
         ...pregunta,
-        pregunta: {
-          ...pregunta.pregunta,
-          pregunta: señal
-            ? preg + `: <img src="/setran/${señal}.png" alt="señal" />`
-            : pregunta.pregunta.pregunta,
-          correcta: {
-            ...pregunta.pregunta.correcta,
-            respuesta: pregunta.pregunta.correcta?.respuesta.match(
-              /^[0-9]{1,3}$/,
-            )
-              ? `<img src="/setran/${pregunta.pregunta.correcta.respuesta}.png" alt="señal" />`
-              : pregunta.pregunta.correcta?.respuesta,
-          },
-        },
+        pregunta: señal
+          ? preg + `: <img src="/setran/${señal}.png" alt="señal" />`
+          : pregunta.pregunta,
+        correcta: pregunta.correcta.match(/^[0-9]{1,3}$/)
+          ? `<img src="/setran/${pregunta.correcta}.png" alt="señal" />`
+          : pregunta.correcta,
         elegida: pregunta.elegida
-          ? {
-              ...pregunta.elegida,
-              respuesta: pregunta.elegida.respuesta.match(/^[0-9]{1,3}$/)
-                ? `<img src="/setran/${pregunta.elegida.respuesta}.png" alt="señal" />`
-                : pregunta.elegida.respuesta,
-            }
+          ? pregunta.elegida.match(/^[0-9]{1,3}$/)
+            ? `<img src="/setran/${pregunta.elegida}.png" alt="señal" />`
+            : pregunta.elegida
           : undefined,
       }
     })

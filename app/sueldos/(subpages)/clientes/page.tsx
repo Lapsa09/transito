@@ -1,23 +1,24 @@
 'use client'
 import React from 'react'
-import { getClientes } from '@/services'
-import useSWR from 'swr'
-import { DataTable } from '@/components/table'
-import Mes from './expansions'
-import { ClientesColumns } from './columns'
+import { getter } from '@/services'
+import { IndexPageProps, SearchParams } from '@/types/data-table'
+import { Cliente } from '@/types'
+import { ClientesTable } from './table'
 
-function page() {
-  const { data, isLoading } = useSWR('clientes', getClientes)
+const getData = async (searchParams: SearchParams) => {
+  const res = await getter<{
+    data: Cliente[]
+    pages: number
+  }>({
+    route: `sueldos/clientes${searchParams ? `?${searchParams.toString()}` : ''}`,
+  })
+  return res
+}
 
-  if (isLoading) return null
-  return (
-    <DataTable
-      columns={ClientesColumns}
-      data={data}
-      expand={Mes}
-      getRowCanExpand={() => true}
-    />
-  )
+async function page({ searchParams }: IndexPageProps) {
+  const { data, pages } = await getData(searchParams)
+
+  return <ClientesTable data={data} pages={pages} />
 }
 
 export default page

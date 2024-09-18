@@ -1,7 +1,7 @@
 import type { Parte } from '@/types/radio'
 import { ColumnDef } from '@tanstack/react-table'
 
-export const columns: ColumnDef<Parte>[] = [
+export const getColumns = (): ColumnDef<Parte>[] => [
   {
     accessorFn: (row) =>
       new Date(row.fecha).toLocaleDateString('UTC', { timeZone: 'GMT' }),
@@ -26,9 +26,9 @@ export const columns: ColumnDef<Parte>[] = [
     enableColumnFilter: false,
     header: 'Operario',
     accessorFn: (row) =>
-      row.operario.apellido
-        ? `${row.operario.legajo} - ${row.operario.nombre} ${row.operario.apellido}`
-        : row.operario.legajo,
+      row.apellido
+        ? `${row.legajo} - ${row.nombre} ${row.apellido}`
+        : row.legajo,
   },
   {
     accessorKey: 'movil',

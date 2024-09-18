@@ -1,40 +1,52 @@
-import prisma from '@/lib/prismadb'
-import { EditCamionesProps } from '@/types'
-import { turnos } from '@prisma/client'
-import { DateTime } from 'luxon'
+import { camionesdb, db } from '@/drizzle'
+import { operativos, registros } from '@/drizzle/schema/camiones'
+import { camionesInputPropsSchema } from '@/schemas/camiones'
+import { eq, sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
 
-  const camion = await prisma.camiones_registros.findUnique({
-    where: { id: Number(id) },
-    include: {
+  const camion = await camionesdb.query.registros.findFirst({
+    where: (registro, { eq }) => eq(registro.id, Number(id)),
+    with: {
+      operativo: {
+        with: {
+          localidad: true,
+        },
+      },
       motivo: true,
-      operativo: { include: { localidad: true } },
-      localidad_destino: true,
-      localidad_origen: true,
+      localidadDestino: true,
+      localidadOrigen: true,
     },
   })
 
   if (camion) {
-    const { operativo, ...rest } = camion
+    const {
+      operativo,
+      localidadDestino: localidad_destino,
+      localidadOrigen: localidad_origen,
+      ...rest
+    } = camion
 
     const res = {
-      ...rest,
-      ...operativo,
-      qth: operativo?.direccion,
-      fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: DateTime.fromJSDate(rest?.hora!)
-        .toUTC()
-        .toFormat('HH:mm'),
+      registro: {
+        ...rest,
+        localidad_origen,
+        localidad_destino,
+      },
+      operativo: {
+        ...operativos,
+        qth: operativos.direccion,
+      },
     }
 
     return NextResponse.json(res)
   }
-  return NextResponse.json(null)
+  return NextResponse.redirect('operativos/camiones')
 }
 
 export async function PUT(req: Request, state: { params: { id: string } }) {
@@ -42,43 +54,41 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
     params: { id },
   } = state
 
-  const body: EditCamionesProps = await req.json()
+  const json = await req.json()
+  const body = camionesInputPropsSchema
+    .merge(
+      z.object({
+        id_op: z.coerce.number(),
+      }),
+    )
+    .parse(json)
 
-  await prisma.camiones_operativos.update({
-    where: { id_op: Number(body.id_op) },
-    data: {
-      fecha: new Date(body.fecha),
-      id_localidad: Number(body.localidad?.id_barrio),
+  await db
+    .update(operativos)
+    .set({
+      fecha: sql`to_date(${body.fecha},'YYYY-MM-DD')`,
+      idLocalidad: body.localidad?.idBarrio,
       turno: body.turno,
       legajo: body.legajo,
       direccion: body.qth,
-      direccion_full: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
-    },
-  })
+      direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    })
+    .where(eq(operativos.idOp, body.id_op))
 
-  const _hora = new Date(body.fecha)
-  // @ts-ignore
-  _hora.setUTCHours(...body.hora.split(':'))
-
-  const camion = await prisma.camiones_registros.update({
-    where: { id: Number(id) },
-    data: {
-      hora: _hora,
+  await db
+    .update(registros)
+    .set({
+      hora: body.hora,
       acta: body.acta,
       dominio: body.dominio,
       licencia: body.licencia,
       resolucion: body.resolucion,
-      id_motivo: body.motivo?.id_motivo,
-      id_localidad_origen: body.localidad_origen?.id_barrio,
-      id_localidad_destino: body.localidad_destino?.id_barrio,
-      id_operativo: body.id_op,
-    },
-    include: {
-      motivo: true,
-      operativo: { include: { localidad: true } },
-      localidad_destino: true,
-      localidad_origen: true,
-    },
-  })
-  return NextResponse.json(camion)
+      idMotivo: body.motivo?.idMotivo,
+      idLocalidadOrigen: body.localidad_origen?.idBarrio,
+      idLocalidadDestino: body.localidad_destino?.idBarrio,
+      idOperativo: body.id_op,
+    })
+    .where(eq(registros.id, Number(id)))
+
+  return NextResponse.json('Exito')
 }

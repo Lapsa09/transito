@@ -1,8 +1,13 @@
-import prisma from '@/lib/prismadb'
-import { KilometrajeVehiculo } from '@/types/logistica'
-import { DateTime } from 'luxon'
+import { db } from '@/drizzle'
+import { kilometrajeVehiculos } from '@/drizzle/schema/logistica'
+import { kilometrajeDTO } from '@/DTO/logistica/kilometraje'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
+import { kilometrajeInputSchema } from '@/schemas/logistica'
+import { and, count, eq, SQL, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(
   req: NextRequest,
@@ -10,24 +15,38 @@ export async function GET(
 ) {
   const { patente } = params
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
+  const { page, per_page, fecha } = searchParamsSchema
+    .merge(
+      z.object({
+        fecha: z.string().optional(),
+      }),
+    )
+    .parse(Object.fromEntries(new URLSearchParams(searchParams).entries()))
 
-  const vehiculo = await prisma.kilometraje_vehiculos.findMany({
-    where: {
-      patente,
-    },
-    include: {
-      movil: true,
-    },
-    skip: pageIndex * 10,
-    take: 10,
-  })
+  const expressions: (SQL<unknown> | undefined)[] = [
+    !!fecha
+      ? filterColumn({
+          column: kilometrajeVehiculos.fecha,
+          value: fecha,
+          isDate: true,
+        })
+      : undefined,
+  ]
 
-  const total = await prisma.kilometraje_vehiculos.count({ where: { patente } })
+  const where = and(...expressions, eq(kilometrajeVehiculos.patente, patente))
+
+  const vehiculo = await kilometrajeDTO({ patente, page, per_page, where })
+
+  const total = await db
+    .select({ count: count() })
+    .from(kilometrajeVehiculos)
+    .where(where)
+    .execute()
+    .then((res) => res[0].count)
 
   return NextResponse.json({
     data: vehiculo,
-    pages: Math.ceil(total / 10).toString(),
+    pages: Math.ceil(total / per_page).toString(),
   })
 }
 
@@ -35,34 +54,21 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { patente: string } },
 ) {
-  const body: KilometrajeVehiculo = await req.json()
+  const json = await req.json()
+  const body = kilometrajeInputSchema.parse(json)
   const { patente } = params
-  const vehiculo = await prisma.kilometraje_vehiculos.create({
-    data: {
-      movil: {
-        connect: {
-          patente,
-        },
-      },
-      fecha: DateTime.fromFormat(String(body.fecha), 'yyyy-MM-dd').toISO(),
-      filtro_aceite: body.filtro_aceite ? +body.filtro_aceite : null,
-      kit_distribucion: body.kit_distribucion ? +body.kit_distribucion : null,
-      kit_poly_v: body.kit_poly_v ? +body.kit_poly_v : null,
-      km: body.km ? +body.km : null,
-      proximo_cambio_distribucion: body.proximo_cambio_distribucion
-        ? +body.proximo_cambio_distribucion
-        : null,
-      proximo_cambio_filtro: body.proximo_cambio_filtro
-        ? +body.proximo_cambio_filtro
-        : null,
-      proximo_cambio_poly_v: body.proximo_cambio_poly_v
-        ? +body.proximo_cambio_poly_v
-        : null,
-    },
-    include: {
-      movil: true,
-    },
+
+  await db.insert(kilometrajeVehiculos).values({
+    patente,
+    fecha: sql`to_date(${body.fecha}, 'YYYY-MM-DD')`,
+    km: body.km,
+    filtroAceite: body.filtro_aceite,
+    proximoCambioFiltro: body.proximo_cambio_filtro,
+    kitDistribucion: body.kit_distribucion,
+    proximoCambioDistribucion: body.proximo_cambio_distribucion,
+    kitPolyV: body.kit_poly_v,
+    proximoCambioPolyV: body.proximo_cambio_poly_v,
   })
   revalidateTag('kilometraje')
-  return NextResponse.json(vehiculo)
+  return NextResponse.json('Exito')
 }

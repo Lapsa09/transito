@@ -1,72 +1,77 @@
-import prisma from '@/lib/prismadb'
-import { Vehiculo } from '@/types/logistica'
+import { db } from '@/drizzle'
+import { movil } from '@/drizzle/schema/logistica'
+import { vehiculosDTO } from '@/DTO/logistica/vehiculos'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
+import { vehiculoInputSchema } from '@/schemas/logistica'
+import { and, count, SQL } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextResponse, NextRequest } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
-  const vehiculosPromise = prisma.movil.findMany({
-    include: {
-      uso: true,
-      dependencia: true,
-      tipo_vehiculo: true,
-    },
-    skip: pageIndex * 10,
-    take: 10,
-  })
+  const { page, per_page, patente } = searchParamsSchema
+    .merge(
+      z.object({
+        patente: z.string().optional(),
+      }),
+    )
+    .parse(Object.fromEntries(new URLSearchParams(searchParams).entries()))
 
-  const totalPromise = prisma.movil.count()
+  const expressions: (SQL<unknown> | undefined)[] = [
+    !!patente
+      ? filterColumn({
+          column: movil.patente,
+          value: patente,
+        })
+      : undefined,
+  ]
+
+  const where = and(...expressions)
+
+  const vehiculosPromise = vehiculosDTO({ page, per_page, where })
+
+  const totalPromise = db
+    .select({ count: count() })
+    .from(movil)
+    .where(where)
+    .execute()
+    .then((res) => res[0].count)
 
   const [vehiculos, total] = await Promise.all([vehiculosPromise, totalPromise])
 
   return NextResponse.json({
     data: vehiculos,
-    pages: Math.ceil(total / 10).toString(),
+    pages: Math.ceil(total / per_page).toString(),
   })
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body: Vehiculo = await req.json()
+    const json = await req.json()
 
-    const vehiculo = await prisma.movil.create({
-      data: {
-        uso: {
-          connect: {
-            id_uso: body.uso.id_uso,
-          },
-        },
-        dependencia: {
-          connect: {
-            id_dependencia: body.dependencia.id_dependencia,
-          },
-        },
-        tipo_vehiculo: {
-          connect: {
-            id_tipo: body.tipo_vehiculo.id_tipo,
-          },
-        },
-        patente: body.patente,
-        marca: body.marca,
-        modelo: body.modelo,
-        a_o: +body.a_o,
-        no_chasis: body.no_chasis,
-        empresa_seguimiento: body.empresa_seguimiento,
-        id_megatrans: body.id_megatrans,
-        nro_movil: body.nro_movil,
-        plan_renovacion: body.plan_renovacion,
-        tipo_combustible: body.tipo_combustible,
-        tipo_motor: body.tipo_motor ? +body.tipo_motor : null,
-      },
-      include: {
-        uso: true,
-        dependencia: true,
-        tipo_vehiculo: true,
-      },
+    const body = vehiculoInputSchema.parse(json)
+
+    await db.insert(movil).values({
+      patente: body.patente,
+      idUso: body.uso.idUso,
+      idDependencia: body.dependencia.idDependencia,
+      idTipoVehiculo: body.tipo_vehiculo.idTipo,
+      marca: body.marca,
+      modelo: body.modelo,
+      año: body.año,
+      noChasis: body.nro_chasis,
+      empresaSeguimiento: body.empresa_seguimiento,
+      idMegatrans: body.id_megatrans,
+      nroMovil: body.nro_movil,
+      planRenovacion: body.plan_renovacion,
+      tipoCombustible: body.tipo_combustible,
+      tipoMotor: body.tipo_motor,
     })
+
     revalidateTag('vehiculos')
-    return NextResponse.json(vehiculo)
+    return NextResponse.json('Exito')
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

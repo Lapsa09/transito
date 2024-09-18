@@ -2,14 +2,14 @@ import React from 'react'
 import Autocomplete from '@/components/Autocomplete'
 import DateField from '@/components/DatePicker'
 import CustomInput from '@/components/Input'
-import { repuesto } from '@prisma/client'
+import { Repuestos } from '@/drizzle/schema/logistica'
 
 function ReparacionesForm<T>({
   patente,
   selects,
 }: {
   patente: string
-  selects: { repuestos: repuesto[] }
+  selects: { repuestos: Repuestos[] }
 }) {
   return (
     <div className="flex w-full px-10 justify-between flex-wrap">

@@ -6,15 +6,15 @@ import CustomInput from '@/components/Input'
 import CustomSelect from '@/components/Select'
 import TimeField from '@/components/TimePicker'
 import Autocomplete from '@/components/Autocomplete'
-import { turnos } from '@prisma/client'
 import { useFormContext } from 'react-hook-form'
 import { useLocalStorage } from 'usehooks-ts'
 import { setExpiration } from '@/utils/misc'
+import { Turno } from '@/drizzle/schema/schema'
 
 export function FirstStep() {
   const [, edit] = useLocalStorage<{
     fecha?: string
-    turno?: turnos
+    turno?: Turno
     qth?: string
     expiresAt: number
   }>('partes', {

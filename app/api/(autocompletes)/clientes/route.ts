@@ -1,52 +1,31 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { clientes, recibos } from '@/drizzle/schema/sueldos'
+import { eq, sum } from 'drizzle-orm'
 import { NextResponse, NextRequest } from 'next/server'
 
-const prismaSueldo = prisma.$extends({
-  name: 'sueldo',
-  result: {
-    clientes: {
-      acopioPromise: {
-        needs: {
-          id_cliente: true,
-        },
-        compute: async ({ id_cliente }) => {
-          const recibos = await prisma.recibos.aggregate({
-            where: {
-              id_cliente,
-            },
-            _sum: {
-              acopio: true,
-            },
-          })
-          return recibos._sum.acopio ?? 0
-        },
-      },
-      acopio: {
-        compute: () => {
-          return 0
-        },
-      },
-    },
-  },
-})
-
 export async function GET() {
-  const clientes = await prismaSueldo.clientes.findMany()
+  const clientesList = await db
+    .select({
+      idCliente: clientes.idCliente,
+      cliente: clientes.cliente,
+      acopio: sum(recibos.acopio).mapWith(Number).as('acopio'),
+    })
+    .from(clientes)
+    .leftJoin(recibos, eq(clientes.idCliente, recibos.idCliente))
+    .groupBy(clientes.idCliente, clientes.cliente)
 
-  for (const cliente of clientes) {
-    cliente.acopio = await cliente.acopioPromise
-  }
-
-  return NextResponse.json(clientes)
+  return NextResponse.json(clientesList)
 }
 
 export async function POST(req: NextRequest) {
   const body: { cliente: string } = await req.json()
-  const cliente = await prisma.clientes.create({
-    data: {
+
+  const cliente = await db
+    .insert(clientes)
+    .values({
       cliente: body.cliente,
-    },
-  })
+    })
+    .returning()
 
   return NextResponse.json(cliente)
 }

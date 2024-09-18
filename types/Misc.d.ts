@@ -1,5 +1,5 @@
 import { invitadoDTO, userDTO } from '@/DTO/user'
-import { examen, rinde_examen } from '@prisma/client'
+import { SQL } from 'drizzle-orm'
 
 export enum Roles {
   ADMIN = 'ADMIN',
@@ -21,7 +21,9 @@ export type User = {
   metaData: Record<string, any>
 }
 
-export type Empleado = User & NonNullable<Awaited<ReturnType<typeof userDTO>>>
+export type Empleado = User & {
+  metadata: NonNullable<Awaited<ReturnType<typeof userDTO>>>['metaData']
+}
 export type Invitado = User &
   NonNullable<Awaited<ReturnType<typeof invitadoDTO>>>
 
@@ -46,3 +48,10 @@ export enum Meses {
   11 = 'NOVIEMBRE',
   12 = 'DICIEMBRE',
 }
+
+export type DrizzleWhere<T> =
+  | SQL<unknown>
+  | ((aliases: T) => SQL<T> | undefined)
+  | undefined
+
+export type Fetched<T> = { data: T[]; pages: number }

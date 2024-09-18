@@ -1,41 +1,49 @@
-import prisma from '@/lib/prismadb'
-import { RioFormProps } from '@/types'
-import { NextRequest, NextResponse } from 'next/server'
-import { DateTime } from 'luxon'
+import { db, riodb } from '@/drizzle'
+import { operativos, registros, zonas } from '@/drizzle/schema/nuevo_control'
+import { Barrio, barrios, turnos } from '@/drizzle/schema/schema'
+import { RioDTO, rioDTO } from '@/DTO/operativos/rio'
+import { authOptions } from '@/lib/auth'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
+import { rioInputPropsSchema } from '@/schemas/rio'
 import { load } from 'cheerio'
-import { Prisma } from '@prisma/client'
+import { and, asc, count, desc, eq, like, or, SQL, sql } from 'drizzle-orm'
+import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
-const operativoPaseo = async (body: RioFormProps) => {
+const operativoPaseo = async (body: z.infer<typeof rioInputPropsSchema>) => {
   const { fecha, turno, lp } = body
 
-  const op = await prisma.nuevo_control_operativos.findFirst({
-    where: {
-      fecha: new Date(fecha),
-      turno,
-      lp: +lp,
-    },
-  })
+  const [op] = await db
+    .select()
+    .from(operativos)
+    .where(
+      and(
+        eq(operativos.fecha, sql`to_date(${fecha},YYYY-MM-DD)`),
+        eq(operativos.turno, turno),
+        eq(operativos.lp, +lp),
+      ),
+    )
 
   if (!op) {
-    const { id_op } = await prisma.nuevo_control_operativos.create({
-      data: {
-        fecha: new Date(fecha),
+    const [{ id_op }] = await db
+      .insert(operativos)
+      .values({
+        fecha: sql`to_date(${fecha},'YYYY-MM-DD')`,
         turno,
         lp: +lp,
-      },
-      select: {
-        id_op: true,
-      },
-    })
+      })
+      .returning({ id_op: operativos.idOp })
 
     return id_op
   } else {
-    return op.id_op
+    return op.idOp
   }
 }
 
-const radicacion = async (body: RioFormProps) => {
+const radicacion = async (body: z.infer<typeof rioInputPropsSchema>) => {
   try {
     const { dominio } = body
 
@@ -76,32 +84,27 @@ const radicacion = async (body: RioFormProps) => {
     const provincia = fonts.eq(3).text().trim()
 
     if (provincia !== 'BUENOS AIRES' && provincia !== 'CAPITAL FEDERAL') {
-      const _res = await prisma.barrios.findFirst({
-        where: {
-          barrio: provincia,
-        },
-      })
-      return _res!.id_barrio
+      const [_res] = await db
+        .select()
+        .from(barrios)
+        .where(eq(barrios.barrio, provincia))
+      return _res.idBarrio
     } else {
       if (localidad === 'CAPITAL FEDERAL') {
         return 51
       } else {
-        const _res = await prisma.barrios.findFirst({
-          where: {
-            barrio: {
-              contains: localidad,
-            },
-          },
-        })
+        const [_res] = await db
+          .select()
+          .from(barrios)
+          .where(like(barrios.barrio, localidad))
         if (!_res) {
-          const nuevoBarrio = await prisma.barrios.create({
-            data: {
-              barrio: localidad,
-            },
-          })
-          return nuevoBarrio.id_barrio
+          const [nuevoBarrio] = await db
+            .insert(barrios)
+            .values({ barrio: localidad })
+            .returning({ idBarrio: barrios.idBarrio })
+          return nuevoBarrio.idBarrio
         } else {
-          return _res.id_barrio
+          return _res.idBarrio
         }
       }
     }
@@ -111,80 +114,118 @@ const radicacion = async (body: RioFormProps) => {
   }
 }
 
+const searchRioParamsSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().optional(),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    zona_infractor: z.string().optional(),
+    zona: z.string().optional(),
+  }),
+)
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
-  const where: Prisma.nuevo_control_registrosWhereInput = {
-    dominio: {
-      contains: filterParams.dominio ?? '',
-      mode: 'insensitive',
-    },
-    operativo: {
-      fecha:
-        filterParams.fecha && new Date(filterParams.fecha).getDate()
-          ? {
-              equals: new Date(filterParams.fecha),
-            }
-          : undefined,
-    },
-    zona: {
-      zona: {
-        contains: filterParams.zona ?? '',
-        mode: 'insensitive',
-      },
-    },
-    barrio: {
-      barrio: {
-        contains: filterParams.barrio ?? '',
-        mode: 'insensitive',
-      },
-    },
+  const input = searchRioParamsSchema.parse(
+    Object.fromEntries(new URLSearchParams(searchParams).entries()),
+  )
+  const {
+    fecha,
+    turno,
+    dominio,
+    zona_infractor,
+    operator,
+    page,
+    sort,
+    per_page,
+    zona,
+  } = input
+
+  const expressions: (SQL<unknown> | undefined)[] = [
+    !!fecha
+      ? filterColumn({
+          column: operativos.fecha,
+          value: fecha,
+          isDate: true,
+        })
+      : undefined,
+    turno
+      ? filterColumn({
+          column: operativos.turno,
+          value: turno,
+          isSelectable: true,
+        })
+      : undefined,
+    dominio
+      ? filterColumn({ column: registros.dominio, value: dominio })
+      : undefined,
+    zona_infractor
+      ? filterColumn({
+          column: registros.idLocalidad,
+          value: zona_infractor,
+          isSelectable: true,
+        })
+      : undefined,
+    zona
+      ? filterColumn({
+          column: registros.idZona,
+          value: zona,
+          isSelectable: true,
+        })
+      : undefined,
+  ]
+
+  const where =
+    !operator || operator === 'and' ? and(...expressions) : or(...expressions)
+
+  const [column, order] = (sort?.split('.').filter(Boolean) ?? [
+    'id',
+    'desc',
+  ]) as [keyof RioDTO, 'asc' | 'desc']
+
+  const sortColumns = () => {
+    if (!column) return desc(registros.id)
+    if (column in registros) {
+      return order === 'asc'
+        ? asc(registros[column as keyof typeof registros.$inferSelect])
+        : desc(registros[column as keyof typeof registros.$inferSelect])
+    }
+    if (column in operativos) {
+      return order === 'asc'
+        ? asc(operativos[column as keyof typeof operativos.$inferSelect])
+        : desc(operativos[column as keyof typeof operativos.$inferSelect])
+    }
+    if (column in zonas) {
+      return order === 'asc'
+        ? asc(zonas[column as keyof typeof zonas.$inferSelect])
+        : desc(zonas[column as keyof typeof zonas.$inferSelect])
+    }
+    return order === 'asc'
+      ? asc(barrios[column as keyof Barrio])
+      : desc(barrios[column as keyof Barrio])
   }
-  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') ?? '0')
 
-  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
-    '=',
-  ) as [string, Prisma.SortOrder]
-  const orderBy: Prisma.nuevo_control_registrosOrderByWithRelationInput =
-    sortBy in prisma.operativos_operativos.fields
-      ? {
-          operativo: {
-            [sortBy]: sort,
-          },
-        }
-      : sortBy === 'zona_infractor'
-      ? {
-          barrio: {
-            barrio: sort,
-          },
-        }
-      : sortBy === 'zona'
-      ? {
-          zona: {
-            zona: sort,
-          },
-        }
-      : { [sortBy]: sort }
-  const rioPromise = prisma.nuevo_control_registros.findMany({
-    include: {
-      operativo: true,
-      zona: true,
-      barrio: true,
-    },
-    orderBy,
-    skip: pageIndex * 10,
-    take: 10,
-    where: Object.keys(filterParams).length ? where : undefined,
+  const rioPromise = rioDTO({
+    page,
+    per_page,
+    orderBy: sortColumns(),
+    where,
   })
 
-  const totalPromise = prisma.nuevo_control_registros.count({
-    where: Object.keys(filterParams).length ? where : undefined,
-  })
+  const totalPromise = db
+    .select({ count: count() })
+    .from(registros)
+    .where(where)
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
+    .innerJoin(zonas, eq(registros.idZona, zonas.idZona))
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
+    .innerJoin(zonas, eq(registros.idZona, zonas.idZona))
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
+    .execute()
+    .then(([{ count }]) => count)
 
   const [data, total] = await Promise.all([rioPromise, totalPromise])
 
@@ -195,14 +236,16 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const data: RioFormProps = await req.json()
-
+  const json = await req.json()
+  const data = rioInputPropsSchema.parse(json)
   const id_operativo = await operativoPaseo(data)
-  const repetido = await prisma.nuevo_control_registros.findFirst({
-    where: {
-      dominio: data.dominio,
-      id_operativo: id_operativo,
-    },
+
+  const repetido = await riodb.query.registros.findFirst({
+    where: (registro, { eq }) =>
+      and(
+        eq(registro.dominio, data.dominio),
+        eq(registro.idOperativo, id_operativo),
+      ),
   })
 
   if (repetido) {
@@ -210,26 +253,16 @@ export async function POST(req: NextRequest) {
   }
 
   const id_localidad = await radicacion(data)
+  const user = await getServerSession(authOptions)
 
-  const _hora = new Date(data.fecha)
-  // @ts-ignore
-  _hora.setUTCHours(...data.hora.split(':'))
-
-  const res = await prisma.nuevo_control_registros.create({
-    data: {
-      hora: _hora,
-      dominio: data.dominio,
-      id_operativo,
-      id_zona: data.zona.id_zona,
-      id_localidad,
-      fechacarga: DateTime.now().toSQL(),
-    },
-    include: {
-      zona: true,
-      barrio: true,
-      operativo: true,
-    },
+  await db.insert(registros).values({
+    hora: data.hora,
+    dominio: data.dominio,
+    idOperativo: id_operativo,
+    idZona: data.zona.idZona,
+    idLocalidad: id_localidad,
+    lpcarga: user?.user?.legajo,
   })
   revalidateTag('rio')
-  return NextResponse.json(res)
+  return NextResponse.json('Exito')
 }

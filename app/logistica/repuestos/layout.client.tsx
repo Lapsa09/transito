@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { useRouter, useSelectedLayoutSegments } from 'next/navigation'
 import React from 'react'
 import { IoReload } from 'react-icons/io5'
@@ -11,7 +11,7 @@ function layoutClient({ children }: React.PropsWithChildren) {
     <div>
       <h1 className="text-center mb-5 capitalize">
         {title.at(-1)}
-        <Button variant="text" onClick={router.refresh}>
+        <Button variant="link" onClick={router.refresh}>
           <IoReload />
         </Button>
       </h1>

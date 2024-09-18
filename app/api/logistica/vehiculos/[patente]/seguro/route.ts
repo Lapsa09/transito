@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
 import * as fs from 'fs'
 import { revalidateTag } from 'next/cache'
+import { db } from '@/drizzle'
+import { movil } from '@/drizzle/schema/logistica'
+import { eq } from 'drizzle-orm'
 
 const decode = async (id: string, archivo: File) => {
   const LINKPATH = '/logistica/vehiculos/seguros'
@@ -27,14 +29,7 @@ export async function POST(
 
   const link = await decode(patente, seguro)
 
-  const movil = await prisma.movil.update({
-    where: {
-      patente,
-    },
-    data: {
-      seguro: link,
-    },
-  })
+  await db.update(movil).set({ seguro: link }).where(eq(movil.patente, patente))
   revalidateTag('vehiculos')
-  return NextResponse.json(movil)
+  return NextResponse.json('Exito')
 }

@@ -5,7 +5,7 @@ import { useSelectedLayoutSegments } from 'next/navigation'
 import React, { PropsWithChildren } from 'react'
 import { useRouter } from 'next/navigation'
 import { IoReload } from 'react-icons/io5'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 
 function LayoutClient({ children }: PropsWithChildren) {
   const title = useSelectedLayoutSegments()
@@ -14,7 +14,7 @@ function LayoutClient({ children }: PropsWithChildren) {
     <div>
       <h1 className="text-center mb-5 capitalize">
         {title.at(-1)}
-        <Button variant="text" onClick={router.refresh}>
+        <Button variant="link" onClick={router.refresh}>
           <IoReload />
         </Button>
       </h1>

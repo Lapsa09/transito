@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 const turnos = [
   {
-    id: 'MA_ANA',
+    id: 'MAÑANA',
     label: 'MAÑANA',
   },
   {

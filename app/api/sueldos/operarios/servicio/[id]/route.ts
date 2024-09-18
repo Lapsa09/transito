@@ -1,36 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { operariosServicios, servicios } from '@/drizzle/schema/sueldos'
+import { eq, sql } from 'drizzle-orm'
 
 export async function PUT(req: NextRequest, state: { params: { id: string } }) {
   const { id } = state.params
   const { cancelado } = await req.json()
 
-  const update = await prisma.operarios_servicios.update({
-    where: { id: +id },
-    data: {
+  const [update] = await db
+    .update(operariosServicios)
+    .set({
       cancelado: !cancelado,
-    },
-  })
+    })
+    .where(eq(operariosServicios.id, +id))
+    .returning()
 
-  const servicio = await prisma.servicios.update({
-    where: { id_servicio: update.id_servicio },
-    data: {
-      importe_servicio: !cancelado
-        ? {
-            decrement: update.a_cobrar!,
-          }
-        : {
-            increment: update.a_cobrar!,
-          },
-    },
-    include: {
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
+  await db
+    .update(servicios)
+    .set({
+      importeServicio: !cancelado
+        ? sql<number>`${servicios.importeServicio}-${update.aCobrar}`
+        : sql<number>`${servicios.importeServicio}+${update.aCobrar}`,
+    })
+    .where(eq(servicios.idServicio, update.idServicio))
+    .execute()
 
-  return NextResponse.json(servicio)
+  return NextResponse.json('Exito')
 }

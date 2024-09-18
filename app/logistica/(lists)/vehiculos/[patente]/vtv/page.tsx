@@ -1,7 +1,7 @@
 import React from 'react'
 import { fetcher } from '@/services'
-import { VTV } from '@/types/logistica'
-import PageClient from './page.client'
+import { VTVTable } from './table'
+import { VTVDTO } from '@/DTO/logistica/vtv'
 
 const getKilometraje = async (patente: string, searchParams: string) => {
   const res = await fetcher(
@@ -13,7 +13,7 @@ const getKilometraje = async (patente: string, searchParams: string) => {
       },
     },
   )
-  const data: { data: VTV[]; pages: number } = await res.json()
+  const data: { data: VTVDTO[]; pages: number } = await res.json()
   return data
 }
 
@@ -33,7 +33,7 @@ async function page({
   return (
     <div>
       <h1 className="text-center mb-5 uppercase">{patente}</h1>
-      <PageClient data={data.data} pages={data.pages} />
+      <VTVTable tasks={data} />
     </div>
   )
 }

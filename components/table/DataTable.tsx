@@ -13,6 +13,9 @@ import {
   TableOptions,
   PaginationState,
   OnChangeFn,
+  memo,
+  getMemoOptions,
+  Table as TableType,
 } from '@tanstack/react-table'
 import {
   Table,
@@ -27,11 +30,14 @@ import { ComponentType, Fragment, useState } from 'react'
 import Filter from './DataTableFilters'
 import { useRouter, useSearchParams } from 'next/navigation'
 import DataTableSorter from './DataTableSorter'
+import useSWRInmutable from 'swr/immutable'
+import { getter } from '@/services'
 
 interface DataTableProps<TData> extends Partial<TableOptions<TData>> {
   columns: ColumnDef<TData>[]
   expand?: ComponentType<{ data: TData }>
   rowClassName?: (row: Row<TData>) => string
+  filters?: Record<any, string[]>
 }
 
 export function DataTable<TData>({
@@ -47,6 +53,12 @@ export function DataTable<TData>({
   const queryParams = useSearchParams()
   const pageIndex = parseInt(queryParams.get('page') ?? '0')
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+  const { data: filters = {} } = useSWRInmutable<Record<string, string[]>>(
+    { route: '/filters' },
+    getter,
+    {},
+  )
 
   const columnFilters: ColumnFiltersState = [
     ...queryParams.getAll('filter'),
@@ -99,6 +111,43 @@ export function DataTable<TData>({
     router.replace(`?${newSearchParams.toString()}`)
   }
 
+  const getFacetedUniqueValues: (
+    table: TableType<TData>,
+    columnId: string,
+  ) => () => Map<any, number> = (table, columnId) =>
+    memo(
+      () => {
+        const filterTag = table.getColumn(columnId)?.columnDef.meta?.filterTag
+        if (filterTag) {
+          return [filters[filterTag]]
+        } else {
+          return [filters[columnId]]
+        }
+      },
+      (values) => {
+        if (!values) return new Map()
+
+        const facetedUniqueValues = new Map<any, number>()
+        if (values) {
+          values.forEach((value) => {
+            if (facetedUniqueValues.has({ value }))
+              facetedUniqueValues.set(
+                { value },
+                (facetedUniqueValues.get({ value }) ?? 0) + 1,
+              )
+            else facetedUniqueValues.set({ value }, 1)
+          })
+        }
+
+        return facetedUniqueValues
+      },
+      getMemoOptions(
+        table.options,
+        'debugTable',
+        `getFacetedUniqueValues_${columnId}`,
+      ),
+    )
+
   const table = useReactTable({
     data,
     columns,
@@ -127,6 +176,7 @@ export function DataTable<TData>({
     manualFiltering: true,
     manualSorting: true,
     manualPagination: true,
+    getFacetedUniqueValues,
     ...props,
   })
   return (

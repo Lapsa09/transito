@@ -1,122 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
-import { ServiciosFormProps } from '@/types'
-import { DateTime } from 'luxon'
-import { parseToISOTime } from '@/utils/misc'
+import { db } from '@/drizzle'
+import {
+  clientes,
+  operarios,
+  operariosServicios,
+  servicios,
+} from '@/drizzle/schema/sueldos'
+import { searchParamsSchema } from '@/schemas/form'
+import { count, eq } from 'drizzle-orm'
+import { NextResponse, NextRequest } from 'next/server'
 
-export async function GET(
-  _: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const servicios = await prisma.servicios.findFirst({
-    where: {
-      id_servicio: +params.id,
-    },
-    include: {
-      clientes: {
-        include: {
-          recibos: true,
-        },
-      },
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
-
-  const res = {
-    ...servicios,
-    cliente: servicios?.clientes,
-    fecha_servicio: DateTime.fromJSDate(servicios?.fecha_servicio!)
-      .toUTC()
-      .toISODate(),
-    ...servicios?.clientes?.recibos[0],
-    fecha_recibo: DateTime.fromJSDate(
-      servicios?.clientes?.recibos[0]?.fecha_recibo!,
+export async function GET(req: NextRequest) {
+  try {
+    const { page, per_page } = searchParamsSchema.parse(
+      req.nextUrl.searchParams,
     )
-      .toUTC()
-      .toISODate(),
-    hay_recibo: servicios?.clientes?.recibos?.length! > 0,
-    operarios: servicios?.operarios_servicios.map((operario) => ({
-      ...operario,
-      operario: operario.operarios,
-      hora_inicio: DateTime.fromJSDate(operario.hora_inicio!)
-        .toUTC()
-        .toLocaleString(DateTime.TIME_24_SIMPLE),
-      hora_fin: DateTime.fromJSDate(operario.hora_fin!)
-        .toUTC()
-        .toLocaleString(DateTime.TIME_24_SIMPLE),
-    })),
-  }
+    const serviciosList = await db
+      .select({
+        nombre: operarios.nombre,
+        legajo: operarios.legajo,
+        horaInicio: operariosServicios.horaInicio,
+        horaFin: operariosServicios.horaFin,
+        aCobrar: operariosServicios.aCobrar,
+        cancelado: operariosServicios.cancelado,
+      })
+      .from(operariosServicios)
+      .innerJoin(operarios, eq(operariosServicios.legajo, operarios.legajo))
+      .offset((page - 1) * per_page)
+      .limit(per_page)
 
-  delete res.clientes
+    const total = await db
+      .select({ count: count() })
+      .from(servicios)
+      .execute()
+      .then((data) => data[0].count)
 
-  return NextResponse.json(res)
-}
-
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const body: ServiciosFormProps = await req.json()
-
-  await prisma.servicios.update({
-    where: {
-      id_servicio: +params.id,
-    },
-    data: {
-      clientes: {
-        connect: {
-          id_cliente: body.cliente.id_cliente,
-        },
-      },
-      fecha_servicio: DateTime.fromISO(body.fecha_servicio).toISO(),
-      feriado: body.feriado,
-      importe_servicio: body.importe_servicio,
-      memo: body.memo,
-    },
-    include: {
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
-
-  for (const operario of body.operarios) {
-    const id = await prisma.operarios_servicios.findFirst({
-      where: { legajo: operario.operario?.legajo, id_servicio: +params.id },
-      select: { id: true },
+    return NextResponse.json({
+      data: serviciosList,
+      pages: Math.ceil(total / per_page),
     })
-    if (id) {
-      await prisma.operarios_servicios.update({
-        where: {
-          id: id.id,
-        },
-        data: {
-          hora_fin: parseToISOTime(operario.hora_fin),
-          hora_inicio: parseToISOTime(operario.hora_inicio),
-          a_cobrar: operario.a_cobrar,
-          cancelado: operario.cancelado,
-          legajo: operario.operario?.legajo,
-        },
-      })
-    } else {
-      await prisma.operarios_servicios.create({
-        data: {
-          hora_fin: parseToISOTime(operario.hora_fin),
-          hora_inicio: parseToISOTime(operario.hora_inicio),
-          a_cobrar: operario.a_cobrar,
-          cancelado: false,
-          id_servicio: +params.id,
-          legajo: operario.operario?.legajo,
-        },
-      })
-    }
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json('Server error', { status: 500 })
   }
-
-  return NextResponse.json('Servicio editado')
 }

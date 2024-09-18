@@ -1,23 +1,19 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { dia } from '@/drizzle/schema/waze'
+import { sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
-
-const xprisma = prisma.$extends({
-  result: {
-    dia: {
-      mes: {
-        needs: { fecha: true },
-        compute({ fecha }) {
-          return new Date(fecha).getMonth()
-        },
-      },
-    },
-  },
-})
 
 export async function GET() {
   try {
-    const dias =
-      await prisma.$executeRaw`select extract(month from fecha)as mes,json_agg(json_build_object('id',id,'fecha',fecha)) as fechas from waze.dia group by mes order by mes asc`
+    const mes = sql<number>`extract(month from fecha) as mes`
+    const dias = await db
+      .select({
+        mes,
+        fechas: sql<string>`json_agg(json_build_object('id',id,'fecha',fecha)) as fechas`,
+      })
+      .from(dia)
+      .groupBy(mes)
+      .orderBy(mes)
 
     return NextResponse.json(dias)
   } catch (error) {

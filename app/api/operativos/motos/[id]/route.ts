@@ -1,107 +1,99 @@
-import prisma from '@/lib/prismadb'
-import { EditMotosProps } from '@/types'
-import { DateTime } from 'luxon'
+import { db, motosdb } from '@/drizzle'
+import { motoMotivo, operativos, registros } from '@/drizzle/schema/motos'
+import { motivos } from '@/drizzle/schema/schema'
+import { motosInputPropsSchema } from '@/schemas/motos'
+import { eq, sql } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-zod'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(_: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
 
-  const auto = await prisma.motos_registros.findUnique({
-    where: { id: Number(id) },
-    include: {
-      motivos: true,
-      operativo: { include: { localidad: true } },
-      tipo_licencias: true,
-      zona_infractor: true,
+  const moto = await motosdb.query.registros.findFirst({
+    where: (registro, { eq }) => eq(registro.id, Number(id)),
+    with: {
+      operativo: {
+        with: {
+          localidad: true,
+        },
+      },
+      tipoLicencia: true,
+      barrio: true,
+      motivos: {
+        with: {
+          motivo: true,
+        },
+      },
     },
   })
 
-  if (auto) {
-    const { operativo, ...rest } = auto
-
-    const res = {
-      ...rest,
-      ...operativo,
-      fecha: operativo?.fecha?.toISOString().split('T')[0],
-      hora: DateTime.fromJSDate(operativo?.hora!)
-        .toUTC()
-        .toFormat('HH:mm'),
-      tipo_licencia: rest.tipo_licencias,
-    }
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(res, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+  if (moto) {
+    const { operativo, ...rest } = moto
+    return NextResponse.json({
+      registro: {
+        ...rest,
+        zona_infractor: moto.barrio,
+        tipo_licencia: moto.tipoLicencia,
+      },
+      operativo,
+    })
   }
-  return NextResponse.json(null)
+  return NextResponse.redirect('operativos/motos')
 }
 
 export async function PUT(req: Request, state: { params: { id: string } }) {
   const {
     params: { id },
   } = state
+  const json = await req.json()
 
-  const body: EditMotosProps = await req.json()
+  const body = motosInputPropsSchema
+    .merge(
+      z.object({
+        id_op: z.number(),
+        motivos: z.array(createSelectSchema(motivos)).optional(),
+      }),
+    )
+    .parse(json)
 
-  const _hora = new Date(body.fecha)
-  // @ts-ignore
-  _hora.setUTCHours(...body.hora.split(':'))
-
-  await prisma.motos_operativos.update({
-    where: { id_op: Number(body.id_op) },
-    data: {
-      fecha: new Date(body.fecha),
-      hora: _hora,
-      id_zona: Number(body.localidad?.id_barrio),
+  await db
+    .update(operativos)
+    .set({
+      fecha: sql`to_date(${body.fecha}, 'YYYY-MM-DD')`,
+      hora: body.hora,
+      idZona: body.localidad?.idBarrio,
       turno: body.turno,
-      legajo_a_cargo: Number(body.legajo_a_cargo),
-      legajo_planilla: Number(body.legajo_planilla),
+      legajoACargo: body.legajo_a_cargo,
+      legajoPlanilla: body.legajo_planilla,
       qth: body.qth,
       seguridad: body.seguridad,
-      direccion_full: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
-    },
-  })
+      direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
+    })
+    .where(eq(operativos.idOp, body.id_op))
 
-  await prisma.moto_motivo.deleteMany({
-    where: { id_registro: Number(id) },
-  })
-  for (const motivo of body.motivos) {
-    await prisma.moto_motivo.create({
-      data: {
-        id_registro: Number(id),
-        id_motivo: Number(motivo.id_motivo),
-      },
+  await db
+    .update(registros)
+    .set({
+      acta: body.acta,
+      dominio: body.dominio,
+      licencia: body.licencia,
+      resolucion: body.resolucion,
+      idLicencia: body.tipo_licencia?.idTipo,
+      idZonaInfractor: body.zona_infractor?.idBarrio,
+    })
+    .where(eq(registros.id, Number(id)))
+
+  await db.delete(motoMotivo).where(eq(motoMotivo.idRegistro, Number(id)))
+
+  for (const motivo of body.motivos || []) {
+    await db.insert(motoMotivo).values({
+      idRegistro: Number(id),
+      idMotivo: motivo?.idMotivo,
     })
   }
 
-  const moto = await prisma.motos_registros.update({
-    where: { id: Number(id) },
-    data: {
-      acta: Number(body.acta) || null,
-      dominio: body.dominio,
-      licencia: Number(body.licencia) || null,
-      resolucion: body.resolucion,
-      id_licencia: Number(body.tipo_licencia?.id_tipo) || null,
-      id_zona_infractor: Number(body.zona_infractor?.id_barrio) || null,
-    },
-    include: {
-      motivos: true,
-      operativo: { include: { localidad: true } },
-      tipo_licencias: true,
-      zona_infractor: true,
-    },
-  })
-
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(moto, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+  return NextResponse.json('Exito')
 }

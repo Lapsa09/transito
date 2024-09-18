@@ -1,21 +1,21 @@
 'use client'
 
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { setter } from '@/services'
-import { Vehiculo } from '@/types/logistica'
 import React, { useRef } from 'react'
 import { mutate } from 'swr'
 import Link from 'next/link'
+import { VehiculoDTO } from '@/DTO/logistica/vehiculos'
 
-function SeguroForm({ movil }: { movil: Vehiculo }) {
+function SeguroForm({ movil }: { movil: VehiculoDTO }) {
   const { patente, seguro } = movil
   const ref = useRef<HTMLInputElement>(null)
 
   const onSubmit = async (data: { seguro: File }) => {
-    await mutate<Vehiculo[]>(
+    await mutate<VehiculoDTO[]>(
       { route: 'logistica/vehiculos' },
       async (moviles) => {
-        const movil = await setter<Vehiculo>({
+        const movil = await setter<VehiculoDTO>({
           route: `logistica/vehiculos/${patente}/seguro`,
           body: data,
           config: {

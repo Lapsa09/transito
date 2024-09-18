@@ -1,11 +1,8 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsContainer from 'next-auth/providers/credentials'
-import prisma from '@/lib/prismadb'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { signIn } from '@/services'
 
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsContainer({
       id: 'credentials',

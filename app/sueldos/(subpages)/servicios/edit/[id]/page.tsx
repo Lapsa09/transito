@@ -1,22 +1,22 @@
 import React from 'react'
-import { EditFormLayout } from '@/components/forms/layout.form'
 import LayoutServiciosForm from '@/components/forms/servicios.form'
-import { getPrecios, getSelects } from '@/services'
+import { getPrecios, getSelects, getter } from '@/services'
+import { ServiciosFormProps } from '@/types'
 
-async function page() {
+async function page({ params }: { params: { id: string } }) {
   const { clientes, operarios } = await getSelects()
   const precios = await getPrecios()
+
+  const data = await getter<ServiciosFormProps>({
+    route: 'sueldos/servicios/edit/' + params.id,
+  })
   return (
-    <EditFormLayout
-      className="flex flex-col justify-center px-6"
-      section="sueldos"
-      stepTitles={['Editar servicio']}
-    >
-      <LayoutServiciosForm
-        selects={{ clientes, operarios }}
-        precios={precios}
-      />
-    </EditFormLayout>
+    <LayoutServiciosForm
+      editableServicio={data}
+      id={params.id}
+      selects={{ clientes, operarios }}
+      precios={precios}
+    />
   )
 }
 

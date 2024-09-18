@@ -1,43 +1,18 @@
-import { examenDTO } from '@/app/api/admision/examen/[id]/route'
-import { historialDTO } from '@/app/api/admision/examen/historial/route'
-import type {
-  examen,
-  examen_preguntas,
-  opciones,
-  preguntas,
-  rinde_examen,
-  tipo_examen,
-} from '@prisma/client'
+import {
+  examenDTO,
+  historialDTO,
+  resultadoDTO,
+  rindeExamenDTO,
+} from '@/DTO/examen'
+import { examenInputSchema } from '@/schemas/form'
+import { z } from 'zod'
 
-export type Question = {
-  id: number
-  pregunta: string
-  opciones: opciones[]
-}
+export type QuizResponse = z.infer<typeof examenInputSchema>
 
-export type QuestionState = {
-  elegida?: opciones
-}
-
-export type QuizResponse = {
-  id: string
-  preguntas: (opciones | null)[]
-  tiempo: Date
-}
-
-export type IPregunta = rinde_examen & {
-  examen_preguntas: (examen_preguntas & {
-    pregunta: Omit<preguntas, 'id_correcta'> & { opciones: opciones[] }
-    elegida?: opciones
-  })[]
-  examen: examen
-}
-
-export type Respuesta = examen_preguntas & {
-  pregunta: preguntas & { correcta: opciones }
-  elegida?: opciones
-}
+export type IPregunta = Awaited<ReturnType<typeof rindeExamenDTO>>
 
 export type Alumno = Awaited<ReturnType<typeof examenDTO>>
 
 export type Historial = Awaited<ReturnType<typeof historialDTO>>[0]
+
+export type Resultado = Awaited<ReturnType<typeof resultadoDTO>>

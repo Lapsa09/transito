@@ -1,16 +1,26 @@
-'use client'
-import { getExportables } from '@/services'
+import { getter } from '@/services'
 import React from 'react'
-import { DataTable } from '@/components/table'
-import { LiquiColumns } from './columns'
-import useSWR from 'swr'
+import DataTable from './table'
+import { IndexPageProps, SearchParams } from '@/types/data-table'
 
-function page() {
-  const { data, isLoading } = useSWR('liqui', getExportables)
+const getData = async (searchParams: SearchParams) => {
+  const data = await getter<{
+    data: {
+      mes: number
+      año: number
+      total: number
+    }[]
+    pages: number
+  }>({
+    route: `sueldos/servicios/liqui/list${searchParams ? `?${searchParams.toString()}` : ''}`,
+  })
+  return data
+}
 
-  if (isLoading) return null
+async function page({ searchParams }: IndexPageProps) {
+  const { data, pages } = await getData(searchParams)
 
-  return <DataTable columns={LiquiColumns} data={data} />
+  return <DataTable data={data} pages={pages} />
 }
 
 export default page

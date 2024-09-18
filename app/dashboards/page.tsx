@@ -34,103 +34,99 @@ export default async function Home() {
   }
 
   return (
-    <TabsContent value="estadisticas">
-      <div className="grid grid-rows-3 grid-cols-3">
-        <div className="row-start-1">
-          <h1 className="text-center">
-            {data.totalVehiculos} Vehiculos controlados
-          </h1>
-          <Funnel className="h-48" data={data.byTrim} />
+    <TabsContent value="estadisticas" className="grid grid-cols-3 grid-rows-3">
+      <div>
+        <h1 className="text-center">
+          {data.totalVehiculos} Vehiculos controlados
+        </h1>
+        <Funnel className="h-48" data={data.byTrim} />
+      </div>
+      <div>
+        <Image
+          src={BannerSubsecretaria}
+          alt="Banners SubSecretarial"
+          height={80}
+          className="mx-auto"
+        />
+        <h2 className="mt-10 text-center text-2xl font-semibold">
+          {Intl.DateTimeFormat('es', { dateStyle: 'full' }).format(Date.now())}
+        </h2>
+      </div>
+      <div>
+        <h1 className="text-center">
+          {citymis.totalDenuncias} Denuncias telefonicas
+        </h1>
+        <Funnel className="h-48" data={citymis.byTrim} />
+      </div>
+      <Bars
+        data={data.byMes}
+        keys={['autos', 'motos', 'camiones']}
+        indexBy={'label'}
+        enableGridY={false}
+        maxValue={Math.max(
+          ...data.byMes.map((d) => d.autos + d.motos + d.camiones),
+        )}
+        enableGridX={false}
+        axisLeft={null}
+      />
+      <div className="text-center justify-self-center">
+        <h1 className="mb-2">Tiempos de respuesta</h1>
+        <div className="flex gap-3">
+          {citymis.byDuracion.map(({ label, value, id }) => (
+            <div key={id}>
+              <h2 className="text-4xl">{timeDiffCalc(value)}</h2>
+              <p className="text-gray-700">{label}</p>
+            </div>
+          ))}
         </div>
+      </div>
+      <Bars
+        data={citymis.byMes}
+        className="col-start-3"
+        indexBy={'label'}
+        maxValue={Math.max(...citymis.byMes.map((d) => d.value))}
+        enableGridY={false}
+        enableGridX={false}
+        axisLeft={null}
+      />
 
-        <div className="col-start-3">
-          <h1 className="text-center">
-            {citymis.totalDenuncias} Denuncias telefonicas
-          </h1>
-          <Funnel className="h-48" data={citymis.byTrim} />
-        </div>
-        <Bars
-          data={data.byMes}
-          keys={['autos', 'motos', 'camiones']}
-          indexBy={'label'}
-          enableGridY={false}
-          maxValue={Math.max(
-            ...data.byMes.map((d) => d.autos + d.motos + d.camiones),
-          )}
-          enableGridX={false}
-          axisLeft={null}
+      <div className="flex flex-wrap w-5/6 mx-auto justify-center 2xl:justify-between gap-10 row-span-2 col-span-3">
+        <Speedometer
+          value={ultimoMes!.motos}
+          customSegmentStops={[
+            0,
+            Math.ceil(UtilsMotos.normalization / 1.7),
+            Math.ceil(UtilsMotos.normalization / 1.1),
+            UtilsMotos.EsperadoMotos[CURRENT_MONTH],
+          ]}
+          maxValue={UtilsMotos.EsperadoMotos[CURRENT_MONTH]}
+          targetValue={UtilsMotos.normalization}
+          label="Control de Motos"
         />
-        <Bars
-          data={citymis.byMes}
-          className="col-start-3"
-          indexBy={'label'}
-          maxValue={Math.max(...citymis.byMes.map((d) => d.value))}
-          enableGridY={false}
-          enableGridX={false}
-          axisLeft={null}
+        <Speedometer
+          value={ultimoMes!.camiones}
+          customSegmentStops={[
+            0,
+            Math.ceil(UtilsCamiones.normalization / 1.7),
+            Math.ceil(UtilsCamiones.normalization / 1.1),
+            UtilsCamiones.EsperadoCamiones[CURRENT_MONTH],
+          ]}
+          maxValue={UtilsCamiones.EsperadoCamiones[CURRENT_MONTH]}
+          targetValue={UtilsCamiones.normalization}
+          label="Control de Camiones"
         />
-        <div className="col-start-2 row-start-1">
-          <Image
-            src={BannerSubsecretaria}
-            alt="Banners SubSecretarial"
-            height={80}
-            className="mx-auto"
-          />
-          <h2 className="mt-10 text-center text-2xl font-semibold">
-            {Intl.DateTimeFormat('es', { dateStyle: 'full' }).format(
-              Date.now(),
-            )}
-          </h2>
-        </div>
-        <div className="col-start-2 row-start-2 text-center justify-self-center">
-          <h1 className="mb-2">Tiempos de respuesta</h1>
-          <div className="flex gap-3">
-            {citymis.byDuracion.map(({ label, value, id }) => (
-              <div key={id}>
-                <h2 className="text-4xl">{timeDiffCalc(value)}</h2>
-                <p className="text-gray-700">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex w-5/6 mx-auto justify-between row-span-2 col-span-3">
-          <Speedometer
-            value={ultimoMes!.motos}
-            customSegmentStops={[
-              0,
-              Math.ceil(UtilsMotos.normalization / 1.7),
-              Math.ceil(UtilsMotos.normalization / 1.1),
-              UtilsMotos.EsperadoMotos[CURRENT_MONTH],
-            ]}
-            maxValue={UtilsMotos.EsperadoMotos[CURRENT_MONTH]}
-            targetValue={UtilsMotos.normalization}
-            label="Control de Motos"
-          />
-          <Speedometer
-            value={ultimoMes!.camiones}
-            customSegmentStops={[
-              0,
-              Math.ceil(UtilsCamiones.normalization / 1.7),
-              Math.ceil(UtilsCamiones.normalization / 1.1),
-              UtilsCamiones.EsperadoCamiones[CURRENT_MONTH],
-            ]}
-            maxValue={UtilsCamiones.EsperadoCamiones[CURRENT_MONTH]}
-            targetValue={UtilsCamiones.normalization}
-            label="Control de Camiones"
-          />
-          <Speedometer
-            value={ultimoMes!.autos}
-            customSegmentStops={[
-              0,
-              Math.ceil(UtilsAutos.normalization / 1.7),
-              Math.ceil(UtilsAutos.normalization / 1.1),
-              UtilsAutos.EsperadoAutos[CURRENT_MONTH],
-            ]}
-            maxValue={UtilsAutos.EsperadoAutos[CURRENT_MONTH]}
-            targetValue={UtilsAutos.normalization}
-            label="Control de Autos"
-          />
-        </div>
+        <Speedometer
+          value={ultimoMes!.autos}
+          customSegmentStops={[
+            0,
+            Math.ceil(UtilsAutos.normalization / 1.7),
+            Math.ceil(UtilsAutos.normalization / 1.1),
+            UtilsAutos.EsperadoAutos[CURRENT_MONTH],
+          ]}
+          maxValue={UtilsAutos.EsperadoAutos[CURRENT_MONTH]}
+          targetValue={UtilsAutos.normalization}
+          label="Control de Autos"
+        />
       </div>
     </TabsContent>
   )

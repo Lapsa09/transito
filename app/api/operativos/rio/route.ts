@@ -116,7 +116,7 @@ const radicacion = async (body: z.infer<typeof rioInputPropsSchema>) => {
 
 const searchRioParamsSchema = searchParamsSchema.merge(
   z.object({
-    fecha: z.string().date().optional(),
+    fecha: z.string().optional(),
     dominio: z.string().optional(),
     turno: z.enum(turnos.enumValues).optional(),
     zona_infractor: z.string().optional(),
@@ -143,7 +143,11 @@ export async function GET(req: NextRequest) {
 
   const expressions: (SQL<unknown> | undefined)[] = [
     !!fecha
-      ? eq(operativos.fecha, sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`)
+      ? filterColumn({
+          column: operativos.fecha,
+          value: fecha,
+          isDate: true,
+        })
       : undefined,
     turno
       ? filterColumn({
@@ -212,6 +216,14 @@ export async function GET(req: NextRequest) {
     .select({ count: count() })
     .from(registros)
     .where(where)
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
+    .innerJoin(zonas, eq(registros.idZona, zonas.idZona))
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
+    .innerJoin(zonas, eq(registros.idZona, zonas.idZona))
+    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
     .execute()
     .then(([{ count }]) => count)
 

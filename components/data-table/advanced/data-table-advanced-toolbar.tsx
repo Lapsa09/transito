@@ -16,7 +16,6 @@ import { DataTableViewOptions } from '@/components/data-table/data-table-view-op
 
 import { DataTableFilterItem } from './data-table-filter-item'
 import { DataTableMultiFilter } from './data-table-multi-filter'
-import { DatePicker } from '@/components/ui/date-picker'
 
 interface DataTableAdvancedToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -40,6 +39,7 @@ export function DataTableAdvancedToolbar<TData>({
         label: field.label,
         value: field.value,
         options: field.options ?? [],
+        type: field.type,
       }
     })
   }, [filterFields])
@@ -82,12 +82,6 @@ export function DataTableAdvancedToolbar<TData>({
       {...props}
     >
       <div className="ml-auto flex items-center gap-2">
-        <DatePicker
-          triggerSize="sm"
-          triggerVariant="outline"
-          triggerClassName="ml-auto w-56 sm:w-60"
-          placeholder="Filtrar por fecha..."
-        />
         {children}
         {(options.length > 0 && selectedOptions.length > 0) ||
         openFilterBuilder ? (

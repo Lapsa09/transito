@@ -22,16 +22,24 @@ export function AutosTable({
 
   const filterFields: DataTableFilterField<AutosDTO>[] = [
     {
+      label: 'fecha',
+      value: 'fecha',
+      type: 'date',
+      placeholder: 'Filtrar fecha...',
+    },
+    {
       label: 'Localidad',
       value: 'localidad',
       options: filters.localidad,
       placeholder: 'Filtrar localidad...',
+      type: 'select',
     },
     {
       label: 'Turno',
       value: 'turno',
       options: filters.turno,
       placeholder: 'Filtrar turno...',
+      type: 'select',
     },
     {
       label: 'Dominio',
@@ -43,24 +51,28 @@ export function AutosTable({
       value: 'tipo_licencia',
       placeholder: 'Filtrar licencia...',
       options: filters.tipo_licencia,
+      type: 'select',
     },
     {
       label: 'Zona Infractor',
       value: 'zona_infractor',
       placeholder: 'Filtrar zona infractor...',
       options: filters.zona_infractor,
+      type: 'select',
     },
     {
       label: 'Resolucion',
       value: 'resolucion',
       placeholder: 'Filtrar resolucion...',
       options: filters.resolucion,
+      type: 'select',
     },
     {
       label: 'Motivo',
       value: 'motivo',
       placeholder: 'Filtrar motivo...',
       options: filters.motivo,
+      type: 'select',
     },
   ]
 

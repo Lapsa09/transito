@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter'
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options'
-import { DatePicker } from '../ui/date-picker'
 
 interface DataTableToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -28,12 +27,18 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0
 
   // Memoize computation of searchableColumns and filterableColumns
-  const { searchableColumns, filterableColumns } = React.useMemo(() => {
-    return {
-      searchableColumns: filterFields.filter((field) => !field.options),
-      filterableColumns: filterFields.filter((field) => field.options),
-    }
-  }, [filterFields])
+  const { searchableColumns, filterableColumns, dateColumns } =
+    React.useMemo(() => {
+      return {
+        searchableColumns: filterFields.filter(
+          (field) => field.type === 'text' || !field.type,
+        ),
+        filterableColumns: filterFields.filter(
+          (field) => field.type === 'select',
+        ),
+        dateColumns: filterFields.filter((field) => field.type === 'date'),
+      }
+    }, [filterFields])
 
   return (
     <div
@@ -55,12 +60,6 @@ export function DataTableToolbar<TData>({
             <RxCross2 className="ml-2 size-4" aria-hidden="true" />
           </Button>
         )}
-        <DatePicker
-          triggerSize="sm"
-          triggerVariant="outline"
-          triggerClassName="ml-auto w-56 sm:w-60"
-          placeholder="Filtrar por fecha..."
-        />
         {searchableColumns.length > 0 &&
           searchableColumns.map(
             (column) =>

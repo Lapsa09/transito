@@ -34,7 +34,9 @@ const sortColumns = (column: keyof RepuestosDTO) => {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const { page, per_page, sort } = searchParamsSchema.parse(searchParams)
+  const { page, per_page, sort } = searchParamsSchema.parse(
+    Object.fromEntries(new URLSearchParams(searchParams).entries()),
+  )
 
   const [column, order] = (sort?.split('.').filter(Boolean) ?? [
     'id',

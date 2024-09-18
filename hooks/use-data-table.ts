@@ -126,12 +126,18 @@ export function useDataTable<TData, TValue>({
   const [column, order] = sort?.split('.') ?? []
 
   // Memoize computation of searchableColumns and filterableColumns
-  const { searchableColumns, filterableColumns } = React.useMemo(() => {
-    return {
-      searchableColumns: filterFields.filter((field) => !field.options),
-      filterableColumns: filterFields.filter((field) => field.options),
-    }
-  }, [filterFields])
+  const { searchableColumns, filterableColumns, dateColumns } =
+    React.useMemo(() => {
+      return {
+        searchableColumns: filterFields.filter(
+          (field) => field.type === 'text' || !field.type,
+        ),
+        filterableColumns: filterFields.filter(
+          (field) => field.type === 'select',
+        ),
+        dateColumns: filterFields.filter((field) => field.type === 'date'),
+      }
+    }, [filterFields])
 
   // Create query string
   const createQueryString = React.useCallback(
@@ -162,6 +168,8 @@ export function useDataTable<TData, TValue>({
           (column) => column.value === key,
         )
 
+        const dateColumn = dateColumns.find((column) => column.value === key)
+
         if (filterableColumn) {
           filters.push({
             id: key,
@@ -172,13 +180,18 @@ export function useDataTable<TData, TValue>({
             id: key,
             value: [value],
           })
+        } else if (dateColumn) {
+          filters.push({
+            id: key,
+            value: [value],
+          })
         }
 
         return filters
       },
       [],
     )
-  }, [filterableColumns, searchableColumns, searchParams])
+  }, [filterableColumns, searchableColumns, searchParams, dateColumns])
 
   // Table states
   const [rowSelection, setRowSelection] = React.useState({})
@@ -248,6 +261,17 @@ export function useDataTable<TData, TValue>({
     ),
   ) as ColumnFiltersState
 
+  const debouncedDateColumnFilters = JSON.parse(
+    useDebounce(
+      JSON.stringify(
+        columnFilters.filter((filter) => {
+          return dateColumns.find((column) => column.value === filter.id)
+        }),
+      ),
+      500,
+    ),
+  ) as ColumnFiltersState
+
   const filterableColumnFilters = columnFilters.filter((filter) => {
     return filterableColumns.find((column) => column.value === filter.id)
   })
@@ -285,6 +309,12 @@ export function useDataTable<TData, TValue>({
       }
     }
 
+    for (const column of debouncedDateColumnFilters) {
+      if (typeof column.value === 'object' && Array.isArray(column.value)) {
+        Object.assign(newParamsObject, { [column.id]: column.value.join('.') })
+      }
+    }
+
     // Remove deleted values
     for (const key of searchParams.keys()) {
       if (
@@ -293,7 +323,9 @@ export function useDataTable<TData, TValue>({
             (column) => column.id === key,
           )) ||
         (filterableColumns.find((column) => column.value === key) &&
-          !filterableColumnFilters.find((column) => column.id === key))
+          !filterableColumnFilters.find((column) => column.id === key)) ||
+        (dateColumns.find((column) => column.value === key) &&
+          !debouncedDateColumnFilters.find((column) => column.id === key))
       ) {
         Object.assign(newParamsObject, { [key]: null })
       }
@@ -310,6 +342,8 @@ export function useDataTable<TData, TValue>({
     JSON.stringify(debouncedSearchableColumnFilters),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     JSON.stringify(filterableColumnFilters),
+
+    JSON.stringify(debouncedDateColumnFilters),
   ])
 
   const table = useReactTable({

@@ -5,14 +5,16 @@ import {
   tipoVehiculo,
   uso,
 } from '@/drizzle/schema/logistica'
-import { eq } from 'drizzle-orm'
+import { SQL, eq } from 'drizzle-orm'
 
 export async function vehiculosDTO({
   page,
   per_page,
+  where,
 }: {
   page: number
   per_page: number
+  where?: SQL
 }) {
   return await db
     .select({
@@ -32,6 +34,7 @@ export async function vehiculosDTO({
       seguro: movil.seguro,
     })
     .from(movil)
+    .where(where)
     .innerJoin(uso, eq(movil.idUso, uso.idUso))
     .limit(per_page)
     .offset((page - 1) * per_page)

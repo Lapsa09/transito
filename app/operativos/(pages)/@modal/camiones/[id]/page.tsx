@@ -5,7 +5,8 @@ import { getOperativosSelects, getter } from '@/services'
 import { z } from 'zod'
 import { operativoInputSchema, registroInputSchema } from '@/schemas/camiones'
 
-async function page({ id }: { id: string }) {
+async function page({ params }: { params: { id: string } }) {
+  const { id } = params
   const { vicenteLopez, turnos, motivos, resolucion, zonas } =
     await getOperativosSelects()
 

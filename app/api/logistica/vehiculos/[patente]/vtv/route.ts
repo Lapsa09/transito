@@ -14,7 +14,9 @@ export async function GET(
   const { patente } = params
 
   const { searchParams } = req.nextUrl
-  const { page, per_page } = searchParamsSchema.parse(searchParams)
+  const { page, per_page } = searchParamsSchema.parse(
+    Object.fromEntries(new URLSearchParams(searchParams).entries()),
+  )
 
   const vehiculo = await vtvDTO({ patente, page, per_page })
 

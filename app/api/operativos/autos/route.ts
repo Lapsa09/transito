@@ -28,7 +28,7 @@ import { searchParamsSchema } from '@/schemas/form'
 
 const searchAutosInputSchema = searchParamsSchema.merge(
   z.object({
-    fecha: z.string().date().optional(),
+    fecha: z.string().optional(),
     dominio: z.string().optional(),
     turno: z.enum(turnos.enumValues).optional(),
     motivo: z.string().optional(),
@@ -159,10 +159,13 @@ export async function GET(req: NextRequest) {
       operator,
       resolucion,
     } = input
-
     const expressions: (SQL<unknown> | undefined)[] = [
       !!fecha
-        ? eq(operativos.fecha, sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`)
+        ? filterColumn({
+            column: operativos.fecha,
+            value: fecha,
+            isDate: true,
+          })
         : undefined,
       turno
         ? filterColumn({
@@ -197,7 +200,6 @@ export async function GET(req: NextRequest) {
         ? filterColumn({ column: registros.resolucion, value: resolucion })
         : undefined,
     ]
-
     const where =
       !operator || operator === 'and' ? and(...expressions) : or(...expressions)
 
@@ -234,6 +236,14 @@ export async function GET(req: NextRequest) {
     const totalPromise = db
       .select({ count: count() })
       .from(registros)
+      .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+      .innerJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+      .innerJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
+      .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
+      .innerJoin(
+        vicenteLopez,
+        eq(operativos.idLocalidad, vicenteLopez.idBarrio),
+      )
       .where(where)
       .execute()
       .then(([{ count }]) => count)

@@ -1,11 +1,13 @@
 import { db } from '@/drizzle'
 import { kilometrajeVehiculos } from '@/drizzle/schema/logistica'
 import { kilometrajeDTO } from '@/DTO/logistica/kilometraje'
+import { filterColumn } from '@/lib/filter-column'
 import { searchParamsSchema } from '@/schemas/form'
 import { kilometrajeInputSchema } from '@/schemas/logistica'
-import { count, eq, sql } from 'drizzle-orm'
+import { and, count, eq, SQL, sql } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 export async function GET(
   req: NextRequest,
@@ -13,14 +15,32 @@ export async function GET(
 ) {
   const { patente } = params
   const { searchParams } = req.nextUrl
-  const { page, per_page } = searchParamsSchema.parse(searchParams)
+  const { page, per_page, fecha } = searchParamsSchema
+    .merge(
+      z.object({
+        fecha: z.string().optional(),
+      }),
+    )
+    .parse(Object.fromEntries(new URLSearchParams(searchParams).entries()))
 
-  const vehiculo = await kilometrajeDTO({ patente, page, per_page })
+  const expressions: (SQL<unknown> | undefined)[] = [
+    !!fecha
+      ? filterColumn({
+          column: kilometrajeVehiculos.fecha,
+          value: fecha,
+          isDate: true,
+        })
+      : undefined,
+  ]
+
+  const where = and(...expressions, eq(kilometrajeVehiculos.patente, patente))
+
+  const vehiculo = await kilometrajeDTO({ patente, page, per_page, where })
 
   const total = await db
     .select({ count: count() })
     .from(kilometrajeVehiculos)
-    .where(eq(kilometrajeVehiculos.patente, patente))
+    .where(where)
     .execute()
     .then((res) => res[0].count)
 

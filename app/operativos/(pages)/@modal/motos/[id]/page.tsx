@@ -5,7 +5,7 @@ import { getOperativosSelects, getter } from '@/services'
 import { z } from 'zod'
 import { operativoInputSchema, registroInputSchema } from '@/schemas/motos'
 
-async function page({ id }: { id: string }) {
+async function page({ params: { id } }: { params: { id: string } }) {
   const {
     vicenteLopez,
     turnos,

@@ -6,16 +6,16 @@ import {
   reparaciones,
   repuesto,
 } from '@/drizzle/schema/logistica'
-import { eq } from 'drizzle-orm'
+import { SQL, eq } from 'drizzle-orm'
 
 export async function reparacionesByMovilDTO({
-  patente,
   page,
   per_page,
+  where,
 }: {
-  patente: string
   page: number
   per_page: number
+  where?: SQL
 }) {
   return await db
     .select({
@@ -30,7 +30,7 @@ export async function reparacionesByMovilDTO({
       observacion: reparaciones.observacion,
     })
     .from(reparaciones)
-    .where(eq(reparaciones.patente, patente))
+    .where(where)
     .innerJoin(repuesto, eq(reparaciones.articulo, repuesto.id))
     .innerJoin(pedidoRepuesto, eq(repuesto.idPedido, pedidoRepuesto.id))
     .innerJoin(proveedor, eq(pedidoRepuesto.idProveedor, proveedor.id))

@@ -1,15 +1,12 @@
-import {
-  camionesDTO,
-  CamionesDTO,
-  localidad_destino,
-  localidad_origen,
-} from '@/DTO/operativos/camiones'
+import { camionesDTO, CamionesDTO } from '@/DTO/operativos/camiones'
 import { camionesdb, db } from '@/drizzle'
 import {
   Operativo,
   operativos,
   Registro,
   registros,
+  localidad_destino,
+  localidad_origen,
 } from '@/drizzle/schema/camiones'
 import {
   Barrio,

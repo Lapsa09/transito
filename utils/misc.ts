@@ -71,7 +71,7 @@ export function excelDateToJSDate(serial: number) {
   const hours = Math.floor(total_seconds / (60 * 60))
   const minutes = Math.floor(total_seconds / 60) % 60
   date_info.setUTCHours(hours, minutes, seconds)
-  return DateTime.fromJSDate(date_info).toUTC()
+  return date_info
 }
 
 export function jsonAgg<T extends Record<string, AnyColumn>>(select: T) {

@@ -17,6 +17,14 @@
     "@next/mdx": "^13.4.7",
     "@nextui-org/react": "^2.3.6",
     "@nextui-org/theme": "^2.2.3",
+<<<<<<< HEAD
+    "@nivo/bar": "^0.87.0",
+    "@nivo/funnel": "^0.87.0",
+    "@nivo/pie": "^0.87.0",
+    "@nivo/treemap": "^0.87.0",
+    "@prisma/client": "5.3.1",
+=======
+>>>>>>> remote/next
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -48,6 +56,7 @@
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.216.0",
     "luxon": "^3.4.3",
+    "mapbox-gl": "^3.6.0",
     "nanoid": "^5.0.4",
     "next": "^14.1.4",
     "next-auth": "^4.24.7",
@@ -56,6 +65,7 @@
     "puppeteer": "^21.9.0",
     "react": "18.2.0",
     "react-csv": "^2.2.2",
+    "react-d3-speedometer": "^2.2.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.9",
@@ -68,6 +78,7 @@
     "tailwindcss-animate": "^1.0.6",
     "tailwindcss-animated": "^1.0.1",
     "usehooks-ts": "^2.9.1",
+    "xlsx": "^0.19.3",
     "zod": "^3.23.8",
     "zustand": "^4.3.8"
   },

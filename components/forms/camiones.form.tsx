@@ -142,7 +142,7 @@ export function SecondStep({
     zonas: Barrio[]
   }
   editableRegistro?: z.infer<typeof registroInputSchema>
-  id: string
+  id?: string
 }) {
   const router = useRouter()
   const formProps = useForm<z.infer<typeof registroInputSchema>>({

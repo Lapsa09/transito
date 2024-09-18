@@ -10,7 +10,7 @@ import {
 } from '@/components/charts'
 import { getMotosData } from '@/services/metrics'
 import Image from 'next/image'
-import BannerMotos from '@/assets/imgs/control de Motos copy.jpg'
+import BannerMotos from '@/assets/imgs/motos.jpg'
 
 async function page() {
   const data = await getMotosData()

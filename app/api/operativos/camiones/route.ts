@@ -71,7 +71,7 @@ const operativoCamiones = async (
         longitud: operativos.longitud,
         direccion_full: operativos.direccionFull,
       })
-      .from(registros)
+      .from(operativos)
       .where(
         and(
           eq(operativos.direccionFull, direccion_full),

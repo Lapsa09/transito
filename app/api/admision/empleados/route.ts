@@ -1,6 +1,8 @@
+import { turnosSchema } from '@/drizzle/schema/schema'
 import { db } from '@/drizzle'
 import { permisos, users } from '@/drizzle/schema/schema'
 import { NextRequest, NextResponse } from 'next/server'
+import { v4 } from 'uuid'
 
 export async function POST(req: NextRequest) {
   const {
@@ -14,7 +16,7 @@ export async function POST(req: NextRequest) {
     rol: typeof permisos.$inferSelect
     nombre: string
     apellido: string
-    turno: (typeof users.$inferInsert)['turno']
+    turno: keyof typeof turnosSchema.Enum | null
   } = await req.json()
 
   await db.insert(users).values({
@@ -23,6 +25,7 @@ export async function POST(req: NextRequest) {
     nombre,
     apellido,
     turno,
+    id: v4(),
   })
 
   return NextResponse.json('Success')

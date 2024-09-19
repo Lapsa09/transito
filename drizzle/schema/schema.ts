@@ -36,7 +36,7 @@ export const users = pgTable('users', {
   apellido: varchar('apellido'),
   turno: turnos('turno'),
   userPassword: varchar('user_password', { length: 255 }),
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: uuid('id').primaryKey(),
   idRol: integer('id_rol')
     .notNull()
     .references(() => permisos.id),
@@ -191,7 +191,7 @@ export const sessions = pgTable(
 )
 
 export const invitados = pgTable('invitados', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  id: uuid('id').primaryKey().notNull(),
   nombre: varchar('nombre'),
   apellido: varchar('apellido'),
   dni: integer('dni').notNull(),

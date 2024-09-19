@@ -5,6 +5,7 @@ import { examenDTO } from '@/DTO/examen'
 import { shuffle } from '@/utils/misc'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
+import { v4 } from 'uuid'
 
 export async function GET(
   _: NextRequest,
@@ -95,6 +96,7 @@ export async function POST(
         idEdad: categorizeAge(+dni, +edad),
         sexo,
         edad: +edad,
+        id: v4(),
       })
       .returning()
 

@@ -77,7 +77,7 @@ export const tipoExamen = examen.table('tipo_examen', {
 export const rindeExamen = examen.table(
   'rinde_examen',
   {
-    id: uuid('id').defaultRandom().primaryKey().notNull(),
+    id: uuid('id').primaryKey().notNull(),
     idExamen: integer('id_examen')
       .notNull()
       .references(() => examenes.id),

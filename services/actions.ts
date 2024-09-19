@@ -36,6 +36,6 @@ export const rehabilitarExamen = async (id: string) =>
       revalidateTag('examen')
     })
 
-export const revalidar = (tag: string) => {
+export const revalidar = async (tag: string) => {
   revalidateTag(tag)
 }

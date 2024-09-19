@@ -12,6 +12,7 @@ import {
   tipoExamen,
 } from '@/drizzle/schema/examen'
 import { jsonAgg } from '@/utils/misc'
+import { v4 } from 'uuid'
 
 export async function examenDTO({
   id,
@@ -29,6 +30,7 @@ export async function examenDTO({
         idExamen: +id,
         tipoExamenId: +tipo_examen,
         idInvitado: id_invitado,
+        id: v4(),
       })
       .then(async () => {
         return await tx.query.rindeExamen.findFirst({

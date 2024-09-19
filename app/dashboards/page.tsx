@@ -9,6 +9,8 @@ import BannerSubsecretaria from '@/assets/imgs/Banners SubSecretarial.png'
 
 const CURRENT_MONTH = new Date().getMonth()
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const data = await getData()
   const citymis = await getCitymis()

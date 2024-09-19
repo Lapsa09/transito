@@ -12,6 +12,8 @@ import { getMotosData } from '@/services/metrics'
 import Image from 'next/image'
 import BannerMotos from '@/assets/imgs/motos.jpg'
 
+export const dynamic = 'force-dynamic'
+
 async function page() {
   const data = await getMotosData()
   const [trim12, trim34] = [data.byTrim.slice(0, 2), data.byTrim.slice(2)]

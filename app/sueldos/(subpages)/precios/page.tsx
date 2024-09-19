@@ -14,6 +14,8 @@ const getPrecios = async () => {
   return data
 }
 
+export const dynamic = 'force-dynamic'
+
 async function page() {
   const data = await getPrecios()
 

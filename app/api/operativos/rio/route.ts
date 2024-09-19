@@ -219,11 +219,6 @@ export async function GET(req: NextRequest) {
     .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
     .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
     .innerJoin(zonas, eq(registros.idZona, zonas.idZona))
-    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
-    .innerJoin(zonas, eq(registros.idZona, zonas.idZona))
-    .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-    .innerJoin(barrios, eq(registros.idLocalidad, barrios.idBarrio))
     .execute()
     .then(([{ count }]) => count)
 

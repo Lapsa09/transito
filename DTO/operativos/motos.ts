@@ -28,9 +28,7 @@ export async function motosDTO({
       fecha_carga: registros.fechacarga,
       lpcarga: registros.lpcarga,
       id_operativo: registros.idOperativo,
-      motivos: sql<
-        string[]
-      >`select array_agg(motivos.motivo) from ${motoMotivo} inner join ${motivos} on ${motoMotivo.idMotivo} = ${motivos.idMotivo} where ${motoMotivo.idRegistro} = ${registros.id}`,
+      motivos: sql<string[]>`array_agg(${motivos.motivo})`,
       tipo_licencia: tipoLicencias.tipo,
       vehiculo: tipoLicencias.vehiculo,
       zona_infractor: barrios.barrio,
@@ -52,10 +50,20 @@ export async function motosDTO({
     .from(registros)
     .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
     .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
+    .leftJoin(motoMotivo, eq(registros.id, motoMotivo.idRegistro))
     .leftJoin(motivos, eq(motoMotivo.idMotivo, motivos.idMotivo))
     .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
     .innerJoin(vicenteLopez, eq(operativos.idZona, vicenteLopez.idBarrio))
     .where(where)
+    .groupBy(
+      registros.id,
+      operativos.idOp,
+      barrios.idBarrio,
+      vicenteLopez.idBarrio,
+      tipoLicencias.idTipo,
+      motoMotivo.idRegistro,
+      motoMotivo.idMotivo,
+    )
     .orderBy(orderBy)
     .limit(per_page)
     .offset((page - 1) * per_page)

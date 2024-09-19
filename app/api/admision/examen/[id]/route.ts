@@ -112,7 +112,7 @@ export async function POST(
       .where(eq(tipoExamen.id, +tipo_examen))
 
     const preguntas = await examendb.query.preguntas.findMany({
-      where: (tipo, { eq }) => eq(tipo.id, +tipo_examen),
+      where: (tipo, { eq }) => eq(tipo.tipoExamenId, +tipo_examen),
       with: {
         opciones: true,
       },

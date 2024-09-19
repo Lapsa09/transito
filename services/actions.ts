@@ -5,6 +5,7 @@ import { examenes, examenPreguntas, rindeExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 export const terminarExamen = async (id: number) => {
   await db
@@ -13,6 +14,7 @@ export const terminarExamen = async (id: number) => {
     .where(eq(examenes.id, id))
     .execute()
     .then(() => revalidatePath('/admision/examen'))
+    .then(() => redirect('/admision/examen'))
 }
 export const rehabilitarExamen = async (id: string) =>
   await db

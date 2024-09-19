@@ -23,7 +23,7 @@ export async function examenDTO({
   tipo_examen: string
   id_invitado: string
 }) {
-  const examen = await examendb.transaction(async (tx) => {
+  const [examen] = await examendb.transaction(async (tx) => {
     return await tx
       .insert(rindeExamen)
       .values({
@@ -32,25 +32,7 @@ export async function examenDTO({
         idInvitado: id_invitado,
         id: v4(),
       })
-      .then(async () => {
-        return await tx.query.rindeExamen.findFirst({
-          where: (examen, { eq }) => eq(examen.idExamen, +id),
-          with: {
-            examen: true,
-            usuario: true,
-            tipoExamen: true,
-            preguntas: {
-              with: {
-                pregunta: {
-                  with: {
-                    opciones: true,
-                  },
-                },
-              },
-            },
-          },
-        })
-      })
+      .returning()
   })
   return examen!
 }

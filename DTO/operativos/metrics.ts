@@ -12,8 +12,7 @@ import {
   vicenteLopez,
 } from '@/drizzle/schema/schema'
 
-const filePath =
-  'C:/Users/agustin.dinardo/Desktop/transito/my-app/public/citymis.xlsx'
+const filePath = '/citymis.xlsx'
 
 type Res = {
   Número: number

@@ -16,6 +16,7 @@ export const userDTO = async (body: { legajo: string; password: string }) => {
       metaData: {
         turno: users.turno,
         rol: permisos.permiso,
+        rol_url: permisos.url,
         isAdmin: sql<boolean>`${permisos.permiso} = ${Roles.ADMIN}`,
       },
     })

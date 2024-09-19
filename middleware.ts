@@ -17,7 +17,7 @@ export default async function middleware(req: NextRequest) {
 
   if (token) {
     if ('legajo' in token) {
-      const rolePage = token.metaData.rol.url
+      const rolePage = token.metaData.rol_url
       const iAmAllowed = pathname.startsWith(rolePage)
       if (!isProtectedPath || !iAmAllowed) {
         const url = new URL(rolePage, req.url)

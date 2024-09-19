@@ -2,8 +2,7 @@ import { citymisMetrics } from '@/DTO/operativos/metrics'
 import { writeFileSync } from 'fs'
 import { NextRequest, NextResponse } from 'next/server'
 
-const filePath =
-  'C:/Users/agustin.dinardo/Desktop/transito/my-app/public/citymis.xlsx'
+const filePath = '/citymis.xlsx'
 
 export async function GET() {
   try {

@@ -177,7 +177,7 @@ export function SecondStep({
   })
   const { fields, append, remove } = useFieldArray<
     z.infer<typeof registroInputSchema>
-  >({ name: 'motivos' })
+  >({ name: 'motivos', control: formProps.control })
 
   const { setActiveStep } = useStepForm()
 

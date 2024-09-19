@@ -28,7 +28,7 @@ export const registroInputSchema = z.object({
   dominio: z.string().regex(DOMINIO_PATTERN),
   zona_infractor: createSelectSchema(barrios),
   licencia: z.coerce.number().optional(),
-  tipo_licencia: createSelectSchema(tipoLicencias).optional(),
+  tipo_licencia: createSelectSchema(tipoLicencias).nullable(),
   resolucion: z.enum(resolucion.enumValues).nullable().default('PREVENCION'),
   acta: z.coerce.number().optional(),
   extranjero: z.boolean().default(false),

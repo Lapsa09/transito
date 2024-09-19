@@ -286,10 +286,11 @@ export async function POST(req: Request) {
     const id_operativo = await operativoCamiones(body.data)
 
     const repetido = await camionesdb.query.registros.findFirst({
-      where: (registro, { eq }) => (
-        eq(registro.dominio, body.data.dominio),
-        eq(registro.idOperativo, id_operativo)
-      ),
+      where: (registro, { eq, and }) =>
+        and(
+          eq(registro.dominio, body.data.dominio),
+          eq(registro.idOperativo, id_operativo),
+        ),
     })
 
     if (repetido) {

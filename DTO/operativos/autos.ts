@@ -2,6 +2,7 @@ import { db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/operativos'
 import {
   barrios,
+  controlSustancias,
   motivos,
   tipoLicencias,
   vicenteLopez,
@@ -49,6 +50,7 @@ export async function autosDTO({
       licencia: registros.licencia,
       tipo_vehiculo: tipoLicencias.vehiculo,
       es_del: registros.esDel,
+      control_sustancias: controlSustancias.resultado,
     })
     .from(registros)
     .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
@@ -56,6 +58,10 @@ export async function autosDTO({
     .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
     .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
     .innerJoin(vicenteLopez, eq(operativos.idLocalidad, vicenteLopez.idBarrio))
+    .innerJoin(
+      controlSustancias,
+      eq(registros.idSustancias, controlSustancias.id),
+    )
     .where(where)
     .orderBy(orderBy)
     .limit(per_page)

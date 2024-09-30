@@ -22,6 +22,7 @@ import { filterColumn } from '@/lib/filter-column'
 import { camionesInputPropsSchema } from '@/schemas/camiones'
 import { searchParamsSchema } from '@/schemas/form'
 import { geoLocation } from '@/services'
+import { Empleado } from '@/types'
 import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
@@ -244,18 +245,18 @@ export async function GET(req: NextRequest) {
       .select({ count: count() })
       .from(registros)
       .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-      .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
       .innerJoin(
-        vicenteLopez,
-        eq(operativos.idLocalidad, vicenteLopez.idBarrio),
+        localidad_destino,
+        eq(registros.idLocalidadDestino, localidad_destino.idBarrio),
       )
       .innerJoin(
         localidad_origen,
         eq(registros.idLocalidadOrigen, localidad_origen.idBarrio),
       )
+      .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
       .innerJoin(
-        localidad_destino,
-        eq(registros.idLocalidadDestino, localidad_destino.idBarrio),
+        vicenteLopez,
+        eq(operativos.idLocalidad, vicenteLopez.idBarrio),
       )
       .where(where)
       .execute()
@@ -299,13 +300,15 @@ export async function POST(req: Request) {
       })
     }
 
-    const user = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions)
+
+    const user = session?.user as Empleado | null
 
     await db.insert(registros).values({
       acta: body.data.acta,
       dominio: body.data.dominio,
       resolucion: body.data.resolucion,
-      lpcarga: user?.user?.legajo,
+      lpcarga: user?.legajo,
       idOperativo: id_operativo,
       idLocalidadOrigen: body.data.localidad_origen?.idBarrio,
       idLocalidadDestino: body.data.localidad_destino?.idBarrio,

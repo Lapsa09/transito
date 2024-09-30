@@ -32,8 +32,8 @@ export const turnos = pgEnum('turnos', turnosSchema.options)
 
 export const users = pgTable('users', {
   legajo: integer('legajo').notNull().unique(),
-  nombre: varchar('nombre'),
-  apellido: varchar('apellido'),
+  nombre: varchar('nombre').notNull(),
+  apellido: varchar('apellido').notNull(),
   turno: turnos('turno'),
   userPassword: varchar('user_password', { length: 255 }),
   id: uuid('id').primaryKey(),
@@ -192,14 +192,19 @@ export const sessions = pgTable(
 
 export const invitados = pgTable('invitados', {
   id: uuid('id').primaryKey().notNull(),
-  nombre: varchar('nombre'),
-  apellido: varchar('apellido'),
+  nombre: varchar('nombre').notNull(),
+  apellido: varchar('apellido').notNull(),
   dni: integer('dni').notNull(),
   utilizado: boolean('utilizado').default(false).notNull(),
   fecha: date('fecha').defaultNow().notNull(),
   sexo: varchar('sexo'),
   edad: integer('edad'),
   idEdad: integer('id_edad').references(() => grupoEtario.id),
+})
+
+export const controlSustancias = pgTable('control_sustancias', {
+  id: serial('id').primaryKey().notNull(),
+  resultado: varchar('resultado').notNull(),
 })
 
 export type Motivo = typeof motivos.$inferSelect

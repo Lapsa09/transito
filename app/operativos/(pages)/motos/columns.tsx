@@ -1,6 +1,6 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import { MotosDTO } from '@/DTO/operativos/motos'
-import { getLocalDate } from '@/utils/misc'
+import { getLocalDate, getLocalTime } from '@/utils/misc'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 
@@ -28,7 +28,7 @@ export function getColumns(): ColumnDef<MotosDTO>[] {
       ),
     },
     {
-      accessorFn: (row) => row.hora,
+      accessorFn: (row) => getLocalTime(row.fecha + 'T' + row.hora),
       id: 'hora',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Hora" />

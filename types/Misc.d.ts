@@ -12,20 +12,11 @@ export enum Roles {
   RADIO = 'RADIO',
 }
 
-export type User = {
-  id: string
-  nombre: string
-  legajo?: number
-  dni?: number
-  apellido: string
-  metaData: Record<string, any>
-}
+export type Empleado = NonNullable<Awaited<ReturnType<typeof userDTO>>>
 
-export type Empleado = User & {
-  metadata: NonNullable<Awaited<ReturnType<typeof userDTO>>>['metaData']
-}
-export type Invitado = User &
-  NonNullable<Awaited<ReturnType<typeof invitadoDTO>>>
+export type Invitado = NonNullable<Awaited<ReturnType<typeof invitadoDTO>>>
+
+export type User = Empleado | Invitado
 
 export interface Links {
   link: string

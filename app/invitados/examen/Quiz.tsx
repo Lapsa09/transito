@@ -78,7 +78,7 @@ const Quiz = ({
             podras volver a realizarlo.
           </p>
         </div>
-        <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
+        <section className="max-h-96 overflow-y-auto text-white gap-5 grid">
           {preguntas?.map(({ id, pregunta, opciones }, index) => {
             return (
               <CustomRadioGroup

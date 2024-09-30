@@ -19,19 +19,21 @@ export const terminarExamen = async (id: number) => {
 export const rehabilitarExamen = async (id: string) =>
   await db
     .transaction(async (tx) => {
-      const [{ idExamen }] = await tx
+      const [{ id_invitado }] = await tx
         .update(rindeExamen)
         .set({ horaFinalizado: null, nota: null })
-        .where(eq(rindeExamen.idInvitado, id))
-        .returning({ idExamen: rindeExamen.id })
+        .where(eq(rindeExamen.id, id))
+        .returning({
+          idExamen: rindeExamen.id,
+          id_invitado: rindeExamen.idInvitado,
+        })
       await tx
         .update(invitados)
         .set({ utilizado: false })
-        .where(eq(invitados.id, id))
+        .where(eq(invitados.id, id_invitado))
       await tx
-        .update(examenPreguntas)
-        .set({ elegidaId: null })
-        .where(eq(examenPreguntas.examenId, idExamen))
+        .delete(examenPreguntas)
+        .where(eq(examenPreguntas.examenId, id))
         .execute()
     })
     .then(() => {

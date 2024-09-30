@@ -22,7 +22,7 @@ export const userDTO = async (body: { legajo: string; password: string }) => {
     })
     .from(users)
     .where(eq(users.legajo, +body.legajo))
-    .leftJoin(permisos, eq(users.idRol, permisos.id))
+    .innerJoin(permisos, eq(users.idRol, permisos.id))
 
   if (!user.length) return null
   const user_password = await bycript.compare(
@@ -48,6 +48,8 @@ export const invitadoDTO = async (body: { dni: string }) => {
         id_examen: rindeExamen.idExamen,
         nota: rindeExamen.nota,
         tipoExamen: tipoExamen.tipo,
+        tipo_examenId: tipoExamen.id,
+        isAdmin: sql<false>`false`,
       },
     })
     .from(invitados)

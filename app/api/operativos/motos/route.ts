@@ -25,6 +25,7 @@ import { filterColumn } from '@/lib/filter-column'
 import { searchParamsSchema } from '@/schemas/form'
 import { motosInputPropsSchema } from '@/schemas/motos'
 import { geoLocation } from '@/services'
+import { Empleado } from '@/types'
 import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
 import { createSelectSchema } from 'drizzle-zod'
 import { getServerSession } from 'next-auth'
@@ -261,10 +262,10 @@ export async function GET(req: NextRequest) {
       .select({ count: count() })
       .from(registros)
       .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-      .innerJoin(motoMotivo, eq(registros.id, motoMotivo.idRegistro))
-      .innerJoin(motivos, eq(motoMotivo.idMotivo, motivos.idMotivo))
-      .innerJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
       .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
+      .leftJoin(motoMotivo, eq(registros.id, motoMotivo.idRegistro))
+      .leftJoin(motivos, eq(motoMotivo.idMotivo, motivos.idMotivo))
+      .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
       .innerJoin(vicenteLopez, eq(operativos.idZona, vicenteLopez.idBarrio))
       .where(where)
       .execute()
@@ -310,7 +311,9 @@ export async function POST(req: Request) {
     })
   }
 
-  const user = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions)
+
+  const user = session?.user as Empleado | null
 
   const [moto] = await db
     .insert(registros)
@@ -318,7 +321,7 @@ export async function POST(req: Request) {
       acta: body.data.acta,
       dominio: body.data.dominio.toUpperCase(),
       licencia: body.data.licencia,
-      lpcarga: user?.user?.legajo,
+      lpcarga: user?.legajo,
       resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
       idLicencia: body.data.tipo_licencia?.idTipo,
       idZonaInfractor: body.data.zona_infractor?.idBarrio,

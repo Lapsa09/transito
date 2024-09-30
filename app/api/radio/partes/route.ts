@@ -14,7 +14,9 @@ const partesInputSchema = searchParamsSchema.merge(
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const { fecha, page, per_page } = partesInputSchema.parse(searchParams)
+  const { fecha, page, per_page } = partesInputSchema.parse(
+    Object.fromEntries(searchParams.entries()),
+  )
 
   const partesPromise = partesDTO({ fecha, page, per_page })
 

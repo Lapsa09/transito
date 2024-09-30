@@ -9,6 +9,7 @@ import {
 import { zonas } from '@/drizzle/schema/nuevo_control'
 import {
   Barrio,
+  controlSustancias,
   Motivo,
   resolucionSchema,
   seguridadSchema,
@@ -180,6 +181,18 @@ export const geoLocation = async (
   return { latitud, longitud }
 }
 
+export const getSustancias = async () => {
+  const data = await getter<
+    {
+      id: number
+      label: string
+    }[]
+  >({
+    route: 'sustancias',
+  })
+  return data
+}
+
 export const getOperativosSelects = async () => {
   const [
     zonas,
@@ -190,6 +203,7 @@ export const getOperativosSelects = async () => {
     motivos,
     vicenteLopez,
     zonasPaseo,
+    controlSustancias,
   ] = await Promise.all([
     getAllZonas(),
     getTurnos(),
@@ -199,6 +213,7 @@ export const getOperativosSelects = async () => {
     getMotivos(),
     getVicenteLopez(),
     getZonasPaseo(),
+    getSustancias(),
   ])
 
   return {
@@ -210,6 +225,7 @@ export const getOperativosSelects = async () => {
     motivos,
     vicenteLopez,
     zonasPaseo,
+    controlSustancias,
   }
 }
 

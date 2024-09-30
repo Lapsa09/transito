@@ -106,27 +106,6 @@ export async function POST(
       id_invitado: invitado.id,
     })
 
-    const [tipo] = await db
-      .select()
-      .from(tipoExamen)
-      .where(eq(tipoExamen.id, +tipo_examen))
-
-    const preguntas = await examendb.query.preguntas.findMany({
-      where: (tipo, { eq }) => eq(tipo.tipoExamenId, +tipo_examen),
-      with: {
-        opciones: true,
-      },
-    })
-
-    for (const pregunta of shuffle(preguntas).slice(
-      0,
-      tipo.cantidadPreguntas,
-    )) {
-      await db.insert(examenPreguntas).values({
-        examenId: examen.id,
-        preguntaId: pregunta.id,
-      })
-    }
     return NextResponse.json(examen)
   } catch (error: any) {
     console.log(error)

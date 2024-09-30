@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import {
   barrios,
+  controlSustancias,
   motivos,
   resolucion,
   seguridad,
@@ -70,6 +71,10 @@ export const registros = autos.table('registros', {
     .notNull()
     .references(() => operativos.idOp),
   idMotivo: integer('id_motivo').references(() => motivos.idMotivo),
+  idSustancias: integer('id_sustancias')
+    .references(() => controlSustancias.id)
+    .notNull()
+    .default(1),
 })
 
 export const operativosRelations = relations(operativos, ({ one }) => ({

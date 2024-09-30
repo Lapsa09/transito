@@ -30,8 +30,7 @@ export const examenes = examen.table(
     id: serial('id').primaryKey().notNull(),
     clave: varchar('clave'),
     fecha: date('fecha').defaultNow(),
-    horaIniciado: time('hora_iniciado').defaultNow(),
-    hora: timestamp('hora'),
+    horaIniciado: time('hora_iniciado').notNull().defaultNow(),
     terminado: boolean('terminado').default(false),
   },
   (table) => {

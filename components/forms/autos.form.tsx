@@ -15,6 +15,7 @@ import { z } from 'zod'
 import { operativoInputSchema, registroInputSchema } from '@/schemas/autos'
 import {
   Barrio,
+  controlSustancias,
   Motivo,
   resolucionSchema,
   seguridadSchema,
@@ -165,13 +166,14 @@ export function SecondStep({
     motivos: Motivo[]
     resolucion: Record<'id' | 'label', keyof typeof resolucionSchema.enum>[]
     zonas: Barrio[]
+    controlSustancias: { id: number; label: string }[]
   }
   editableRegistro?: z.infer<typeof registroInputSchema>
   id?: string
 }) {
   const router = useRouter()
   const formProps = useForm<z.infer<typeof registroInputSchema>>({
-    mode: 'onBlur',
+    mode: 'all',
     resolver: zodResolver(registroInputSchema),
     defaultValues: {
       ...editableRegistro,
@@ -285,6 +287,12 @@ export function SecondStep({
           className="w-full basis-5/12"
           type="number"
           placeholder='Ej: "0.0"'
+        />
+        <Select
+          name="control_sustancias"
+          label="Control sustancias"
+          className="w-full basis-5/12"
+          options={selects.controlSustancias}
         />
         <Select
           name="resolucion"

@@ -54,6 +54,11 @@ function layout({ children }: Props) {
                   Control de Camiones
                 </Link>
               </TabsTrigger>
+              <TabsTrigger asChild value="/sustancias">
+                <Link replace href="/dashboards/sustancias">
+                  Sustancias Psicoactivas
+                </Link>
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         )

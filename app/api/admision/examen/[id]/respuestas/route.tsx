@@ -16,6 +16,8 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         pregunta: preguntas.pregunta,
         elegida: opciones.respuesta,
         correcta: correcta.respuesta,
+        idCorrecta: preguntas.idCorrecta,
+        elegidaId: examenPreguntas.elegidaId,
       })
       .from(examenPreguntas)
       .innerJoin(preguntas, eq(preguntas.id, examenPreguntas.preguntaId))

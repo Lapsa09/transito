@@ -14,10 +14,10 @@ export const parseToISOTime = (date: string) => {
 }
 
 export const getLocalTime = (date: string) => {
-  return new Date(date).toLocaleTimeString('UTC', {
-    timeZone: 'GMT',
+  return Intl.DateTimeFormat('es-AR', {
     timeStyle: 'short',
-  })
+    hour12: false,
+  }).format(new Date(date))
 }
 
 export const getLocalDate = (date: string) => {

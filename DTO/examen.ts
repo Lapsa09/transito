@@ -11,7 +11,7 @@ import {
   rindeExamen,
   tipoExamen,
 } from '@/drizzle/schema/examen'
-import { jsonAgg } from '@/utils/misc'
+import { jsonAgg, shuffle } from '@/utils/misc'
 import { v4 } from 'uuid'
 
 export async function examenDTO({
@@ -82,7 +82,7 @@ export async function historialDTO<T>({
     .offset((page - 1) * per_page)
     .fullJoin(examenes, eq(examenes.id, rindeExamen.idExamen))
     .fullJoin(invitados, eq(invitados.id, rindeExamen.idInvitado))
-    .fullJoin(tipoExamen, eq(tipoExamen.tipo, rindeExamen.tipoExamenId))
+    .fullJoin(tipoExamen, eq(tipoExamen.id, rindeExamen.tipoExamenId))
     .where(where)
     .orderBy(
       orderBy.column in rindeExamen
@@ -97,11 +97,46 @@ export async function historialDTO<T>({
                 orderBy.column as keyof typeof rindeExamen.$inferSelect
               ],
             )
-        : rindeExamen.id,
+        : desc(rindeExamen.horaIngresado),
     )
 }
 
 export async function rindeExamenDTO({ id }: { id: string }) {
+  function getRandomNumberWithMargin(
+    upperLimit: number,
+    margin: number,
+  ): number {
+    const adjustedUpperLimit = upperLimit - margin
+
+    return Math.floor(Math.random() * adjustedUpperLimit)
+  }
+
+  const [invitado] = await db
+    .select()
+    .from(invitados)
+    .where(eq(invitados.id, id))
+    .innerJoin(rindeExamen, eq(invitados.id, rindeExamen.idInvitado))
+  const [tipo] = await db
+    .select()
+    .from(tipoExamen)
+    .where(eq(tipoExamen.id, invitado.rinde_examen.tipoExamenId))
+
+  const preguntas = await examendb.query.preguntas.findMany({
+    where: (row, { eq }) => eq(row.tipoExamenId, tipo.id),
+    with: {
+      opciones: true,
+    },
+  })
+  const init = getRandomNumberWithMargin(
+    preguntas.length,
+    tipo.cantidadPreguntas,
+  )
+  for (const pregunta of preguntas.slice(init, init + tipo.cantidadPreguntas)) {
+    await db.insert(examenPreguntas).values({
+      examenId: invitado.rinde_examen.id,
+      preguntaId: pregunta.id,
+    })
+  }
   return await examendb.query.rindeExamen
     .findFirst({
       where: (examen, { eq }) => eq(examen.idInvitado, id),

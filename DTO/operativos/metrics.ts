@@ -12,7 +12,7 @@ import {
   vicenteLopez,
 } from '@/drizzle/schema/schema'
 
-const filePath = '/citymis.xlsx'
+const filePath = process.env.NEXT_PUBLIC_FILEPATH!
 
 type Res = {
   Número: number

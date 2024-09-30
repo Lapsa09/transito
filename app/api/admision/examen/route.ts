@@ -11,7 +11,6 @@ export async function POST() {
       .insert(examenes)
       .values({
         clave,
-        hora: new Date(),
       })
       .returning()
     revalidateTag('examenes')

@@ -63,6 +63,7 @@ function NuevoAlumno({ id }: { id: number }) {
           { id: 'M', label: 'Masculino' },
           { id: 'F', label: 'Femenino' },
         ]}
+        className="pb-6"
       />
       <CustomSelect
         label="Tipo de examen"

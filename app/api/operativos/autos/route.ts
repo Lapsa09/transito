@@ -1,3 +1,4 @@
+import { Empleado } from '@/types'
 import { Operativo, Registro } from '@/drizzle/schema/operativos'
 import { autosdb, db } from '@/drizzle'
 import { operativos, registros } from '@/drizzle/schema/operativos'
@@ -237,9 +238,9 @@ export async function GET(req: NextRequest) {
       .select({ count: count() })
       .from(registros)
       .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
-      .innerJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
-      .innerJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
       .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
+      .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+      .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
       .innerJoin(
         vicenteLopez,
         eq(operativos.idLocalidad, vicenteLopez.idBarrio),
@@ -284,14 +285,16 @@ export async function POST(req: NextRequest) {
         status: 401,
       })
     }
-    const user = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions)
+
+    const user = session?.user as Empleado | null
 
     await db.insert(registros).values({
       acta: body.data.acta ? +body.data.acta : null,
       dominio: body.data.dominio.toUpperCase(),
       graduacionAlcoholica: body.data.graduacion_alcoholica,
       licencia: Number(body.data.licencia) || null,
-      lpcarga: user?.user?.legajo,
+      lpcarga: user?.legajo,
       resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
       idLicencia: body.data.tipo_licencia?.idTipo,
       idZonaInfractor: body.data.zona_infractor?.idBarrio,

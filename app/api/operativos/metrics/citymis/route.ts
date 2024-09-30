@@ -2,7 +2,7 @@ import { citymisMetrics } from '@/DTO/operativos/metrics'
 import { writeFileSync } from 'fs'
 import { NextRequest, NextResponse } from 'next/server'
 
-const filePath = '/citymis.xlsx'
+const filePath = process.env.NEXT_PUBLIC_FILEPATH!
 
 export async function GET() {
   try {

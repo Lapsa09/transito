@@ -59,7 +59,7 @@ export const authOptions = {
       return { ...token, ...user }
     },
     session({ session, token }) {
-      session.user = token
+      session.user = token as typeof session.user
 
       return session
     },

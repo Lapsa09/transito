@@ -1,6 +1,6 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import { AutosDTO } from '@/DTO/operativos/autos'
-import { getLocalDate } from '@/utils/misc'
+import { getLocalDate, getLocalTime } from '@/utils/misc'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 
@@ -29,7 +29,7 @@ export function getColumns(): ColumnDef<AutosDTO>[] {
       ),
     },
     {
-      accessorFn: (row) => row.hora,
+      accessorFn: (row) => getLocalTime(row.fecha + 'T' + row.hora),
       id: 'hora',
       enableColumnFilter: false,
       header: ({ column }) => (
@@ -138,6 +138,13 @@ export function getColumns(): ColumnDef<AutosDTO>[] {
           column={column}
           title="Resultado de alcoholemia"
         />
+      ),
+    },
+    {
+      accessorFn: (row) => row.control_sustancias,
+      id: 'control_sustancias',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Control de sustancias" />
       ),
     },
     {

@@ -1,6 +1,6 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import { CamionesDTO } from '@/DTO/operativos/camiones'
-import { getLocalDate } from '@/utils/misc'
+import { getLocalDate, getLocalTime } from '@/utils/misc'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 
@@ -68,7 +68,7 @@ export const getColumns: () => ColumnDef<CamionesDTO>[] = () => {
         <DataTableColumnHeader column={column} title="Hora" />
       ),
       id: 'hora',
-      accessorFn: ({ hora }) => hora,
+      accessorFn: ({ hora, fecha }) => getLocalTime(fecha + 'T' + hora),
     },
     {
       id: 'dominio',

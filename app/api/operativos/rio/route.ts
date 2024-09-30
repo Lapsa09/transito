@@ -1,3 +1,4 @@
+import { Empleado } from '@/types'
 import { db, riodb } from '@/drizzle'
 import { operativos, registros, zonas } from '@/drizzle/schema/nuevo_control'
 import { Barrio, barrios, turnos } from '@/drizzle/schema/schema'
@@ -248,7 +249,10 @@ export async function POST(req: NextRequest) {
   }
 
   const id_localidad = await radicacion(data)
-  const user = await getServerSession(authOptions)
+
+  const session = await getServerSession(authOptions)
+
+  const user = session?.user as Empleado | null
 
   await db.insert(registros).values({
     hora: data.hora,
@@ -256,7 +260,7 @@ export async function POST(req: NextRequest) {
     idOperativo: id_operativo,
     idZona: data.zona.idZona,
     idLocalidad: id_localidad,
-    lpcarga: user?.user?.legajo,
+    lpcarga: user?.legajo,
   })
   revalidateTag('rio')
   return NextResponse.json('Exito')

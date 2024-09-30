@@ -1,20 +1,19 @@
 import { db } from '@/drizzle'
-import { examenes, rindeExamen } from '@/drizzle/schema/examen'
+import { examenes, rindeExamen, tipoExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { historialDTO } from '@/DTO/examen'
 import { filterColumn } from '@/lib/filter-column'
 import { searchParamsSchema } from '@/schemas/form'
 import { Historial } from '@/types/quiz'
-import { and, count, eq, or, SQL } from 'drizzle-orm'
+import { and, count, eq, isNotNull, or, SQL } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const searchHistorialParamsSchema = searchParamsSchema.merge(
   z.object({
     nombre: z.string().optional(),
-    dni: z.number().optional(),
+    dni: z.coerce.number().optional(),
     fecha: z.string().optional(),
-    hora_finalizado: z.string().time().optional(),
     operator: z.enum(['and', 'or']).optional(),
   }),
 )
@@ -22,22 +21,16 @@ const searchHistorialParamsSchema = searchParamsSchema.merge(
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const {
-      page,
-      per_page,
-      sort,
-      nombre,
-      fecha,
-      dni,
-      operator,
-      hora_finalizado,
-    } = searchHistorialParamsSchema.parse(searchParams)
+    const input = searchHistorialParamsSchema.parse(
+      Object.fromEntries(searchParams.entries()),
+    )
+
+    const { page, per_page, sort, nombre, dni, fecha, operator } = input
 
     const [column, order] = (sort?.split('.').filter(Boolean) ?? [
-      'id',
+      'horaFinalizado',
       'desc',
     ]) as [keyof Historial, 'asc' | 'desc']
-
     const expressions: (SQL<unknown> | undefined)[] = [
       nombre
         ? filterColumn({
@@ -45,23 +38,24 @@ export async function GET(req: NextRequest) {
             value: nombre,
           })
         : undefined,
-      // Filter tasks by status
-      !!fecha ? eq(examenes.fecha, fecha) : undefined,
-      // Filter tasks by priority
+      !!fecha
+        ? filterColumn({
+            column: examenes.fecha,
+            value: fecha,
+            isDate: true,
+          })
+        : undefined,
       !!dni
         ? filterColumn({
             column: invitados.dni,
             value: dni.toString(),
           })
         : undefined,
-      // Filter by createdAt
-      !!hora_finalizado
-        ? eq(rindeExamen.horaFinalizado, hora_finalizado)
-        : undefined,
     ]
-
     const where =
-      !operator || operator === 'and' ? and(...expressions) : or(...expressions)
+      !operator || operator === 'and'
+        ? and(...expressions, isNotNull(rindeExamen.nota))
+        : or(...expressions)
 
     const _examenes = await historialDTO({
       page,
@@ -73,13 +67,16 @@ export async function GET(req: NextRequest) {
     const total = await db
       .select({ count: count() })
       .from(rindeExamen)
+      .fullJoin(examenes, eq(examenes.id, rindeExamen.idExamen))
+      .fullJoin(invitados, eq(invitados.id, rindeExamen.idInvitado))
+      .fullJoin(tipoExamen, eq(tipoExamen.id, rindeExamen.tipoExamenId))
       .where(where)
       .execute()
       .then((res) => res[0]?.count ?? 0)
 
     return NextResponse.json({
       data: _examenes,
-      pages: Math.ceil(total / 10).toString(),
+      pages: Math.ceil(total / per_page).toString(),
     })
   } catch (error) {
     console.log(error)

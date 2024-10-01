@@ -24,7 +24,7 @@ export const searchParamsSchema = z.object({
 
 export const examenInputSchema = z.object({
   id: z.string(),
-  preguntas: z.array(createSelectSchema(opciones).nullable()).length(40 || 80),
+  preguntas: z.array(createSelectSchema(opciones).nullable()),
   tiempo: z.string().datetime().default(new Date().toISOString()),
 })
 

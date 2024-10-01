@@ -11,11 +11,13 @@ import {
 import useSWR from 'swr'
 import { getter } from '@/services'
 import Loader from '@/components/Loader'
-import { ExamenPreguntas, Opciones, Preguntas } from '@/drizzle/schema/examen'
+import { ExamenPreguntas } from '@/drizzle/schema/examen'
 
 type Respuesta = ExamenPreguntas & {
-  pregunta: Preguntas & { correcta: Opciones }
-  elegida?: Opciones
+  pregunta: string
+  elegida?: string
+  idCorrecta: number
+  correcta: string
 }
 
 function RespuestasAlumnoCard({ id }: { id: string }) {
@@ -27,7 +29,7 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
   )
 
   const preguntasCorrectas = data?.filter(
-    ({ elegidaId, pregunta }) => elegidaId === pregunta.idCorrecta,
+    ({ elegidaId, idCorrecta }) => elegidaId === idCorrecta,
   ).length
 
   const totalPreguntas = data?.length
@@ -51,7 +53,7 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
             <h3
               className="text-lg font-semibold"
               dangerouslySetInnerHTML={{
-                __html: i + 1 + '- ' + r.pregunta.pregunta,
+                __html: i + 1 + '- ' + r.pregunta,
               }}
             />
 
@@ -60,18 +62,16 @@ function RespuestasAlumnoCard({ id }: { id: string }) {
               <span
                 className="p-2 mb-1 ml-1 text-sm bg-green-800 rounded-lg text-green-50"
                 dangerouslySetInnerHTML={{
-                  __html: r.pregunta.correcta.respuesta,
+                  __html: r.correcta,
                 }}
               />
             </p>
             <p className="flex flex-col">
               Elegida:
               <span
-                className={`p-2 ml-1 text-sm ${r.elegidaId === r.pregunta.idCorrecta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
+                className={`p-2 ml-1 text-sm ${r.elegidaId === r.idCorrecta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
                 dangerouslySetInnerHTML={{
-                  __html:
-                    r.elegida?.respuesta ??
-                    'El alumno no respondió esta pregunta',
+                  __html: r.elegida ?? 'El alumno no respondió esta pregunta',
                 }}
               />
             </p>

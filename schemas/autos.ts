@@ -7,7 +7,6 @@ import {
   turnos,
   vicenteLopez,
 } from '@/drizzle/schema/schema'
-import { DOMINIO_PATTERN } from '@/utils/validations'
 import { createSelectSchema } from 'drizzle-zod'
 
 import { z } from 'zod'
@@ -27,7 +26,7 @@ export const registroInputSchema = z.object({
   lpcarga: z.number().optional(),
   graduacion_alcoholica: z.coerce.number().optional(),
   motivo: createSelectSchema(motivos).optional(),
-  dominio: z.string().regex(DOMINIO_PATTERN),
+  dominio: z.string(),
   zona_infractor: createSelectSchema(barrios),
   licencia: z.coerce.number().optional(),
   tipo_licencia: createSelectSchema(tipoLicencias).nullable(),

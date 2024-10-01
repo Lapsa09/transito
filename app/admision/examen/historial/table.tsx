@@ -15,7 +15,7 @@ function page({ data, pages }: { data: Historial[]; pages: number }) {
     pageCount: pages,
     // optional props
     defaultPerPage: 10,
-    defaultSort: 'horaFinalizado.desc',
+    defaultSort: 'fecha.desc',
   })
 
   return <DataTable table={table} />

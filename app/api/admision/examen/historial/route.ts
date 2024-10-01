@@ -1,11 +1,18 @@
 import { db } from '@/drizzle'
-import { examenes, rindeExamen, tipoExamen } from '@/drizzle/schema/examen'
+import {
+  Examen,
+  examenes,
+  RindeExamen,
+  rindeExamen,
+  TipoExamen,
+  tipoExamen,
+} from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { historialDTO } from '@/DTO/examen'
 import { filterColumn } from '@/lib/filter-column'
 import { searchParamsSchema } from '@/schemas/form'
 import { Historial } from '@/types/quiz'
-import { and, count, eq, isNotNull, or, SQL } from 'drizzle-orm'
+import { and, count, desc, eq, isNotNull, or, SQL, asc } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -18,6 +25,11 @@ const searchHistorialParamsSchema = searchParamsSchema.merge(
   }),
 )
 
+const orderFunctions = {
+  asc,
+  desc,
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
@@ -28,7 +40,7 @@ export async function GET(req: NextRequest) {
     const { page, per_page, sort, nombre, dni, fecha, operator } = input
 
     const [column, order] = (sort?.split('.').filter(Boolean) ?? [
-      'horaFinalizado',
+      'fecha',
       'desc',
     ]) as [keyof Historial, 'asc' | 'desc']
     const expressions: (SQL<unknown> | undefined)[] = [
@@ -52,15 +64,30 @@ export async function GET(req: NextRequest) {
           })
         : undefined,
     ]
+
+    const sortColumns = () => {
+      if (!column) return desc(examenes.fecha)
+
+      if (column in rindeExamen) {
+        return orderFunctions[order](rindeExamen[column as keyof RindeExamen])
+      } else if (column in invitados) {
+        return orderFunctions[order](
+          invitados[column as keyof typeof invitados.$inferSelect],
+        )
+      } else if (column in tipoExamen) {
+        return orderFunctions[order](tipoExamen[column as keyof TipoExamen])
+      }
+      return orderFunctions[order](examenes[column as keyof Examen])
+    }
     const where =
       !operator || operator === 'and'
         ? and(...expressions, isNotNull(rindeExamen.nota))
-        : or(...expressions)
+        : or(...expressions, isNotNull(rindeExamen.nota))
 
     const _examenes = await historialDTO({
       page,
       per_page,
-      orderBy: { column, order },
+      orderBy: sortColumns(),
       where,
     })
 

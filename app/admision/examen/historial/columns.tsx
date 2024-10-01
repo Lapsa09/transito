@@ -29,7 +29,10 @@ export const getColumns = (): ColumnDef<Historial>[] => [
     size: 300,
   },
   {
-    accessorFn: (row) => new Date(row.fecha!).toLocaleDateString(),
+    accessorFn: (row) =>
+      new Date(row.fecha!).toLocaleDateString('utc', {
+        timeZone: 'UTC',
+      }),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Fecha" />
     ),

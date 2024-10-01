@@ -63,7 +63,7 @@ export async function historialDTO<T>({
 }: {
   page: number
   per_page: number
-  orderBy: { column: keyof T; order: 'asc' | 'desc' }
+  orderBy: SQL<unknown>
   where?: SQL
 }) {
   return await db
@@ -84,21 +84,7 @@ export async function historialDTO<T>({
     .fullJoin(invitados, eq(invitados.id, rindeExamen.idInvitado))
     .fullJoin(tipoExamen, eq(tipoExamen.id, rindeExamen.tipoExamenId))
     .where(where)
-    .orderBy(
-      orderBy.column in rindeExamen
-        ? orderBy.order === 'asc'
-          ? asc(
-              rindeExamen[
-                orderBy.column as keyof typeof rindeExamen.$inferSelect
-              ],
-            )
-          : desc(
-              rindeExamen[
-                orderBy.column as keyof typeof rindeExamen.$inferSelect
-              ],
-            )
-        : desc(rindeExamen.horaIngresado),
-    )
+    .orderBy(orderBy)
 }
 
 export async function rindeExamenDTO({ id }: { id: string }) {

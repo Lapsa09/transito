@@ -18,7 +18,9 @@ function PageClient({ data }: Props) {
     <Funnel
       margin={{ left: 180 }}
       className="h-[700px]"
-      valueFormat={(value) => `${value} (${(value / data.total) * 100}%)`}
+      valueFormat={(value) =>
+        `${value} (${Math.round((value / data.total) * 100)}%)`
+      }
       data={groupedData}
     />
   )

@@ -216,6 +216,7 @@ export function SecondStep({
   const handleSubmit = async (body: z.infer<typeof registroInputSchema>) => {
     try {
       if (!id) {
+        console.log(body)
         await setter<void>({
           route: `/operativos/autos`,
           body: {

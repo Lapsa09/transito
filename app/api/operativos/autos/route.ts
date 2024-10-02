@@ -290,16 +290,17 @@ export async function POST(req: NextRequest) {
     const user = session?.user as Empleado | null
 
     await db.insert(registros).values({
-      acta: body.data.acta ? +body.data.acta : null,
+      acta: body.data.acta,
       dominio: body.data.dominio.toUpperCase(),
       graduacionAlcoholica: body.data.graduacion_alcoholica,
-      licencia: Number(body.data.licencia) || null,
+      licencia: body.data.licencia,
       lpcarga: user?.legajo,
-      resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
+      resolucion: body.data.resolucion,
       idLicencia: body.data.tipo_licencia?.idTipo,
       idZonaInfractor: body.data.zona_infractor?.idBarrio,
       idMotivo: body.data.motivo?.idMotivo,
       idOperativo: id_operativo,
+      idSustancias: body.data.control_sustancias,
     })
 
     revalidateTag('autos')

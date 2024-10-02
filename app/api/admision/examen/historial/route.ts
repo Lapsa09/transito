@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     ]
 
     const sortColumns = () => {
-      if (!column) return desc(examenes.fecha)
+      if (!column) return desc(examenes.horaIniciado)
 
       if (column in rindeExamen) {
         return orderFunctions[order](rindeExamen[column as keyof RindeExamen])

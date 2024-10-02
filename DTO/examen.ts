@@ -11,7 +11,7 @@ import {
   rindeExamen,
   tipoExamen,
 } from '@/drizzle/schema/examen'
-import { jsonAgg, shuffle } from '@/utils/misc'
+import { jsonAgg } from '@/utils/misc'
 import { v4 } from 'uuid'
 
 export async function examenDTO({

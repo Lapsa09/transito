@@ -1,9 +1,6 @@
 import { db, examendb } from '@/drizzle'
-import { examenPreguntas, tipoExamen } from '@/drizzle/schema/examen'
 import { invitados } from '@/drizzle/schema/schema'
 import { examenDTO } from '@/DTO/examen'
-import { shuffle } from '@/utils/misc'
-import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 } from 'uuid'
 

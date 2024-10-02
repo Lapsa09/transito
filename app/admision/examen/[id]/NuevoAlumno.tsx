@@ -32,46 +32,52 @@ function NuevoAlumno({ id }: { id: number }) {
 
   return (
     <RegularForm className="w-5/6 mt-2" resetOnSubmit onSubmit={onSubmit}>
-      <CustomInput
-        name="dni"
-        label="DNI"
-        rules={{
-          required: 'Campo requerido',
-          pattern: { value: /^[0-9]{8}$/, message: 'DNI inválido' },
-        }}
-      />
-      <CustomInput
-        name="nombre"
-        label="Nombre"
-        rules={{ required: 'Campo requerido' }}
-      />
-      <CustomInput
-        name="apellido"
-        label="Apellido"
-        rules={{ required: 'Campo requerido' }}
-      />
-      <CustomInput
-        name="edad"
-        label="Edad"
-        rules={{ required: 'Campo requerido' }}
-      />
-      <CustomSelect
-        name="sexo"
-        rules={{ required: 'Campo requerido' }}
-        label="Sexo"
-        options={[
-          { id: 'M', label: 'Masculino' },
-          { id: 'F', label: 'Femenino' },
-        ]}
-        className="pb-6"
-      />
-      <CustomSelect
-        label="Tipo de examen"
-        rules={{ required: 'Campo requerido' }}
-        options={tipos_examen}
-        name="tipo_examen"
-      />
-      <Button type="submit">Crear alumno</Button>
+      {({ formState: { isSubmitting, isSubmitted } }) => (
+        <>
+          <CustomInput
+            name="dni"
+            label="DNI"
+            rules={{
+              required: 'Campo requerido',
+              pattern: { value: /^[0-9]{8}$/, message: 'DNI inválido' },
+            }}
+          />
+          <CustomInput
+            name="nombre"
+            label="Nombre"
+            rules={{ required: 'Campo requerido' }}
+          />
+          <CustomInput
+            name="apellido"
+            label="Apellido"
+            rules={{ required: 'Campo requerido' }}
+          />
+          <CustomInput
+            name="edad"
+            label="Edad"
+            rules={{ required: 'Campo requerido' }}
+          />
+          <CustomSelect
+            name="sexo"
+            rules={{ required: 'Campo requerido' }}
+            label="Sexo"
+            options={[
+              { id: 'M', label: 'Masculino' },
+              { id: 'F', label: 'Femenino' },
+            ]}
+            className="pb-6"
+          />
+          <CustomSelect
+            label="Tipo de examen"
+            rules={{ required: 'Campo requerido' }}
+            options={tipos_examen}
+            name="tipo_examen"
+          />
+          <Button disabled={isSubmitted || isSubmitting} type="submit">
+            Crear alumno
+          </Button>
+        </>
+      )}
     </RegularForm>
   )
 }

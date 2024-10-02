@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       .update(rindeExamen)
       .set({
         nota: notaFinal(nota, examen.tipo_examen),
-        horaFinalizado: body.tiempo,
+        horaFinalizado: new Date(),
       })
       .where(eq(rindeExamen.id, examen.id))
       .returning()

@@ -118,6 +118,7 @@ export async function rindeExamenDTO({ id }: { id: string }) {
     tipo.cantidadPreguntas,
   )
   for (const pregunta of preguntas.slice(init, init + tipo.cantidadPreguntas)) {
+    console.log('pregunta', pregunta.id, invitado.invitados.dni)
     await db.insert(examenPreguntas).values({
       examenId: invitado.rinde_examen.id,
       preguntaId: pregunta.id,

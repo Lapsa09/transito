@@ -93,7 +93,7 @@ export const rindeExamen = examen.table(
         onDelete: 'restrict',
         onUpdate: 'cascade',
       }),
-    horaFinalizado: timestamp('hora_finalizado', { mode: 'string' }),
+    horaFinalizado: timestamp('hora_finalizado'),
     horaIngresado: timestamp('hora_ingresado'),
   },
   (table) => {

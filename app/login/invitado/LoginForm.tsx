@@ -28,7 +28,7 @@ function LoginForm() {
   }
   return (
     <RegularForm onSubmit={onSubmit}>
-      {({ formState: { isSubmitting } }) => (
+      {({ formState: { isSubmitting, isSubmitted } }) => (
         <>
           <Input
             label="DNI"
@@ -39,7 +39,7 @@ function LoginForm() {
           <div className="flex justify-between gap-10 my-3">
             <Button
               color="primary"
-              isLoading={isSubmitting}
+              isLoading={isSubmitting || isSubmitted}
               className="mx-auto"
               type="submit"
             >

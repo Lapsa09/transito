@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { recibos } from '@/drizzle/schema/sueldos'
+import { eq, sum } from 'drizzle-orm'
 
 export async function GET(
   _: NextRequest,
@@ -7,14 +9,12 @@ export async function GET(
 ) {
   const { id } = params
 
-  const acopio = await prisma.recibos.aggregate({
-    _sum: {
-      acopio: true,
-    },
-    where: {
-      id_cliente: +id,
-    },
-  })
+  const [acopio] = await db
+    .select({
+      acopio: sum(recibos.acopio).mapWith(Number).as('acopio'),
+    })
+    .from(recibos)
+    .where(eq(recibos.idCliente, +id))
 
-  return NextResponse.json(acopio._sum.acopio ?? 0)
+  return NextResponse.json(acopio.acopio ?? 0)
 }

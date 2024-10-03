@@ -1,82 +1,36 @@
-import prisma from '@/lib/prismadb'
-import { Historial } from '@/types'
+import { db } from '@/drizzle'
+import { clientes, recibos, servicios } from '@/drizzle/schema/sueldos'
+import { searchParamsSchema } from '@/schemas/form'
+import { count, sum } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
-
-const sueldosPrisma = prisma.$extends({
-  query: {
-    clientes: {
-      async findMany({ args }) {
-        const { select, ...rest } = args
-        const clientes = await prisma.clientes.findMany({
-          ...rest,
-          include: {
-            ...rest.include,
-            recibos: true,
-            servicios: {
-              include: {
-                operarios_servicios: { include: { operarios: true } },
-              },
-            },
-          },
-        })
-
-        const response = clientes.map((cliente) => {
-          const historial = cliente.servicios.reduce<Historial[]>(
-            (acc, servicio) => {
-              const mes = servicio.fecha_servicio?.getMonth()
-              const año = servicio.fecha_servicio?.getFullYear()
-
-              const recibo = acc.find(
-                (row) => row.mes === mes && row.año === año
-              )
-              if (recibo) {
-                recibo.servicios.push(servicio)
-                recibo.gastos += servicio.importe_servicio!
-              } else {
-                acc.push({
-                  mes,
-                  año,
-                  servicios: [servicio],
-                  gastos: servicio.importe_servicio!,
-                  acopio: cliente.recibos
-                    .filter(
-                      (recibo) =>
-                        recibo.fecha_recibo?.getMonth() === mes &&
-                        recibo.fecha_recibo?.getFullYear() === año
-                    )
-                    .reduce((acc, recibo) => acc + recibo.acopio, 0),
-                })
-              }
-
-              return acc
-            },
-            []
-          )
-
-          const { servicios, ...rest } = cliente
-          return {
-            ...rest,
-            historial,
-            a_favor: historial.reduce((acc, row) => acc + row.acopio, 0),
-            a_deudor: historial.reduce((acc, row) => acc + row.gastos, 0),
-          }
-        })
-
-        return response
-      },
-    },
-  },
-})
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
 
-  if (searchParams.has('id_cliente')) {
-  }
+  const { page, per_page } = searchParamsSchema.parse(searchParams)
   try {
-    const servicios = await sueldosPrisma.clientes.findMany()
+    const clientesList = await db
+      .select({
+        id_cliente: clientes.idCliente,
+        cliente: clientes.cliente,
+        a_favor: sum(recibos.acopio),
+        gastos: sum(servicios.importeServicio),
+      })
+      .from(clientes)
+      .offset((page - 1) * per_page)
+      .limit(per_page)
+      .groupBy(clientes.idCliente, clientes.cliente)
 
-    return NextResponse.json(servicios)
+    const total = await db
+      .select({ count: count() })
+      .from(clientes)
+      .execute()
+      .then((res) => res[0].count)
+
+    return NextResponse.json({
+      data: clientesList,
+      pages: Math.ceil(total / per_page),
+    })
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

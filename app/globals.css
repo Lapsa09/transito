@@ -104,3 +104,7 @@ body {
 .footer {
   grid-area: footer;
 }
+
+.mapboxgl-ctrl-bottom-right {
+  display: none;
+}

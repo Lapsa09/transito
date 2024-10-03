@@ -1,61 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
+import { z } from 'zod'
+import { sueldosdb } from '@/drizzle'
+import { and, desc, gte, lte, sql } from 'drizzle-orm'
+
+const searchParamsSchema = z.object({
+  mes: z.coerce.number(),
+  año: z.coerce.number(),
+})
+
+// {
+//   id_servicio: number
+//   mes: number
+//   año: number
+//   servicios: {
+//     id_servicio: number | null
+//     memo: string | null
+//     recibo: number | null
+//     fecha_recibo?: string
+//     importe_recibo?: number
+//     importe_servicio: number | null
+//     acopio?: number
+//     legajo?: number
+//     nombre?: string | null
+//     a_cobrar: number
+//     cancelado: boolean | null
+//   }[]
+// }
+
+//create a zod schema for the response
+const responseSchema = z.array(
+  z.object({
+    id_servicio: z.number(),
+    mes: z.number(),
+    año: z.number(),
+    servicios: z.array(
+      z.object({
+        id_servicio: z.number().nullable(),
+        memo: z.string().nullable(),
+        recibo: z.number().nullable(),
+        fecha_recibo: z.string().optional(),
+        importe_recibo: z.number().optional(),
+        importe_servicio: z.number().nullable(),
+        acopio: z.number().optional(),
+        legajo: z.number().optional(),
+        nombre: z.string().nullish(),
+        a_cobrar: z.number().nullable(),
+        cancelado: z.boolean().nullable(),
+      }),
+    ),
+  }),
+)
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const mes = searchParams.get('mes')!
-    const año = searchParams.get('año')!
-    const minDate = new Date(`${año}-${mes}-01`)
-    const maxDate = new Date(`${año}-${mes}-31`)
+    const { mes, año } = searchParamsSchema.parse(searchParams)
 
-    if (maxDate.getMonth() !== +mes) {
-      maxDate.setDate(maxDate.getDate() - 1)
-    }
+    const minDate = sql<Date>`to_date(${`${año}-${mes}-01`}, 'YYYY-MM-DD')`
+    const maxDate = sql<Date>`to_date(${`${año}-${mes}-31`}, 'YYYY-MM-DD')`
 
-    const servicios = await prisma.servicios.findMany({
-      where: {
-        fecha_servicio: {
-          gte: minDate,
-          lte: maxDate,
-        },
-      },
-      include: {
-        clientes: {
-          include: {
+    const _servicios = await sueldosdb.query.servicios.findMany({
+      where: (servicio) =>
+        and(
+          gte(servicio.fechaServicio, minDate),
+          lte(servicio.fechaServicio, maxDate),
+        ),
+      with: {
+        cliente: {
+          with: {
             recibos: {
-              orderBy: {
-                fecha_recibo: 'asc',
-              },
+              orderBy: (recibo) => desc(recibo.fechaRecibo),
             },
           },
         },
-        operarios_servicios: {
-          include: {
+        servicios: {
+          with: {
             operarios: true,
           },
         },
       },
     })
 
-    for (const servicio of servicios) {
-      const { recibos } = servicio.clientes!
+    for (const servicio of _servicios) {
+      const { recibos } = servicio.cliente
       const operarios = []
       let i = 0
-      for (const operario of servicio.operarios_servicios) {
-        let acopio = recibos[i].importe_recibo!
-        if (acopio >= operario.a_cobrar!) {
+      for (const operario of servicio.servicios) {
+        let acopio = recibos[i].importeRecibo
+        if (acopio >= operario.aCobrar) {
           operario.recibo = recibos[i].recibo
-          acopio -= operario.a_cobrar!
+          acopio -= operario.aCobrar
           recibos[i].acopio = acopio
           operarios.push(operario)
         } else {
-          let cuantoFalta = operario.a_cobrar!
+          let cuantoFalta = operario.aCobrar!
           while (acopio < cuantoFalta && i < recibos.length) {
             cuantoFalta -= acopio
             const _operario = { ...operario }
             _operario.recibo = recibos[i].recibo
-            _operario.a_cobrar = recibos[i].acopio
+            _operario.aCobrar = recibos[i].acopio
             acopio = 0
             recibos[i].acopio = acopio
             operarios.push(_operario)
@@ -63,66 +106,69 @@ export async function GET(req: NextRequest) {
           }
           if (cuantoFalta > 0) {
             operario.recibo = recibos[i].recibo
-            operario.a_cobrar = cuantoFalta
+            operario.aCobrar = cuantoFalta
             acopio -= cuantoFalta
             recibos[i].acopio = acopio
             operarios.push(operario)
           }
         }
       }
-      servicio.operarios_servicios = operarios
+      servicio.servicios = operarios
     }
-    const arr = servicios.reduce<any[]>((acc, row) => {
-      const busca = acc.find((a) => a.id_servicio === row.id_servicio)
-      if (busca) {
-        busca.servicios ??= []
-        row.operarios_servicios.forEach((op) => {
-          const recibo = row.clientes?.recibos.find(
-            (r) => r.recibo === op.recibo,
-          )
-          busca.servicios.push({
-            id_servicio: row.id_servicio,
-            memo: row.memo,
-            recibo: op.recibo,
-            fecha_recibo: recibo?.fecha_recibo,
-            importe_recibo: recibo?.importe_recibo,
-            importe_servicio: row.importe_servicio,
-            acopio: recibo?.acopio,
-            legajo: op.operarios?.legajo,
-            nombre: op.operarios?.nombre,
-            a_cobrar: op.a_cobrar,
-            cancelado: op.cancelado,
-          })
-        })
-        return acc
-      } else {
-        const obj = {
-          id_servicio: row.id_servicio,
-          mes: row.fecha_servicio!.getMonth() + 1,
-          año: row.fecha_servicio!.getFullYear(),
-          servicios: row.operarios_servicios.map((op) => {
-            const recibo = row.clientes?.recibos.find(
+    const arr = _servicios.reduce<z.infer<typeof responseSchema>>(
+      (acc, row) => {
+        const busca = acc.find((a) => a.id_servicio === row.idServicio)
+        if (busca) {
+          busca.servicios ??= []
+          row.servicios.forEach((op) => {
+            const recibo = row.cliente.recibos.find(
               (r) => r.recibo === op.recibo,
             )
-            return {
-              id_servicio: row.id_servicio,
+            busca.servicios.push({
+              id_servicio: row.idServicio,
               memo: row.memo,
               recibo: op.recibo,
-              fecha_recibo: recibo?.fecha_recibo,
-              importe_recibo: recibo?.importe_recibo,
-              importe_servicio: row.importe_servicio,
+              fecha_recibo: recibo?.fechaRecibo,
+              importe_recibo: recibo?.importeRecibo,
+              importe_servicio: row.importeServicio,
               acopio: recibo?.acopio,
               legajo: op.operarios?.legajo,
               nombre: op.operarios?.nombre,
-              a_cobrar: op.a_cobrar,
+              a_cobrar: op.aCobrar,
               cancelado: op.cancelado,
-            }
-          }),
-        }
+            })
+          })
+          return acc
+        } else {
+          const obj = {
+            id_servicio: row.idServicio,
+            mes: new Date(row.fechaServicio).getUTCMonth(),
+            año: new Date(row.fechaServicio).getUTCFullYear(),
+            servicios: row.servicios.map((op) => {
+              const recibo = row.cliente?.recibos.find(
+                (r) => r.recibo === op.recibo,
+              )
+              return {
+                id_servicio: row.idServicio,
+                memo: row.memo,
+                recibo: op.recibo,
+                fecha_recibo: recibo?.fechaRecibo,
+                importe_recibo: recibo?.importeRecibo,
+                importe_servicio: row.idServicio,
+                acopio: recibo?.acopio,
+                legajo: op.operarios?.legajo,
+                nombre: op.operarios?.nombre,
+                a_cobrar: op.aCobrar,
+                cancelado: op.cancelado,
+              }
+            }),
+          }
 
-        return acc.concat(obj)
-      }
-    }, [])
+          return acc.concat(obj)
+        }
+      },
+      [],
+    )
 
     return NextResponse.json(arr)
   } catch (error: any) {

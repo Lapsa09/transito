@@ -1,8 +1,9 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { zonas } from '@/drizzle/schema/nuevo_control'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const zonas = await prisma.zonas.findMany()
+  const _zonas = await db.select().from(zonas)
 
-  return NextResponse.json(zonas)
+  return NextResponse.json(_zonas)
 }

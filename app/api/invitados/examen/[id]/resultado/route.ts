@@ -1,22 +1,8 @@
-import prisma from '@/lib/prismadb'
+import { resultadoDTO } from '@/DTO/examen'
 import { NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
-  const examen = await prisma.rinde_examen.findUnique({
-    where: {
-      id: params.id,
-    },
-    select: {
-      usuario: {
-        select: {
-          apellido: true,
-          nombre: true,
-          dni: true,
-        },
-      },
-      calificacion: true,
-    },
-  })
+  const examen = await resultadoDTO({ id: params.id })
 
   return NextResponse.json(examen)
 }

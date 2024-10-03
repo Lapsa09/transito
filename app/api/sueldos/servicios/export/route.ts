@@ -1,45 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
-import { DateTime } from 'luxon'
+import { db } from '@/drizzle'
+import {
+  clientes,
+  operarios,
+  operariosServicios,
+  servicios,
+} from '@/drizzle/schema/sueldos'
+import { eq, sql } from 'drizzle-orm'
+
+type Operario = {
+  legajo: number
+  nombre: string
+  horaInicio: Date
+  horaFin: Date
+  aCobrar: number
+  cancelado: boolean
+  memo: string
+  recibo: number
+  id: number
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
 
-  const fecha = DateTime.fromFormat(body.fecha, 'yyyy-MM-dd').toISO()
+  const agenda = await db
+    .select({
+      fechaServicio: servicios.fechaServicio,
+      idCliente: clientes.idCliente,
+      cliente: clientes.cliente,
+      memo: servicios.memo,
+      feriado: servicios.feriado,
+      idServicio: servicios.idServicio,
+      importeServicio: servicios.importeServicio,
+      operarios: sql<
+        Operario[]
+      >`json_agg(json_build_object('legajo',${operarios.legajo},'nombre',${operarios.nombre},
+      'horaInicio',${operariosServicios.horaInicio},'horaFin',${operariosServicios.horaFin},'aCobrar',${operariosServicios.aCobrar},'cancelado',${operariosServicios.cancelado},'memo',${operariosServicios.memo},'recibo',${operariosServicios.recibo},'id',${operariosServicios.id}
+    ))`.as('operarios'),
+    })
+    .from(servicios)
+    .where(eq(servicios.fechaServicio, body.fecha))
+    .innerJoin(clientes, eq(servicios.idCliente, clientes.idCliente))
+    .leftJoin(
+      operariosServicios,
+      eq(servicios.idServicio, operariosServicios.idServicio),
+    )
+    .leftJoin(operarios, eq(operariosServicios.legajo, operarios.legajo))
 
-  const agenda = await prisma.servicios.findMany({
-    where: {
-      fecha_servicio: fecha,
-    },
-    include: {
-      clientes: true,
-      operarios_servicios: {
-        include: {
-          operarios: true,
-        },
-      },
-    },
-  })
-
-  return NextResponse.json(
-    agenda.map((servicio) => {
-      return {
-        ...servicio,
-        fecha_servicio: DateTime.fromJSDate(servicio.fecha_servicio!)
-          .toUTC()
-          .toLocaleString(DateTime.DATE_SHORT),
-        operarios_servicios: servicio.operarios_servicios.map((operario) => {
-          return {
-            ...operario,
-            hora_inicio: DateTime.fromJSDate(operario.hora_inicio!)
-              .toUTC()
-              .toLocaleString(DateTime.TIME_24_SIMPLE),
-            hora_fin: DateTime.fromJSDate(operario.hora_fin!)
-              .toUTC()
-              .toLocaleString(DateTime.TIME_24_SIMPLE),
-          }
-        }),
-      }
-    }),
-  )
+  return NextResponse.json(agenda)
 }

@@ -8,7 +8,7 @@ import {
 } from '@nextui-org/react'
 import { IoIosRefresh } from 'react-icons/io'
 import { useRouter } from 'next/navigation'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import React from 'react'
 import RespuestasAlumnoCard from './RespuestasAlumno'
 import { rehabilitarExamen } from '@/services/actions'
@@ -30,13 +30,13 @@ function AlumnoCard({ alumno }: { alumno: Alumno }) {
         <p>DNI: {alumno.usuario?.dni}</p>
         <Accordion isCompact>
           <AccordionItem title="Mas informacion">
-            <p>Rinde examen de: {alumno.tipo_examen.tipo}</p>
+            <p>Rinde examen de: {alumno.tipoExamen.tipo}</p>
 
             <p>
               Estado del examen:
               {!alumno.usuario?.utilizado
                 ? 'No ingresado'
-                : !alumno.hora_finalizado && !alumno.nota
+                : !alumno.horaFinalizado && !alumno.nota
                   ? 'Ingresado'
                   : 'Finalizado'}
             </p>
@@ -54,14 +54,14 @@ function AlumnoCard({ alumno }: { alumno: Alumno }) {
             </p>
             <p>
               Hora de ingreso:
-              {alumno.hora_ingresado
-                ? new Date(alumno.hora_ingresado).toLocaleString()
+              {alumno.horaIngresado
+                ? new Date(alumno.horaIngresado).toLocaleString()
                 : ''}
             </p>
             <p>
               Hora de finalizado:
-              {alumno.hora_finalizado
-                ? new Date(alumno.hora_finalizado).toLocaleString()
+              {alumno.horaFinalizado
+                ? new Date(alumno.horaFinalizado).toLocaleString()
                 : ''}
             </p>
             <p>Nota: {alumno.nota || ''}</p>

@@ -1,213 +1,297 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
-import { FormCamionesProps } from '@/types'
-import { resolucion, Prisma } from '@prisma/client'
+import { camionesDTO, CamionesDTO } from '@/DTO/operativos/camiones'
+import { camionesdb, db } from '@/drizzle'
+import {
+  Operativo,
+  operativos,
+  Registro,
+  registros,
+  localidad_destino,
+  localidad_origen,
+} from '@/drizzle/schema/camiones'
+import {
+  Barrio,
+  Motivo,
+  motivos,
+  resolucion,
+  turnos,
+  VicenteLopez,
+  vicenteLopez,
+} from '@/drizzle/schema/schema'
+import { authOptions } from '@/lib/auth'
+import { filterColumn } from '@/lib/filter-column'
+import { camionesInputPropsSchema } from '@/schemas/camiones'
+import { searchParamsSchema } from '@/schemas/form'
 import { geoLocation } from '@/services'
+import { Empleado } from '@/types'
+import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
+import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
-const operativoCamiones = async (body: FormCamionesProps) => {
+const searchCamionesParamsSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().optional(),
+    operator: z.enum(['and', 'or']).default('and'),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    motivo: z.string().optional(),
+    localidad_origen: z.string().optional(),
+    localidad_destino: z.string().optional(),
+    remito: z.boolean().optional(),
+    carga: z.boolean().optional(),
+    localidad: z.string().optional(),
+    resolucion: z.enum(resolucion.enumValues).optional(),
+  }),
+)
+
+const operativoCamiones = async (
+  body: z.infer<typeof camionesInputPropsSchema>,
+) => {
   const { fecha, qth, turno, legajo, localidad } = body
 
   const direccion_full = `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`
 
-  const op = await prisma.camiones_operativos.findFirst({
-    select: { id_op: true },
-    where: {
-      fecha: new Date(fecha),
-      direccion: qth,
-      turno,
-      legajo: legajo.toString(),
-      id_localidad: localidad.id_barrio,
-      direccion_full,
-    },
-  })
+  const op = await db
+    .select({ id_op: operativos.idOp })
+    .from(operativos)
+    .where(
+      and(
+        eq(operativos.fecha, sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`),
+        eq(operativos.direccionFull, direccion_full),
+        eq(operativos.turno, turno),
+        eq(operativos.legajo, legajo),
+        eq(operativos.idLocalidad, localidad.idBarrio),
+      ),
+    )
 
-  if (!op) {
-    const geocodificado = await prisma.camiones_operativos.findFirst({
-      where: {
-        direccion_full,
-        latitud: {
-          not: null,
-        },
-        longitud: {
-          not: null,
-        },
-      },
-      select: {
-        direccion_full: true,
-        latitud: true,
-        longitud: true,
-      },
-    })
-    if (!geocodificado) {
+  if (!op.length) {
+    const geocodificado = await db
+      .select({
+        latitud: operativos.latitud,
+        longitud: operativos.longitud,
+        direccion_full: operativos.direccionFull,
+      })
+      .from(operativos)
+      .where(
+        and(
+          eq(operativos.direccionFull, direccion_full),
+          isNotNull(operativos.latitud),
+          isNotNull(operativos.longitud),
+        ),
+      )
+    if (!geocodificado.length) {
       const { latitud, longitud } = await geoLocation(direccion_full)
-      const { id_op } = await prisma.camiones_operativos.create({
-        data: {
-          fecha: new Date(fecha),
+      const [{ id_op }] = await db
+        .insert(operativos)
+        .values({
+          fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
           direccion: qth,
           turno,
-          legajo: legajo.toString(),
-          localidad: {
-            connect: {
-              id_barrio: localidad.id_barrio,
-            },
-          },
-          direccion_full,
+          legajo: legajo,
+          idLocalidad: localidad.idBarrio,
+          direccionFull: direccion_full,
           latitud,
           longitud,
-        },
-        select: {
-          id_op: true,
-        },
-      })
+        })
+        .returning({ id_op: operativos.idOp })
 
       return id_op
     } else {
-      const { id_op } = await prisma.camiones_operativos.create({
-        data: {
-          fecha: new Date(fecha),
+      const [{ id_op }] = await db
+        .insert(operativos)
+        .values({
+          fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
           direccion: qth,
           turno,
-          legajo: legajo.toString(),
-          localidad: {
-            connect: {
-              id_barrio: localidad.id_barrio,
-            },
-          },
-          direccion_full,
-          latitud: geocodificado.latitud,
-          longitud: geocodificado.longitud,
-        },
-        select: {
-          id_op: true,
-        },
-      })
+          legajo: legajo,
+          idLocalidad: localidad.idBarrio,
+          direccionFull: direccion_full,
+          latitud: geocodificado[0].latitud,
+          longitud: geocodificado[0].longitud,
+        })
+        .returning({ id_op: operativos.idOp })
 
       return id_op
     }
   } else {
-    return op.id_op
+    return op[0].id_op
   }
 }
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
-  const where: Prisma.camiones_registrosWhereInput = {
-    dominio: {
-      contains: filterParams.dominio ?? '',
-      mode: 'insensitive',
-    },
-    operativo: {
-      direccion: {
-        contains: filterParams.direccion ?? '',
-        mode: 'insensitive',
-      },
-      localidad: {
-        barrio: {
-          contains: filterParams.localidad ?? '',
-          mode: 'insensitive',
-        },
-      },
-      fecha:
-        filterParams.fecha && new Date(filterParams.fecha).getDate()
-          ? {
-              equals: new Date(filterParams.fecha),
-            }
-          : undefined,
-    },
-    motivo: {
-      motivo: {
-        contains: filterParams.motivo ?? '',
-        mode: 'insensitive',
-      },
-    },
-    localidad_origen: {
-      barrio: {
-        contains: filterParams.localidad_origen ?? '',
-        mode: 'insensitive',
-      },
-    },
-    localidad_destino: {
-      barrio: {
-        contains: filterParams.localidad_destino ?? '',
-        mode: 'insensitive',
-      },
-    },
+  try {
+    const { searchParams } = req.nextUrl
+    const input = searchCamionesParamsSchema.parse(
+      Object.fromEntries(new URLSearchParams(searchParams).entries()),
+    )
+
+    const expressions: (SQL<unknown> | undefined)[] = [
+      !!input.fecha
+        ? filterColumn({
+            column: operativos.fecha,
+            value: input.fecha,
+            isDate: true,
+          })
+        : undefined,
+      input.turno
+        ? filterColumn({
+            column: operativos.turno,
+            value: input.turno,
+            isSelectable: true,
+          })
+        : undefined,
+      input.localidad
+        ? filterColumn({
+            column: operativos.idLocalidad,
+            value: input.localidad,
+            isSelectable: true,
+          })
+        : undefined,
+      input.dominio
+        ? filterColumn({ column: registros.dominio, value: input.dominio })
+        : undefined,
+      input.motivo
+        ? filterColumn({
+            column: registros.idMotivo,
+            value: input.motivo,
+            isSelectable: true,
+          })
+        : undefined,
+      input.localidad_origen
+        ? filterColumn({
+            column: registros.idLocalidadOrigen,
+            value: input.localidad_origen,
+            isSelectable: true,
+          })
+        : undefined,
+      input.localidad_destino
+        ? filterColumn({
+            column: registros.idLocalidadDestino,
+            value: input.localidad_destino,
+            isSelectable: true,
+          })
+        : undefined,
+      input.remito
+        ? filterColumn({
+            column: registros.remito,
+            value: String(input.remito),
+            isSelectable: true,
+          })
+        : undefined,
+      input.carga
+        ? filterColumn({
+            column: registros.carga,
+            value: String(input.carga),
+            isSelectable: true,
+          })
+        : undefined,
+      input.resolucion
+        ? filterColumn({
+            column: registros.resolucion,
+            value: input.resolucion,
+            isSelectable: true,
+          })
+        : undefined,
+    ]
+
+    const where =
+      !input.operator || input.operator === 'and'
+        ? and(...expressions)
+        : or(...expressions)
+
+    const [column, order] = (input.sort?.split('.').filter(Boolean) ?? [
+      'id',
+      'desc',
+    ]) as [keyof CamionesDTO, 'asc' | 'desc']
+
+    const sortColumns = () => {
+      if (!column) return desc(registros.id)
+
+      if (column in registros) {
+        return order === 'asc'
+          ? asc(registros[column as keyof Registro])
+          : desc(registros[column as keyof Registro])
+      } else if (column in operativos) {
+        return order === 'asc'
+          ? asc(operativos[column as keyof Operativo])
+          : desc(operativos[column as keyof Operativo])
+      } else if (column in motivos) {
+        return order === 'asc'
+          ? asc(motivos[column as keyof Motivo])
+          : desc(motivos[column as keyof Motivo])
+      } else if (column in vicenteLopez) {
+        return order === 'asc'
+          ? asc(vicenteLopez[column as keyof VicenteLopez])
+          : desc(vicenteLopez[column as keyof VicenteLopez])
+      } else if (column in localidad_destino) {
+        return order === 'asc'
+          ? asc(localidad_destino[column as keyof Barrio])
+          : desc(localidad_destino[column as keyof Barrio])
+      }
+      return order === 'asc'
+        ? asc(localidad_origen[column as keyof Barrio])
+        : desc(localidad_origen[column as keyof Barrio])
+    }
+
+    const camionesPromise = camionesDTO({
+      page: input.page,
+      per_page: input.per_page,
+      orderBy: sortColumns(),
+      where,
+    })
+
+    const totalPromise = db
+      .select({ count: count() })
+      .from(registros)
+      .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+      .innerJoin(
+        localidad_destino,
+        eq(registros.idLocalidadDestino, localidad_destino.idBarrio),
+      )
+      .innerJoin(
+        localidad_origen,
+        eq(registros.idLocalidadOrigen, localidad_origen.idBarrio),
+      )
+      .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+      .innerJoin(
+        vicenteLopez,
+        eq(operativos.idLocalidad, vicenteLopez.idBarrio),
+      )
+      .where(where)
+      .execute()
+      .then(([{ count }]) => count)
+
+    const [camiones, total] = await Promise.all([camionesPromise, totalPromise])
+
+    return NextResponse.json({
+      data: camiones,
+      pages: Math.ceil(total / 10).toString(),
+    })
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json([], { status: 500 })
   }
-  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
-
-  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
-    '=',
-  ) as [string, Prisma.SortOrder]
-  const orderBy: Prisma.camiones_registrosOrderByWithRelationInput =
-    sortBy in prisma.operativos_operativos.fields
-      ? {
-          operativo: {
-            [sortBy]: sort,
-          },
-        }
-      : sortBy === 'localidad_origen'
-      ? {
-          localidad_origen: {
-            barrio: sort,
-          },
-        }
-      : sortBy === 'motivo'
-      ? {
-          motivo: {
-            motivo: sort,
-          },
-        }
-      : sortBy === 'localidad_destino'
-      ? {
-          localidad_destino: {
-            barrio: sort,
-          },
-        }
-      : { [sortBy]: sort }
-  const camionesPromise = prisma.camiones_registros.findMany({
-    include: {
-      motivo: { select: { motivo: true } },
-      localidad_destino: true,
-      localidad_origen: true,
-      operativo: {
-        include: { localidad: { select: { barrio: true, cp: true } } },
-      },
-    },
-    orderBy,
-    skip: pageIndex * 10,
-    take: 10,
-    where: Object.keys(filterParams).length ? where : undefined,
-  })
-
-  const totalPromise = prisma.camiones_registros.count({
-    where: Object.keys(filterParams).length ? where : undefined,
-  })
-
-  const [camiones, total] = await Promise.all([camionesPromise, totalPromise])
-  return NextResponse.json({
-    data: camiones,
-    pages: Math.ceil(total / 10).toString(),
-  })
 }
 
 export async function POST(req: Request) {
   try {
-    const body: FormCamionesProps = await req.json()
+    const json = await req.json()
 
-    const id_operativo = await operativoCamiones(body)
+    const body = camionesInputPropsSchema.safeParse(json)
 
-    const repetido = await prisma.operativos_registros.findFirst({
-      where: {
-        dominio: body.dominio,
-        id_operativo,
-      },
+    if (!body.success) {
+      return NextResponse.json('Campos requeridos', { status: 400 })
+    }
+
+    const id_operativo = await operativoCamiones(body.data)
+
+    const repetido = await camionesdb.query.registros.findFirst({
+      where: (registro, { eq, and }) =>
+        and(
+          eq(registro.dominio, body.data.dominio),
+          eq(registro.idOperativo, id_operativo),
+        ),
     })
 
     if (repetido) {
@@ -216,38 +300,29 @@ export async function POST(req: Request) {
       })
     }
 
-    const _hora = new Date(body.fecha)
-    // @ts-ignore
-    _hora.setUTCHours(...body.hora.split(':'))
+    const session = await getServerSession(authOptions)
 
-    const camion = await prisma.camiones_registros.create({
-      data: {
-        acta: body.acta,
-        dominio: body.dominio.toUpperCase(),
-        licencia: body.licencia,
-        lpcarga: body.lpcarga,
-        resolucion: body.resolucion || resolucion.PREVENCION,
-        id_motivo: body.motivo?.id_motivo,
-        id_operativo,
-        origen: body.origen,
-        destino: body.destino,
-        id_localidad_origen: body.localidad_origen?.id_barrio,
-        id_localidad_destino: body.localidad_destino?.id_barrio,
-        remito: body.remito,
-        carga: body.carga,
-        hora: _hora,
-      },
-      include: {
-        operativo: {
-          include: { localidad: { select: { barrio: true, cp: true } } },
-        },
-        motivo: { select: { motivo: true } },
-        localidad_origen: { select: { barrio: true } },
-        localidad_destino: { select: { barrio: true } },
-      },
+    const user = session?.user as Empleado | null
+
+    await db.insert(registros).values({
+      acta: body.data.acta,
+      dominio: body.data.dominio,
+      resolucion: body.data.resolucion,
+      lpcarga: user?.legajo,
+      idOperativo: id_operativo,
+      idLocalidadOrigen: body.data.localidad_origen?.idBarrio,
+      idLocalidadDestino: body.data.localidad_destino?.idBarrio,
+      idMotivo: body.data.motivo?.idMotivo,
+      hora: body.data.hora,
+      remito: body.data.remito,
+      carga: body.data.carga,
+      destino: body.data.destino,
+      origen: body.data.origen,
+      licencia: body.data.licencia,
     })
+
     revalidateTag('camiones')
-    return NextResponse.json(camion)
+    return NextResponse.json('Exito')
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

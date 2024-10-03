@@ -2,12 +2,12 @@ import React from 'react'
 import NuevoAlumno from './NuevoAlumno'
 import ListaAlumnos from './ListaAlumnos'
 import { redirect } from 'next/navigation'
-import { examen } from '@prisma/client'
 import QuitButton from './QuitButton'
 import { fetcher } from '@/services'
 import { Alumno } from '@/types/quiz'
+import { Examen } from '@/drizzle/schema/examen'
 
-type Examen = examen & {
+type IExamen = Examen & {
   alumnos: Alumno[]
 }
 
@@ -16,7 +16,7 @@ const getExamen = async (id: string) => {
     cache: 'no-store',
   })
 
-  const examen: Examen | null = await res.json()
+  const examen: IExamen | null = await res.json()
 
   return examen
 }

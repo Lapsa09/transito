@@ -1,13 +1,15 @@
 import { getter } from '@/services'
-import { examen_preguntas, opciones, preguntas } from '@prisma/client'
 import React from 'react'
 import Modal from '@/components/Modal'
 import { DialogHeader } from '@/components/ui/dialog'
 import { ModalBody } from '@nextui-org/react'
+import { ExamenPreguntas } from '@/drizzle/schema/examen'
 
-type Respuesta = examen_preguntas & {
-  pregunta: preguntas & { correcta: opciones }
-  elegida?: opciones
+type Respuesta = ExamenPreguntas & {
+  pregunta: string
+  elegida?: string
+  idCorrecta: number
+  correcta: string
 }
 
 async function page({ params }: { params: { id: string } }) {
@@ -15,8 +17,9 @@ async function page({ params }: { params: { id: string } }) {
   const data = await getter<Respuesta[]>({
     route: `/admision/examen/${id}/respuestas`,
   })
+
   const preguntasCorrectas = data.filter(
-    ({ elegida_id, pregunta }) => elegida_id === pregunta.id_correcta,
+    ({ elegidaId, idCorrecta }) => elegidaId === idCorrecta,
   ).length
 
   const totalPreguntas = data.length
@@ -33,11 +36,11 @@ async function page({ params }: { params: { id: string } }) {
       </DialogHeader>
       <ModalBody>
         {data?.map((r, i) => (
-          <div key={r.preguntas_id}>
+          <div key={r.preguntaId}>
             <h3
               className="text-lg font-semibold"
               dangerouslySetInnerHTML={{
-                __html: i + 1 + '- ' + r.pregunta.pregunta,
+                __html: i + 1 + '- ' + r.pregunta,
               }}
             />
 
@@ -46,18 +49,16 @@ async function page({ params }: { params: { id: string } }) {
               <span
                 className="p-2 mb-1 ml-1 text-sm bg-green-800 rounded-lg text-green-50"
                 dangerouslySetInnerHTML={{
-                  __html: r.pregunta.correcta.respuesta,
+                  __html: r.correcta,
                 }}
               />
             </p>
             <p className="flex flex-col">
               Elegida:
               <span
-                className={`p-2 ml-1 text-sm ${r.elegida_id === r.pregunta.id_correcta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
+                className={`p-2 ml-1 text-sm ${r.elegidaId === r.idCorrecta ? 'bg-green-800' : 'bg-red-800'} rounded-lg text-green-50`}
                 dangerouslySetInnerHTML={{
-                  __html:
-                    r.elegida?.respuesta ??
-                    'El alumno no respondió esta pregunta',
+                  __html: r.elegida ?? 'El alumno no respondió esta pregunta',
                 }}
               />
             </p>

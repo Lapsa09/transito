@@ -1,7 +1,8 @@
 import React from 'react'
-import PageClient from './page.client'
 import { fetcher } from '@/services'
-import { proveedor } from '@prisma/client'
+import { proveedor } from '@/drizzle/schema/logistica'
+import { ProveedoresTable } from './table'
+import { Filter } from '@/DTO/filters'
 
 export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
@@ -16,7 +17,18 @@ const getAutos = async (searchParams: string) => {
       },
     },
   )
-  const data: { data: proveedor[]; pages: number } = await res.json()
+  const data: { data: (typeof proveedor.$inferSelect)[]; pages: number } =
+    await res.json()
+  return data
+}
+
+const getFilters = async () => {
+  const res = await fetcher('api/filters', {
+    next: {
+      tags: ['filters'],
+    },
+  })
+  const data: Filter = await res.json()
   return data
 }
 
@@ -25,11 +37,11 @@ async function page({
 }: {
   searchParams: Record<string, string>
 }) {
-  const { data, pages } = await getAutos(
-    new URLSearchParams(searchParams).toString(),
-  )
+  const data = await getAutos(new URLSearchParams(searchParams).toString())
 
-  return <PageClient data={data} pages={pages} />
+  const filters = await getFilters()
+
+  return <ProveedoresTable tasks={data} filters={filters} />
 }
 
 export default page

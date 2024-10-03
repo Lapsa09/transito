@@ -1,5 +1,8 @@
+import { db } from '@/drizzle'
+import { rindeExamen } from '@/drizzle/schema/examen'
+import { invitados } from '@/drizzle/schema/schema'
 import { invitadoDTO, userDTO } from '@/DTO/user'
-import prisma from '@/lib/prismadb'
+import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -11,19 +14,17 @@ export async function POST(req: Request) {
 
   const invitado = await invitadoDTO(body)
 
-  await prisma.invitado.update({
-    where: {
-      id: invitado?.id,
-    },
-    data: {
-      utilizado: true,
-      examen: {
-        update: {
-          hora_ingresado: new Date(),
-        },
-      },
-    },
-  })
+  if (invitado)
+    await db.transaction(async (tx) => {
+      await tx
+        .update(invitados)
+        .set({ utilizado: true })
+        .where(eq(invitados.id, invitado.id))
+      await tx
+        .update(rindeExamen)
+        .set({ horaIngresado: new Date() })
+        .where(eq(rindeExamen.idInvitado, invitado.id))
+    })
 
   return NextResponse.json(invitado)
 }

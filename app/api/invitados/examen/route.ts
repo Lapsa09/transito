@@ -1,9 +1,10 @@
-import prisma from '@/lib/prismadb'
-import { NextRequest, NextResponse } from 'next/server'
-import { examen } from '@prisma/client'
-import { getter, setter } from '@/services'
-import { splitFullName } from '@/utils/misc'
-import { ScheduleList } from '@/types/citymis.examen'
+import { db } from '@/drizzle'
+import { examenes } from '@/drizzle/schema/examen'
+import { eq } from 'drizzle-orm'
+import { NextResponse } from 'next/server'
+// import { getter, setter } from '@/services'
+// import { splitFullName } from '@/utils/misc'
+// import { ScheduleList } from '@/types/citymis.examen'
 
 // const getFromCitymis = async () => {
 //   try {
@@ -48,17 +49,18 @@ import { ScheduleList } from '@/types/citymis.examen'
 //   }
 // }
 
-export async function GET(req: NextRequest) {
-  // await getFromCitymis()
-  const { searchParams } = req.nextUrl
-  try {
-    const examenes = await prisma.examen.findMany({
-      where: {
-        terminado: false,
-      },
-    })
+export const dynamic = 'force-dynamic'
 
-    return NextResponse.json(examenes)
+export async function GET() {
+  // await getFromCitymis()
+
+  try {
+    const examen = await db
+      .select()
+      .from(examenes)
+      .where(eq(examenes.terminado, false))
+
+    return NextResponse.json(examen)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

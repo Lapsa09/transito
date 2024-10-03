@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+import { AnyColumn, InferColumnsDataTypes, SQL, sql } from 'drizzle-orm'
 
 export const setExpiration = () => {
   const now = DateTime.now()
@@ -13,9 +14,15 @@ export const parseToISOTime = (date: string) => {
 }
 
 export const getLocalTime = (date: string) => {
-  return new Date(date).toLocaleTimeString('UTC', {
-    timeZone: 'GMT',
+  return Intl.DateTimeFormat('es-AR', {
     timeStyle: 'short',
+    hour12: false,
+  }).format(new Date(date))
+}
+
+export const getLocalDate = (date: string) => {
+  return new Date(date).toLocaleDateString('UTC', {
+    timeZone: 'GMT',
   })
 }
 
@@ -64,5 +71,33 @@ export function excelDateToJSDate(serial: number) {
   const hours = Math.floor(total_seconds / (60 * 60))
   const minutes = Math.floor(total_seconds / 60) % 60
   date_info.setUTCHours(hours, minutes, seconds)
-  return DateTime.fromJSDate(date_info).toUTC()
+  return date_info
+}
+
+export function jsonAgg<T extends Record<string, AnyColumn>>(select: T) {
+  const chunks: SQL[] = []
+
+  Object.entries(select).forEach(([key, column], index) => {
+    if (index > 0) chunks.push(sql`,`)
+    chunks.push(sql.raw(`'${key}',`), sql`${column}`)
+  })
+
+  return sql<InferColumnsDataTypes<T>[]>`
+    coalesce(
+      json_agg(json_build_object(${sql.join(chunks)})),
+      '[]'
+    )
+  `
+}
+
+export function formatDate(
+  date: Date | string | number,
+  opts: Intl.DateTimeFormatOptions = {},
+) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: opts.month ?? 'long',
+    day: opts.day ?? 'numeric',
+    year: opts.year ?? 'numeric',
+    ...opts,
+  }).format(new Date(date))
 }

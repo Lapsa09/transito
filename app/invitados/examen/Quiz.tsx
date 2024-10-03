@@ -18,7 +18,7 @@ const Quiz = ({
   id,
   tiempo,
 }: {
-  preguntas: IPregunta['examen_preguntas']
+  preguntas: IPregunta['preguntas']
   id: string
   tiempo: number
 }) => {
@@ -50,9 +50,9 @@ const Quiz = ({
   const onSubmit: SubmitHandler<QuizResponse> = async (body) => {
     const resultado = await setter({
       route: `invitados/examen/${id}`,
-      body: { ...body, tiempo: new Date() },
+      body,
     })
-    await update({ metaData: { nota: resultado.nota } })
+    await update({ metaData: { nota: resultado } })
     router.push(`/invitados/examen/resultado`)
   }
 
@@ -78,13 +78,13 @@ const Quiz = ({
             podras volver a realizarlo.
           </p>
         </div>
-        <section className="max-h-unit-8xl overflow-y-auto text-white gap-5 grid">
-          {preguntas?.map(({ preguntas_id, pregunta }, index) => {
+        <section className="max-h-96 overflow-y-auto text-white gap-5 grid">
+          {preguntas?.map(({ id, pregunta, opciones }, index) => {
             return (
               <CustomRadioGroup
-                key={preguntas_id}
-                label={`${index + 1}- ${pregunta.pregunta}`}
-                options={pregunta.opciones}
+                key={id}
+                label={`${index + 1}- ${pregunta}`}
+                options={opciones}
                 name={'preguntas.' + index}
               />
             )

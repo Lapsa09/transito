@@ -1,66 +1,24 @@
 import {
-  dependencia,
-  kilometraje_vehiculos,
-  logistica_tipo_vehiculo,
-  movil,
-  proveedor,
-  reparaciones,
-  uso,
-  pedido_repuesto,
-  repuesto,
-  vtv,
-  tipo_repuesto,
-} from '@prisma/client'
+  kilometrajeInputSchema,
+  logisticaForms,
+  pedidoRepuestoSchema,
+  proveedorInputSchema,
+  reparacionInputSchema,
+  vehiculoInputSchema,
+  vtvInputSchema,
+} from '@/schemas/logistica'
+import { z } from 'zod'
 
-export interface Vehiculo extends movil {
-  uso: uso
-  dependencia: dependencia
-  tipo_vehiculo: logistica_tipo_vehiculo
-  seguro?: string
-}
+export type Vehiculo = z.infer<typeof vehiculoInputSchema>
 
-export interface KilometrajeVehiculo extends kilometraje_vehiculos {}
+export type ReparacionForm = z.infer<typeof reparacionInputSchema>
 
-export interface Reparacion extends reparaciones {
-  repuesto: repuesto & {
-    pedido_repuesto: pedido_repuesto & {
-      proveedor: proveedor
-    }
-  }
-  movil: movil
-}
+export type PedidoForm = z.infer<typeof pedidoRepuestoSchema>
 
-export type ReparacionForm = reparaciones & {
-  repuesto: repuesto
-}
+export type KilometrajeVehiculo = z.infer<typeof kilometrajeInputSchema>
 
-export interface VTV extends vtv {}
+export type Proveedor = z.infer<typeof proveedorInputSchema>
 
-export interface Repuesto extends repuesto {
-  tipo_repuesto: tipo_repuesto
-  reparacion?: reparaciones
-  pedido_repuesto?: pedido_repuesto
-}
+export type VTV = z.infer<typeof vtvInputSchema>
 
-export interface PedidoRepuesto extends pedido_repuesto {
-  repuestos: Array<Repuesto & { cantidad: number }>
-  proveedor: proveedor
-}
-
-export interface PedidoForm extends pedido_repuesto {
-  repuestos: {
-    tipo_repuesto: tipo_repuesto
-    cantidad: number
-    item: string
-  }[]
-}
-
-export type LogisticaForms =
-  | Vehiculo
-  | KilometrajeVehiculo
-  | ReparacionForm
-  | VTV
-  | Repuesto
-  | PedidoForm
-  | proveedor
-  | stock
+export type LogisticaForms = z.infer<typeof logisticaForms>

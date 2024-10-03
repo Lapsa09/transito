@@ -2,12 +2,12 @@
 
 import { useStepForm, useToast } from '@/hooks'
 import { setter } from '@/services'
-import { turnos } from '@prisma/client'
 import React, { FormEvent, useEffect } from 'react'
 import Stepper from '@/components/Stepper'
 import { FieldValues, FormProvider, useForm } from 'react-hook-form'
 import { Button } from '@/components/ui'
 import { useLocalStorage } from 'usehooks-ts'
+import { Turno } from '@/drizzle/schema/schema'
 
 function LayoutClient({ children }: { children: React.ReactNode }) {
   const stepTitles = ['Operativo', 'Inspector']
@@ -25,7 +25,7 @@ function LayoutClient({ children }: { children: React.ReactNode }) {
 
   const [parte, setParte] = useLocalStorage<{
     fecha?: string
-    turno?: turnos
+    turno?: Turno
     qth?: string
     expiresAt: number
   }>('partes', {

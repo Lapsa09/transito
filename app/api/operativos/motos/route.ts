@@ -1,11 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
-import { FormMotosProps } from '@/types'
-import { resolucion, Prisma } from '@prisma/client'
+import { MotosDTO, motosDTO } from '@/DTO/operativos/motos'
+import { autosdb, db } from '@/drizzle'
+import {
+  motoMotivo,
+  Operativo,
+  operativos,
+  Registro,
+  registros,
+} from '@/drizzle/schema/motos'
+import {
+  Barrio,
+  barrios,
+  Motivo,
+  motivos,
+  resolucion,
+  resolucionSchema,
+  TipoLicencia,
+  tipoLicencias,
+  turnos,
+  VicenteLopez,
+  vicenteLopez,
+} from '@/drizzle/schema/schema'
+import { authOptions } from '@/lib/auth'
+import { filterColumn } from '@/lib/filter-column'
+import { searchParamsSchema } from '@/schemas/form'
+import { motosInputPropsSchema } from '@/schemas/motos'
 import { geoLocation } from '@/services'
+import { Empleado } from '@/types'
+import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
+import { createSelectSchema } from 'drizzle-zod'
+import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
-const operativoMotos = async (body: FormMotosProps) => {
+const operativoMotos = async (body: z.infer<typeof motosInputPropsSchema>) => {
   const {
     fecha,
     qth,
@@ -17,276 +45,299 @@ const operativoMotos = async (body: FormMotosProps) => {
     hora,
   } = body
 
-  const _hora = new Date(fecha)
-  // @ts-ignore
-  _hora.setUTCHours(...hora.split(':'))
-
   const direccion_full = `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`
 
-  try {
-    const op = await prisma.motos_operativos.findFirst({
-      where: {
-        fecha: new Date(fecha),
-        qth,
-        turno,
-        legajo_a_cargo: +legajo_a_cargo,
-        legajo_planilla: +legajo_planilla,
-        seguridad,
-        hora: _hora,
-        direccion_full,
-      },
-      select: {
-        id_op: true,
-      },
-    })
+  const [op] = await db
+    .select({ id_op: operativos.idOp })
+    .from(operativos)
+    .where(
+      and(
+        eq(operativos.fecha, sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`),
+        eq(operativos.qth, qth),
+        eq(operativos.turno, turno),
+        eq(operativos.legajoACargo, +legajo_a_cargo),
+        eq(operativos.legajoPlanilla, +legajo_planilla),
+        eq(operativos.idZona, localidad.idBarrio),
+        eq(operativos.seguridad, seguridad),
+        eq(operativos.hora, hora),
+        eq(operativos.direccionFull, direccion_full),
+      ),
+    )
 
-    if (!op) {
-      const geocodificado = await prisma.motos_operativos.findFirst({
-        where: {
-          direccion_full,
-          latitud: {
-            not: null,
-          },
-          longitud: {
-            not: null,
-          },
-        },
-        select: {
-          direccion_full: true,
-          latitud: true,
-          longitud: true,
-        },
+  if (!op) {
+    const geocodificado = await db
+      .select({
+        direccion_full: operativos.direccionFull,
+        latitud: operativos.latitud,
+        longitud: operativos.longitud,
       })
-      if (!geocodificado) {
-        const { latitud, longitud } = await geoLocation(direccion_full)
-        const { id_op } = await prisma.motos_operativos.create({
-          data: {
-            fecha: new Date(fecha),
-            qth,
-            turno,
-            legajo_a_cargo: +legajo_a_cargo,
-            legajo_planilla: +legajo_planilla,
-            id_zona: localidad?.id_barrio,
-            seguridad,
-            hora: _hora,
-            direccion_full,
-            latitud,
-            longitud,
-          },
-          select: {
-            id_op: true,
-          },
-        })
+      .from(operativos)
+      .where(
+        and(
+          eq(operativos.direccionFull, direccion_full),
+          isNotNull(operativos.latitud),
+          isNotNull(operativos.longitud),
+        ),
+      )
+    if (!geocodificado.length) {
+      const { latitud, longitud } = await geoLocation(direccion_full)
 
-        return id_op
-      } else {
-        const { id_op } = await prisma.motos_operativos.create({
-          data: {
-            fecha: new Date(fecha),
-            qth,
-            turno,
-            legajo_a_cargo: +legajo_a_cargo,
-            legajo_planilla: +legajo_planilla,
-            id_zona: localidad?.id_barrio,
-            seguridad,
-            hora: _hora,
-            direccion_full,
-            latitud: geocodificado.latitud,
-            longitud: geocodificado.longitud,
-          },
-          select: {
-            id_op: true,
-          },
+      const [{ id_op }] = await db
+        .insert(operativos)
+        .values({
+          fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
+          qth,
+          turno,
+          legajoACargo: +legajo_a_cargo,
+          legajoPlanilla: +legajo_planilla,
+          idZona: localidad.idBarrio,
+          seguridad,
+          hora,
+          direccionFull: direccion_full,
+          latitud,
+          longitud,
         })
+        .returning({ id_op: operativos.idOp })
 
-        return id_op
-      }
+      return id_op
     } else {
-      return op.id_op
+      const [{ id_op }] = await db
+        .insert(operativos)
+        .values({
+          fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
+          qth,
+          turno,
+          legajoACargo: +legajo_a_cargo,
+          legajoPlanilla: +legajo_planilla,
+          idZona: localidad.idBarrio,
+          seguridad,
+          hora,
+          direccionFull: direccion_full,
+          latitud: geocodificado[0].latitud,
+          longitud: geocodificado[0].longitud,
+        })
+        .returning({ id_op: operativos.idOp })
+
+      return id_op
     }
-  } catch (error) {
-    console.log(error)
+  } else {
+    return op.id_op
   }
 }
 
+const searchMotosParamsSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().optional(),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    motivo: z.string().optional(),
+    zona_infractor: z.string().optional(),
+    localidad: z.string().optional(),
+    tipo_licencia: z.string().optional(),
+    resolucion: z.enum(resolucion.enumValues).optional(),
+  }),
+)
+
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
-  const where: Prisma.motos_registrosWhereInput = {
-    dominio: {
-      contains: filterParams.dominio ?? '',
-      mode: 'insensitive',
-    },
-    operativo: {
-      qth: {
-        contains: filterParams.qth ?? '',
-        mode: 'insensitive',
-      },
-      localidad: {
-        barrio: {
-          contains: filterParams.localidad ?? '',
-          mode: 'insensitive',
-        },
-      },
-      fecha:
-        filterParams.fecha && new Date(filterParams.fecha).getDate()
-          ? {
-              equals: new Date(filterParams.fecha),
-            }
-          : undefined,
-    },
-    motivos: {
-      some: {
-        motivo: {
-          motivo: {
-            contains: filterParams.motivo ?? '',
-            mode: 'insensitive',
-          },
-        },
-      },
-    },
-    tipo_licencias: {
-      tipo: {
-        contains: filterParams.tipo_licencias ?? '',
-        mode: 'insensitive',
-      },
-    },
-    zona_infractor: {
-      barrio: {
-        contains: filterParams.zona_infractor ?? '',
-        mode: 'insensitive',
-      },
-    },
+  try {
+    const { searchParams } = req.nextUrl
+    const input = searchMotosParamsSchema.parse(
+      Object.fromEntries(new URLSearchParams(searchParams).entries()),
+    )
+
+    const {
+      page,
+      per_page,
+      sort,
+      dominio,
+      fecha,
+      turno,
+      motivo,
+      zona_infractor,
+      localidad,
+      tipo_licencia,
+      operator,
+      resolucion,
+    } = input
+
+    const expressions: (SQL<unknown> | undefined)[] = [
+      !!fecha
+        ? filterColumn({
+            column: operativos.fecha,
+            value: fecha,
+            isDate: true,
+          })
+        : undefined,
+      turno
+        ? filterColumn({
+            column: operativos.turno,
+            value: turno,
+            isSelectable: true,
+          })
+        : undefined,
+      localidad
+        ? filterColumn({
+            column: operativos.idZona,
+            value: localidad,
+            isSelectable: true,
+          })
+        : undefined,
+      dominio
+        ? filterColumn({ column: registros.dominio, value: dominio })
+        : undefined,
+      motivo
+        ? filterColumn({
+            column: motoMotivo.idMotivo,
+            value: motivo,
+            isSelectable: true,
+          })
+        : undefined,
+      zona_infractor
+        ? filterColumn({
+            column: registros.idZonaInfractor,
+            value: zona_infractor,
+            isSelectable: true,
+          })
+        : undefined,
+      tipo_licencia
+        ? filterColumn({
+            column: registros.idLicencia,
+            value: tipo_licencia,
+            isSelectable: true,
+          })
+        : undefined,
+      resolucion
+        ? filterColumn({
+            column: registros.resolucion,
+            value: resolucion,
+            isSelectable: true,
+          })
+        : undefined,
+    ]
+
+    const where =
+      !operator || operator === 'and' ? and(...expressions) : or(...expressions)
+
+    const [column, order] = (sort?.split('.').filter(Boolean) ?? [
+      'id',
+      'desc',
+    ]) as [keyof MotosDTO, 'asc' | 'desc']
+
+    const sortColumns = () => {
+      if (!column) return desc(registros.id)
+
+      if (column in registros) {
+        return order === 'asc'
+          ? asc(registros[column as keyof Registro])
+          : desc(registros[column as keyof Registro])
+      } else if (column in operativos) {
+        return order === 'asc'
+          ? asc(operativos[column as keyof Operativo])
+          : desc(operativos[column as keyof Operativo])
+      } else if (column in motivos) {
+        return order === 'asc'
+          ? asc(motivos[column as keyof Motivo])
+          : desc(motivos[column as keyof Motivo])
+      } else if (column in tipoLicencias) {
+        return order === 'asc'
+          ? asc(tipoLicencias[column as keyof TipoLicencia])
+          : desc(tipoLicencias[column as keyof TipoLicencia])
+      } else if (column in vicenteLopez) {
+        return order === 'asc'
+          ? asc(vicenteLopez[column as keyof VicenteLopez])
+          : desc(vicenteLopez[column as keyof VicenteLopez])
+      }
+      return order === 'asc'
+        ? asc(barrios[column as keyof Barrio])
+        : desc(barrios[column as keyof Barrio])
+    }
+    const autosPromise = motosDTO({
+      page,
+      per_page,
+      orderBy: sortColumns(),
+      where,
+    })
+
+    const totalPromise = db
+      .select({ count: count() })
+      .from(registros)
+      .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+      .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
+      .leftJoin(motoMotivo, eq(registros.id, motoMotivo.idRegistro))
+      .leftJoin(motivos, eq(motoMotivo.idMotivo, motivos.idMotivo))
+      .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
+      .innerJoin(vicenteLopez, eq(operativos.idZona, vicenteLopez.idBarrio))
+      .where(where)
+      .execute()
+      .then(([{ count }]) => count)
+
+    const [autos, total] = await Promise.all([autosPromise, totalPromise])
+
+    return NextResponse.json({
+      data: autos,
+      pages: Math.ceil(total / per_page).toString(),
+    })
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json([], { status: 500 })
   }
-  const pageIndex = parseInt(req.nextUrl.searchParams.get('page') || '0')
-
-  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
-    '=',
-  ) as [string, Prisma.SortOrder]
-  const orderBy: Prisma.motos_registrosOrderByWithRelationInput =
-    sortBy in prisma.operativos_operativos.fields
-      ? {
-          operativo: {
-            [sortBy]: sort,
-          },
-        }
-      : sortBy === 'zona_infractor'
-        ? {
-            zona_infractor: {
-              barrio: sort,
-            },
-          }
-        : sortBy === 'tipo_licencia'
-          ? {
-              tipo_licencias: {
-                tipo: sort,
-              },
-            }
-          : { [sortBy]: sort }
-
-  const motosPromise = prisma.motos_registros.findMany({
-    include: {
-      operativo: { include: { localidad: true } },
-      motivos: {
-        include: {
-          motivo: true,
-        },
-      },
-      tipo_licencias: true,
-      zona_infractor: true,
-    },
-    orderBy,
-    skip: pageIndex * 10,
-    take: 10,
-    where: Object.keys(filterParams).length ? where : undefined,
-  })
-
-  const totalPromise = prisma.motos_registros.count({
-    where: Object.keys(filterParams).length ? where : undefined,
-  })
-
-  const [motos, total] = await Promise.all([motosPromise, totalPromise])
-
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(
-        {
-          data: motos,
-          pages: Math.ceil(total / 10).toString(),
-        },
-        (_, value) => (typeof value === 'bigint' ? value.toString() : value),
-      ),
-    ),
-  )
 }
 
 export async function POST(req: Request) {
-  const body: FormMotosProps = await req.json()
+  const json = await req.json()
+  const body = motosInputPropsSchema
+    .merge(
+      z.object({
+        motivos: z.array(createSelectSchema(motivos)).optional(),
+      }),
+    )
+    .safeParse(json)
 
-  const id_operativo = await operativoMotos(body)
+  if (!body.success) {
+    return NextResponse.json('Campos requeridos', { status: 400 })
+  }
+  const id_operativo = await operativoMotos(body.data)
 
-  const repetido = await prisma.motos_registros.findFirst({
-    where: {
-      dominio: body.dominio,
-      id_operativo,
-    },
+  const repetido = await autosdb.query.registros.findFirst({
+    where: (registro, { eq }) =>
+      and(
+        eq(registro.dominio, body.data?.dominio),
+        eq(registro.idOperativo, id_operativo),
+      ),
   })
-
   if (repetido) {
     return NextResponse.json('El dominio ya fue ingresado el mismo dia', {
       status: 401,
     })
   }
 
-  const moto = await prisma.motos_registros.create({
-    data: {
-      acta: Number(body.acta) || null,
-      dominio: body.dominio,
-      fechacarga: new Date(),
-      licencia: Number(body.licencia) || null,
-      lpcarga: body.lpcarga,
-      resolucion: body.resolucion || resolucion.PREVENCION,
-      id_operativo,
-      id_licencia: body.tipo_licencia?.id_tipo,
-      id_zona_infractor: body.zona_infractor?.id_barrio,
-    },
-    include: {
-      operativo: {
-        include: { localidad: true },
-      },
-      motivos: { include: { motivo: true } },
-      tipo_licencias: true,
-      zona_infractor: true,
-    },
-  })
-  if (body.motivos) {
-    const motivos = []
-    for (const motivo of body.motivos) {
-      const nuevo_motivo = await prisma.moto_motivo.create({
-        data: {
-          id_motivo: motivo.id_motivo,
-          id_registro: moto.id,
-        },
-        include: {
-          motivo: true,
-        },
-      })
-      motivos.push(nuevo_motivo)
-    }
+  const session = await getServerSession(authOptions)
 
-    moto.motivos = motivos
+  const user = session?.user as Empleado | null
+
+  const [moto] = await db
+    .insert(registros)
+    .values({
+      acta: body.data.acta,
+      dominio: body.data.dominio.toUpperCase(),
+      licencia: body.data.licencia,
+      lpcarga: user?.legajo,
+      resolucion: body.data.resolucion || resolucionSchema.enum.PREVENCION,
+      idLicencia: body.data.tipo_licencia?.idTipo,
+      idZonaInfractor: body.data.zona_infractor?.idBarrio,
+      idOperativo: id_operativo,
+    })
+    .returning({
+      id: registros.id,
+    })
+
+  for (const motivo of body.data.motivos || []) {
+    await db.insert(motoMotivo).values({
+      idRegistro: moto.id,
+      idMotivo: motivo.idMotivo,
+    })
   }
+
   revalidateTag('motos')
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(moto, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value,
-      ),
-    ),
-  )
+  return NextResponse.json('Exito')
 }

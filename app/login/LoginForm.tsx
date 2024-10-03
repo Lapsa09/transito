@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react'
 import { useToast } from '@/hooks'
 import { RegularForm } from '@/components/forms/layout.form'
 import { SubmitHandler } from 'react-hook-form'
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 
 function LoginForm() {
   const { toast } = useToast()

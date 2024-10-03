@@ -1,19 +1,28 @@
-import prisma from '@/lib/prismadb'
-import { QuizResponse } from '@/types/quiz'
-import { tipo_examen } from '@prisma/client'
+import { db } from '@/drizzle'
+import {
+  examenes,
+  examenPreguntas,
+  preguntas,
+  rindeExamen,
+  tipoExamen,
+} from '@/drizzle/schema/examen'
+import { examenInputSchema } from '@/schemas/form'
+import { and, eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
-  const examen = await prisma.examen.findFirst({
-    where: {
-      clave: params.id,
-    },
-  })
+  const examen = await db
+    .select()
+    .from(examenes)
+    .where(eq(examenes.clave, params.id))
 
   return NextResponse.json(examen)
 }
 
-const notaFinal = (nota: number, tipo_examen: tipo_examen) => {
+const notaFinal = (
+  nota: number,
+  tipo_examen: typeof tipoExamen.$inferSelect,
+) => {
   if (tipo_examen.id <= 2) {
     return nota <= 24 ? 'C' : nota >= 25 && nota <= 31 ? 'B' : 'A'
   }
@@ -22,56 +31,54 @@ const notaFinal = (nota: number, tipo_examen: tipo_examen) => {
 
 export async function POST(req: Request) {
   try {
-    const body: QuizResponse = await req.json()
-    const examen = await prisma.rinde_examen.findUniqueOrThrow({
-      where: {
-        id_invitado: body.id,
-      },
-      include: {
-        tipo_examen: true,
-      },
-    })
+    const json = await req.json()
 
-    const respuestas = await prisma.preguntas.findMany({
-      orderBy: {
-        id: 'asc',
-      },
-    })
+    const body = examenInputSchema.parse(json)
+
+    const [examen] = await db
+      .select({
+        id: rindeExamen.id,
+        tipo_examen: tipoExamen,
+      })
+      .from(rindeExamen)
+      .where(eq(rindeExamen.idInvitado, body.id))
+      .innerJoin(tipoExamen, eq(rindeExamen.tipoExamenId, tipoExamen.id))
+
+    const respuestas = await db.select().from(preguntas).orderBy(preguntas.id)
 
     const nota = body.preguntas.reduce((acc, pregunta) => {
       if (pregunta) {
-        const respuesta = respuestas.find((r) => r.id === pregunta.id_pregunta)
-        if (pregunta.id === respuesta?.id_correcta) acc++
+        const respuesta = respuestas.find((r) => r.id === pregunta.idPregunta)
+        if (pregunta.id === respuesta?.idCorrecta) acc++
       }
 
       return acc
     }, 0)
 
-    const resultado = await prisma.rinde_examen.update({
-      data: {
+    const [resultado] = await db
+      .update(rindeExamen)
+      .set({
         nota: notaFinal(nota, examen.tipo_examen),
-        hora_finalizado: body.tiempo,
-      },
-      where: {
-        id: examen.id,
-      },
-    })
+        horaFinalizado: new Date(),
+      })
+      .where(eq(rindeExamen.id, examen.id))
+      .returning()
 
     for (const pregunta of body.preguntas.filter(Boolean)) {
-      await prisma.examen_preguntas.update({
-        data: {
-          elegida_id: pregunta?.id,
-        },
-        where: {
-          examen_id_preguntas_id: {
-            examen_id: resultado.id,
-            preguntas_id: pregunta!.id_pregunta,
-          },
-        },
-      })
+      await db
+        .update(examenPreguntas)
+        .set({
+          elegidaId: pregunta?.id,
+        })
+        .where(
+          and(
+            eq(examenPreguntas.examenId, resultado.id),
+            eq(examenPreguntas.preguntaId, pregunta!.idPregunta),
+          ),
+        )
     }
 
-    return NextResponse.json(resultado)
+    return NextResponse.json(resultado.nota!)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })
@@ -87,12 +94,11 @@ export async function PUT(
 
     const { id } = params
 
-    const examen = await prisma.rinde_examen.update({
-      where: {
-        id,
-      },
-      data: body,
-    })
+    const [examen] = await db
+      .update(rindeExamen)
+      .set(body)
+      .where(eq(rindeExamen.id, id))
+      .returning()
 
     return NextResponse.json(examen)
   } catch (error) {

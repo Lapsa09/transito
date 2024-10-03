@@ -17,9 +17,10 @@ const getPreguntas = async (id: string) => {
 async function page() {
   const session = await getServerSession(authOptions)
   const user = session?.user as Invitado
-  const preguntas = await getPreguntas(user.id)
 
   if (user.metaData?.nota) return redirect('/invitados/examen/resultado')
+
+  const preguntas = await getPreguntas(user.id)
 
   const { tipo_examenId } = user.metaData || { tipo_examenId: 1 }
 
@@ -29,11 +30,7 @@ async function page() {
     <div>
       <h1 className="text-center text-3xl font-bold">Examen</h1>
 
-      <Quiz
-        preguntas={preguntas?.examen_preguntas}
-        tiempo={tiempo}
-        id={user.id}
-      />
+      <Quiz preguntas={preguntas.preguntas} tiempo={tiempo} id={user.id} />
     </div>
   )
 }

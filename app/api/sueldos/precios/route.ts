@@ -1,37 +1,36 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { precios } from '@/drizzle/schema/sueldos'
+import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET() {
-  const precios = await prisma.precios.findMany()
+  const preciosList = await db.select().from(precios)
 
-  return NextResponse.json(precios)
+  return NextResponse.json(preciosList)
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const body: { precio_normal: string; precio_pico: string } =
       await request.json()
-    await prisma.precios.update({
-      where: {
-        id: 'precio_normal',
-      },
-      data: {
+
+    await db
+      .update(precios)
+      .set({
         precio: Number(body.precio_normal),
-      },
-    })
+      })
+      .where(eq(precios.id, 'precio_normal'))
 
-    await prisma.precios.update({
-      where: {
-        id: 'precio_pico',
-      },
-      data: {
+    await db
+      .update(precios)
+      .set({
         precio: Number(body.precio_pico),
-      },
-    })
+      })
+      .where(eq(precios.id, 'precio_pico'))
 
-    const precios = await prisma.precios.findMany()
+    const preciosList = await db.select().from(precios)
 
-    return NextResponse.json(precios)
+    return NextResponse.json(preciosList)
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

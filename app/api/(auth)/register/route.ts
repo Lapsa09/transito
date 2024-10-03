@@ -1,6 +1,8 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { users } from '@/drizzle/schema/schema'
 import { RegisterUserProps } from '@/types'
 import bcrypt from 'bcrypt'
+import { and, eq, isNotNull } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 const validLegajo = (legajo: any) => {
@@ -39,11 +41,13 @@ export async function POST(req: Request) {
   try {
     const body: RegisterUserProps = await req.json()
     const { legajo, password } = body
-    const isRegistered = await prisma.user.findUnique({
-      where: { legajo: +legajo, user_password: { not: null } },
-    })
 
-    if (isRegistered) {
+    const isRegistered = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.legajo, +legajo), isNotNull(users.userPassword)))
+
+    if (isRegistered.length) {
       return NextResponse.json(
         'El legajo ingresado ya se encuentra registrado',
         { status: 409 },
@@ -54,11 +58,12 @@ export async function POST(req: Request) {
     if (!isValidLegajo)
       return NextResponse.json('Legajo Invalido', { status: 400 })
 
-    const findLegajo = await prisma.user.findUnique({
-      where: { legajo: +legajo },
-    })
+    const findLegajo = await db
+      .select()
+      .from(users)
+      .where(eq(users.legajo, +legajo))
 
-    if (!findLegajo)
+    if (!findLegajo.length)
       return NextResponse.json(
         'El legajo ingresado no corresponde con el de un empleado',
         { status: 404 },
@@ -71,12 +76,13 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await prisma.user.update({
-      where: { legajo: +legajo },
-      data: {
-        user_password: hashedPassword,
-      },
-    })
+
+    const user = await db
+      .update(users)
+      .set({ userPassword: hashedPassword })
+      .where(eq(users.legajo, +legajo))
+      .returning()
+
     return NextResponse.json(user)
   } catch (error: any) {
     console.log(error.message)

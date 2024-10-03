@@ -1,55 +1,45 @@
 'use server'
 
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { examenes, examenPreguntas, rindeExamen } from '@/drizzle/schema/examen'
+import { invitados } from '@/drizzle/schema/schema'
+import { eq } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 export const terminarExamen = async (id: number) => {
-  await prisma.examen
-    .update({
-      where: {
-        id,
-      },
-      data: {
-        terminado: true,
-      },
-    })
+  await db
+    .update(examenes)
+    .set({ terminado: true })
+    .where(eq(examenes.id, id))
+    .execute()
     .then(() => revalidatePath('/admision/examen'))
+    .then(() => redirect('/admision/examen'))
 }
 export const rehabilitarExamen = async (id: string) =>
-  await prisma.rinde_examen
-    .update({
-      where: {
-        id_invitado: id,
-      },
-      data: {
-        hora_finalizado: null,
-        nota: null,
-      },
-    })
-    .then(() => {
-      prisma.invitado.update({
-        where: {
-          id,
-        },
-        data: {
-          utilizado: false,
-        },
-      })
-    })
-    .then(() => {
-      prisma.examen_preguntas.updateMany({
-        where: {
-          examen_id: id,
-        },
-        data: {
-          elegida_id: null,
-        },
-      })
+  await db
+    .transaction(async (tx) => {
+      const [{ id_invitado }] = await tx
+        .update(rindeExamen)
+        .set({ horaFinalizado: null, nota: null })
+        .where(eq(rindeExamen.id, id))
+        .returning({
+          idExamen: rindeExamen.id,
+          id_invitado: rindeExamen.idInvitado,
+        })
+      await tx
+        .update(invitados)
+        .set({ utilizado: false })
+        .where(eq(invitados.id, id_invitado))
+      await tx
+        .delete(examenPreguntas)
+        .where(eq(examenPreguntas.examenId, id))
+        .execute()
     })
     .then(() => {
       revalidateTag('examen')
     })
 
-export const revalidar = (tag: string) => {
+export const revalidar = async (tag: string) => {
   revalidateTag(tag)
 }

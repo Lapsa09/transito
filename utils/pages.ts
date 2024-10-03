@@ -27,7 +27,6 @@ export const pages: Links[] = [
   {
     name: 'Radio',
     permission: Roles.RADIO,
-    link:
-      '/radio/partes?filter=fecha=' + new Date().toISOString().split('T')[0],
+    link: '/radio/partes?fecha=' + new Date().toISOString().split('T')[0],
   },
 ]

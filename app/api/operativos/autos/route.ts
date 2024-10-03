@@ -1,11 +1,53 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
-import { FormAutosProps } from '@/types'
-import { resolucion, Prisma } from '@prisma/client'
+import { Empleado } from '@/types'
+import { Operativo, Registro } from '@/drizzle/schema/operativos'
+import { autosdb, db } from '@/drizzle'
+import { operativos, registros } from '@/drizzle/schema/operativos'
+import {
+  Barrio,
+  barrios,
+  Motivo,
+  motivos,
+  resolucion,
+  resolucionSchema,
+  TipoLicencia,
+  tipoLicencias,
+  turnos,
+  VicenteLopez,
+  vicenteLopez,
+} from '@/drizzle/schema/schema'
+import { AutosDTO, autosDTO } from '@/DTO/operativos/autos'
+import { filterColumn } from '@/lib/filter-column'
 import { geoLocation } from '@/services'
+import { and, asc, count, desc, eq, isNotNull, or, sql, SQL } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { autosInputPropsSchema } from '@/schemas/autos'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { searchParamsSchema } from '@/schemas/form'
 
-const operativoAlcoholemia = async (body: FormAutosProps) => {
+const searchAutosInputSchema = searchParamsSchema.merge(
+  z.object({
+    fecha: z.string().optional(),
+    dominio: z.string().optional(),
+    turno: z.enum(turnos.enumValues).optional(),
+    motivo: z.string().optional(),
+    zona_infractor: z.string().optional(),
+    localidad: z.string().optional(),
+    tipo_licencia: z.string().optional(),
+    resolucion: z.enum(resolucion.enumValues).optional(),
+  }),
+)
+
+const orderFunctions = {
+  asc,
+  desc,
+}
+
+const operativoAlcoholemia = async (
+  body: z.infer<typeof autosInputPropsSchema>,
+) => {
   const {
     fecha,
     qth,
@@ -17,83 +59,79 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
     hora,
   } = body
 
-  const _hora = new Date(fecha)
-  // @ts-ignore
-  _hora.setUTCHours(...hora.split(':'))
   const direccion_full = `${qth}, ${localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`
 
-  const op = await prisma.operativos_operativos.findFirst({
-    select: { id_op: true },
-    where: {
-      fecha: new Date(fecha),
-      qth,
-      turno,
-      legajo_a_cargo: +legajo_a_cargo,
-      legajo_planilla: +legajo_planilla,
-      id_localidad: localidad.id_barrio,
-      seguridad,
-      hora: _hora,
-      direccion_full,
-    },
-  })
+  const [op] = await db
+    .select({ id_op: operativos.idOp })
+    .from(operativos)
+    .where(
+      and(
+        eq(operativos.fecha, sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`),
+        eq(operativos.qth, qth),
+        eq(operativos.turno, turno),
+        eq(operativos.legajoACargo, +legajo_a_cargo),
+        eq(operativos.legajoPlanilla, +legajo_planilla),
+        eq(operativos.idLocalidad, localidad.idBarrio),
+        eq(operativos.seguridad, seguridad),
+        eq(operativos.hora, hora),
+        eq(operativos.direccionFull, direccion_full),
+      ),
+    )
 
   if (!op) {
-    const geocodificado = await prisma.operativos_operativos.findFirst({
-      where: {
-        direccion_full,
-        latitud: {
-          not: null,
-        },
-        longitud: {
-          not: null,
-        },
-      },
-      select: {
-        direccion_full: true,
-        latitud: true,
-        longitud: true,
-      },
-    })
-    if (!geocodificado) {
+    const geocodificado = await db
+      .select({
+        direccion_full: operativos.direccionFull,
+        latitud: operativos.latitud,
+        longitud: operativos.longitud,
+      })
+      .from(operativos)
+      .where(
+        and(
+          eq(operativos.direccionFull, direccion_full),
+          isNotNull(operativos.latitud),
+          isNotNull(operativos.longitud),
+        ),
+      )
+    if (!geocodificado.length) {
       const { latitud, longitud } = await geoLocation(direccion_full)
-      const { id_op } = await prisma.operativos_operativos.create({
-        data: {
-          fecha: new Date(fecha),
+
+      const [{ id_op }] = await db
+        .insert(operativos)
+        .values({
+          fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
           qth,
           turno,
-          legajo_a_cargo: +legajo_a_cargo,
-          legajo_planilla: +legajo_planilla,
-          id_localidad: localidad.id_barrio,
+          legajoACargo: +legajo_a_cargo,
+          legajoPlanilla: +legajo_planilla,
+          idLocalidad: localidad.idBarrio,
           seguridad,
-          hora: _hora,
-          direccion_full,
+          hora: sql<Date>`to_timestamp(${hora}, 'HH24:MI')`,
+          direccionFull: direccion_full,
           latitud,
           longitud,
-        },
-        select: {
-          id_op: true,
-        },
-      })
+        })
+        .returning({ id_op: operativos.idOp })
+
       return id_op
     } else {
-      const { id_op } = await prisma.operativos_operativos.create({
-        data: {
-          fecha: new Date(fecha),
+      const [{ id_op }] = await db
+        .insert(operativos)
+        .values({
+          fecha: sql<Date>`to_date(${fecha}, 'yyyy-mm-dd')`,
           qth,
           turno,
-          legajo_a_cargo: +legajo_a_cargo,
-          legajo_planilla: +legajo_planilla,
-          id_localidad: localidad.id_barrio,
+          legajoACargo: +legajo_a_cargo,
+          legajoPlanilla: +legajo_planilla,
+          idLocalidad: localidad.idBarrio,
           seguridad,
-          hora: _hora,
-          direccion_full,
-          latitud: geocodificado.latitud,
-          longitud: geocodificado.longitud,
-        },
-        select: {
-          id_op: true,
-        },
-      })
+          hora: sql<Date>`to_timestamp(${hora}, 'HH24:MI')`,
+          direccionFull: direccion_full,
+          latitud: geocodificado[0].latitud,
+          longitud: geocodificado[0].longitud,
+        })
+        .returning({ id_op: operativos.idOp })
+
       return id_op
     }
   } else {
@@ -102,148 +140,144 @@ const operativoAlcoholemia = async (body: FormAutosProps) => {
 }
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl
-  const filterParams: Record<string, string> = [
-    ...searchParams.getAll('filter'),
-  ].reduce((acc, curr) => {
-    const [id, value] = curr.split('=')
-    return { ...acc, [id]: value }
-  }, {})
+  try {
+    const { searchParams } = req.nextUrl
+    const input = searchAutosInputSchema.parse(
+      Object.fromEntries(new URLSearchParams(searchParams).entries()),
+    )
 
-  const where: Prisma.operativos_registrosWhereInput = {
-    dominio: filterParams.dominio
-      ? {
-          contains: filterParams.dominio,
-          mode: 'insensitive',
-        }
-      : undefined,
-    operativo:
-      filterParams.qth || filterParams.localidad || filterParams.fecha
-        ? {
-            qth: filterParams.qth
-              ? {
-                  contains: filterParams.qth,
-                  mode: 'insensitive',
-                }
-              : undefined,
-            localidad: filterParams.barrio
-              ? {
-                  barrio: {
-                    contains: filterParams.barrio,
-                    mode: 'insensitive',
-                  },
-                }
-              : undefined,
-            fecha:
-              filterParams.fecha && new Date(filterParams.fecha).getDate()
-                ? {
-                    equals: new Date(filterParams.fecha),
-                  }
-                : undefined,
-          }
+    const {
+      page,
+      per_page,
+      sort,
+      dominio,
+      fecha,
+      turno,
+      motivo,
+      zona_infractor,
+      localidad,
+      tipo_licencia,
+      operator,
+      resolucion,
+    } = input
+    const expressions: (SQL<unknown> | undefined)[] = [
+      !!fecha
+        ? filterColumn({
+            column: operativos.fecha,
+            value: fecha,
+            isDate: true,
+          })
         : undefined,
-    motivo: filterParams.motivo
-      ? {
-          motivo: {
-            contains: filterParams.motivo,
-            mode: 'insensitive',
-          },
-        }
-      : undefined,
-    tipo_licencia: filterParams.tipo_licencia
-      ? {
-          tipo: {
-            contains: filterParams.tipo_licencia,
-            mode: 'insensitive',
-          },
-        }
-      : undefined,
-    zona_infractor: filterParams.zona_infractor
-      ? {
-          barrio: {
-            contains: filterParams.zona_infractor,
-            mode: 'insensitive',
-          },
-        }
-      : undefined,
+      turno
+        ? filterColumn({
+            column: operativos.turno,
+            value: turno,
+            isSelectable: true,
+          })
+        : undefined,
+      localidad
+        ? filterColumn({
+            column: operativos.idLocalidad,
+            value: localidad,
+            isSelectable: true,
+          })
+        : undefined,
+      dominio
+        ? filterColumn({ column: registros.dominio, value: dominio })
+        : undefined,
+      motivo
+        ? filterColumn({ column: registros.idMotivo, value: motivo })
+        : undefined,
+      zona_infractor
+        ? filterColumn({
+            column: registros.idZonaInfractor,
+            value: zona_infractor,
+          })
+        : undefined,
+      tipo_licencia
+        ? filterColumn({ column: registros.idLicencia, value: tipo_licencia })
+        : undefined,
+      resolucion
+        ? filterColumn({ column: registros.resolucion, value: resolucion })
+        : undefined,
+    ]
+    const where =
+      !operator || operator === 'and' ? and(...expressions) : or(...expressions)
+
+    const [column, order] = (sort?.split('.').filter(Boolean) ?? [
+      'id',
+      'desc',
+    ]) as [keyof AutosDTO, 'asc' | 'desc']
+
+    const sortColumns = () => {
+      if (!column) return desc(registros.id)
+
+      if (column in registros) {
+        return orderFunctions[order](registros[column as keyof Registro])
+      } else if (column in operativos) {
+        return orderFunctions[order](operativos[column as keyof Operativo])
+      } else if (column in motivos) {
+        return orderFunctions[order](motivos[column as keyof Motivo])
+      } else if (column in tipoLicencias) {
+        return orderFunctions[order](
+          tipoLicencias[column as keyof TipoLicencia],
+        )
+      } else if (column in vicenteLopez) {
+        return orderFunctions[order](vicenteLopez[column as keyof VicenteLopez])
+      }
+      return orderFunctions[order](barrios[column as keyof Barrio])
+    }
+    const autosPromise = autosDTO({
+      page,
+      per_page,
+      orderBy: sortColumns(),
+      where,
+    })
+
+    const totalPromise = db
+      .select({ count: count() })
+      .from(registros)
+      .innerJoin(operativos, eq(registros.idOperativo, operativos.idOp))
+      .innerJoin(barrios, eq(registros.idZonaInfractor, barrios.idBarrio))
+      .leftJoin(motivos, eq(registros.idMotivo, motivos.idMotivo))
+      .leftJoin(tipoLicencias, eq(registros.idLicencia, tipoLicencias.idTipo))
+      .innerJoin(
+        vicenteLopez,
+        eq(operativos.idLocalidad, vicenteLopez.idBarrio),
+      )
+      .where(where)
+      .execute()
+      .then(([{ count }]) => count)
+
+    const [autos, total] = await Promise.all([autosPromise, totalPromise])
+
+    return NextResponse.json({
+      data: autos,
+      pages: Math.ceil(total / per_page).toString(),
+    })
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json([], { status: 500 })
   }
-  const pageIndex = parseInt(searchParams.get('page') ?? '0')
-
-  const [sortBy, sort] = (searchParams.get('sortBy') ?? 'id=desc').split(
-    '=',
-  ) as [string, Prisma.SortOrder]
-  const orderBy: Prisma.operativos_registrosOrderByWithRelationInput =
-    sortBy in prisma.operativos_operativos.fields
-      ? {
-          operativo: {
-            [sortBy]: sort,
-          },
-        }
-      : sortBy === 'zona_infractor'
-        ? {
-            zona_infractor: {
-              barrio: sort,
-            },
-          }
-        : sortBy === 'motivo'
-          ? {
-              motivo: {
-                motivo: sort,
-              },
-            }
-          : sortBy === 'tipo_licencia'
-            ? {
-                tipo_licencia: {
-                  tipo: sort,
-                },
-              }
-            : { [sortBy]: sort }
-
-  const autosPromise = prisma.operativos_registros.findMany({
-    include: {
-      motivo: { select: { motivo: true } },
-      tipo_licencia: { select: { tipo: true, vehiculo: true } },
-      zona_infractor: { select: { barrio: true } },
-      operativo: {
-        include: { localidad: { select: { barrio: true, cp: true } } },
-      },
-    },
-    where: Object.keys(filterParams).length ? where : undefined,
-    orderBy,
-    skip: pageIndex * 10,
-    take: 10,
-  })
-
-  const totalPromise = prisma.operativos_registros.count({
-    where: Object.keys(filterParams).length ? where : undefined,
-  })
-
-  const [autos, total] = await Promise.all([autosPromise, totalPromise])
-
-  return NextResponse.json(
-    JSON.parse(
-      JSON.stringify(
-        {
-          data: autos,
-          pages: Math.ceil(total / 10).toString(),
-        },
-        (_, value) => (typeof value === 'bigint' ? value.toString() : value),
-      ),
-    ),
-  )
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body: FormAutosProps = await req.json()
+    const json = await req.json()
+    const body = autosInputPropsSchema.safeParse(json)
 
-    const id_operativo = await operativoAlcoholemia(body)
+    if (!body.success) {
+      return NextResponse.json('Campos requeridos', { status: 400 })
+    }
 
-    const repetido = await prisma.operativos_registros.findFirst({
-      where: {
-        dominio: body.dominio,
-        id_operativo,
-      },
+    const id_operativo = await operativoAlcoholemia(body.data)
+
+    const repetido = await autosdb.query.registros.findFirst({
+      where: (registro, { eq }) =>
+        and(
+          eq(registro.dominio, body.data.dominio),
+          eq(registro.idOperativo, id_operativo),
+        ),
     })
 
     if (repetido) {
@@ -251,37 +285,26 @@ export async function POST(req: NextRequest) {
         status: 401,
       })
     }
+    const session = await getServerSession(authOptions)
 
-    const auto = await prisma.operativos_registros.create({
-      data: {
-        acta: Number(body.acta) || null,
-        dominio: body.dominio.toUpperCase(),
-        graduacion_alcoholica: Number(body.graduacion_alcoholica),
-        licencia: Number(body.licencia) || null,
-        lpcarga: body.lpcarga,
-        resolucion: body.resolucion || resolucion.PREVENCION,
-        id_licencia: body.tipo_licencia?.id_tipo,
-        id_zona_infractor: body.zona_infractor?.id_barrio,
-        id_motivo: body.motivo?.id_motivo,
-        id_operativo,
-      },
-      include: {
-        operativo: {
-          include: { localidad: { select: { barrio: true, cp: true } } },
-        },
-        motivo: { select: { motivo: true } },
-        tipo_licencia: { select: { tipo: true, vehiculo: true } },
-        zona_infractor: { select: { barrio: true } },
-      },
+    const user = session?.user as Empleado | null
+
+    await db.insert(registros).values({
+      acta: body.data.acta,
+      dominio: body.data.dominio.toUpperCase(),
+      graduacionAlcoholica: body.data.graduacion_alcoholica,
+      licencia: body.data.licencia,
+      lpcarga: user?.legajo,
+      resolucion: body.data.resolucion,
+      idLicencia: body.data.tipo_licencia?.idTipo,
+      idZonaInfractor: body.data.zona_infractor?.idBarrio,
+      idMotivo: body.data.motivo?.idMotivo,
+      idOperativo: id_operativo,
+      idSustancias: body.data.control_sustancias,
     })
+
     revalidateTag('autos')
-    return NextResponse.json(
-      JSON.parse(
-        JSON.stringify(auto, (_, value) =>
-          typeof value === 'bigint' ? value.toString() : value,
-        ),
-      ),
-    )
+    return NextResponse.json('Exito')
   } catch (error) {
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 
 import Heading from './Heading'
-import Button from './Button'
+import { Button } from './ui/button'
 
 interface EmptyStateProps {
   title?: string
@@ -32,7 +32,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <Heading center title={title} subtitle={subtitle} />
       <div className="w-48 mt-4">
         {showReset && (
-          <Button variant="background" onClick={() => router.push('/')}>
+          <Button variant="ghost" onClick={() => router.push('/')}>
             Remove all filters
           </Button>
         )}

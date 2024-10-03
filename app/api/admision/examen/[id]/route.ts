@@ -1,7 +1,8 @@
+import { db, examendb } from '@/drizzle'
+import { invitados } from '@/drizzle/schema/schema'
 import { examenDTO } from '@/DTO/examen'
-import prisma from '@/lib/prismadb'
-import { shuffle } from '@/utils/misc'
 import { NextRequest, NextResponse } from 'next/server'
+import { v4 } from 'uuid'
 
 export async function GET(
   _: NextRequest,
@@ -9,26 +10,19 @@ export async function GET(
 ) {
   try {
     const { id } = params
-    const examen = await prisma.examen.findFirst({
-      where: {
-        clave: id,
-        terminado: false,
-      },
-      include: {
+
+    const examen = await examendb.query.examenes.findFirst({
+      where: (examenes, { eq }) => eq(examenes.clave, id),
+      with: {
         alumnos: {
-          include: {
-            tipo_examen: true,
+          with: {
+            tipoExamen: true,
             usuario: true,
           },
-          orderBy: {
-            usuario: {
-              apellido: 'asc',
-            },
-          },
+          orderBy: (usuario, { desc }) => [desc(usuario.horaIngresado)],
         },
       },
     })
-
     return NextResponse.json(examen)
   } catch (error) {
     console.log(error)
@@ -89,59 +83,28 @@ export async function POST(
       edad: string
       sexo: string
     } = await req.json()
-    const invitado = await prisma.invitado.create({
-      data: {
+
+    const [invitado] = await db
+      .insert(invitados)
+      .values({
         dni: +dni,
         apellido,
         nombre,
-        id_edad: categorizeAge(+dni, +edad),
+        idEdad: categorizeAge(+dni, +edad),
         sexo,
         edad: +edad,
-      },
-    })
-    const examen = await examenDTO(id, tipo_examen, invitado.id)
-
-    const tipo = await prisma.tipo_examen.findUniqueOrThrow({
-      where: {
-        id: +tipo_examen,
-      },
-    })
-
-    const preguntas = await prisma.preguntas.findMany({
-      where: {
-        tipo_examen: {
-          id: +tipo_examen,
-        },
-      },
-      include: {
-        opciones: true,
-      },
-    })
-
-    for (const pregunta of shuffle([...preguntas]).slice(
-      0,
-      tipo.cantidad_preguntas,
-    )) {
-      await prisma.examen_preguntas.create({
-        data: {
-          examen: {
-            connect: {
-              id: examen.id,
-            },
-          },
-          pregunta: {
-            connect: {
-              id: pregunta.id,
-            },
-          },
-        },
+        id: v4(),
       })
-    }
+      .returning()
+
+    const examen = await examenDTO({
+      id,
+      tipo_examen,
+      id_invitado: invitado.id,
+    })
+
     return NextResponse.json(examen)
   } catch (error: any) {
-    if (error.name === 'PrismaClientKnownRequestError') {
-      return NextResponse.json('El alumno ya fue ingresado', { status: 403 })
-    }
     console.log(error)
     return NextResponse.json('Server error', { status: 500 })
   }

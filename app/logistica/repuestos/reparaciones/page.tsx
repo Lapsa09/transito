@@ -1,10 +1,7 @@
 import React from 'react'
-import PageClient from './page.client'
 import { fetcher } from '@/services'
-import { Reparacion } from '@/types/logistica'
-
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
+import { ReparacionesTable } from './table'
+import { ReparacionesDTO } from '@/DTO/logistica/reparaciones'
 
 const getAutos = async (searchParams: string) => {
   const res = await fetcher(
@@ -16,7 +13,7 @@ const getAutos = async (searchParams: string) => {
       },
     },
   )
-  const data: { data: Reparacion[]; pages: number } = await res.json()
+  const data: { data: ReparacionesDTO[]; pages: number } = await res.json()
   return data
 }
 
@@ -25,11 +22,9 @@ async function page({
 }: {
   searchParams: Record<string, string>
 }) {
-  const { data, pages } = await getAutos(
-    new URLSearchParams(searchParams).toString(),
-  )
+  const data = await getAutos(new URLSearchParams(searchParams).toString())
 
-  return <PageClient data={data} pages={pages} />
+  return <ReparacionesTable tasks={data} />
 }
 
 export default page

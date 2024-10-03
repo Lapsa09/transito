@@ -5,13 +5,14 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
-import { Input } from '@nextui-org/input'
+import { TimeInput, TimeInputProps, TimeInputValue } from '@nextui-org/react'
 import { X } from 'lucide-react'
+import { parseTime } from '@internationalized/date'
 
-interface TimeFieldProps extends UseControllerProps {
-  className?: string
+interface TimeFieldProps
+  extends UseControllerProps,
+    Omit<TimeInputProps, 'defaultValue' | 'name'> {
   persist?: (data: any) => void
-  label?: string
 }
 
 export function TimeField({
@@ -29,13 +30,13 @@ export function TimeField({
   } = useController({
     control,
     name,
-    defaultValue: null,
+    defaultValue: props.defaultValue || '',
     rules,
   })
 
-  const onChange = (value: string) => {
-    field.onChange(value)
-    if (persist) persist({ [name]: value })
+  const onChange = (value: TimeInputValue) => {
+    field.onChange(value.toString())
+    if (persist) persist({ [name]: value.toString() })
   }
 
   const clear = () => {
@@ -43,19 +44,18 @@ export function TimeField({
     if (persist) persist({ [name]: '' })
   }
   return (
-    <Input
+    <TimeInput
       {...props}
       {...field}
-      onValueChange={onChange}
+      value={field.value ? parseTime(field.value) : null}
+      onChange={onChange}
       variant="bordered"
       label={label}
       labelPlacement="outside"
       isRequired={!!rules?.required}
       size="md"
       radius="sm"
-      type="time"
-      placeholder="hh:mm"
-      validationState={invalid ? 'invalid' : 'valid'}
+      isInvalid={invalid}
       className={twMerge(className, 'data-[has-helper=true]:pb-6 pb-6')}
       classNames={{
         inputWrapper: 'border border-gray-600',

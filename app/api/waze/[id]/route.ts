@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prismadb'
+import { wazedb } from '@/drizzle'
+import { dia } from '@/drizzle/schema/waze'
 
 export async function GET(
   _: NextRequest,
@@ -8,25 +9,25 @@ export async function GET(
   try {
     const { id } = params
 
-    const reportes = await prisma.reporte.findMany({
-      where: {
-        id_dia: +id,
+    const reportes = await wazedb.query.reporte.findMany({
+      where(fields, operators) {
+        return operators.eq(fields.idDia, +id)
       },
-      select: {
+      columns: {
         id: true,
-        recorrido: {
-          include: {
+      },
+      with: {
+        recorridos: {
+          with: {
             calles: true,
-            nivel_trafico: true,
+            nivelTrafico: true,
           },
         },
-        dia: true,
         horarios: true,
+        dia: true,
       },
-      orderBy: {
-        dia: {
-          fecha: 'desc',
-        },
+      orderBy(_, operators) {
+        return operators.desc(dia.fecha)
       },
     })
     return NextResponse.json(reportes)

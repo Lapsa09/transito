@@ -1,14 +1,8 @@
-import { Button } from '@/components/ui'
 import React from 'react'
 
 export default function MenuButton() {
   return (
-    <Button
-      variant="outline"
-      className="ml-3 text-gray-400 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-lg inline-flex items-center justify-center"
-      aria-controls="mobile-menu-2"
-      aria-expanded="false"
-    >
+    <>
       <span className="sr-only">Menu</span>
       <svg
         className="w-6 h-6"
@@ -34,6 +28,6 @@ export default function MenuButton() {
           clipRule="evenodd"
         ></path>
       </svg>
-    </Button>
+    </>
   )
 }

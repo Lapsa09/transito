@@ -1,8 +1,9 @@
-import prisma from '@/lib/prismadb'
+import { db } from '@/drizzle'
+import { vicenteLopez } from '@/drizzle/schema/schema'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const zonas = await prisma.vicente_lopez.findMany()
+  const zonas = await db.select().from(vicenteLopez)
 
   return NextResponse.json(zonas)
 }

@@ -1,37 +1,34 @@
 import React from 'react'
 import Link from 'next/link'
-import {
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
-  Button,
-} from '@material-tailwind/react'
 import { Links } from '@/types'
 
 function Dropdown({ page }: { page: Links }) {
   return (
-    <Menu allowHover>
-      <MenuHandler>
-        <Link href={page.link}>
-          <Button
-            variant="text"
-            className="text-gray-700 md:hover:text-green-400 font-sans text-base font-medium capitalize"
-          >
-            {page.name}
-          </Button>
-        </Link>
-      </MenuHandler>
-      <MenuList>
-        {page.links?.map((link) => (
-          <Link key={link.name} href={link.link}>
-            <MenuItem key={link.name} className="hover:text-green-400">
-              {link.name}
-            </MenuItem>
-          </Link>
+    <div className="dropdown dropdown-hover">
+      <Link
+        href={page.link}
+        tabIndex={0}
+        role="button"
+        className="btn btn-ghost text-gray-700 dark:text-white text-base font-medium font-sans md:hover:text-green-400"
+      >
+        {page.name}
+      </Link>
+      <ul
+        tabIndex={0}
+        className="dropdown-content menu bg-white dark:bg-slate-900 rounded-box z-[1] w-52 p-2 shadow"
+      >
+        {page.links?.map((child) => (
+          <li key={child.name}>
+            <Link
+              href={child.link}
+              className="text-gray-700 dark:text-white hover:text-green-400"
+            >
+              {child.name}
+            </Link>
+          </li>
         ))}
-      </MenuList>
-    </Menu>
+      </ul>
+    </div>
   )
 }
 

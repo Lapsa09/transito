@@ -1,74 +1,73 @@
-import { Registro } from '@/types/rio'
+import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
+import { RioDTO } from '@/DTO/operativos/rio'
+import { getLocalDate } from '@/utils/misc'
 import { ColumnDef } from '@tanstack/react-table'
-import { DateTime } from 'luxon'
 import Link from 'next/link'
 
-export const columns: ColumnDef<Registro>[] = [
-  {
-    id: 'actions',
-    cell: ({ row }) => (
-      <Link href={`/operativos/rio/${row.getValue('id')}`}>Editar</Link>
-    ),
-  },
-  {
-    id: 'id',
-    accessorFn: (registro) => registro.id,
-    enableColumnFilter: false,
-    size: 100,
-  },
-  {
-    accessorFn: ({ operativo: { fecha } }) =>
-      DateTime.fromISO(fecha, {
-        setZone: true,
-      }).toLocaleString(DateTime.DATE_SHORT),
-    header: 'Fecha',
-  },
-  {
-    accessorFn: (registro) =>
-      registro.operativo.turno === 'MA_ANA'
-        ? 'MAÑANA'
-        : registro.operativo.turno,
-    header: 'Turno',
-  },
-  {
-    accessorFn: (registro) => registro.operativo.lp,
-    header: 'Legajo',
-    enableColumnFilter: false,
-  },
-  {
-    accessorFn: ({ hora }) =>
-      DateTime.fromISO(hora, {
-        setZone: true,
-      }).toLocaleString(DateTime.TIME_24_SIMPLE),
-    header: 'Hora',
-    enableColumnFilter: false,
-  },
-  {
-    accessorFn: (registro) => registro.dominio?.toUpperCase(),
-    header: 'Dominio',
-  },
-  {
-    accessorFn: (registro) => registro.barrio?.barrio,
-    header: 'Barrio',
-  },
-  {
-    accessorFn: (registro) => registro.zona.zona,
-    header: 'Zona',
-  },
-  {
-    accessorFn: ({ fechacarga }) => {
-      const sql = DateTime.fromSQL(fechacarga, {
-        setZone: true,
-      })
-
-      if (sql.isValid) {
-        return sql.toLocaleString(DateTime.DATETIME_SHORT)
-      } else {
-        return DateTime.fromFormat(fechacarga, 'F').toLocaleString(
-          DateTime.DATETIME_SHORT,
-        )
-      }
+export function getColumns(): ColumnDef<RioDTO>[] {
+  return [
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <Link href={`/operativos/rio/${row.getValue('id')}`}>Editar</Link>
+      ),
     },
-    header: 'Fecha de carga',
-  },
-]
+    {
+      id: 'id',
+      accessorFn: (registro) => registro.id,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="id" />
+      ),
+      size: 100,
+    },
+    {
+      accessorFn: (row) => row.fecha && getLocalDate(row.fecha),
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Fecha" />
+      ),
+      id: 'fecha',
+    },
+    {
+      accessorFn: (registro) => registro.turno,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Turno" />
+      ),
+      id: 'turno',
+    },
+    {
+      accessorFn: (registro) => registro.legajo,
+      id: 'legajo',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Legajo" />
+      ),
+    },
+    {
+      accessorFn: (registro) => registro.dominio?.toUpperCase(),
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Dominio" />
+      ),
+      id: 'dominio',
+    },
+    {
+      accessorFn: (registro) => registro.zona_infractor,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Barrio" />
+      ),
+      id: 'zona_infractor',
+    },
+    {
+      accessorFn: (registro) => registro.zona,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Zona" />
+      ),
+      id: 'zona',
+    },
+    {
+      accessorFn: (row) => row.fecha_carga,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Fecha de carga" />
+      ),
+      id: 'fecha_carga',
+    },
+  ]
+}

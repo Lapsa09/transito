@@ -17,14 +17,15 @@ import { z } from 'zod'
 const operativoPaseo = async (body: z.infer<typeof rioInputPropsSchema>) => {
   const { fecha, turno, lp } = body
 
+  // const fecha = sql<Date>`to_date(${body.fecha},yyyy-mm-dd)`
   const [op] = await db
     .select()
     .from(operativos)
     .where(
       and(
-        eq(operativos.fecha, sql`to_date(${fecha},YYYY-MM-DD)`),
+        eq(operativos.fecha, fecha),
         eq(operativos.turno, turno),
-        eq(operativos.lp, +lp),
+        eq(operativos.lp, lp),
       ),
     )
 
@@ -32,9 +33,9 @@ const operativoPaseo = async (body: z.infer<typeof rioInputPropsSchema>) => {
     const [{ id_op }] = await db
       .insert(operativos)
       .values({
-        fecha: sql`to_date(${fecha},'YYYY-MM-DD')`,
+        fecha,
         turno,
-        lp: +lp,
+        lp,
       })
       .returning({ id_op: operativos.idOp })
 
@@ -128,7 +129,7 @@ const searchRioParamsSchema = searchParamsSchema.merge(
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const input = searchRioParamsSchema.parse(
-    Object.fromEntries(new URLSearchParams(searchParams).entries()),
+    Object.fromEntries(searchParams.entries()),
   )
   const {
     fecha,
@@ -232,36 +233,41 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const json = await req.json()
-  const data = rioInputPropsSchema.parse(json)
-  const id_operativo = await operativoPaseo(data)
+  try {
+    const json = await req.json()
+    const data = rioInputPropsSchema.parse(json)
+    const id_operativo = await operativoPaseo(data)
 
-  const repetido = await riodb.query.registros.findFirst({
-    where: (registro, { eq }) =>
-      and(
-        eq(registro.dominio, data.dominio),
-        eq(registro.idOperativo, id_operativo),
-      ),
-  })
+    const repetido = await riodb.query.registros.findFirst({
+      where: (registro, { eq }) =>
+        and(
+          eq(registro.dominio, data.dominio),
+          eq(registro.idOperativo, id_operativo),
+        ),
+    })
 
-  if (repetido) {
-    return NextResponse.json('El dominio ya fue cargado', { status: 400 })
+    if (repetido) {
+      return NextResponse.json('El dominio ya fue cargado', { status: 400 })
+    }
+
+    const id_localidad = await radicacion(data)
+
+    const session = await getServerSession(authOptions)
+
+    const user = session?.user as Empleado | null
+
+    await db.insert(registros).values({
+      hora: data.hora,
+      dominio: data.dominio,
+      idOperativo: id_operativo,
+      idZona: data.zona.idZona,
+      idLocalidad: id_localidad,
+      lpcarga: user?.legajo,
+    })
+    revalidateTag('rio')
+    return NextResponse.json('Exito')
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json('Server Error', { status: 500 })
   }
-
-  const id_localidad = await radicacion(data)
-
-  const session = await getServerSession(authOptions)
-
-  const user = session?.user as Empleado | null
-
-  await db.insert(registros).values({
-    hora: data.hora,
-    dominio: data.dominio,
-    idOperativo: id_operativo,
-    idZona: data.zona.idZona,
-    idLocalidad: id_localidad,
-    lpcarga: user?.legajo,
-  })
-  revalidateTag('rio')
-  return NextResponse.json('Exito')
 }

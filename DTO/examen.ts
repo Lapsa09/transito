@@ -113,11 +113,13 @@ export async function rindeExamenDTO({ id }: { id: string }) {
       opciones: true,
     },
   })
-  const init = getRandomNumberWithMargin(
-    preguntas.length,
-    tipo.cantidadPreguntas,
-  )
-  for (const pregunta of preguntas.slice(init, init + tipo.cantidadPreguntas)) {
+  const init =
+    preguntas.length >= tipo.cantidadPreguntas
+      ? getRandomNumberWithMargin(preguntas.length, tipo.cantidadPreguntas)
+      : 0
+  const finish = init ? init + tipo.cantidadPreguntas : undefined
+
+  for (const pregunta of preguntas.slice(init, finish)) {
     console.log('pregunta', pregunta.id, invitado.invitados.dni)
     await db.insert(examenPreguntas).values({
       examenId: invitado.rinde_examen.id,

@@ -114,7 +114,7 @@ export async function rindeExamenDTO({ id }: { id: string }) {
     },
   })
   const init =
-    preguntas.length >= tipo.cantidadPreguntas
+    preguntas.length > tipo.cantidadPreguntas
       ? getRandomNumberWithMargin(preguntas.length, tipo.cantidadPreguntas)
       : 0
   const finish = init ? init + tipo.cantidadPreguntas : undefined

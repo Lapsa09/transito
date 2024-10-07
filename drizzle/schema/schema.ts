@@ -214,3 +214,4 @@ export type VicenteLopez = typeof vicenteLopez.$inferSelect
 export type Permiso = typeof permisos.$inferSelect
 export type Turno = keyof typeof turnos.enumValues
 export type Resolucion = keyof typeof resolucion.enumValues
+export type ControlSustancias = typeof controlSustancias.$inferSelect

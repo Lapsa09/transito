@@ -14,11 +14,14 @@ async function page() {
     motivos,
     resolucion,
     zonas,
+    controlSustancias,
   } = await getOperativosSelects()
   return (
     <MainForm>
       <FirstStep selects={{ vicenteLopez, turnos, seguridad }} />
-      <SecondStep selects={{ licencias, motivos, resolucion, zonas }} />
+      <SecondStep
+        selects={{ licencias, motivos, resolucion, zonas, controlSustancias }}
+      />
     </MainForm>
   )
 }

@@ -6,12 +6,18 @@ import { getOperativosSelects } from '@/services'
 export const dynamic = 'force-dynamic'
 
 async function page() {
-  const { vicenteLopez, turnos, motivos, resolucion, zonas } =
-    await getOperativosSelects()
+  const {
+    vicenteLopez,
+    turnos,
+    motivos,
+    resolucion,
+    zonas,
+    controlSustancias,
+  } = await getOperativosSelects()
   return (
     <MainForm>
       <FirstStep selects={{ vicenteLopez, turnos }} />
-      <SecondStep selects={{ motivos, resolucion, zonas }} />
+      <SecondStep selects={{ motivos, resolucion, zonas, controlSustancias }} />
     </MainForm>
   )
 }

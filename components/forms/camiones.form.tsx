@@ -140,6 +140,7 @@ export function SecondStep({
     motivos: Motivo[]
     resolucion: Record<'id' | 'label', keyof typeof resolucionSchema.enum>[]
     zonas: Barrio[]
+    controlSustancias: { id: number; label: string }[]
   }
   editableRegistro?: z.infer<typeof registroInputSchema>
   id?: string

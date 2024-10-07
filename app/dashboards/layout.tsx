@@ -59,6 +59,11 @@ function layout({ children }: Props) {
                   Sustancias Psicoactivas
                 </Link>
               </TabsTrigger>
+              <TabsTrigger asChild value="/otros">
+                <Link replace href="/dashboards/otros">
+                  Otros tableros
+                </Link>
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         )

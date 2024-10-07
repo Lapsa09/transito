@@ -4,7 +4,19 @@ import { db } from '@/drizzle'
 import * as Camiones from '@/drizzle/schema/camiones'
 import * as Motos from '@/drizzle/schema/motos'
 import * as Autos from '@/drizzle/schema/operativos'
-import { and, count, desc, eq, isNotNull, sql, sum } from 'drizzle-orm'
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  isNotNull,
+  isNull,
+  not,
+  or,
+  sql,
+  sum,
+} from 'drizzle-orm'
 import {
   barrios,
   motivos,
@@ -805,3 +817,170 @@ export async function motosMetrics({ y }: { y: number }) {
 }
 
 export type MotosMetrics = Awaited<ReturnType<typeof motosMetrics>>
+
+export async function sustanciasMetrics({ y }: { y: number }) {
+  const autos = db
+    .select()
+    .from(Autos.registros)
+    .innerJoin(
+      Autos.operativos,
+      eq(Autos.operativos.idOp, Autos.registros.idOperativo),
+    )
+    .where(eq(sql`extract(year from ${Autos.operativos.fecha})`, y))
+    .as('autos')
+
+  const motos = db
+    .select()
+    .from(Motos.registros)
+    .innerJoin(
+      Motos.operativos,
+      eq(Motos.operativos.idOp, Motos.registros.idOperativo),
+    )
+    .where(eq(sql`extract(year from ${Motos.operativos.fecha})`, y))
+    .as('motos')
+  const camiones = db
+    .select()
+    .from(Camiones.registros)
+    .innerJoin(
+      Camiones.operativos,
+      eq(Camiones.operativos.idOp, Camiones.registros.idOperativo),
+    )
+    .where(eq(sql`extract(year from ${Camiones.operativos.fecha})`, y))
+    .as('camiones')
+
+  const total = await db.transaction(async (tx) => {
+    const totalAutos = await tx
+      .select({
+        idSustancias: autos.registros.idSustancias,
+      })
+      .from(autos)
+      .where(not(eq(autos.registros.idSustancias, 1)))
+
+    const totalMotos = await tx
+      .select({
+        idSustancias: motos.registros.idSustancias,
+      })
+      .from(motos)
+      .where(not(eq(motos.registros.idSustancias, 1)))
+
+    const totalCamiones = await tx
+      .select({
+        idSustancias: camiones.registros.idSustancias,
+      })
+      .from(camiones)
+      .where(not(eq(camiones.registros.idSustancias, 1)))
+
+    return totalAutos.length + totalMotos.length + totalCamiones.length
+  })
+
+  const sustancias = await db.transaction(async (tx) => {
+    const _autos = await tx
+      .select({
+        value: count(Autos.registros.id),
+        label: motivos.motivo,
+        id: motivos.motivo,
+      })
+      .from(motivos)
+      .where(
+        and(
+          gte(motivos.idMotivo, 88),
+          or(
+            eq(sql`extract(year from ${Autos.operativos.fecha})`, y),
+            isNull(Autos.operativos.fecha),
+          ),
+        ),
+      )
+      .fullJoin(Autos.registros, eq(Autos.registros.idMotivo, motivos.idMotivo))
+      .leftJoin(
+        Autos.operativos,
+        eq(Autos.operativos.idOp, Autos.registros.idOperativo),
+      )
+      .groupBy(motivos.motivo, motivos.idMotivo)
+      .orderBy(desc(count(Autos.registros.id)))
+
+    const _motos = await tx
+      .select({
+        value: count(Motos.registros.id),
+        label: motivos.motivo,
+        id: motivos.motivo,
+      })
+      .from(motivos)
+      .where(
+        and(
+          gte(motivos.idMotivo, 88),
+          or(
+            eq(sql`extract(year from ${Motos.operativos.fecha})`, y),
+            isNull(Motos.operativos.fecha),
+          ),
+        ),
+      )
+      .fullJoin(
+        Motos.motoMotivo,
+        eq(Motos.motoMotivo.idMotivo, motivos.idMotivo),
+      )
+      .leftJoin(
+        Motos.registros,
+        eq(Motos.motoMotivo.idRegistro, Motos.registros.id),
+      )
+      .leftJoin(
+        Motos.operativos,
+        eq(Motos.operativos.idOp, Motos.registros.idOperativo),
+      )
+      .groupBy(motivos.motivo, motivos.idMotivo)
+      .orderBy(desc(count(Motos.registros.id)))
+
+    const _camiones = await tx
+      .select({
+        value: count(Camiones.registros.id),
+        label: motivos.motivo,
+        id: motivos.motivo,
+      })
+      .from(motivos)
+      .where(
+        and(
+          gte(motivos.idMotivo, 88),
+          or(
+            eq(sql`extract(year from ${Camiones.operativos.fecha})`, y),
+            isNull(Camiones.operativos.fecha),
+          ),
+        ),
+      )
+      .fullJoin(
+        Camiones.registros,
+        eq(Camiones.registros.idMotivo, motivos.idMotivo),
+      )
+      .leftJoin(
+        Camiones.operativos,
+        eq(Camiones.operativos.idOp, Camiones.registros.idOperativo),
+      )
+      .groupBy(motivos.motivo, motivos.idMotivo)
+      .orderBy(desc(count(Camiones.registros.id)))
+
+    return _autos
+      .concat(_motos)
+      .concat(_camiones)
+      .reduce(
+        (acc, row) => {
+          const q = acc.findIndex((q) => q.id === row.id)
+
+          if (q === -1) {
+            acc.push({
+              id: row.id!,
+              value: row.value,
+              label: row.label!,
+            })
+          } else acc[q].value += row.value
+
+          return acc
+        },
+        [] as { id: string; value: number; label: string }[],
+      )
+  })
+
+  return {
+    sustancias,
+    total,
+  }
+}
+
+export type SustanciasMetrics = Awaited<ReturnType<typeof sustanciasMetrics>>

@@ -23,12 +23,13 @@ function CustomSelect({
   options = [],
   className,
   persist,
+  defaultValue,
 }: Props) {
   const { control } = useFormContext()
   const {
     field,
     fieldState: { invalid, error },
-  } = useController({ name, control, rules, defaultValue: null })
+  } = useController({ name, control, rules, defaultValue })
 
   const onChange = (value: any) => {
     field.onChange(value.currentKey)

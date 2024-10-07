@@ -32,6 +32,7 @@ export const registroInputSchema = z.object({
   resolucion: z.enum(resolucion.enumValues).nullable().default('PREVENCION'),
   acta: z.coerce.number().optional(),
   extranjero: z.boolean().default(false),
+  control_sustancias: z.coerce.number().default(1),
 })
 
 export const motosInputPropsSchema =

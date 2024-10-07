@@ -265,7 +265,7 @@ export async function POST(req: NextRequest) {
   try {
     const json = await req.json()
     const body = autosInputPropsSchema.safeParse(json)
-
+    console.log(body)
     if (!body.success) {
       return NextResponse.json('Campos requeridos', { status: 400 })
     }
@@ -300,7 +300,7 @@ export async function POST(req: NextRequest) {
       idZonaInfractor: body.data.zona_infractor?.idBarrio,
       idMotivo: body.data.motivo?.idMotivo,
       idOperativo: id_operativo,
-      idSustancias: body.data.control_sustancias,
+      idSustancias: body.data.control_sustancias!,
     })
 
     revalidateTag('autos')

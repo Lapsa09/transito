@@ -2,14 +2,12 @@ import { TabsContent } from '@/components/ui/tabs'
 import { getter } from '@/services'
 import React from 'react'
 import PageClient from './page.client'
+import { SustanciasMetrics } from '@/DTO/operativos/metrics'
 
 export const dynamic = 'force-dynamic'
 
 const getData = async () => {
-  const data = await getter<{
-    sustancias: { id: string; value: number; label: string }[]
-    total: number
-  }>({
+  const data = await getter<SustanciasMetrics>({
     route: '/operativos/metrics/sustancias',
   })
 

@@ -9,7 +9,13 @@ import {
   real,
   alias,
 } from 'drizzle-orm/pg-core'
-import { barrios, motivos, turnos, vicenteLopez } from './schema'
+import {
+  barrios,
+  controlSustancias,
+  motivos,
+  turnos,
+  vicenteLopez,
+} from './schema'
 import { relations } from 'drizzle-orm'
 
 export const localidad_origen = alias(barrios, 'localidad_origen')
@@ -40,6 +46,10 @@ export const registros = camiones.table('registros', {
   ),
   idMotivo: integer('id_motivo').references(() => motivos.idMotivo),
   idOperativo: integer('id_operativo').references(() => operativos.idOp),
+  idSustancias: integer('id_sustancias')
+    .references(() => controlSustancias.id)
+    .notNull()
+    .default(1),
 })
 
 export const operativos = camiones.table('operativos', {

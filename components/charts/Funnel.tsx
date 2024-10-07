@@ -72,7 +72,7 @@ function Funnel({ data, className, margin, ...props }: Props) {
                     <g key={part.data.id}>
                       <text
                         x={part.x - part.x * 1.2}
-                        y={part.y + part.height / 2}
+                        y={part.y}
                         textAnchor="left"
                         className="font-bold"
                         dominantBaseline="left"

@@ -12,6 +12,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import {
   barrios,
+  controlSustancias,
   motivos,
   resolucion,
   seguridad,
@@ -58,6 +59,10 @@ export const registros = motos.table('registros', {
     () => barrios.idBarrio,
   ),
   idOperativo: integer('id_operativo').references(() => operativos.idOp),
+  idSustancias: integer('id_sustancias')
+    .references(() => controlSustancias.id)
+    .notNull()
+    .default(1),
 })
 
 export const motoMotivo = motos.table(

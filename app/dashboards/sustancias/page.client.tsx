@@ -2,18 +2,17 @@
 
 import React from 'react'
 import { Funnel } from '@/components/charts'
+import { SustanciasMetrics } from '@/DTO/operativos/metrics'
 
 type Props = {
-  data: {
-    sustancias: { id: string; value: number; label: string }[]
-    total: number
-  }
+  data: SustanciasMetrics
 }
 
 function PageClient({ data }: Props) {
   const groupedData = [
-    { id: 'total', value: data.total, label: 'TOTAL' },
-  ].concat(data.sustancias)
+    { id: 0, value: data.total, label: 'TOTAL' },
+    ...data.sustancias,
+  ]
   return (
     <Funnel
       margin={{ left: 180 }}

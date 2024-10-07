@@ -165,6 +165,7 @@ export function SecondStep({
     motivos: Motivo[]
     resolucion: Record<'id' | 'label', keyof typeof resolucionSchema.enum>[]
     zonas: Barrio[]
+    controlSustancias: { id: number; label: string }[]
   }
   editableRegistro?: z.infer<typeof registroInputSchema>
   id?: string
@@ -302,6 +303,12 @@ export function SecondStep({
           inputLabel="barrio"
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
+        />
+        <Select
+          name="control_sustancias"
+          label="Control sustancias"
+          className="w-full basis-5/12"
+          options={selects.controlSustancias}
         />
         <Select
           name="resolucion"

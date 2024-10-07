@@ -41,7 +41,7 @@ export default async function Home() {
         <h1 className="text-center">
           {data.totalVehiculos} Vehiculos controlados
         </h1>
-        <Funnel className="h-48" data={data.byTrim} />
+        <Funnel className="h-56" data={data.byTrim} />
       </div>
       <div>
         <Image
@@ -58,7 +58,7 @@ export default async function Home() {
         <h1 className="text-center">
           {citymis.totalDenuncias} Denuncias telefonicas
         </h1>
-        <Funnel className="h-48" data={citymis.byTrim} />
+        <Funnel className="h-52" data={citymis.byTrim} />
       </div>
       <Bars
         data={data.byMes}

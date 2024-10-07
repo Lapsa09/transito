@@ -14,6 +14,7 @@ async function page({ params: { id } }: { params: { id: string } }) {
     motivos,
     resolucion,
     zonas,
+    controlSustancias,
   } = await getOperativosSelects()
 
   const { operativo, registro } = await getter<{
@@ -31,7 +32,7 @@ async function page({ params: { id } }: { params: { id: string } }) {
       />
       <SecondStep
         editableRegistro={registro}
-        selects={{ licencias, motivos, resolucion, zonas }}
+        selects={{ licencias, motivos, resolucion, zonas, controlSustancias }}
         id={id}
       />
     </MainForm>

@@ -7,8 +7,14 @@ import { operativoInputSchema, registroInputSchema } from '@/schemas/camiones'
 
 async function page({ params }: { params: { id: string } }) {
   const { id } = params
-  const { vicenteLopez, turnos, motivos, resolucion, zonas } =
-    await getOperativosSelects()
+  const {
+    vicenteLopez,
+    turnos,
+    motivos,
+    resolucion,
+    zonas,
+    controlSustancias,
+  } = await getOperativosSelects()
 
   const { operativo, registro } = await getter<{
     registro: z.infer<typeof registroInputSchema>
@@ -25,7 +31,7 @@ async function page({ params }: { params: { id: string } }) {
       />
       <SecondStep
         editableRegistro={registro}
-        selects={{ motivos, resolucion, zonas }}
+        selects={{ motivos, resolucion, zonas, controlSustancias }}
         id={id}
       />
     </MainForm>

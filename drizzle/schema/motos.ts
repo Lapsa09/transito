@@ -52,6 +52,7 @@ export const registros = motos.table('registros', {
   }).defaultNow(),
   lpcarga: integer('lpcarga'),
   mes: integer('mes'),
+  graduacionAlcoholica: real('graduacion_alcoholica').default(0),
   semana: integer('semana'),
   id: serial('id').primaryKey().notNull(),
   idLicencia: integer('id_licencia').references(() => tipoLicencias.idTipo),

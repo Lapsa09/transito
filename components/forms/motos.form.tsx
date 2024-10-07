@@ -304,6 +304,13 @@ export function SecondStep({
           className="w-full basis-5/12"
           rules={{ required: 'Este campo es requerido' }}
         />
+        <Input
+          name="graduacion_alcoholica"
+          label="Graduacion Alcoholica"
+          className="w-full basis-5/12"
+          type="number"
+          placeholder='Ej: "0.0"'
+        />
         <Select
           name="control_sustancias"
           label="Control sustancias"

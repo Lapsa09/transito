@@ -33,6 +33,7 @@ export const registroInputSchema = z.object({
   acta: z.coerce.number().optional(),
   extranjero: z.boolean().default(false),
   control_sustancias: z.coerce.number().default(1),
+  graduacion_alcoholica: z.coerce.number().optional(),
 })
 
 export const motosInputPropsSchema =

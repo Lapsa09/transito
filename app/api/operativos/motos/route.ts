@@ -326,6 +326,7 @@ export async function POST(req: Request) {
       idLicencia: body.data.tipo_licencia?.idTipo,
       idZonaInfractor: body.data.zona_infractor?.idBarrio,
       idOperativo: id_operativo,
+      graduacionAlcoholica: body.data.graduacion_alcoholica,
     })
     .returning({
       id: registros.id,

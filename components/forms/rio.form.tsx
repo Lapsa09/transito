@@ -159,6 +159,7 @@ export function SecondStep({
 
   const handleSubmit = async (body: z.infer<typeof registroInputSchema>) => {
     try {
+      console.log(id)
       if (!id) {
         await setter<void>({
           route: `/operativos/rio`,
@@ -169,7 +170,10 @@ export function SecondStep({
         })
         toast({ title: 'Operativo creado con exito', variant: 'success' })
 
-        formProps.reset()
+        formProps.reset({
+          zona: body.zona,
+          dominio: '',
+        })
 
         formProps.setFocus('dominio')
       } else {
@@ -208,7 +212,9 @@ export function SecondStep({
           options={zonasPaseo}
         />
         <div className="flex justify-between w-full">
-          <Button onClick={handleBack}>Atras</Button>
+          <Button type="reset" onClick={handleBack}>
+            Atras
+          </Button>
 
           <Button disabled={!formProps.formState.isValid} type="submit">
             Guardar

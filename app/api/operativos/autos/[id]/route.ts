@@ -47,7 +47,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   const json = await req.json()
 
   const body = autosInputPropsSchema
-    .merge(z.object({ id_operativo: z.number() }))
+    .merge(z.object({ idOp: z.number() }))
     .parse(json)
 
   await db
@@ -61,7 +61,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       idLicencia: body.tipo_licencia?.idTipo,
       idZonaInfractor: body.zona_infractor?.idBarrio,
       idMotivo: body.motivo?.idMotivo,
-      idOperativo: body.id_operativo,
+      idOperativo: body.idOp,
     })
     .where(eq(registros.id, Number(id)))
 
@@ -78,7 +78,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       seguridad: body.seguridad,
       direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
     })
-    .where(eq(operativos.idOp, body.id_operativo))
+    .where(eq(operativos.idOp, body.idOp))
 
   return NextResponse.json('Exito')
 }

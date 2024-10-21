@@ -58,7 +58,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   const body = camionesInputPropsSchema
     .merge(
       z.object({
-        id_op: z.coerce.number(),
+        idOp: z.coerce.number(),
       }),
     )
     .parse(json)
@@ -73,7 +73,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       direccion: body.qth,
       direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
     })
-    .where(eq(operativos.idOp, body.id_op))
+    .where(eq(operativos.idOp, body.idOp))
 
   await db
     .update(registros)
@@ -86,7 +86,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       idMotivo: body.motivo?.idMotivo,
       idLocalidadOrigen: body.localidad_origen?.idBarrio,
       idLocalidadDestino: body.localidad_destino?.idBarrio,
-      idOperativo: body.id_op,
+      idOperativo: body.idOp,
     })
     .where(eq(registros.id, Number(id)))
 

@@ -288,7 +288,9 @@ export function SecondStep({
           </>
         )}
         <div className="flex justify-between w-full">
-          <Button onClick={handleBack}>Atras</Button>
+          <Button type="reset" onClick={handleBack}>
+            Atras
+          </Button>
 
           <Button disabled={!formProps.formState.isValid} type="submit">
             Guardar

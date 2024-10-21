@@ -53,7 +53,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
   const body = motosInputPropsSchema
     .merge(
       z.object({
-        id_op: z.number(),
+        idOp: z.number(),
         motivos: z.array(createSelectSchema(motivos)).optional(),
       }),
     )
@@ -72,7 +72,7 @@ export async function PUT(req: Request, state: { params: { id: string } }) {
       seguridad: body.seguridad,
       direccionFull: `${body.qth}, ${body.localidad.cp}, Vicente Lopez, Buenos Aires, Argentina`,
     })
-    .where(eq(operativos.idOp, body.id_op))
+    .where(eq(operativos.idOp, body.idOp))
 
   await db
     .update(registros)
